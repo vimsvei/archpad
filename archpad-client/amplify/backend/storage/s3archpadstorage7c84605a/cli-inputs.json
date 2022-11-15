@@ -1,0 +1,13 @@
+{
+  "resourceName": "s3archpadstorage7c84605a",
+  "bucketName": "archpad-storage-7c84605a",
+  "policyUUID": "369cfe5b",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ]
+}

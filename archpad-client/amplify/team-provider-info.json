@@ -1,0 +1,23 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-archpad-staging-121419-authRole",
+      "UnauthRoleArn": "arn:aws:iam::415624005017:role/amplify-archpad-staging-121419-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::415624005017:role/amplify-archpad-staging-121419-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-archpad-staging-121419-deployment",
+      "UnauthRoleName": "amplify-archpad-staging-121419-unauthRole",
+      "StackName": "amplify-archpad-staging-121419",
+      "StackId": "arn:aws:cloudformation:eu-central-1:415624005017:stack/amplify-archpad-staging-121419/8a63eef0-5dcc-11ed-9d05-02dbb5c6ed4e",
+      "AmplifyAppId": "dqn1tyh8mb62n"
+    },
+    "categories": {
+      "auth": {
+        "archpad": {}
+      },
+      "storage": {
+        "s3archpadstorage7c84605a": {}
+      }
+    }
+  }
+}

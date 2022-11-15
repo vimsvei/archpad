@@ -1,0 +1,112 @@
+version: '3.7'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: archpad-neo4j
+    ports:
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
+    volumes:
+      - neo4j-storage:/data/neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/vdd%O81B@$0J
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+    networks:
+      - archpad
+
+  minio:
+    image: minio/minio:latest
+    container_name: archpad-minio
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: archipad-minio
+      MINIO_ROOT_PASSWORD: w0HqR@2r906O
+    volumes:
+      - minio-storage:/data
+    networks:
+      - archpad
+
+  postgres:
+    image: postgres
+    container_name: archpad-postgres
+    volumes:
+      - postgres-storage:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: archipad-postgres
+      POSTGRES_PASSWORD: ZIa$0D$#9Z25
+    networks:
+      - archpad
+    restart: unless-stopped
+
+  keycloak:
+      image: quay.io/keycloak/keycloak:legacy
+      container_name: archpad-keycloak
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: archipad-postgres
+        DB_SCHEMA: public
+        DB_PASSWORD: ZIa$0D$#9Z25
+        KEYCLOAK_USER: archipad-keycloak
+        KEYCLOAK_PASSWORD: L01#c1jJxIwh
+      ports:
+        - "8080:8080"
+      depends_on:
+        - postgres
+      networks:
+        - archpad
+
+#  openam:
+#    image: openidentityplatform/openam:latest
+#    container_name: archpad-openam
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - ./am-secrets:/var/secrets/openam
+#      - ./dj-secrets:/var/secrets/opendj
+#      - ./config-embedded:/var/tmp/config
+#    networks:
+#      - archpad
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    container_name: archpad-elastic
+    ports:
+      - "9200:9200"
+    environment:
+      - ELASTIC_PASSWORD=@sx085jB*wQM
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      - archpad
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.5.0
+    container_name: archpad-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://archpad-elastic:9200
+      - ELASTICSEARCH_USERNAME=archpad-kibana
+      - ELASTICSEARCH_PASSWORD=tu^0VGH^4J5#
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    networks:
+      - archpad
+
+networks:
+  archpad:
+    driver: bridge
+
+volumes:
+  minio-storage:
+  neo4j-storage:
+  postgres-storage:
