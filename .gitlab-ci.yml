@@ -11,10 +11,10 @@ stages:
 
 include:
   - template: Jobs/SAST.gitlab-ci.yml
-  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
 
-secret-detection:
+secret_detection:
   stage: secret-detection
-
-variables:
-  SECRET_DETECTION_ENABLED: "true"
+  variables:
+    SECRET_DETECTION_ENABLED: "true"
+    SECRETS_ANALYZER_VERSION: "4.5"
