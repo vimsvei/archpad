@@ -1,0 +1,33 @@
+global: { scrape_interval: 15s, evaluation_interval: 15s }
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs: [{ targets: ["prometheus:9090"] }]
+  - job_name: traefik
+    static_configs: [{ targets: ["reverse-proxy:8080"] }]
+    metrics_path: /metrics
+  - job_name: hasura
+    static_configs: [{ targets: ["hasura:8080"] }]
+    metrics_path: /metrics
+  - job_name: keycloak
+    static_configs: [{ targets: ["keycloak:8080"] }]
+    metrics_path: /metrics
+  - job_name: minio
+    static_configs: [{ targets: ["minio:9000"] }]
+    metrics_path: /minio/v2/metrics/cluster
+  - job_name: cadvisor
+    static_configs: [{ targets: ["cadvisor:8080"] }]
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params: { module: [http_2xx] }
+    static_configs:
+      - targets:
+          - http://strapi:1337/admin
+          - http://hasura:8080/healthz
+          - http://keycloak:8080/realms/app-realm
+          - http://minio:9000/minio/health/ready
+          - http://reverse-proxy:8080/ping
+    relabel_configs:
+      - { source_labels: [__address__], target_label: __param_target }
+      - { source_labels: [__param_target], target_label: instance }
+      - { target_label: __address__, replacement: blackbox:9115 }
