@@ -1,0 +1,280 @@
+version: "3.9"
+
+services:
+  reverse-proxy:
+    image: traefik:v3.1
+    command:
+      - --api.dashboard=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --ping=true
+    ports:
+      - "80:80"
+      - "8080:8080"  # dashboard + /metrics + /ping
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)
+      - traefik.http.routers.traefik.service=api@internal
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sh:/docker-entrypoint-initdb.d/00-init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [appnet]
+
+  portal:
+    image: node:20-alpine
+    working_dir: /app
+    command: >
+      sh -lc "
+        corepack enable &&
+        pnpm i --frozen-lockfile &&
+        pnpm dev
+      "
+    environment:
+      NODE_ENV: development
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
+      NEXT_PUBLIC_CMS_URL: http://${STRAPI_HOST}
+      KEYCLOAK_ISSUER: http://${AUTH_HOST}/realms/${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_AUDIENCE}
+      # для стабильного HMR в докере на mac/win, если понадобится:
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ../portal:/app
+      - portal_node_modules:/app/node_modules
+      - portal_pnpm_store:/root/.local/share/pnpm/store
+    networks: [ appnet ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portal.rule=Host(`${APP_HOST}`)
+      - traefik.http.services.portal.loadbalancer.server.port=3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: [ "app" ]
+
+
+  hasura:
+    image: hasura/graphql-engine:v2.42.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${HASURA_DB}
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+      HASURA_GRAPHQL_JWT_SECRETS: |
+        [{"type":"RS256","jwk_url":"http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs","audience":"${KEYCLOAK_AUDIENCE}"}]
+      HASURA_GRAPHQL_CORS_DOMAIN: "*"
+      HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,console,health,metrics
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
+      - traefik.http.services.hasura.loadbalancer.server.port=8080
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  strapi:
+    image: strapi/strapi:5.5.1
+    profiles: ["app"]
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${STRAPI_DB}
+      DATABASE_USERNAME: ${STRAPI_DB_USER}
+      DATABASE_PASSWORD: ${STRAPI_DB_PASS}
+      APP_KEYS: ${STRAPI_APP_KEYS}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
+      JWT_SECRET: ${STRAPI_JWT_SECRET}
+      NODE_ENV: development
+      STRAPI_HOST: 0.0.0.0
+      STRAPI_PORT: 1337
+      PUBLIC_URL: http://${STRAPI_HOST}
+      # Upload provider (S3 → MinIO)
+      STRAPI_UPLOAD_PROVIDER: ${STRAPI_UPLOAD_PROVIDER}
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      AWS_REGION: ${STRAPI_S3_REGION}
+      AWS_S3_BUCKET: ${MINIO_BUCKET}
+      AWS_S3_ENDPOINT: ${STRAPI_S3_ENDPOINT}
+      AWS_S3_FORCE_PATH_STYLE: ${STRAPI_S3_FORCE_PATH_STYLE}
+    volumes:
+      - ../content:/srv/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.strapi.rule=Host(`${STRAPI_HOST}`)
+      - traefik.http.services.strapi.loadbalancer.server.port=1337
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start --hostname-strict=false --http-enabled=true --hostname ${AUTH_HOST} --http-port 8080 --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASS}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_METRICS_ENABLED: "true"
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.keycloak.rule=Host(`${AUTH_HOST}`)
+      - traefik.http.services.keycloak.loadbalancer.server.port=8080
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  keycloak-sync:
+    image: alpine:3.20
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      IMPORT_FILE: /import/partial-import.json
+    volumes:
+      - ./keycloak/imports:/import:ro
+      - ./keycloak/sync.sh:/sync.sh:ro
+    entrypoint: ["/bin/sh","/sync.sh"]
+    restart: "no"
+    networks: [appnet]
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
+      - traefik.http.services.mailhog.loadbalancer.server.port=8025
+    ports:
+      - "1025:1025"
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    volumes:
+      - minio_data:/data
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio.rule=Host(`${MINIO_HOST}`)
+      - traefik.http.services.minio.loadbalancer.server.port=9001
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-01-15T10-00-00Z
+    depends_on:
+      - minio
+    entrypoint: >-
+      sh -c '
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      mc mb -p local/${MINIO_BUCKET} || true &&
+      mc anonymous set public local/${MINIO_BUCKET} || true
+      '
+    networks: [appnet]
+
+  # --- Monitoring stack ---
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    profiles: ["monitoring"]
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prom.rule=Host(`${PROMETHEUS_HOST}`)
+      - traefik.http.services.prom.loadbalancer.server.port=9090
+
+  grafana:
+    image: grafana/grafana-oss:11.1.0
+    profiles: ["monitoring"]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana.rule=Host(`${GRAFANA_HOST}`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    profiles: ["monitoring"]
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks: [appnet]
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.25.0
+    profiles: ["monitoring"]
+    command: ["--config.file=/config/blackbox.yml"]
+    volumes:
+      - ./monitoring/blackbox/blackbox.yml:/config/blackbox.yml:ro
+    networks: [appnet]
+
+networks:
+  appnet:
+
+volumes:
+  pgdata:
+  minio_data:
+  prometheus_data:
+  grafana_data:
+  portal_node_modules:
+  portal_pnpm_store:

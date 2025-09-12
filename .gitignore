@@ -1,0 +1,26 @@
+# Node
+node_modules/
+.pnpm-store/
+
+# Editor/OS
+.idea/
+.vscode/
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local envs
+**/.env
+**/.env.local
+
+# Docker
+**/pgdata
+**/minio_data
+**/prometheus_data
+**/grafana_data
+**/.cache
+**/build
+**/public/uploads
