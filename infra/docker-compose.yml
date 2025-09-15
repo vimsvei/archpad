@@ -7,10 +7,13 @@ services:
       - --api.dashboard=true
       - --providers.docker=true
       - --entrypoints.web.address=:80
+      - --entrypoints.traefik.address=:8080
+      - --entrypoints.pg.address=:5432
       - --metrics.prometheus=true
       - --metrics.prometheus.addEntryPointsLabels=true
       - --metrics.prometheus.addServicesLabels=true
       - --ping=true
+      - --ping.entryPoint=traefik
     ports:
       - "80:80"
       - "8080:8080"  # dashboard + /metrics + /ping
@@ -21,12 +24,28 @@ services:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)
       - traefik.http.routers.traefik.service=api@internal
+      # also expose dashboard/API on :8080 without Host header
+      - traefik.http.routers.traefik8080.entrypoints=traefik
+      - traefik.http.routers.traefik8080.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+      - traefik.http.routers.traefik8080.service=api@internal
 
   postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
+      # pass app DB params to init script
+      DB_OWNERSHIP_MODE: ${DB_OWNERSHIP_MODE:-app_owner}
+      PROJECT_DB: ${PROJECT_DB}
+      HASURA_DB: ${HASURA_DB}
+      HASURA_DB_USER: ${HASURA_DB_USER}
+      HASURA_DB_PASS: ${HASURA_DB_PASS}
+      STRAPI_DB: ${STRAPI_DB}
+      STRAPI_DB_USER: ${STRAPI_DB_USER}
+      STRAPI_DB_PASS: ${STRAPI_DB_PASS}
+      KEYCLOAK_DB: ${KEYCLOAK_DB}
+      KEYCLOAK_DB_USER: ${KEYCLOAK_DB_USER}
+      KEYCLOAK_DB_PASS: ${KEYCLOAK_DB_PASS}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sh:/docker-entrypoint-initdb.d/00-init.sh:ro
@@ -36,6 +55,11 @@ services:
       timeout: 5s
       retries: 30
     networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.pg.rule=HostSNI(`*`)
+      - traefik.tcp.routers.pg.entrypoints=pg
+      - traefik.tcp.services.pg.loadbalancer.server.port=5432
 
   portal:
     image: node:20-alpine
@@ -70,12 +94,15 @@ services:
         condition: service_healthy
     profiles: [ "app" ]
 
-
   hasura:
     image: hasura/graphql-engine:v2.42.0
     depends_on:
       postgres:
         condition: service_healthy
+      keycloak:
+        condition: service_started
+      hasura-wait:
+        condition: service_completed_successfully
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
@@ -85,17 +112,37 @@ services:
       HASURA_GRAPHQL_JWT_SECRETS: |
         [{"type":"RS256","jwk_url":"http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs","audience":"${KEYCLOAK_AUDIENCE}"}]
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
-      HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,console,health,metrics
+      HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,pgdump,metrics
+      PG_PROJECT_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_DB}
     networks: [appnet]
     labels:
       - traefik.enable=true
       - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
       - traefik.http.services.hasura.loadbalancer.server.port=8080
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
+
+  hasura-wait:
+    image: alpine:3.20
+    depends_on:
+      keycloak:
+        condition: service_started
+    entrypoint: [ "sh", "-lc",
+                  "until wget -q --spider http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs; do echo '[hasura-wait] JWKS not ready; retrying...'; sleep 2; done" ]
+    networks: [ appnet ]
+    restart: "no"
+
+  hasura-metadata:
+    image: alpine:3.20
+    depends_on:
+      hasura:
+        condition: service_started
+    environment:
+      HASURA_URL: http://hasura:8080
+      HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
+    volumes:
+      - ./hasura/metadata:/metadata:ro
+    entrypoint: ["sh","-lc","(command -v curl >/dev/null 2>&1 || apk add --no-cache curl) && /metadata/apply.sh"]
+    restart: "no"
+    networks: [appnet]
 
   strapi:
     image: strapi/strapi:5.5.1
@@ -140,15 +187,16 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    command: start --hostname-strict=false --http-enabled=true --hostname ${AUTH_HOST} --http-port 8080 --import-realm
+    command: start --hostname-strict=false --http-enabled=true --hostname ${AUTH_HOST} --http-port 8080
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB}
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASS}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_METRICS_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
     volumes:
       - ./keycloak/realms:/opt/keycloak/data/import:ro
     depends_on:
@@ -159,21 +207,16 @@ services:
       - traefik.enable=true
       - traefik.http.routers.keycloak.rule=Host(`${AUTH_HOST}`)
       - traefik.http.services.keycloak.loadbalancer.server.port=8080
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 30
 
   keycloak-sync:
     image: alpine:3.20
     depends_on:
       keycloak:
-        condition: service_healthy
+        condition: service_started
     environment:
       KEYCLOAK_URL: http://keycloak:8080
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       IMPORT_FILE: /import/partial-import.json
     volumes:
@@ -193,8 +236,27 @@ services:
     ports:
       - "1025:1025"
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 25
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST}`)
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+
   minio:
-    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    image: minio/minio:latest
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -205,11 +267,13 @@ services:
     networks: [appnet]
     labels:
       - traefik.enable=true
-      - traefik.http.routers.minio.rule=Host(`${MINIO_HOST}`)
-      - traefik.http.services.minio.loadbalancer.server.port=9001
+      - traefik.http.routers.minio-console.rule=Host(`${MINIO_CONSOLE_HOST}`)
+      - traefik.http.services.minio-console.loadbalancer.server.port=9001
+      - traefik.http.routers.minio-s3.rule=Host(`${MINIO_S3_HOST}`)
+      - traefik.http.services.minio-s3.loadbalancer.server.port=9000
 
   minio-init:
-    image: minio/mc:RELEASE.2025-01-15T10-00-00Z
+    image: minio/mc:latest
     depends_on:
       - minio
     entrypoint: >-
@@ -220,61 +284,13 @@ services:
       '
     networks: [appnet]
 
-  # --- Monitoring stack ---
-  prometheus:
-    image: prom/prometheus:v2.53.0
-    profiles: ["monitoring"]
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.prom.rule=Host(`${PROMETHEUS_HOST}`)
-      - traefik.http.services.prom.loadbalancer.server.port=9090
-
-  grafana:
-    image: grafana/grafana-oss:11.1.0
-    profiles: ["monitoring"]
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-    depends_on:
-      - prometheus
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.rule=Host(`${GRAFANA_HOST}`)
-      - traefik.http.services.grafana.loadbalancer.server.port=3000
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    profiles: ["monitoring"]
-    privileged: true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    networks: [appnet]
-
-  blackbox:
-    image: prom/blackbox-exporter:v0.25.0
-    profiles: ["monitoring"]
-    command: ["--config.file=/config/blackbox.yml"]
-    volumes:
-      - ./monitoring/blackbox/blackbox.yml:/config/blackbox.yml:ro
-    networks: [appnet]
-
 networks:
   appnet:
 
 volumes:
   pgdata:
+  pgadmin_data:
   minio_data:
-  prometheus_data:
   grafana_data:
   portal_node_modules:
   portal_pnpm_store:
