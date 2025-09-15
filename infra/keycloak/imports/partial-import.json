@@ -9,43 +9,16 @@
       { "name": "INFRASTRUCTURE_ARCHITECT" }
     ]
   },
-  "groups": [
-    { "name": "ADMIN" },
-    { "name": "USER" }
-  ],
   "clients": [
-    {
-      "clientId": "archpad-portal",
-      "protocol": "openid-connect",
-      "publicClient": true,
-      "redirectUris": ["http://app.localhost/*"],
+    { "clientId": "archpad-portal", "protocol": "openid-connect", "publicClient": true,
+      "redirectUris": ["http://app.localhost/*", "http://localhost:3000/*"],
       "attributes": { "pkce.code.challenge.method": "S256" },
       "protocolMappers": [
-        {
-          "name": "x-hasura-default-role",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-hardcoded-claim-mapper",
-          "config": {
-            "claim.name": "x-hasura-default-role",
-            "claim.value": "user",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "userinfo.token.claim": "true"
-          }
-        },
-        {
-          "name": "x-hasura-allowed-roles",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-hardcoded-claim-mapper",
-          "config": {
-            "claim.name": "x-hasura-allowed-roles",
-            "claim.value": "[\"user\",\"public\"]",
-            "jsonType.label": "JSON",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "userinfo.token.claim": "true"
-          }
-        }
+        { "name": "x-hasura-default-role", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": { "claim.name": "x-hasura-default-role", "claim.value": "user", "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } },
+        { "name": "x-hasura-allowed-roles", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": { "claim.name": "x-hasura-allowed-roles", "claim.value": "[\"user\",\"public\"]", "jsonType.label": "JSON",
+            "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
       ]
     }
   ]
