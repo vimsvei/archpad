@@ -9,9 +9,6 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.traefik.address=:8080
       - --entrypoints.pg.address=:5432
-      - --metrics.prometheus=true
-      - --metrics.prometheus.addEntryPointsLabels=true
-      - --metrics.prometheus.addServicesLabels=true
       - --ping=true
       - --ping.entryPoint=traefik
     ports:
@@ -60,6 +57,8 @@ services:
       - traefik.tcp.routers.pg.rule=HostSNI(`*`)
       - traefik.tcp.routers.pg.entrypoints=pg
       - traefik.tcp.services.pg.loadbalancer.server.port=5432
+      - traefik.tcp.routers.pg.tls=false
+      - traefik.docker.network=archpad_appnet
 
   portal:
     image: node:20-alpine
@@ -78,7 +77,6 @@ services:
       NEXT_PUBLIC_CMS_URL: http://${STRAPI_HOST}
       KEYCLOAK_ISSUER: http://${AUTH_HOST}/realms/${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_AUDIENCE}
-      # для стабильного HMR в докере на mac/win, если понадобится:
       WATCHPACK_POLLING: "true"
     volumes:
       - ../portal:/app
@@ -164,12 +162,13 @@ services:
       PUBLIC_URL: http://${STRAPI_HOST}
       # Upload provider (S3 → MinIO)
       STRAPI_UPLOAD_PROVIDER: ${STRAPI_UPLOAD_PROVIDER}
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-      AWS_REGION: ${STRAPI_S3_REGION}
+      AWS_ACCESS_KEY_ID: ${MINIO_STRAPI_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_STRAPI_PASSWORD}
+      AWS_REGION: ${AWS_S3_REGION}
       AWS_S3_BUCKET: ${MINIO_BUCKET}
-      AWS_S3_ENDPOINT: ${STRAPI_S3_ENDPOINT}
-      AWS_S3_FORCE_PATH_STYLE: ${STRAPI_S3_FORCE_PATH_STYLE}
+      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT_INTERNAL}
+      AWS_S3_FORCE_PATH_STYLE: ${AWS_S3_FORCE_PATH_STYLE}
+      AWS_S3_PUBLIC_BASE_URL: ${AWS_S3_PUBLIC_BASE_URL}
     volumes:
       - ../content:/srv/app
     depends_on:
@@ -261,7 +260,6 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_PROMETHEUS_AUTH_TYPE: public
     volumes:
       - minio_data:/data
     networks: [appnet]
@@ -275,14 +273,21 @@ services:
   minio-init:
     image: minio/mc:latest
     depends_on:
-      - minio
-    entrypoint: >-
-      sh -c '
-      mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-      mc mb -p local/${MINIO_BUCKET} || true &&
-      mc anonymous set public local/${MINIO_BUCKET} || true
-      '
+      minio:
+        condition: service_started
+    environment:
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_STRAPI_USER: ${MINIO_STRAPI_USER}
+      MINIO_STRAPI_PASSWORD: ${MINIO_STRAPI_PASSWORD}
+      MINIO_PORTAL_USER: ${MINIO_PORTAL_USER}
+      MINIO_PORTAL_PASSWORD: ${MINIO_PORTAL_PASSWORD}
+    volumes:
+      - ./minio/init.sh:/init/init.sh:ro
+    entrypoint: ["sh","-lc","/init/init.sh"]
     networks: [appnet]
+    restart: "no"
 
 networks:
   appnet:
@@ -291,6 +296,5 @@ volumes:
   pgdata:
   pgadmin_data:
   minio_data:
-  grafana_data:
   portal_node_modules:
   portal_pnpm_store:
