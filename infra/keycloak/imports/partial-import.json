@@ -10,9 +10,26 @@
     ]
   },
   "clients": [
-    { "clientId": "archpad-portal", "protocol": "openid-connect", "publicClient": true,
-      "redirectUris": ["http://app.localhost/*", "http://localhost:3000/*"],
-      "attributes": { "pkce.code.challenge.method": "S256" },
+    {
+      "clientId": "archpad-portal",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "redirectUris": [
+        "http://app.localhost/api/auth/callback/keycloak",
+        "http://localhost:3000/api/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "http://app.localhost",
+        "http://localhost:3000"
+      ],
+      "rootUrl": "http://app.localhost",
+      "baseUrl": "/",
+      "adminUrl": "http://app.localhost",
+
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://app.localhost/login\nhttp://localhost:3000/login"
+      },
       "protocolMappers": [
         { "name": "x-hasura-default-role", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
           "config": { "claim.name": "x-hasura-default-role", "claim.value": "user", "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } },
