@@ -2,6 +2,7 @@
   "name": "archpad",
   "private": true,
   "scripts": {
+    "install:all": "pnpm install",
     "dev:infra": "pnpm -C infra dev:infra",
     "dev:app": "pnpm -C infra dev:app",
     "dev:all": "pnpm -C infra dev:all",
@@ -9,9 +10,5 @@
     "logs": "pnpm -C infra logs",
     "keycloak:sync": "pnpm -C infra keycloak:sync"
   },
-  "workspaces": [
-    "portal",
-    "content"
-  ],
   "packageManager": "pnpm@10.16.0+sha512.8066e7b034217b700a9a4dbb3a005061d641ba130a89915213a10b3ca4919c19c037bec8066afdc559b89635fdb806b16ea673f2468fbb28aabfa13c53e3f769"
 }

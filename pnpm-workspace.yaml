@@ -1,4 +1,3 @@
 packages:
-  - "portal"
-  - "content"
+  - "packages/*"
   - "infra"
