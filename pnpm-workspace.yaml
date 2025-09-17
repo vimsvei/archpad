@@ -1,5 +1,4 @@
 packages:
-  - portal
-  - content
-  - infra
-  - model
+  - "portal"
+  - "content"
+  - "infra"
