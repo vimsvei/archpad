@@ -1,5 +1,5 @@
 {
-  "name": "archpad-portal",
+  "name": "@archpad/portal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
