@@ -1,11 +1,23 @@
-import ApplicationProvider from "@/components/providers/application-provider";
-
 import './globals.css';
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import {getLanguage} from "@/tolgee/language";
+import {getTolgee} from "@/tolgee/server";
+import ApplicationProvider from "@/components/providers/application-provider";
+import {TolgeeNextProvider} from "@/components/providers/tolgee-next-provider";
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  
+  const locale = await getLanguage();
+  const tolgee = await getTolgee();
+  const staticData = await tolgee.loadRequired();
+  
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body>
-        <ApplicationProvider>{children}</ApplicationProvider>
+        <TolgeeNextProvider language={locale} staticData={staticData}>
+          <ApplicationProvider>
+            {children}
+          </ApplicationProvider>
+        </TolgeeNextProvider>
       </body>
     </html>
   )
