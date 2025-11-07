@@ -1,0 +1,12 @@
+tolgee:
+  postgres:
+    autoconfigure: false
+    enabled: false
+  authentication:
+    enabled: true
+  contentDelivery:
+    allowedOrigins:
+      - http://portal.localhost
+      - http://localhost:3000
+server:
+  port: 8080
