@@ -1,0 +1,6 @@
+GET /v2/projects/2/translations/ru-RU HTTP/1.1
+Host: tolgee.localhost
+Accept: application/json
+X-API-Key: tgpak_gjptez3moi4hezzzhbxti33kni4gq4bymjzdq4tdobzhg
+
+###
