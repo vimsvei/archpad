@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {useTranslate} from "@tolgee/react";
 
-export function LoginForm({ className, ...props}: React.ComponentProps<"div">) {
+export function SignInForm({className, ...props}: React.ComponentProps<"div">) {
   const { t, isLoading } = useTranslate();
   
   console.log(isLoading)
