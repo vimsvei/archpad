@@ -2,7 +2,11 @@
   "realm": "archpad",
   "enabled": true,
   "clients": [
-    { "clientId": "archpad-portal", "publicClient": true, "standardFlowEnabled": true,
+    {
+      "clientId": "archpad-portal",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "registrationEmailAsUsername": true,
       "redirectUris": ["http://app.localhost/*"], "attributes": { "pkce.code.challenge.method": "S256" },
       "protocolMappers": [
         { "name": "x-hasura-default-role", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
