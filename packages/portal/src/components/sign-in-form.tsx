@@ -6,17 +6,19 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {useTranslate} from "@tolgee/react";
+import {useFormStatus} from "react-dom";
+import {signIn} from "next-auth/react";
 
-export function SignInForm({className, ...props}: React.ComponentProps<"div">) {
+export function SignInForm({className, onSubmit, ...props}: React.ComponentProps<"div">) {
   const { t, isLoading } = useTranslate();
   
-  console.log(isLoading)
+  const { pending } = useFormStatus();
   
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={() => signIn("keycloak")}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">{t('SignIn-Title')}</h1>
@@ -29,6 +31,7 @@ export function SignInForm({className, ...props}: React.ComponentProps<"div">) {
                 <Input
                   id="email"
                   type="email"
+                  name="username"
                   placeholder="m@example.com"
                   required
                 />
@@ -43,9 +46,9 @@ export function SignInForm({className, ...props}: React.ComponentProps<"div">) {
                     {t('Forgot-password')}
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" disabled={pending} className="w-full">
                 {t('SignIn-Submit')}
               </Button>
               {/*<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">*/}

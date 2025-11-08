@@ -11,7 +11,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     onUnauthenticated() {
       // можно сохранить «куда вернуть»:
       const next = typeof window !== 'undefined' ? window.location.pathname : '/dashboard';
-      router.replace(`/login?next=${encodeURIComponent(next)}`);
+      router.replace(`/sign-in?next=${encodeURIComponent(next)}`);
     },
   });
   

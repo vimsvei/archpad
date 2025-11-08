@@ -12,7 +12,7 @@ export default function Root() {
   
   useEffect(() => {
     if (status === 'authenticated') router.replace('/dashboard');
-    if (status === 'unauthenticated') router.replace('/login');
+    if (status === 'unauthenticated') router.replace('/sign-in');
   }, [status, router, next]);
   
   return <div className="p-6 text-sm opacity-70">Проверяем сессию…</div>;
