@@ -5,6 +5,7 @@ import {TolgeeNextProvider} from "@/components/providers/tolgee-next-provider";
 import {ReactNode} from "react";
 import {ALL_LANGUAGES} from "@/tolgee/shared";
 import {notFound} from "next/navigation";
+import {NextIntlClientProvider} from "next-intl";
 
 type RootLayoutProps = {
   children: ReactNode;
@@ -23,9 +24,11 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     <html lang={locale} suppressHydrationWarning>
       <body>
         <ApplicationProvider>
-          <TolgeeNextProvider language={locale} staticData={records}>
-            { children }
-          </TolgeeNextProvider>
+          <NextIntlClientProvider locale={locale}>
+            <TolgeeNextProvider language={locale} staticData={records}>
+              { children }
+            </TolgeeNextProvider>
+          </NextIntlClientProvider>
         </ApplicationProvider>
       </body>
     </html>

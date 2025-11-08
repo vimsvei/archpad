@@ -12,6 +12,7 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import {ModeToggle} from "@/components/mode-toggle";
+import {LocaleToggle} from "@/components/locale-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,7 +59,8 @@ export default function DashboardLayout({
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div>
+          <div className="flex gap-2">
+            <LocaleToggle/>
             <ModeToggle/>
           </div>
         </header>

@@ -6,3 +6,4 @@ import {ALL_LANGUAGES} from "@/tolgee/shared";
 export const { Link, redirect, usePathname, useRouter } = createNavigation({
   locales: ALL_LANGUAGES,
 });
+
