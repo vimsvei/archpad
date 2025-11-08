@@ -2,13 +2,12 @@ import '../globals.css';
 import {getTolgee} from "@/tolgee/server";
 import ApplicationProvider from "@/components/providers/application-provider";
 import {TolgeeNextProvider} from "@/components/providers/tolgee-next-provider";
-import {ReactNode} from "react";
 import {ALL_LANGUAGES} from "@/tolgee/shared";
 import {notFound} from "next/navigation";
 import {NextIntlClientProvider} from "next-intl";
 
 type RootLayoutProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
 

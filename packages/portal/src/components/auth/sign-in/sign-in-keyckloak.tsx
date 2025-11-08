@@ -6,14 +6,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import {useTranslate} from "@tolgee/react";
 import {useFormStatus} from "react-dom";
 
-function SignInKeycloak({className, onSubmit, ...props}: React.ComponentProps<"div">) {
+type SignInKeycloakProps = Omit<React.ComponentProps<'div'>, 'onSubmit'> & {
+  action: (formData: FormData) => void | Promise<void>;
+};
+
+function SignInKeycloak({className, action, ...props}: SignInKeycloakProps) {
   const { t } = useTranslate();
   
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" action={onSubmit}>
+          <form className="p-6 md:p-8" action={action}>
             <div className="flex flex-col gap-6 h-64 justify-between">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">{t('SignIn-Title')}</h1>
