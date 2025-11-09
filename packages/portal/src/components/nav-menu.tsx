@@ -46,7 +46,9 @@ export function NavMenu({ menu }: INavMenuProps) {
                         ? (
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton tooltip={t(item.title)}>
-                              {item.icon && ( item.color ? <item.icon color={item.color}/> : <item.icon/>)}
+                              {item.icon && ( item.color
+                                ? <item.icon color={item.color} strokeWidth={3}/>
+                                : <item.icon strokeWidth={3}/>)}
                               <span>{t(item.title)}</span>
                               <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
@@ -55,7 +57,7 @@ export function NavMenu({ menu }: INavMenuProps) {
                         : (
                           <SidebarMenuButton asChild>
                             <a href={item.url}>
-                              {item.icon && <item.icon />}
+                              {item.icon && <item.icon strokeWidth={3} />}
                               <span>{t(item.title)}</span>
                             </a>
                           </SidebarMenuButton>
