@@ -4,9 +4,8 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {useTranslate} from "@tolgee/react";
-import {useFormStatus} from "react-dom";
 
-type SignInKeycloakProps = Omit<React.ComponentProps<'div'>, 'onSubmit'> & {
+type SignInKeycloakProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'onSubmit'> & {
   action: (formData: FormData) => void | Promise<void>;
 };
 

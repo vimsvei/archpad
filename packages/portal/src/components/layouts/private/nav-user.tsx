@@ -5,7 +5,7 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LogOut,
+  LogOut, Send, Settings2,
   Sparkles,
 } from "lucide-react"
 
@@ -93,12 +93,20 @@ export function NavUser({
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Settings2 />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem>
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Send />
+                Feedback
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

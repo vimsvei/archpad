@@ -36,7 +36,7 @@ export function NavMenu({ menu }: INavMenuProps) {
               {menuItem.items.map((item) => (
                 <Collapsible
                   key={item.title}
-                  asChild
+                  // asChild
                   defaultOpen={item.isActive}
                   className="group/collapsible"
                 >

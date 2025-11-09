@@ -98,11 +98,6 @@ export const menu: TMenu = [
 
 export const secondaryMenu: TSecondaryMenu = [
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings2,
-  },
-  {
     title: "Support",
     url: "#",
     icon: LifeBuoy,
