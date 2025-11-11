@@ -2,11 +2,21 @@
   "ifResourceExists": "OVERWRITE",
   "roles": {
     "realm": [
-      { "name": "CHIEF_ARCHITECT" },
-      { "name": "ENTERPRISE_ARCHITECT" },
-      { "name": "SOLUTION_ARCHITECT" },
-      { "name": "SECURITY_ARCHITECT" },
-      { "name": "INFRASTRUCTURE_ARCHITECT" }
+      {
+        "name": "CHIEF_ARCHITECT"
+      },
+      {
+        "name": "ENTERPRISE_ARCHITECT"
+      },
+      {
+        "name": "SOLUTION_ARCHITECT"
+      },
+      {
+        "name": "SECURITY_ARCHITECT"
+      },
+      {
+        "name": "INFRASTRUCTURE_ARCHITECT"
+      }
     ]
   },
   "clients": [
@@ -25,17 +35,78 @@
       "rootUrl": "http://app.localhost",
       "baseUrl": "/",
       "adminUrl": "http://app.localhost",
-
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://app.localhost/login\nhttp://localhost:3000/login"
       },
       "protocolMappers": [
-        { "name": "x-hasura-default-role", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
-          "config": { "claim.name": "x-hasura-default-role", "claim.value": "user", "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } },
-        { "name": "x-hasura-allowed-roles", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper",
-          "config": { "claim.name": "x-hasura-allowed-roles", "claim.value": "[\"user\",\"public\"]", "jsonType.label": "JSON",
-            "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
+        {
+          "name": "x-hasura-default-role",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "x-hasura-default-role",
+            "claim.value": "user",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "x-hasura-allowed-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "x-hasura-allowed-roles",
+            "claim.value": "[\"user\",\"public\"]",
+            "jsonType.label": "JSON",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "given_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "firstName",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "family_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lastName",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        }
       ]
     }
   ]
