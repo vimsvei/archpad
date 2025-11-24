@@ -1,17 +1,21 @@
-import { PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { randomUUID } from 'node:crypto';
+import { ActionStamp } from '../embeddable/action-stamp.embeddable';
+import { BeforeCreate, BeforeUpdate, Embedded, Entity } from '@mikro-orm/core';
 
+@Entity({ abstract: true })
 export abstract class BaseObject {
-  @PrimaryKey({ type: 'uuid' })
-  id: string = randomUUID();
+  @Embedded(() => ActionStamp, { prefix: 'created_', prefixMode: 'absolute'})
+  created: ActionStamp;
   
-  @Property({ type: 'text' })
-  @Unique()
-  code!: string;
+  @Embedded(() => ActionStamp, { prefix: 'updated_', prefixMode: 'absolute'})
+  updated: ActionStamp;
   
-  @Property({ type: 'text' })
-  @Unique()
-  name!: string;
+  @BeforeCreate()
+  protected setCreatedStamp(by: string) {
+    this.created = ActionStamp.now(by);
+  }
   
-  
+  @BeforeUpdate()
+  protected setUpdatedStamp(by: string) {
+    this.updated = ActionStamp.now(by);
+  }
 }
