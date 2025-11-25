@@ -1,7 +1,9 @@
 import { BaseObject } from './base-object.abstract';
 import { PrimaryKey } from '@mikro-orm/core';
+import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class IdentifiedObject extends BaseObject{
-  @PrimaryKey({ type: 'uuid'})
+export abstract class IdentifiedObject extends BaseObject {
+  @ApiProperty({ description: 'identified object' })
+  @PrimaryKey({ type: 'uuid' })
   id: string = crypto.randomUUID();
 }

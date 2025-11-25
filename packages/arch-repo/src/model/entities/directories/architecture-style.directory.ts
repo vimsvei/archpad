@@ -1,8 +1,8 @@
-import { NamedObject } from '../abstract/named-object.abstract';
 import { Entity, Property } from '@mikro-orm/core';
+import { DirectoryObject } from '../../abstract/directory-object.abstract';
 
 @Entity({ tableName: 'architecture_style' })
-export class ArchitectureStyleDirectory extends NamedObject {
+export class ArchitectureStyleDirectory extends DirectoryObject {
   @Property({ type: Boolean, name: 'by_default', default: false })
   byDefault: boolean;
 }

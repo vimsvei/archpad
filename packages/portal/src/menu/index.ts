@@ -94,6 +94,36 @@ export const menu: TMenu = [
       }
     ]
   },
+  {
+    title: 'Menu-Directory',
+    items: [
+      {
+        title: 'Architecture-Style',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+      {
+        title: 'Critical-Levels',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+      {
+        title: 'Node-Types',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+      {
+        title: 'License-Types',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+      {
+        title: 'Protocol-Types',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+    ]
+  },
 ]
 
 export const secondaryMenu: TSecondaryMenu = [
