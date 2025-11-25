@@ -30,7 +30,7 @@ import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: RequestLoggerInterceptor,
-    }
+    },
   ],
 })
 export class AppModule {}

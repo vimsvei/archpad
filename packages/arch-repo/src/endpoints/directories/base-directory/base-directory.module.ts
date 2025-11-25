@@ -58,8 +58,8 @@ export class BaseDirectoryModule {
     const { entity, path, swaggerTag, createDto, updateDto } = options;
 
     const EntityClass = entity as any;
-    const CreateDtoClass = (createDto ?? EntityClass) as any;
-    const UpdateDtoClass = (updateDto ?? createDto ?? EntityClass) as any;
+    const CreateDtoClass = createDto ?? EntityClass;
+    const UpdateDtoClass = updateDto ?? createDto ?? EntityClass;
 
     @Injectable()
     class DirectoryService extends BaseDirectoryService<

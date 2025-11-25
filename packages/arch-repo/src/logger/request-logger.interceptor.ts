@@ -11,22 +11,20 @@ import { LoggerService } from './logger.service';
 @Injectable()
 export class RequestLoggerInterceptor implements NestInterceptor {
   constructor(private readonly logger: LoggerService) {}
-  
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpCtx = context.switchToHttp();
     const req = httpCtx.getRequest<Request & { id?: string }>();
-    
+
     const method = (req as any).method;
     const url = (req as any).url;
-    
+
     // correlation / request id
     const requestId =
-      (req as any).headers?.['x-request-id'] ??
-      (req as any).id ??
-      randomUUID();
-    
+      (req as any).headers?.['x-request-id'] ?? (req as any).id ?? randomUUID();
+
     const startedAt = Date.now();
-    
+
     this.logger.log(
       {
         event: 'request_started',
@@ -36,13 +34,13 @@ export class RequestLoggerInterceptor implements NestInterceptor {
       },
       'HTTP',
     );
-    
+
     return next.handle().pipe(
       tap({
         next: (body) => {
           const res = httpCtx.getResponse<any>();
           const statusCode = res.statusCode;
-          
+
           this.logger.log(
             {
               event: 'request_completed',
@@ -58,7 +56,7 @@ export class RequestLoggerInterceptor implements NestInterceptor {
         error: (err) => {
           const res = httpCtx.getResponse<any>();
           const statusCode = res?.statusCode ?? 500;
-          
+
           this.logger.error(
             {
               event: 'request_error',
