@@ -10,7 +10,7 @@ export default {
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
   /**
-   * An asynchronous bootstrap function that runs before
+   * An asynchronous archimate-bootstrap function that runs before
    * your application gets started.
    *
    * This gives you an opportunity to set up your data model,

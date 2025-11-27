@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from './logger/logger.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
+import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootstrap.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
       password: process.env.PROJECT_DB_PASS,
       debug: process.env.NODE_ENV !== 'production',
     }),
+    ArchimateBootstrapModule,
   ],
   controllers: [AppController],
   providers: [

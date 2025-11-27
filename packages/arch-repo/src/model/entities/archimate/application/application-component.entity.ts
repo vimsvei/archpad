@@ -1,19 +1,23 @@
-import { NamedObject } from '../../../abstract/named-object.abstract';
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { LicenseTypeDirectory } from '../../directories/license-type.directory';
-import { ArchitectureStyleDirectory } from '../../directories/architecture-style.directory';
-import { CriticalLevelDirectory } from '../../directories/critical-level.directory';
 import * as trace_events from 'node:trace_events';
+import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
+import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
+import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
+import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
-@Entity({ tableName: 'application_components' })
-export class ApplicationComponent extends NamedObject {
+@Entity({ tableName: 'components' })
+export class ApplicationComponent extends ArchimateElementGeneric {
+  @ArchimateCode('APP_COM')
+  override code: string = undefined as any;
+
   @ManyToOne((type) => LicenseTypeDirectory, {
     name: 'license_type_id',
     nullable: true,
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  license?: LicenseTypeDirectory | null;
+  license: LicenseTypeDirectory;
 
   @ManyToOne((type) => ArchitectureStyleDirectory, {
     name: 'style_id',
@@ -21,7 +25,7 @@ export class ApplicationComponent extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  architectureStyle?: ArchitectureStyleDirectory | null;
+  architectureStyle!: ArchitectureStyleDirectory;
 
   @ManyToOne((type) => CriticalLevelDirectory, {
     name: 'critical_level_id',
@@ -29,5 +33,5 @@ export class ApplicationComponent extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  criticalLevel?: CriticalLevelDirectory | null;
+  criticalLevel!: CriticalLevelDirectory;
 }

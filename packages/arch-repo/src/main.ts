@@ -11,15 +11,6 @@ async function bootstrap() {
 
   const appLogger = app.get(LoggerService);
   app.useLogger(appLogger);
-  
-  if (process.env.NODE_ENV !== 'production') {
-    const orm = app.get(MikroORM);
-    const generator = orm.getSchemaGenerator();
-    
-    // Если БД пустая — можно один раз сделать createSchema()
-    // await generator.createSchema();
-    await generator.updateSchema();
-  }
 
   const config = new DocumentBuilder()
     .setTitle('Archpad API')

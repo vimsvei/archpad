@@ -1,5 +1,6 @@
 import { Entity } from '@mikro-orm/core';
 import { DirectoryObject } from '../../abstract/directory-object.abstract';
+import { DirectoryKind } from '@/model/enums/directory-kind.enum';
 
-@Entity({ tableName: 'critical_levels' })
+@Entity({ discriminatorValue: DirectoryKind.CRITICAL_LEVEL })
 export class CriticalLevelDirectory extends DirectoryObject {}
