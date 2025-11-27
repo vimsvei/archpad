@@ -18,6 +18,7 @@ import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
       entitiesTs: ['./src/model/**/*.entity{.ts}'],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,
+      port: +(process.env.PG_PORT ?? '5432'),
       dbName: process.env.PROJECT_DB,
       user: process.env.PROJECT_DB_USER,
       password: process.env.PROJECT_DB_PASS,

@@ -1,17 +1,19 @@
-import { Property, Unique } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
+import { IdentifiedObject } from './identified-object.abstract';
 
-export abstract class NamedObject {
+@Entity({ abstract: true })
+export abstract class NamedObject extends IdentifiedObject{
   @ApiProperty({ description: 'System name', required: true })
-  @Property({ type: 'text' })
+  @Property({ type: 'string' })
   @Unique()
   code!: string;
 
   @ApiProperty({ description: 'Item name', required: true })
-  @Property({ type: 'text' })
+  @Property({ type: "string" })
   name!: string;
 
   @ApiProperty({ description: 'Description', required: false })
-  @Property({ nullable: true })
+  @Property({ type: "text", nullable: true })
   description?: string;
 }

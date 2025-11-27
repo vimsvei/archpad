@@ -5,7 +5,7 @@ export class ActionStamp {
   @Property({ onCreate: () => new Date() })
   at: Date;
 
-  @Property({ nullable: true })
+  @Property({ type: 'uuid', nullable: true })
   by: string;
 
   protected constructor(by: string) {
