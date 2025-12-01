@@ -8,7 +8,7 @@ import { InterfaceFunctionMap } from '@/model/entities/maps/interface-function.m
 export class ApplicationFunction extends FunctionGeneric {
   @OneToOne({ entity: () => ComponentFunctionMap, mappedBy: 'function' })
   components = new Collection<ComponentFunctionMap>(this);
-  
+
   @OneToOne({ entity: () => InterfaceFunctionMap, mappedBy: 'function' })
-  interfaces = new Collection<InterfaceFunctionMap>(this)
+  interfaces = new Collection<InterfaceFunctionMap>(this);
 }
