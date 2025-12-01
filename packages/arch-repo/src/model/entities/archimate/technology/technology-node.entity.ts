@@ -1,8 +1,8 @@
-import { NamedObject } from '../../../abstract/named-object.abstract';
+import { NamedObject } from '@/model/abstract/named-object.abstract';
 import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { NodeTypeDirectory } from '../../directories/node-type.directory';
 import { TechnologyNetwork } from './technology-network.entity';
-import { NodeKind } from '../../../enums/node-kind.enum';
+import { NodeKind } from '@/model/enums/node-kind.enum';
 
 @Entity({
   tableName: 'technology_nodes',
