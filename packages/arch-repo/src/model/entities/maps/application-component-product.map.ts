@@ -1,11 +1,9 @@
 import { MappedObject } from '@/model/abstract/mapped-object.abstract';
-import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
+import { ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/entities/archimate/application/application-component.entity';
-import { DataObject } from '@/model/entities/archimate/application/data-object.entity';
+import { BusinessProduct } from '@/model/entities/archimate/business/business-product.entity';
 
-@Entity({ tableName: 'map_application_component_data_object' })
-@Unique({ properties: ['component', 'dataObject'] })
-export class ApplicationComponentDataObjectMap extends MappedObject {
+export class ApplicationComponentProductMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
     fieldName: 'component_id',
@@ -15,10 +13,10 @@ export class ApplicationComponentDataObjectMap extends MappedObject {
   component!: ApplicationComponent;
 
   @ManyToOne({
-    entity: () => DataObject,
-    fieldName: 'data_object_id',
+    entity: () => BusinessProduct,
+    fieldName: 'product_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  dataObject: DataObject;
+  product!: BusinessProduct;
 }

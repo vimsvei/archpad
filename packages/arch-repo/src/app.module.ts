@@ -17,10 +17,15 @@ import { AuditSubscriber } from '@/audit/audit.subscriber';
     ArchimateBootstrapModule,
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
-      entities: ['./dist/**/*.entity{.ts,.js}', './dist/**/*.generic{.ts,.js}'],
+      entities: [
+        './dist/**/*.entity{.ts,.js}',
+        './dist/**/*.generic{.ts,.js}',
+        './dist/**/*.map{.ts,.js}',
+      ],
       entitiesTs: [
         './src/model/**/*.entity{.ts}',
         './src/model/**/*.generic{.ts}',
+        './src/model/**/*.map{.ts}',
       ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,

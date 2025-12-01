@@ -16,6 +16,7 @@ import { DirectoryKind } from '@/model/enums/directory-kind.enum';
   discriminatorColumn: 'kind',
 })
 export abstract class DirectoryObject extends NamedObject {
+  @ApiProperty({ enum: DirectoryKind, description: 'Тип справочника' })
   @Enum({ items: () => DirectoryKind, nativeEnumName: 'directory_kind_enum' })
   kind!: DirectoryKind;
 

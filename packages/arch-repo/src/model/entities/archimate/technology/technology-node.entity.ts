@@ -15,6 +15,7 @@ import { OperatingSystem } from '@/model/entities/archimate/technology/operating
 import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
 import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({
   tableName: 'technology_nodes',
@@ -35,15 +36,19 @@ export abstract class TechnologyNode extends NamedObject {
   })
   architecture: SystemArchitectureKind;
 
+  @ApiProperty({ description: 'CPU', minimum: 0 })
   @Property({ nullable: true })
   cpuCores?: number;
 
+  @ApiProperty({ description: 'RAM, Gb', minimum: 0 })
   @Property({ nullable: true })
   ramGb?: number;
 
+  @ApiProperty({ description: 'Storage, Gb', minimum: 0 })
   @Property({ nullable: true })
   storageGb?: number;
 
+  @ApiProperty({ format: 'uuid', type: NodeTypeDirectory })
   @ManyToOne(() => NodeTypeDirectory, {
     name: 'type_id',
     updateRule: 'cascade',
@@ -51,6 +56,7 @@ export abstract class TechnologyNode extends NamedObject {
   })
   type: NodeTypeDirectory;
 
+  @ApiProperty({ format: 'uuid', type: TechnologyNetwork })
   @ManyToOne(() => TechnologyNetwork, {
     fieldName: 'network_id',
     nullable: true,
@@ -59,6 +65,7 @@ export abstract class TechnologyNode extends NamedObject {
   })
   network: TechnologyNetwork;
 
+  @ApiProperty({ format: 'uuid', type: OperatingSystem })
   @ManyToOne(() => OperatingSystem, {
     fieldName: 'os_id',
     nullable: true,
@@ -67,6 +74,7 @@ export abstract class TechnologyNode extends NamedObject {
   })
   os: OperatingSystem;
 
+  @ApiProperty({ format: 'uuid', type: SystemSoftwareVersion })
   @ManyToOne(() => SystemSoftwareVersion, {
     fieldName: 'os_version_id',
     nullable: true,

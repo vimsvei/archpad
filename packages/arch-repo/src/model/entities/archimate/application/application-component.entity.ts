@@ -8,17 +8,65 @@ import { ApplicationComponentFunctionMap } from '@/model/entities/maps/applicati
 import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
 import { ApplicationComponentDataObjectMap } from '@/model/entities/maps/application-component-data-object.map';
 import { ApplicationFunctionDataObject } from '@/model/entities/maps/application-function-data-object.map';
+import { ApplicationComponentProductMap } from '@/model/entities/maps/application-component-product.map';
+import { ApplicationComponentEventMap } from '@/model/entities/maps/application-component-event.map';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
   @ArchimateCode('COMP')
   override code: string = undefined as any;
 
+  @ApiProperty({
+    format: 'uuid',
+    type: LicenseTypeDirectory,
+    description: 'Тип лицензии',
+  })
+  @ManyToOne((type) => LicenseTypeDirectory, {
+    name: 'license_type_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  license: LicenseTypeDirectory;
+
+  @ApiProperty({
+    format: 'uuid',
+    type: ArchitectureStyleDirectory,
+    description: 'Архитектурный стиль компонента',
+  })
+  @ManyToOne((type) => ArchitectureStyleDirectory, {
+    name: 'style_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  architectureStyle!: ArchitectureStyleDirectory;
+
+  @ApiProperty({
+    format: 'uuid',
+    type: CriticalLevelDirectory,
+    description: 'Уровень критичности',
+  })
+  @ManyToOne((type) => CriticalLevelDirectory, {
+    name: 'critical_level_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  criticalLevel!: CriticalLevelDirectory;
+
   @OneToMany({
     entity: () => ApplicationComponentFunctionMap,
     mappedBy: 'component',
   })
   functions = new Collection<ApplicationComponentFunctionMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentEventMap,
+    mappedBy: 'component',
+  })
+  events = new Collection<ApplicationComponentEventMap>(this);
 
   @OneToMany({ entity: () => ApplicationInterface, mappedBy: 'component' })
   interfaces = new Collection<ApplicationInterface>(this);
@@ -29,33 +77,15 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   dataObjects = new Collection<ApplicationComponentDataObjectMap>(this);
 
-  @ManyToOne((type) => LicenseTypeDirectory, {
-    name: 'license_type_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  license: LicenseTypeDirectory;
-
-  @ManyToOne((type) => ArchitectureStyleDirectory, {
-    name: 'style_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  architectureStyle!: ArchitectureStyleDirectory;
-
-  @ManyToOne((type) => CriticalLevelDirectory, {
-    name: 'critical_level_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  criticalLevel!: CriticalLevelDirectory;
-
   @OneToMany({
     entity: () => ApplicationFunctionDataObject,
     mappedBy: 'component',
   })
   dataObjectUsages = new Collection<ApplicationFunctionDataObject>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentProductMap,
+    mappedBy: 'component',
+  })
+  products = new Collection<ApplicationComponentProductMap>(this);
 }
