@@ -13,6 +13,7 @@ import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootst
 @Module({
   imports: [
     LoggerModule,
+    ArchimateBootstrapModule,
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
       entities: ['./dist/**/*.entity{.ts,.js}'],
@@ -25,7 +26,6 @@ import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootst
       password: process.env.PROJECT_DB_PASS,
       debug: process.env.NODE_ENV !== 'production',
     }),
-    ArchimateBootstrapModule,
   ],
   controllers: [AppController],
   providers: [

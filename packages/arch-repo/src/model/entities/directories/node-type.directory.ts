@@ -10,7 +10,7 @@ export class NodeTypeDirectory extends DirectoryObject {
     pivotEntity: () => NodeChildType,
   })
   children = new Collection<NodeTypeDirectory>(this);
-  
+
   @ManyToMany(() => NodeTypeDirectory, (node) => node.children)
   parents = new Collection<NodeTypeDirectory>(this);
 }
@@ -22,7 +22,7 @@ export class NodeChildType extends BaseObject {
     joinColumn: 'parent_id',
   })
   parent!: NodeTypeDirectory;
-  
+
   @ManyToOne(() => NodeTypeDirectory, { primary: true, joinColumn: 'child_id' })
   child!: NodeTypeDirectory;
 }

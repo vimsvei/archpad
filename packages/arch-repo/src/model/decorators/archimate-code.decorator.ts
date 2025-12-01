@@ -17,7 +17,6 @@ export function ArchimateCode(
 
   return Property({
     ...options,
-    unique: true,
     defaultRaw,
   }) as PropertyDecorator;
 }

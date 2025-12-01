@@ -10,7 +10,7 @@ import { NodeKind } from '../../../enums/node-kind.enum';
   discriminatorColumn: 'kind',
 })
 export abstract class TechnologyNode extends NamedObject {
-  @Enum(() => NodeKind)
+  @Enum({ items: () => NodeKind, nativeEnumName: 'node_kind_enum' })
   kind: NodeKind;
 
   @ManyToOne(() => NodeTypeDirectory, {

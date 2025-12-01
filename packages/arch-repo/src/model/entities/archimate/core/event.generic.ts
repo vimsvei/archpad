@@ -4,7 +4,7 @@ import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
 @Entity({
-  tableName: 'interfaces',
+  tableName: 'events',
   abstract: true,
   discriminatorColumn: 'layer',
 })
@@ -12,6 +12,6 @@ export abstract class InterfaceGeneric extends ArchimateElementGeneric {
   @Enum(() => LayerKind)
   layer: LayerKind;
   
-  @ArchimateCode('INT')
+  @ArchimateCode('EVENT')
   override code: string = undefined as any;
 }

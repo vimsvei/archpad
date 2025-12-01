@@ -16,9 +16,9 @@ import { DirectoryKind } from '@/model/enums/directory-kind.enum';
   discriminatorColumn: 'kind',
 })
 export abstract class DirectoryObject extends NamedObject {
-  @Enum({ items: () => DirectoryKind })
+  @Enum({ items: () => DirectoryKind, nativeEnumName: 'directory_kind_enum' })
   kind!: DirectoryKind;
-  
+
   @ApiProperty({ description: 'Item color', required: false })
   @Property({ type: 'string', nullable: true })
   color!: string;
@@ -26,7 +26,7 @@ export abstract class DirectoryObject extends NamedObject {
   @ApiProperty({ description: 'By Default', required: false })
   @Property({ type: Boolean, name: 'by_default', default: false })
   byDefault: boolean = false;
-  
+
   @ApiProperty({
     description: 'Parent directory item',
     required: false,
@@ -39,7 +39,7 @@ export abstract class DirectoryObject extends NamedObject {
     deleteRule: 'no action',
   })
   parent?: DirectoryObject;
-  
+
   @OneToMany(() => DirectoryObject, (item) => item.parent)
   children = new Collection<DirectoryObject>(this);
 }

@@ -39,6 +39,7 @@ export class RiskAssessment extends Assessment {
   @Enum({
     items: () => RiskStatus,
     nullable: true,
+    nativeEnumName: 'risk_status_enum',
   })
   status?: RiskStatus;
 

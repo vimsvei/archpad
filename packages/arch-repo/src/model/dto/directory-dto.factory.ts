@@ -12,9 +12,9 @@ export function createDirectoryCreateDto<TBase extends Type<DirectoryObject>>(
     'name',
     'description',
     'color',
-    'byDefault'
+    'byDefault',
   ] as const) {}
-  
+
   return BaseCreateDto;
 }
 

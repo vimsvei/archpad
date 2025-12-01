@@ -23,7 +23,7 @@ export class ArchimateSequenceInitializer implements OnApplicationBootstrap {
       `;
       await conn.execute(sql);
     }
-    
+
     const generator = this.orm.getSchemaGenerator();
     await generator.updateSchema();
   }

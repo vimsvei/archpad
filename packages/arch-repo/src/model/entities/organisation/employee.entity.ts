@@ -12,7 +12,6 @@ export class Employee extends IdentifiedObject {
   @Property({ name: 'last_name', type: 'string' })
   lastName: string;
 
-  @Property({ name: 'user_id', type: 'uuid'})
+  @Property({ name: 'user_id', type: 'uuid' })
   userID: string;
-  
 }

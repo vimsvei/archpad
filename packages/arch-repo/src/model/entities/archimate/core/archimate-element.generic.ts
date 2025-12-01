@@ -10,5 +10,5 @@ export abstract class ArchimateElementGeneric extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  owner: Employee
+  owner: Employee;
 }
