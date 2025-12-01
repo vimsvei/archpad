@@ -1,18 +1,37 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
-import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Enum,
+  ManyToOne,
+  OneToMany,
+} from '@mikro-orm/core';
 import { LicenseTypeDirectory } from '../../directories/license-type.directory';
 import { SoftwareTypeDirectory } from '../../directories/software-type.directory';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
+import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
+import { SoftwareKind } from '@/model/enums/software-kind.enum';
+import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
-@Entity({ tableName: 'system_software' })
-export class SystemSoftware extends NamedObject {
+@Entity({
+  tableName: 'system_software',
+  abstract: true,
+  discriminatorColumn: 'kind',
+})
+export class SystemSoftware extends ArchimateElementGeneric {
+  @Enum({ items: () => SoftwareKind, nativeEnumName: 'software_kind_enum' })
+  kind: SoftwareKind;
+
+  @ArchimateCode('SOFTWARE')
+  override code: string = undefined as any;
+
   @ManyToOne((type) => SoftwareTypeDirectory, {
     name: 'type_id',
     nullable: true,
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  type?: SoftwareTypeDirectory | null;
+  type!: SoftwareTypeDirectory;
 
   @ManyToOne((type) => LicenseTypeDirectory, {
     name: 'license_type_id',
@@ -20,7 +39,22 @@ export class SystemSoftware extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  license?: LicenseTypeDirectory | null;
+  license!: LicenseTypeDirectory;
+
+  @ManyToOne({
+    entity: () => SystemSoftwareVersion,
+    name: 'default_version_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  defaultVersion: SystemSoftwareVersion;
+
+  @OneToMany({
+    entity: () => SystemSoftwareVersion,
+    mappedBy: 'systemSoftware',
+  })
+  versions = new Collection<SystemSoftwareVersion>(this);
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,

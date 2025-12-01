@@ -3,7 +3,7 @@ import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { BusinessActorRoleMap } from '@/model/entities/maps/business-actor-role.map';
 
-@Entity({ tableName: 'business_roles' })
+@Entity({ tableName: 'roles' })
 export class BusinessRole extends ArchimateElementGeneric {
   @ArchimateCode('ROLE')
   override code: string = undefined as any;

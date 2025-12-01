@@ -11,6 +11,10 @@ import { NodeTypeDirectory } from '../../directories/node-type.directory';
 import { TechnologyNetwork } from './technology-network.entity';
 import { NodeKind } from '@/model/enums/node-kind.enum';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
+import { OperatingSystem } from '@/model/entities/archimate/technology/operating-system.entity';
+import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
+import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
 @Entity({
   tableName: 'technology_nodes',
@@ -20,6 +24,16 @@ import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technolog
 export abstract class TechnologyNode extends NamedObject {
   @Enum({ items: () => NodeKind, nativeEnumName: 'node_kind_enum' })
   kind: NodeKind;
+
+  @ArchimateCode('NODE')
+  override code: string = undefined as any;
+
+  @Enum({
+    items: () => SystemArchitectureKind,
+    default: SystemArchitectureKind.X86,
+    nativeEnumName: 'system_architecture_kind_enum',
+  })
+  architecture: SystemArchitectureKind;
 
   @Property({ nullable: true })
   cpuCores?: number;
@@ -44,6 +58,22 @@ export abstract class TechnologyNode extends NamedObject {
     deleteRule: 'no action',
   })
   network: TechnologyNetwork;
+
+  @ManyToOne(() => OperatingSystem, {
+    fieldName: 'os_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  os: OperatingSystem;
+
+  @ManyToOne(() => SystemSoftwareVersion, {
+    fieldName: 'os_version_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  osVersion: SystemSoftwareVersion;
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,

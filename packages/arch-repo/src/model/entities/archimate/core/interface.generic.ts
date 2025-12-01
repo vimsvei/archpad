@@ -9,7 +9,7 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
   discriminatorColumn: 'layer',
 })
 export abstract class InterfaceGeneric extends ArchimateElementGeneric {
-  @Enum(() => LayerKind)
+  @Enum({ items: () => LayerKind, nativeEnumName: 'layer_kind_enum' })
   layer: LayerKind;
 
   @ArchimateCode('INT')

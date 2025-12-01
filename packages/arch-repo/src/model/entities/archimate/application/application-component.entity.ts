@@ -1,5 +1,4 @@
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
-import * as trace_events from 'node:trace_events';
 import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
 import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
 import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
@@ -7,10 +6,12 @@ import { CriticalLevelDirectory } from '@/model/entities/directories/critical-le
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ApplicationComponentFunctionMap } from '@/model/entities/maps/application-component-function.map';
 import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
+import { ApplicationComponentDataObjectMap } from '@/model/entities/maps/application-component-data-object.map';
+import { ApplicationFunctionDataObject } from '@/model/entities/maps/application-function-data-object.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
-  @ArchimateCode('APP_COM')
+  @ArchimateCode('COMP')
   override code: string = undefined as any;
 
   @OneToMany({
@@ -21,6 +22,12 @@ export class ApplicationComponent extends ArchimateElementGeneric {
 
   @OneToMany({ entity: () => ApplicationInterface, mappedBy: 'component' })
   interfaces = new Collection<ApplicationInterface>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentDataObjectMap,
+    mappedBy: 'component',
+  })
+  dataObjects = new Collection<ApplicationComponentDataObjectMap>(this);
 
   @ManyToOne((type) => LicenseTypeDirectory, {
     name: 'license_type_id',
@@ -45,4 +52,10 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     deleteRule: 'no action',
   })
   criticalLevel!: CriticalLevelDirectory;
+
+  @OneToMany({
+    entity: () => ApplicationFunctionDataObject,
+    mappedBy: 'component',
+  })
+  dataObjectUsages = new Collection<ApplicationFunctionDataObject>(this);
 }

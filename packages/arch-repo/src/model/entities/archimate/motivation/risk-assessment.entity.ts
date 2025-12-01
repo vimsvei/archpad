@@ -8,6 +8,7 @@ import { Assessment } from '@/model/entities/archimate/motivation/assessment.ent
 export class RiskAssessment extends Assessment {
   @Enum({
     items: () => RiskCategory,
+    nativeEnumName: 'risk_category_enum',
     nullable: true,
   })
   riskCategory?: RiskCategory;
