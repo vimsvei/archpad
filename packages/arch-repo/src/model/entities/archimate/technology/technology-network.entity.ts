@@ -4,7 +4,10 @@ import { TechnologyNode } from './technology-node.entity';
 
 @Entity({ tableName: 'technology_networks' })
 export class TechnologyNetwork extends NamedObject {
-  @OneToMany(() => TechnologyNode, (node) => node.network)
+  @OneToMany({
+    entity: () => TechnologyNode,
+    mappedBy: 'network',
+  })
   nodes = new Collection<TechnologyNode>(this);
 
   @ManyToOne(() => Location, {

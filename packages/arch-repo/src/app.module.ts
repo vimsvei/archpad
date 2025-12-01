@@ -9,6 +9,7 @@ import { LoggerModule } from './logger/logger.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
 import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootstrap.module';
+import { AuditSubscriber } from '@/audit/audit.subscriber';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootst
       provide: APP_INTERCEPTOR,
       useClass: RequestLoggerInterceptor,
     },
+    AuditSubscriber,
   ],
 })
 export class AppModule {}

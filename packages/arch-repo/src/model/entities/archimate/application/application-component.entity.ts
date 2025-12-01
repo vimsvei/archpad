@@ -5,7 +5,7 @@ import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.
 import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
 import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
-import { ComponentFunctionMap } from '@/model/entities/maps/component-function.map';
+import { ApplicationComponentFunctionMap } from '@/model/entities/maps/application-component-function.map';
 import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
 
 @Entity({ tableName: 'components' })
@@ -13,8 +13,11 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   @ArchimateCode('APP_COM')
   override code: string = undefined as any;
 
-  @OneToMany({ entity: () => ComponentFunctionMap, mappedBy: 'component' })
-  functions = new Collection<ComponentFunctionMap>(this);
+  @OneToMany({
+    entity: () => ApplicationComponentFunctionMap,
+    mappedBy: 'component',
+  })
+  functions = new Collection<ApplicationComponentFunctionMap>(this);
 
   @OneToMany({ entity: () => ApplicationInterface, mappedBy: 'component' })
   interfaces = new Collection<ApplicationInterface>(this);

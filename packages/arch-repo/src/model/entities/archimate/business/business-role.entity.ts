@@ -1,5 +1,13 @@
 import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
-import { Entity } from '@mikro-orm/core';
+import { Collection, Entity, OneToMany } from '@mikro-orm/core';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { BusinessActorRoleMap } from '@/model/entities/maps/business-actor-role.map';
 
 @Entity({ tableName: 'business_roles' })
-export class BusinessRole extends ArchimateElementGeneric {}
+export class BusinessRole extends ArchimateElementGeneric {
+  @ArchimateCode('ROLE')
+  override code: string = undefined as any;
+
+  @OneToMany(() => BusinessActorRoleMap, (map) => map.role)
+  actors = new Collection<BusinessActorRoleMap>(this);
+}

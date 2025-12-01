@@ -1,23 +1,24 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
-import { Entity, ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationFunction } from '@/model/entities/archimate/application/application-function.entity';
 import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
+import { MappedObject } from '@/model/abstract/mapped-object.abstract';
 
-@Entity({ tableName: 'map_interface_function' })
-export class InterfaceFunctionMap extends NamedObject {
+@Entity({ tableName: 'map_application_interface_function' })
+@Unique({ properties: ['function', 'interface'] })
+export class ApplicationInterfaceFunctionMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationFunction,
-    name: 'function_id',
+    fieldName: 'function_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  function: ApplicationFunction;
+  function!: ApplicationFunction;
 
   @ManyToOne({
     entity: () => ApplicationInterface,
-    name: 'interface_id',
+    fieldName: 'interface_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  interface: ApplicationInterface;
+  interface!: ApplicationInterface;
 }
