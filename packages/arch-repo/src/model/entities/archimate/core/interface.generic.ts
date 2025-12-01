@@ -11,7 +11,7 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 export abstract class InterfaceGeneric extends ArchimateElementGeneric {
   @Enum(() => LayerKind)
   layer: LayerKind;
-  
+
   @ArchimateCode('INT')
   override code: string = undefined as any;
 }
