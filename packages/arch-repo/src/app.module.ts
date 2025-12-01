@@ -17,8 +17,11 @@ import { AuditSubscriber } from '@/audit/audit.subscriber';
     ArchimateBootstrapModule,
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
-      entities: ['./dist/**/*.entity{.ts,.js}'],
-      entitiesTs: ['./src/model/**/*.entity{.ts}'],
+      entities: ['./dist/**/*.entity{.ts,.js}', './dist/**/*.generic{.ts,.js}'],
+      entitiesTs: [
+        './src/model/**/*.entity{.ts}',
+        './src/model/**/*.generic{.ts}',
+      ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,
       port: +(process.env.PG_PORT ?? '5432'),

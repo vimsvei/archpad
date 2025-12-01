@@ -6,7 +6,13 @@ import { ApplicationInterfaceFunctionMap } from '@/model/entities/maps/applicati
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
 export class ApplicationInterface extends InterfaceGeneric {
-  @ManyToOne({ entity: () => ApplicationComponent, fieldName: 'component_id' })
+  @ManyToOne({
+    entity: () => ApplicationComponent,
+    fieldName: 'component_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   component: ApplicationComponent;
 
   @OneToMany({

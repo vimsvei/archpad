@@ -8,7 +8,7 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
   abstract: true,
   discriminatorColumn: 'layer',
 })
-export abstract class InterfaceGeneric extends ArchimateElementGeneric {
+export abstract class EventGeneric extends ArchimateElementGeneric {
   @Enum(() => LayerKind)
   layer: LayerKind;
 

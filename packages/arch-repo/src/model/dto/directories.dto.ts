@@ -7,6 +7,7 @@ import { ArchitectureStyleDirectory } from '@/model/entities/directories/archite
 import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
 import { NodeTypeDirectory } from '@/model/entities/directories/node-type.directory';
 import { SoftwareTypeDirectory } from '@/model/entities/directories/software-type.directory';
+import { ProtocolTypeDirectory } from '@/model/entities/directories/protocol-type.directory';
 
 export class CreateDtoArchitectureStyle extends createDirectoryCreateDto(
   ArchitectureStyleDirectory,
@@ -41,4 +42,11 @@ export class CreateDtoSoftwareType extends createDirectoryCreateDto(
 ) {}
 export class UpdateDtoSoftwareType extends createDirectoryUpdateDto(
   CreateDtoSoftwareType,
+) {}
+
+export class CreateDtoProtocolType extends createDirectoryCreateDto(
+  ProtocolTypeDirectory,
+) {}
+export class UpdateDtoProtocolType extends createDirectoryUpdateDto(
+  CreateDtoProtocolType,
 ) {}
