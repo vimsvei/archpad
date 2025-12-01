@@ -1,8 +1,10 @@
 import { MappedObject } from '@/model/abstract/mapped-object.abstract';
-import { ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/entities/archimate/application/application-component.entity';
 import { BusinessProduct } from '@/model/entities/archimate/business/business-product.entity';
 
+@Entity({ tableName: 'map_application_component_product' })
+@Unique({ properties: ['component', 'product'] })
 export class ApplicationComponentProductMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
