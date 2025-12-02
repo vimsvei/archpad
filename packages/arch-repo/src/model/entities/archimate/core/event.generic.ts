@@ -10,7 +10,7 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 })
 export abstract class EventGeneric extends ArchimateElementGeneric {
   @Enum({ items: () => LayerKind, nativeEnumName: 'layer_kind_enum' })
-  layer: LayerKind;
+  layer!: LayerKind;
 
   @ArchimateCode('EVENT')
   override code: string = undefined as any;

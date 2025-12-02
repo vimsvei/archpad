@@ -22,11 +22,13 @@ import { DirectoriesModule } from '@/endpoints/directories/directories.module';
         './dist/**/*.entity{.ts,.js}',
         './dist/**/*.generic{.ts,.js}',
         './dist/**/*.map{.ts,.js}',
+        './dist/**/*.directory{.ts,.js}',
       ],
       entitiesTs: [
         './src/model/**/*.entity{.ts}',
         './src/model/**/*.generic{.ts}',
         './src/model/**/*.map{.ts}',
+        './src/model/**/*.directory{.ts}',
       ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,

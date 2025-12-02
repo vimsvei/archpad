@@ -1,8 +1,4 @@
 import { Module } from '@nestjs/common';
-import { BaseDirectoryModule } from './base-directory/base-directory.module';
-import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
-import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
-import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
 import {
   CreateDtoArchitectureStyle,
   CreateDtoCriticalLevel,
@@ -17,6 +13,10 @@ import {
   UpdateDtoProtocolType,
   UpdateDtoSoftwareType,
 } from '@/model/dto/directories.dto';
+import { BaseDirectoryModule } from './base-directory/base-directory.module';
+import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
+import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
+import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
 import { NodeTypeDirectory } from '@/model/entities/directories/node-type.directory';
 import { SoftwareTypeDirectory } from '@/model/entities/directories/software-type.directory';
 import { ProtocolTypeDirectory } from '@/model/entities/directories/protocol-type.directory';

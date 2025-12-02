@@ -22,20 +22,20 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: LicenseTypeDirectory,
     description: 'Тип лицензии',
   })
-  @ManyToOne((type) => LicenseTypeDirectory, {
+  @ManyToOne(() => LicenseTypeDirectory, {
     name: 'license_type_id',
     nullable: true,
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  license: LicenseTypeDirectory;
+  license!: LicenseTypeDirectory;
 
   @ApiProperty({
     format: 'uuid',
     type: ArchitectureStyleDirectory,
     description: 'Архитектурный стиль компонента',
   })
-  @ManyToOne((type) => ArchitectureStyleDirectory, {
+  @ManyToOne(() => ArchitectureStyleDirectory, {
     name: 'style_id',
     nullable: true,
     updateRule: 'cascade',
@@ -48,7 +48,7 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: CriticalLevelDirectory,
     description: 'Уровень критичности',
   })
-  @ManyToOne((type) => CriticalLevelDirectory, {
+  @ManyToOne(() => CriticalLevelDirectory, {
     name: 'critical_level_id',
     nullable: true,
     updateRule: 'cascade',

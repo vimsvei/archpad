@@ -20,12 +20,12 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 })
 export class SystemSoftware extends ArchimateElementGeneric {
   @Enum({ items: () => SoftwareKind, nativeEnumName: 'software_kind_enum' })
-  kind: SoftwareKind;
+  kind!: SoftwareKind;
 
   @ArchimateCode('SOFTWARE')
   override code: string = undefined as any;
 
-  @ManyToOne((type) => SoftwareTypeDirectory, {
+  @ManyToOne(() => SoftwareTypeDirectory, {
     name: 'type_id',
     nullable: true,
     updateRule: 'cascade',
@@ -33,7 +33,7 @@ export class SystemSoftware extends ArchimateElementGeneric {
   })
   type!: SoftwareTypeDirectory;
 
-  @ManyToOne((type) => LicenseTypeDirectory, {
+  @ManyToOne(() => LicenseTypeDirectory, {
     name: 'license_type_id',
     nullable: true,
     updateRule: 'cascade',
@@ -48,7 +48,7 @@ export class SystemSoftware extends ArchimateElementGeneric {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  defaultVersion: SystemSoftwareVersion;
+  defaultVersion!: SystemSoftwareVersion;
 
   @OneToMany({
     entity: () => SystemSoftwareVersion,

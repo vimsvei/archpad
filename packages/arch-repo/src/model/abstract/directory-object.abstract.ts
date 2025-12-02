@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Collection,
-  Entity,
-  Enum,
-  ManyToOne,
-  OneToMany,
-  Property,
-} from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { NamedObject } from '@/model/abstract/named-object.abstract';
 import { DirectoryKind } from '@/model/enums/directory-kind.enum';
 
@@ -39,8 +32,11 @@ export abstract class DirectoryObject extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  parent?: DirectoryObject;
+  parent!: DirectoryObject;
 
-  @OneToMany(() => DirectoryObject, (item) => item.parent)
-  children = new Collection<DirectoryObject>(this);
+  // @OneToMany({
+  //   entity: () => DirectoryObject,
+  //   mappedBy: 'parent'
+  // })
+  // children = new Collection<DirectoryObject>(this);
 }

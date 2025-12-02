@@ -17,5 +17,5 @@ export class TechnologyNetwork extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  location: PhysicalLocation;
+  location!: PhysicalLocation;
 }

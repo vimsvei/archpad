@@ -20,5 +20,5 @@ export class ApplicationComponentDataObjectMap extends MappedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  dataObject: DataObject;
+  dataObject!: DataObject;
 }

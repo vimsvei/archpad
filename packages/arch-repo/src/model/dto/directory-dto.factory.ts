@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ApiExtraModels } from '@nestjs/swagger';
 
 // Базовая Zod-схема, может использоваться повторно
 export const BaseDirectorySchema = z.object({
@@ -14,10 +13,7 @@ export const BaseDirectorySchema = z.object({
 
 // Функция-фабрика для создания DTO-классов
 export function createDirectoryZodDto(name: string) {
-  const schema = BaseDirectorySchema;
-  
-  class ZodDto extends createZodDto(schema) {}
-  Object.defineProperty(ZodDto, 'name', { value: name });
-  
-  return ZodDto; // ← здесь ты НЕ экспортируешь сам тип
+  const dto = createZodDto(BaseDirectorySchema);
+  Object.defineProperty(dto, 'name', { value: name });
+  return dto;
 }

@@ -5,7 +5,7 @@ import { SystemSoftware } from '@/model/entities/archimate/technology/system-sof
 @Entity({ tableName: 'system_software_versions' })
 export class SystemSoftwareVersion extends IdentifiedObject {
   @Property()
-  version: string;
+  version!: string;
 
   @Property({ nullable: true })
   releaseDate?: Date;
@@ -25,5 +25,5 @@ export class SystemSoftwareVersion extends IdentifiedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  systemSoftware: SystemSoftware;
+  systemSoftware!: SystemSoftware;
 }

@@ -13,7 +13,7 @@ export class ApplicationInterface extends InterfaceGeneric {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  component: ApplicationComponent;
+  component!: ApplicationComponent;
 
   @OneToMany({
     entity: () => ApplicationInterfaceFunctionMap,

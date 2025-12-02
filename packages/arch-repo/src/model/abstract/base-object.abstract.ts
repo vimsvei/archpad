@@ -4,13 +4,13 @@ import { BeforeCreate, BeforeUpdate, Embedded, Entity } from '@mikro-orm/core';
 @Entity({ abstract: true })
 export abstract class BaseObject {
   @Embedded(() => ActionStamp, { prefix: 'created_', prefixMode: 'absolute' })
-  created: ActionStamp;
+  created!: ActionStamp;
 
   @Embedded(() => ActionStamp, { prefix: 'updated_', prefixMode: 'absolute' })
-  updated: ActionStamp;
+  updated!: ActionStamp;
 
   @Embedded(() => ActionStamp, { prefix: 'deleted_', prefixMode: 'absolute' })
-  deleted: ActionStamp;
+  deleted!: ActionStamp;
 
   @BeforeCreate()
   protected setCreatedStamp(by: string) {

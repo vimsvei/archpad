@@ -24,7 +24,7 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export abstract class TechnologyNode extends NamedObject {
   @Enum({ items: () => NodeKind, nativeEnumName: 'node_kind_enum' })
-  kind: NodeKind;
+  kind!: NodeKind;
 
   @ArchimateCode('NODE')
   override code: string = undefined as any;
@@ -34,7 +34,7 @@ export abstract class TechnologyNode extends NamedObject {
     default: SystemArchitectureKind.X86,
     nativeEnumName: 'system_architecture_kind_enum',
   })
-  architecture: SystemArchitectureKind;
+  architecture!: SystemArchitectureKind;
 
   @ApiProperty({ description: 'CPU', minimum: 0 })
   @Property({ nullable: true })
@@ -54,7 +54,7 @@ export abstract class TechnologyNode extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  type: NodeTypeDirectory;
+  type!: NodeTypeDirectory;
 
   @ApiProperty({ format: 'uuid', type: TechnologyNetwork })
   @ManyToOne(() => TechnologyNetwork, {
@@ -63,7 +63,7 @@ export abstract class TechnologyNode extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  network: TechnologyNetwork;
+  network!: TechnologyNetwork;
 
   @ApiProperty({ format: 'uuid', type: OperatingSystem })
   @ManyToOne(() => OperatingSystem, {
@@ -72,7 +72,7 @@ export abstract class TechnologyNode extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  os: OperatingSystem;
+  os!: OperatingSystem;
 
   @ApiProperty({ format: 'uuid', type: SystemSoftwareVersion })
   @ManyToOne(() => SystemSoftwareVersion, {
@@ -81,7 +81,7 @@ export abstract class TechnologyNode extends NamedObject {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  osVersion: SystemSoftwareVersion;
+  osVersion!: SystemSoftwareVersion;
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,

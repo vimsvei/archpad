@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ActionStamp {
   @ApiProperty({ format: 'date-time' })
   @Property({ onCreate: () => new Date() })
-  at: Date;
+  at!: Date;
 
   @ApiProperty({ format: 'uuid' })
   @Property({ type: 'uuid', nullable: true })
