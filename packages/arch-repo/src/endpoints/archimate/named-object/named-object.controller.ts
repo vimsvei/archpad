@@ -52,12 +52,12 @@ export function createNamedObjectController<
       return this.service.create(dto as RequiredEntityData<TEntity>);
     }
 
-    @Get()
-    @ApiOperation({ summary: `Получение списка ${entityClass.name}` })
-    @ApiOkResponse({ type: [entityClass] })
-    findAll() {
-      return this.service.findAll();
-    }
+    // @Get()
+    // @ApiOperation({ summary: `Получение списка ${entityClass.name}` })
+    // @ApiOkResponse({ type: [entityClass] })
+    // findAll() {
+    //   return this.service.findAll();
+    // }
 
     @Get(':id')
     @ApiOperation({ summary: `Получение ${entityClass.name} по id` })

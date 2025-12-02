@@ -12,6 +12,7 @@ import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootst
 import { AuditSubscriber } from '@/audit/audit.subscriber';
 import { DirectoriesModule } from '@/endpoints/directories/directories.module';
 import { NamedObjectAutoRegistry } from '@/endpoints/archimate/named-object/named-object.autoregistry';
+import { ApplicationComponentModule } from '@/endpoints/archimate/application-component/application-component.module';
 
 @Module({
   imports: [
@@ -39,8 +40,9 @@ import { NamedObjectAutoRegistry } from '@/endpoints/archimate/named-object/name
       password: process.env.PROJECT_DB_PASS,
       debug: process.env.NODE_ENV !== 'production',
     }),
-    DirectoriesModule,
     NamedObjectAutoRegistry.registerAll(),
+    ApplicationComponentModule,
+    DirectoriesModule,
   ],
   controllers: [AppController],
   providers: [
