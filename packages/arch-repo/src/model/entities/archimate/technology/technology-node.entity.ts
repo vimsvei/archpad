@@ -11,7 +11,6 @@ import { NodeTypeDirectory } from '../../directories/node-type.directory';
 import { TechnologyNetwork } from './technology-network.entity';
 import { NodeKind } from '@/model/enums/node-kind.enum';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
-import { OperatingSystem } from '@/model/entities/archimate/technology/operating-system.entity';
 import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
 import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
@@ -64,15 +63,6 @@ export abstract class TechnologyNode extends NamedObject {
     deleteRule: 'no action',
   })
   network!: TechnologyNetwork;
-
-  @ApiProperty({ format: 'uuid', type: OperatingSystem })
-  @ManyToOne(() => OperatingSystem, {
-    fieldName: 'os_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  os!: OperatingSystem;
 
   @ApiProperty({ format: 'uuid', type: SystemSoftwareVersion })
   @ManyToOne(() => SystemSoftwareVersion, {

@@ -1,6 +1,6 @@
-import { SystemSoftware } from '@/model/entities/archimate/technology/system-software.entity';
 import { Entity } from '@mikro-orm/core';
-import { SoftwareKind } from '@/model/enums/software-kind.enum';
+import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
+import { SystemSoftware } from '@/model/entities/archimate/technology/system-software.entity';
 
-@Entity({ discriminatorValue: SoftwareKind.OS })
+@Entity({ discriminatorValue: SystemSoftwareKind.OS })
 export class OperatingSystem extends SystemSoftware {}

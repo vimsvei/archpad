@@ -1,16 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
 import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
 import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
 import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ApplicationComponentFunctionMap } from '@/model/entities/maps/application-component-function.map';
 import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
 import { ApplicationComponentDataObjectMap } from '@/model/entities/maps/application-component-data-object.map';
 import { ApplicationFunctionDataObject } from '@/model/entities/maps/application-function-data-object.map';
 import { ApplicationComponentProductMap } from '@/model/entities/maps/application-component-product.map';
 import { ApplicationComponentEventMap } from '@/model/entities/maps/application-component-event.map';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/entities/maps/application-component-system-software.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
@@ -88,4 +89,10 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     mappedBy: 'component',
   })
   products = new Collection<ApplicationComponentProductMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentSystemSoftwareMap,
+    mappedBy: 'component',
+  })
+  systemSoftware = new Collection<ApplicationComponentSystemSoftwareMap>(this);
 }

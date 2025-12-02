@@ -5,13 +5,14 @@ import {
   ManyToOne,
   OneToMany,
 } from '@mikro-orm/core';
+import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { LicenseTypeDirectory } from '../../directories/license-type.directory';
 import { SoftwareTypeDirectory } from '../../directories/software-type.directory';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
 import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
-import { SoftwareKind } from '@/model/enums/software-kind.enum';
+import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/entities/maps/application-component-system-software.map';
 
 @Entity({
   tableName: 'system_software',
@@ -19,8 +20,11 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
   discriminatorColumn: 'kind',
 })
 export class SystemSoftware extends ArchimateElementGeneric {
-  @Enum({ items: () => SoftwareKind, nativeEnumName: 'software_kind_enum' })
-  kind!: SoftwareKind;
+  @Enum({
+    items: () => SystemSoftwareKind,
+    nativeEnumName: 'system_software_kind_enum',
+  })
+  kind!: SystemSoftwareKind;
 
   @ArchimateCode('SOFTWARE')
   override code: string = undefined as any;
@@ -61,4 +65,10 @@ export class SystemSoftware extends ArchimateElementGeneric {
     mappedBy: 'systemSoftware',
   })
   nodes = new Collection<TechnologyNodeSystemSoftwareMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentSystemSoftwareMap,
+    mappedBy: 'systemSoftware',
+  })
+  components = new Collection<ApplicationComponentSystemSoftwareMap>(this);
 }

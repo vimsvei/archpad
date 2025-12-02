@@ -1,19 +1,19 @@
 import { MappedObject } from '@/model/abstract/mapped-object.abstract';
 import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
-import { TechnologyNode } from '@/model/entities/archimate/technology/technology-node.entity';
+import { ApplicationComponent } from '@/model/entities/archimate/application/application-component.entity';
 import { SystemSoftware } from '@/model/entities/archimate/technology/system-software.entity';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
-@Entity({ tableName: 'map_technology_node_system_software' })
-@Unique({ properties: ['node', 'systemSoftware'] })
-export class TechnologyNodeSystemSoftwareMap extends MappedObject {
+@Entity({ tableName: 'map_application_component_system_software' })
+@Unique({ properties: ['component', 'systemSoftware'] })
+export class ApplicationComponentSystemSoftwareMap extends MappedObject {
   @ManyToOne({
-    entity: () => TechnologyNode,
-    fieldName: 'node_id',
+    entity: () => ApplicationComponent,
+    fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  node!: TechnologyNode;
+  component!: ApplicationComponent;
 
   @ManyToOne({
     entity: () => SystemSoftware,
@@ -22,11 +22,11 @@ export class TechnologyNodeSystemSoftwareMap extends MappedObject {
     deleteRule: 'no action',
   })
   systemSoftware!: SystemSoftware;
-  
+
   @Enum({
     items: () => SystemSoftwareKind,
     nativeEnumName: 'system_software_kind_enum',
-    default: SystemSoftwareKind.RUNTIME,
+    default: SystemSoftwareKind.LIBRARY,
   })
   kind!: SystemSoftwareKind;
 }
