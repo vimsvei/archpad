@@ -8,15 +8,18 @@ import {
   CreateDtoCriticalLevel,
   CreateDtoLicenseType,
   CreateDtoNodeType,
+  CreateDtoProtocolType,
   CreateDtoSoftwareType,
   UpdateDtoArchitectureStyle,
   UpdateDtoCriticalLevel,
   UpdateDtoLicenseType,
   UpdateDtoNodeType,
+  UpdateDtoProtocolType,
   UpdateDtoSoftwareType,
 } from '@/model/dto/directories.dto';
 import { NodeTypeDirectory } from '@/model/entities/directories/node-type.directory';
 import { SoftwareTypeDirectory } from '@/model/entities/directories/software-type.directory';
+import { ProtocolTypeDirectory } from '@/model/entities/directories/protocol-type.directory';
 
 @Module({
   imports: [
@@ -27,7 +30,7 @@ import { SoftwareTypeDirectory } from '@/model/entities/directories/software-typ
     >({
       entity: ArchitectureStyleDirectory,
       path: 'architecture-styles',
-      swaggerTag: 'Architecture styles',
+      swaggerTag: 'Архитектурный стиль',
       createDto: CreateDtoArchitectureStyle,
       updateDto: UpdateDtoArchitectureStyle,
     }),
@@ -39,7 +42,7 @@ import { SoftwareTypeDirectory } from '@/model/entities/directories/software-typ
     >({
       entity: CriticalLevelDirectory,
       path: 'critical-levels',
-      swaggerTag: 'Critical levels',
+      swaggerTag: 'Уровни критичности',
       createDto: CreateDtoCriticalLevel,
       updateDto: UpdateDtoCriticalLevel,
     }),
@@ -50,7 +53,7 @@ import { SoftwareTypeDirectory } from '@/model/entities/directories/software-typ
     >({
       entity: LicenseTypeDirectory,
       path: 'license-types',
-      swaggerTag: 'Type of license on soft',
+      swaggerTag: 'Типы лицензий нв ПО',
       createDto: CreateDtoLicenseType,
       updateDto: UpdateDtoLicenseType,
     }),
@@ -61,7 +64,7 @@ import { SoftwareTypeDirectory } from '@/model/entities/directories/software-typ
     >({
       entity: NodeTypeDirectory,
       path: 'node-types',
-      swaggerTag: 'Types of nodes',
+      swaggerTag: 'Типы технологических узлов',
       createDto: CreateDtoNodeType,
       updateDto: UpdateDtoNodeType,
     }),
@@ -72,9 +75,20 @@ import { SoftwareTypeDirectory } from '@/model/entities/directories/software-typ
     >({
       entity: SoftwareTypeDirectory,
       path: 'software-types',
-      swaggerTag: 'Types of software',
+      swaggerTag: 'Тип системного ПО',
       createDto: CreateDtoSoftwareType,
       updateDto: UpdateDtoSoftwareType,
+    }),
+    BaseDirectoryModule.register<
+      ProtocolTypeDirectory,
+      CreateDtoProtocolType,
+      UpdateDtoProtocolType
+    >({
+      entity: ProtocolTypeDirectory,
+      path: 'protocol-types',
+      swaggerTag: 'Тип сетевых протоколов',
+      createDto: CreateDtoProtocolType,
+      updateDto: UpdateDtoProtocolType,
     }),
   ],
 })

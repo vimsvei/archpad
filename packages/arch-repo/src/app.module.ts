@@ -10,6 +10,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
 import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootstrap.module';
 import { AuditSubscriber } from '@/audit/audit.subscriber';
+import { DirectoriesModule } from '@/endpoints/directories/directories.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AuditSubscriber } from '@/audit/audit.subscriber';
       password: process.env.PROJECT_DB_PASS,
       debug: process.env.NODE_ENV !== 'production',
     }),
+    DirectoriesModule,
   ],
   controllers: [AppController],
   providers: [

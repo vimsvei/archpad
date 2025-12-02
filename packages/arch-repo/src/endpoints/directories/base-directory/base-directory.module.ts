@@ -1,4 +1,4 @@
-import { NamedObject } from '../../../model/abstract/named-object.abstract';
+import { NamedObject } from '@/model/abstract/named-object.abstract';
 import { EntityName, EntityRepository } from '@mikro-orm/core';
 import {
   Body,
@@ -22,6 +22,8 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -82,36 +84,97 @@ export class BaseDirectoryModule {
       constructor(private readonly service: DirectoryService) {}
 
       @Get()
-      @ApiOkResponse({ type: EntityClass, isArray: true })
+      @ApiOperation({
+        summary: 'Retrieve all directory items',
+        description: 'Получить список всех элементов данного справочника.',
+      })
+      @ApiOkResponse({
+        description: 'Успешно: возвращает массив объектов справочника.',
+        type: EntityClass,
+        isArray: true,
+      })
       findAll() {
         return this.service.findAll();
       }
 
       @Get(':id')
-      @ApiOkResponse({ type: EntityClass })
-      @ApiNotFoundResponse()
+      @ApiOperation({
+        summary: 'Retrieve one directory item',
+        description:
+          'Получить элемент справочника по его уникальному идентификатору.',
+      })
+      @ApiParam({
+        name: 'id',
+        format: 'uuid',
+        description: 'UUID элемента справочника',
+        example: '550e8400-e29b-41d4-a716-446655440000',
+      })
+      @ApiOkResponse({
+        description: 'Успешно: возвращает запрошенный объект справочника.',
+        type: EntityClass,
+      })
+      @ApiNotFoundResponse({ description: 'Элемент с таким ID не найден.' })
       findOne(@Param('id') id: string) {
         return this.service.findOne(id);
       }
 
       @Post()
-      @ApiCreatedResponse({ type: EntityClass })
-      @ApiBody({ type: CreateDtoClass })
+      @ApiOperation({
+        summary: 'Create a new directory item',
+        description:
+          'Создать новый элемент справочника на основе переданных данных.',
+      })
+      @ApiBody({
+        description: 'Данные для создания нового элемента справочника',
+        type: CreateDtoClass,
+      })
+      @ApiCreatedResponse({
+        description: 'Элемент успешно создан.',
+        type: EntityClass,
+      })
       create(@Body() dto: CreateDto) {
         return this.service.create(dto);
       }
 
       @Patch(':id')
-      @ApiOkResponse({ type: EntityClass })
-      @ApiNotFoundResponse()
-      @ApiBody({ type: UpdateDtoClass })
+      @ApiOperation({
+        summary: 'Update an existing directory item',
+        description:
+          'Обновить существующий элемент справочника по его идентификатору.',
+      })
+      @ApiParam({
+        name: 'id',
+        description: 'UUID элемента справочника, который требуется обновить',
+        example: '550e8400-e29b-41d4-a716-446655440000',
+      })
+      @ApiBody({
+        description: 'Данные для обновления элемента справочника',
+        type: UpdateDtoClass,
+      })
+      @ApiOkResponse({
+        description: 'Элемент успешно обновлён.',
+        type: EntityClass,
+      })
+      @ApiNotFoundResponse({ description: 'Элемент с таким ID не найден.' })
       update(@Param('id') id: string, @Body() dto: UpdateDto) {
         return this.service.update(id, dto);
       }
 
       @Delete(':id')
-      @ApiNoContentResponse()
-      @ApiNotFoundResponse()
+      @ApiOperation({
+        summary: 'Delete a directory item',
+        description:
+          'Удалить элемент справочника по его уникальному идентификатору.',
+      })
+      @ApiParam({
+        name: 'id',
+        description: 'UUID элемента справочника, который требуется удалить',
+        example: '550e8400-e29b-41d4-a716-446655440000',
+      })
+      @ApiNoContentResponse({
+        description: 'Элемент успешно удалён (нет содержимого в ответе).',
+      })
+      @ApiNotFoundResponse({ description: 'Элемент с таким ID не найден.' })
       async remove(@Param('id') id: string) {
         await this.service.remove(id);
       }

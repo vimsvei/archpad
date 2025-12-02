@@ -1,52 +1,50 @@
-import {
-  createDirectoryCreateDto,
-  createDirectoryUpdateDto,
-} from '@/model/dto/directory-dto.factory';
-import { LicenseTypeDirectory } from '@/model/entities/directories/license-type.directory';
-import { ArchitectureStyleDirectory } from '@/model/entities/directories/architecture-style.directory';
-import { CriticalLevelDirectory } from '@/model/entities/directories/critical-level.directory';
-import { NodeTypeDirectory } from '@/model/entities/directories/node-type.directory';
-import { SoftwareTypeDirectory } from '@/model/entities/directories/software-type.directory';
-import { ProtocolTypeDirectory } from '@/model/entities/directories/protocol-type.directory';
+// ✅ Zod-based directories.dto.ts с типами
+import { createDirectoryZodDto } from './directory-dto.factory';
 
-export class CreateDtoArchitectureStyle extends createDirectoryCreateDto(
-  ArchitectureStyleDirectory,
-) {}
-export class UpdateDtoArchitectureStyle extends createDirectoryUpdateDto(
-  CreateDtoArchitectureStyle,
-) {}
+const CreateDtoArchitectureStyleClass = createDirectoryZodDto('CreateDtoArchitectureStyle');
+export type CreateDtoArchitectureStyle = InstanceType<typeof CreateDtoArchitectureStyleClass>;
+export { CreateDtoArchitectureStyleClass as CreateDtoArchitectureStyle };
 
-export class CreateDtoCriticalLevel extends createDirectoryCreateDto(
-  CriticalLevelDirectory,
-) {}
-export class UpdateDtoCriticalLevel extends createDirectoryUpdateDto(
-  CreateDtoCriticalLevel,
-) {}
+const UpdateDtoArchitectureStyleClass = createDirectoryZodDto('UpdateDtoArchitectureStyle');
+export type UpdateDtoArchitectureStyle = InstanceType<typeof UpdateDtoArchitectureStyleClass>;
+export { UpdateDtoArchitectureStyleClass as UpdateDtoArchitectureStyle };
 
-export class CreateDtoLicenseType extends createDirectoryCreateDto(
-  LicenseTypeDirectory,
-) {}
-export class UpdateDtoLicenseType extends createDirectoryUpdateDto(
-  CreateDtoLicenseType,
-) {}
+const CreateDtoLicenseTypeClass = createDirectoryZodDto('CreateDtoLicenseType');
+export type CreateDtoLicenseType = InstanceType<typeof CreateDtoLicenseTypeClass>;
+export { CreateDtoLicenseTypeClass as CreateDtoLicenseType };
 
-export class CreateDtoNodeType extends createDirectoryCreateDto(
-  NodeTypeDirectory,
-) {}
-export class UpdateDtoNodeType extends createDirectoryUpdateDto(
-  CreateDtoNodeType,
-) {}
+const UpdateDtoLicenseTypeClass = createDirectoryZodDto('UpdateDtoLicenseType');
+export type UpdateDtoLicenseType = InstanceType<typeof UpdateDtoLicenseTypeClass>;
+export { UpdateDtoLicenseTypeClass as UpdateDtoLicenseType };
 
-export class CreateDtoSoftwareType extends createDirectoryCreateDto(
-  SoftwareTypeDirectory,
-) {}
-export class UpdateDtoSoftwareType extends createDirectoryUpdateDto(
-  CreateDtoSoftwareType,
-) {}
+const CreateDtoCriticalLevelClass = createDirectoryZodDto('CreateDtoCriticalLevel');
+export type CreateDtoCriticalLevel = InstanceType<typeof CreateDtoCriticalLevelClass>;
+export { CreateDtoCriticalLevelClass as CreateDtoCriticalLevel };
 
-export class CreateDtoProtocolType extends createDirectoryCreateDto(
-  ProtocolTypeDirectory,
-) {}
-export class UpdateDtoProtocolType extends createDirectoryUpdateDto(
-  CreateDtoProtocolType,
-) {}
+const UpdateDtoCriticalLevelClass = createDirectoryZodDto('UpdateDtoCriticalLevel');
+export type UpdateDtoCriticalLevel = InstanceType<typeof UpdateDtoCriticalLevelClass>;
+export { UpdateDtoCriticalLevelClass as UpdateDtoCriticalLevel };
+
+const CreateDtoNodeTypeClass = createDirectoryZodDto('CreateDtoNodeType');
+export type CreateDtoNodeType = InstanceType<typeof CreateDtoNodeTypeClass>;
+export { CreateDtoNodeTypeClass as CreateDtoNodeType };
+
+const UpdateDtoNodeTypeClass = createDirectoryZodDto('UpdateDtoNodeType');
+export type UpdateDtoNodeType = InstanceType<typeof UpdateDtoNodeTypeClass>;
+export { UpdateDtoNodeTypeClass as UpdateDtoNodeType };
+
+const CreateDtoProtocolTypeClass = createDirectoryZodDto('CreateDtoProtocolType');
+export type CreateDtoProtocolType = InstanceType<typeof CreateDtoProtocolTypeClass>;
+export { CreateDtoProtocolTypeClass as CreateDtoProtocolType };
+
+const UpdateDtoProtocolTypeClass = createDirectoryZodDto('UpdateDtoProtocolType');
+export type UpdateDtoProtocolType = InstanceType<typeof UpdateDtoProtocolTypeClass>;
+export { UpdateDtoProtocolTypeClass as UpdateDtoProtocolType };
+
+const CreateDtoSoftwareTypeClass = createDirectoryZodDto('CreateDtoSoftwareType');
+export type CreateDtoSoftwareType = InstanceType<typeof CreateDtoSoftwareTypeClass>;
+export { CreateDtoProtocolTypeClass as CreateDtoSoftwareType };
+
+const UpdateDtoSoftwareTypeClass = createDirectoryZodDto('UpdateDtoSoftwareType');
+export type UpdateDtoSoftwareType = InstanceType<typeof UpdateDtoSoftwareTypeClass>;
+export { UpdateDtoSoftwareTypeClass as UpdateDtoSoftwareType };

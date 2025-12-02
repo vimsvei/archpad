@@ -1,4 +1,4 @@
-import { NamedObject } from '../../../model/abstract/named-object.abstract';
+import { NamedObject } from '@/model/abstract/named-object.abstract';
 import { EntityName, EntityRepository } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 
