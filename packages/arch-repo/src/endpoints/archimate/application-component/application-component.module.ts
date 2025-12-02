@@ -4,6 +4,6 @@ import { ApplicationComponentService } from './application-component.service';
 
 @Module({
   controllers: [ApplicationComponentController],
-  providers: [ApplicationComponentService]
+  providers: [ApplicationComponentService],
 })
 export class ApplicationComponentModule {}

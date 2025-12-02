@@ -12,17 +12,15 @@ import { ApplicationComponent } from '@/model/entities/archimate/application/app
 @ApiExtraModels(ApplicationComponent)
 @Controller('application-components')
 export class ApplicationComponentController {
-  constructor(
-    protected readonly service: ApplicationComponentService
-  ) {}
-  
+  constructor(protected readonly service: ApplicationComponentService) {}
+
   @Get()
   @ApiOperation({ summary: `Получение списка компонентов приложений` })
-  @ApiOkResponse({ type: [ApplicationComponent]})
+  @ApiOkResponse({ type: [ApplicationComponent] })
   findAll() {
     // return this.service.findAll();
   }
-  
+
   @Put()
   @ApiOperation({ summary: `Изменение компонента приложения` })
   update() {}

@@ -20,7 +20,7 @@ export class NamedObjectModule {
     options: NamedObjectModuleOptions<TEntity, TCreateDto>,
   ): DynamicModule {
     const { tag, entity, path, createDto } = options;
-    
+
     const controller = createNamedObjectController<TEntity, TCreateDto>(
       tag,
       path,
