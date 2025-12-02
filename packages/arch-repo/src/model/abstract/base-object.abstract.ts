@@ -6,11 +6,19 @@ export abstract class BaseObject {
   @Embedded(() => ActionStamp, { prefix: 'created_', prefixMode: 'absolute' })
   created!: ActionStamp;
 
-  @Embedded(() => ActionStamp, { prefix: 'updated_', prefixMode: 'absolute' })
-  updated!: ActionStamp;
+  @Embedded(() => ActionStamp, {
+    prefix: 'updated_',
+    prefixMode: 'absolute',
+    nullable: true,
+  })
+  updated?: ActionStamp;
 
-  @Embedded(() => ActionStamp, { prefix: 'deleted_', prefixMode: 'absolute' })
-  deleted!: ActionStamp;
+  @Embedded(() => ActionStamp, {
+    prefix: 'deleted_',
+    prefixMode: 'absolute',
+    nullable: true,
+  })
+  deleted?: ActionStamp;
 
   @BeforeCreate()
   protected setCreatedStamp(by: string) {

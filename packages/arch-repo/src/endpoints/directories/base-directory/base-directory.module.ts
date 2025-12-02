@@ -26,9 +26,12 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
+import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
+import { DirectoryItemsMap } from '@/model/entities/maps/directory-items.map';
 
 export interface BaseDirectoryModuleOptions<
-  Entity extends NamedObject,
+  Entity extends DirectoryObject,
   CreateDto extends object = any,
   UpdateDto extends object = CreateDto,
 > {
@@ -51,7 +54,7 @@ export interface BaseDirectoryModuleOptions<
 @Module({})
 export class BaseDirectoryModule {
   static register<
-    Entity extends NamedObject,
+    Entity extends DirectoryObject,
     CreateDto extends object = any,
     UpdateDto extends object = CreateDto,
   >(
@@ -72,8 +75,10 @@ export class BaseDirectoryModule {
       constructor(
         @InjectRepository(entity)
         repo: EntityRepository<Entity>,
+        @InjectRepository(DirectoryItemsMap)
+        mapRepo: EntityRepository<DirectoryItemsMap>,
       ) {
-        super(repo, entity);
+        super(repo, mapRepo, entity);
       }
     }
 
@@ -178,11 +183,38 @@ export class BaseDirectoryModule {
       async remove(@Param('id') id: string) {
         await this.service.remove(id);
       }
+
+      @Post(':id/links')
+      @ApiOperation({ summary: 'Создать связь' })
+      @ApiBody({ type: DirectoryLinkDto })
+      async linkItem(@Param('id') id: string, @Body() dto: DirectoryLinkDto) {
+        return this.service.addLink(id, dto);
+      }
+
+      @Patch(':id/links/:targetId')
+      @ApiOperation({ summary: 'Обновить тип связи' })
+      @ApiBody({ type: DirectoryLinkDto })
+      async updateLink(
+        @Param('id') id: string,
+        @Param('targetId') targetId: string,
+        @Body() dto: Pick<DirectoryLinkDto, 'type'>,
+      ) {
+        return this.service.updateLink(id, targetId, dto);
+      }
+
+      @Delete(':id/links/:targetId')
+      @ApiOperation({ summary: 'Удалить связь' })
+      async deleteLink(
+        @Param('id') id: string,
+        @Param('targetId') targetId: string,
+      ) {
+        return this.service.deleteLink(id, targetId);
+      }
     }
 
     return {
       module: BaseDirectoryModule,
-      imports: [MikroOrmModule.forFeature([entity])],
+      imports: [MikroOrmModule.forFeature([entity, DirectoryItemsMap])],
       providers: [DirectoryService],
       controllers: [DirectoryController],
       exports: [DirectoryService],

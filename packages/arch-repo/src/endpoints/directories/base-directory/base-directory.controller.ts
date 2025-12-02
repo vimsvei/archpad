@@ -1,11 +1,8 @@
 import { BaseDirectoryService } from './base-directory.service';
-import { NamedObject } from '@/model/abstract/named-object.abstract';
-import { Delete, Get, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { DirectoryKind } from '@/model/enums/directory-kind.enum';
+import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 
 export class BaseDirectoryController<
-  Entity extends NamedObject,
+  Entity extends DirectoryObject,
   CreateDto extends object = any,
   UpdateDto extends object = CreateDto,
 > {
