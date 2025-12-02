@@ -30,15 +30,11 @@ export function createNamedObjectController<
   entityClass: Type<TEntity>,
   createDtoClass: Type<TCreateDto>,
 ) {
-  
   @ApiTags(tag)
   @ApiExtraModels(entityClass, createDtoClass)
   @Controller(controllerPath)
   class GeneratedController {
-    
-    constructor(
-      readonly service: NamedObjectService<TEntity>
-    ) {}
+    constructor(readonly service: NamedObjectService<TEntity>) {}
 
     @Post()
     @ApiOperation({
@@ -84,7 +80,6 @@ export function createNamedObjectController<
     @ApiNoContentResponse({
       description: `${entityClass.name} успешно удалён`,
     })
-    
     delete(@Param('id') id: string) {
       return this.service.delete(id);
     }

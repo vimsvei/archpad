@@ -19,17 +19,15 @@ export class NamedObjectModule {
   static register<TEntity extends NamedObject, TCreateDto>(
     options: NamedObjectModuleOptions<TEntity, TCreateDto>,
   ): DynamicModule {
-    
     const { tag, entity, path, createDto } = options;
     
-    const dtoName = `CreateDto${entity.name}`;
     const controller = createNamedObjectController<TEntity, TCreateDto>(
       tag,
       path,
       entity,
       createDto,
     );
-    
+
     return {
       module: NamedObjectModule,
       controllers: [controller],

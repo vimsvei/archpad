@@ -8,7 +8,6 @@ import { TechnologyHostNode } from '@/model/entities/archimate/technology/techno
 import { TechnologyClusterNode } from '@/model/entities/archimate/technology/technology-node-cluster.entity';
 import { createNamedObjectZodDto } from '@/model/dto/named-object.dto-factory';
 
-
 @Module({})
 export class NamedObjectAutoRegistry {
   static registerAll(): DynamicModule {
@@ -19,37 +18,37 @@ export class NamedObjectAutoRegistry {
           tag: 'Компонент приложения',
           entity: ApplicationComponent,
           path: 'application-components',
-          createDto: createNamedObjectZodDto('CreateDtoApplicationComponent')
-          }),
+          createDto: createNamedObjectZodDto('CreateDtoApplicationComponent'),
+        }),
         NamedObjectModule.register({
           tag: 'Функция компонента приложения',
           entity: ApplicationFunction,
           path: 'application-functions',
-          createDto: createNamedObjectZodDto('CreateDtoApplicationFunction')
+          createDto: createNamedObjectZodDto('CreateDtoApplicationFunction'),
         }),
         NamedObjectModule.register({
           tag: 'Интерфейс компонента приложения',
           entity: ApplicationInterface,
           path: 'application-interfaces',
-          createDto: createNamedObjectZodDto('CreateDtoApplicationInterface')
+          createDto: createNamedObjectZodDto('CreateDtoApplicationInterface'),
         }),
         NamedObjectModule.register({
           tag: 'Технологическая сеть',
           entity: TechnologyNetwork,
           path: 'technology-networks',
-          createDto: createNamedObjectZodDto('CreateDtoTechnologyNetwork')
+          createDto: createNamedObjectZodDto('CreateDtoTechnologyNetwork'),
         }),
         NamedObjectModule.register({
           tag: 'Узлы',
           entity: TechnologyHostNode,
           path: 'technology-host-nodes',
-          createDto: createNamedObjectZodDto('CreateDtoTechnologyHostNode')
+          createDto: createNamedObjectZodDto('CreateDtoTechnologyHostNode'),
         }),
         NamedObjectModule.register({
           tag: 'Кластеры',
           entity: TechnologyClusterNode,
           path: 'technology-cluster-nodes',
-          createDto: createNamedObjectZodDto('CreateDtoTechnologyClusterNode')
+          createDto: createNamedObjectZodDto('CreateDtoTechnologyClusterNode'),
         }),
       ],
     };

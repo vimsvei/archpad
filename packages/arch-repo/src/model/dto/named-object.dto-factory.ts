@@ -14,9 +14,9 @@ export function createNamedObjectZodDto(dtoName: string): Type<any> {
     name: z.string(),
     description: z.string().optional(),
   });
-  
+
   class BaseDto extends createZodDto(schema) {}
   Object.defineProperty(BaseDto, 'name', { value: dtoName });
-  
+
   return BaseDto as Type<any>;
 }
