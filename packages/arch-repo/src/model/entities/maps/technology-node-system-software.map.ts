@@ -22,7 +22,7 @@ export class TechnologyNodeSystemSoftwareMap extends MappedObject {
     deleteRule: 'no action',
   })
   systemSoftware!: SystemSoftware;
-  
+
   @Enum({
     items: () => SystemSoftwareKind,
     nativeEnumName: 'system_software_kind_enum',

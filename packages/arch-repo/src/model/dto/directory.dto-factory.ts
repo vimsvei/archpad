@@ -8,7 +8,7 @@ export const BaseDirectorySchema = z.object({
   description: z.string().optional(),
   color: z.string().optional(),
   byDefault: z.boolean().optional(),
-  parentId: z.string().uuid().optional(),
+  parentId: z.uuid().optional(),
 });
 
 // Функция-фабрика для создания DTO-классов

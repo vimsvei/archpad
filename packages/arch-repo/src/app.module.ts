@@ -11,6 +11,7 @@ import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
 import { ArchimateBootstrapModule } from '@/archimate-bootstrap/archimate-bootstrap.module';
 import { AuditSubscriber } from '@/audit/audit.subscriber';
 import { DirectoriesModule } from '@/endpoints/directories/directories.module';
+import { NamedObjectAutoRegistry } from '@/endpoints/archimate/named-object/named-object.autoregistry';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DirectoriesModule } from '@/endpoints/directories/directories.module';
       debug: process.env.NODE_ENV !== 'production',
     }),
     DirectoriesModule,
+    NamedObjectAutoRegistry.registerAll(),
   ],
   controllers: [AppController],
   providers: [

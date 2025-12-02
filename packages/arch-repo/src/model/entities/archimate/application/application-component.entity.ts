@@ -12,6 +12,7 @@ import { ApplicationFunctionDataObject } from '@/model/entities/maps/application
 import { ApplicationComponentProductMap } from '@/model/entities/maps/application-component-product.map';
 import { ApplicationComponentEventMap } from '@/model/entities/maps/application-component-event.map';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/entities/maps/application-component-system-software.map';
+import { ApplicationComponentTechnologyNodeMap } from '@/model/entities/maps/application-component-technology-node.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
@@ -95,4 +96,10 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     mappedBy: 'component',
   })
   systemSoftware = new Collection<ApplicationComponentSystemSoftwareMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentTechnologyNodeMap,
+    mappedBy: 'component',
+  })
+  nodes = new Collection<ApplicationComponentTechnologyNodeMap>(this);
 }

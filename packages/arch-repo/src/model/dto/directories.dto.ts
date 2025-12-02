@@ -1,5 +1,5 @@
 // ✅ Обновлённый безопасный экспорт DTO без ошибки TS4023
-import { createDirectoryZodDto } from './directory-dto.factory';
+import { createDirectoryZodDto } from './directory.dto-factory';
 
 export class CreateDtoArchitectureStyle extends createDirectoryZodDto(
   'CreateDtoArchitectureStyle',

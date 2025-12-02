@@ -74,20 +74,6 @@ export class BaseDirectoryService<
     return link;
   }
 
-  async updateLink(
-    sourceId: string,
-    targetId: string,
-    dto: Pick<DirectoryLinkDto, 'type'>,
-  ): Promise<DirectoryItemsMap> {
-    const link = await this.mapRepo.findOneOrFail({
-      source: { id: sourceId },
-      target: { id: targetId },
-    });
-    link.type = dto.type;
-    await this.mapRepo.getEntityManager().flush();
-    return link;
-  }
-
   async deleteLink(sourceId: string, targetId: string): Promise<void> {
     const link = await this.mapRepo.findOneOrFail({
       source: { id: sourceId },

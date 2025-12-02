@@ -15,6 +15,7 @@ import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/sys
 import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ApplicationComponentTechnologyNodeMap } from '@/model/entities/maps/application-component-technology-node.map';
 
 @Entity({
   tableName: 'technology_nodes',
@@ -78,6 +79,12 @@ export abstract class TechnologyNode extends NamedObject {
     mappedBy: 'node',
   })
   systemSoftware = new Collection<TechnologyNodeSystemSoftwareMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentTechnologyNodeMap,
+    mappedBy: 'node',
+  })
+  components = new Collection<ApplicationComponentTechnologyNodeMap>(this);
 }
 
 @Entity({ discriminatorValue: NodeKind.HOST })

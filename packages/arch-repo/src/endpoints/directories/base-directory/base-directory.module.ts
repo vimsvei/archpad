@@ -191,17 +191,6 @@ export class BaseDirectoryModule {
         return this.service.addLink(id, dto);
       }
 
-      @Patch(':id/links/:targetId')
-      @ApiOperation({ summary: 'Обновить тип связи' })
-      @ApiBody({ type: DirectoryLinkDto })
-      async updateLink(
-        @Param('id') id: string,
-        @Param('targetId') targetId: string,
-        @Body() dto: Pick<DirectoryLinkDto, 'type'>,
-      ) {
-        return this.service.updateLink(id, targetId, dto);
-      }
-
       @Delete(':id/links/:targetId')
       @ApiOperation({ summary: 'Удалить связь' })
       async deleteLink(
