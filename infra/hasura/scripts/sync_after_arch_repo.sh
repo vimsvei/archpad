@@ -15,4 +15,4 @@ until curl -fsS "${ARCH_REPO_HEALTH_URL}" >/dev/null 2>&1; do
 done
 
 echo "[hasura-sync] arch-repo is ready. Tracking…"
-/bin/sh /work/track_all.sh
+bash /work/track_all.sh
