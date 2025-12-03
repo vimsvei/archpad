@@ -33,12 +33,14 @@ export class HealthController {
     const rssLimit = Number(process.env.MEMORY_RSS_MAX || 512 * 1024 * 1024);
     const diskPath = process.env.DISK_PATH || '/';
     const threshold = Number(process.env.DISK_THRESHOLD_PERCENT || 0.85);
+    const minFreeBytes = Number(process.env.DISK_THRESHOLD_BYTES ?? 5 * 1024 * 1024 * 1024);
     
     return this.health.check([
       () => this.db.pingCheck('database'),
       () => this.memory.checkHeap('memory_heap', heapLimit),
       () => this.memory.checkRSS('memory_rss', rssLimit),
-      () => this.disk.checkStorage('disk', { path: diskPath, thresholdPercent: threshold }),
+      // () => this.disk.checkStorage('disk', { path: diskPath, thresholdPercent: threshold }),
+      () => this.disk.checkStorage('disk', { path: diskPath, threshold: minFreeBytes }),
     ]);
   }
 }
