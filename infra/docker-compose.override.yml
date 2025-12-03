@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # Expose Postgres to localhost (for psql / DBeaver / TablePlus)
   postgres:
