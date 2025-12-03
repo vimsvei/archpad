@@ -64,8 +64,8 @@ services:
 
   arch-repo:
     build:
-      context: .
-      dockerfile: ../packages/arch-repo/Dockerfile
+      context: ../packages/arch-repo
+      dockerfile: Dockerfile
     depends_on:
       postgres:
         condition: service_healthy

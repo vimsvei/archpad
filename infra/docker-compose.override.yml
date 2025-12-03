@@ -3,8 +3,3 @@ services:
   postgres:
     ports:
       - "${PG_PORT}:5432"
-
-  # Expose MinIO S3 API to localhost (для локального Strapi)
-  minio:
-    ports:
-      - "127.0.0.1:9000:9000"    # S3 API (use http://127.0.0.1:9000)
