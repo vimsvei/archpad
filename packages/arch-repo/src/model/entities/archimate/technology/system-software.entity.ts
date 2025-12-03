@@ -4,15 +4,16 @@ import {
   Enum,
   ManyToOne,
   OneToMany,
+  Property,
 } from '@mikro-orm/core';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
-import { LicenseTypeDirectory } from '../../directories/license-type.directory';
-import { SoftwareTypeDirectory } from '../../directories/software-type.directory';
+import { LicenseTypeDirectory } from '@directory/license-type.directory';
+import { SoftwareTypeDirectory } from '@directory/software-type.directory';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
 import { ArchimateElementGeneric } from '@/model/entities/archimate/core/archimate-element.generic';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
-import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/entities/maps/application-component-system-software.map';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({
   tableName: 'system_software',
@@ -28,6 +29,10 @@ export class SystemSoftware extends ArchimateElementGeneric {
 
   @ArchimateCode('SOFTWARE')
   override code: string = undefined as any;
+  
+  @ApiProperty()
+  @Property({ type: String, nullable: true })
+  version!: string
 
   @ManyToOne(() => SoftwareTypeDirectory, {
     name: 'type_id',
@@ -44,21 +49,6 @@ export class SystemSoftware extends ArchimateElementGeneric {
     deleteRule: 'no action',
   })
   license!: LicenseTypeDirectory;
-
-  @ManyToOne({
-    entity: () => SystemSoftwareVersion,
-    name: 'default_version_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  defaultVersion!: SystemSoftwareVersion;
-
-  @OneToMany({
-    entity: () => SystemSoftwareVersion,
-    mappedBy: 'systemSoftware',
-  })
-  versions = new Collection<SystemSoftwareVersion>(this);
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,

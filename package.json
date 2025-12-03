@@ -5,6 +5,7 @@
     "install:all": "pnpm install",
     "dev:infra": "pnpm -C infra dev:infra",
     "dev:app": "pnpm -C infra dev:app",
+    "dev:backend": "pnpm -C infra dev:backend",
     "dev:all": "pnpm -C infra dev:all",
     "down": "pnpm -C infra dev:down",
     "logs": "pnpm -C infra logs",

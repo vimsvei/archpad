@@ -64,20 +64,6 @@ services:
       - traefik.tcp.routers.pg.tls=false
       - traefik.docker.network=archpad_appnet
 
-  arch-repo:
-    build:
-      context: .
-      dockerfile: ../packages/arch-repo/Dockerfile
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.arch-repo.rule=Host(`${REPO_HOST}`)
-      - traefik.http.services.arch-repo.loadbalancer.server.port=3000
-    profiles: [ "backend" ]
-
   portal:
     image: node:20-alpine
     working_dir: /app
@@ -160,6 +146,48 @@ services:
     restart: "no"
     networks: [appnet]
 
+  strapi:
+    image: strapi/strapi:5.5.1
+    profiles: ["app"]
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${STRAPI_DB}
+      DATABASE_USERNAME: ${STRAPI_DB_USER}
+      DATABASE_PASSWORD: ${STRAPI_DB_PASS}
+      APP_KEYS: ${STRAPI_APP_KEYS}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
+      JWT_SECRET: ${STRAPI_JWT_SECRET}
+      NODE_ENV: development
+      STRAPI_HOST: 0.0.0.0
+      STRAPI_PORT: 1337
+      PUBLIC_URL: http://${STRAPI_HOST}
+      # Upload provider (S3 → MinIO)
+      STRAPI_UPLOAD_PROVIDER: ${STRAPI_UPLOAD_PROVIDER}
+      AWS_ACCESS_KEY_ID: ${MINIO_STRAPI_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_STRAPI_PASSWORD}
+      AWS_REGION: ${AWS_S3_REGION}
+      AWS_S3_BUCKET: ${MINIO_BUCKET}
+      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT_INTERNAL}
+      AWS_S3_FORCE_PATH_STYLE: ${AWS_S3_FORCE_PATH_STYLE}
+      AWS_S3_PUBLIC_BASE_URL: ${AWS_S3_PUBLIC_BASE_URL}
+    volumes:
+      - ../content:/srv/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.strapi.rule=Host(`${STRAPI_HOST}`)
+      - traefik.http.services.strapi.loadbalancer.server.port=1337
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     command: start --hostname-strict=false --http-enabled=true --hostname ${AUTH_HOST} --http-port 8080
@@ -232,6 +260,41 @@ services:
       - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST}`)
       - traefik.http.services.pgadmin.loadbalancer.server.port=80
 
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks: [appnet]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio-console.rule=Host(`${MINIO_CONSOLE_HOST}`)
+      - traefik.http.services.minio-console.loadbalancer.server.port=9001
+      - traefik.http.routers.minio-s3.rule=Host(`${MINIO_S3_HOST}`)
+      - traefik.http.services.minio-s3.loadbalancer.server.port=9000
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_STRAPI_USER: ${MINIO_STRAPI_USER}
+      MINIO_STRAPI_PASSWORD: ${MINIO_STRAPI_PASSWORD}
+      MINIO_PORTAL_USER: ${MINIO_PORTAL_USER}
+      MINIO_PORTAL_PASSWORD: ${MINIO_PORTAL_PASSWORD}
+    volumes:
+      - ./minio/init.sh:/init/init.sh:ro
+    entrypoint: ["sh","-lc","/init/init.sh"]
+    networks: [appnet]
+    restart: "no"
+
   tolgee:
     image: tolgee/tolgee:latest
     depends_on:
@@ -262,6 +325,7 @@ networks:
 volumes:
   pgdata:
   pgadmin_data:
+  minio_data:
   tolgee_data:
   portal_node_modules:
   portal_pnpm_store:

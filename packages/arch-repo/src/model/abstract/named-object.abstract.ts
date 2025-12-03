@@ -13,7 +13,7 @@ export abstract class NamedObject extends IdentifiedObject {
   @Property({ type: 'string' })
   name!: string;
 
-  @ApiProperty({ description: 'Description', required: false })
+  @ApiProperty({ description: 'Description' })
   @Property({ type: 'text', nullable: true })
   description?: string;
 }

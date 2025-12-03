@@ -7,11 +7,10 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { NodeTypeDirectory } from '../../directories/node-type.directory';
+import { NodeTypeDirectory } from '@directory/node-type.directory';
 import { TechnologyNetwork } from './technology-network.entity';
 import { NodeKind } from '@/model/enums/node-kind.enum';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/entities/maps/technology-node-system-software.map';
-import { SystemSoftwareVersion } from '@/model/entities/archimate/technology/system-software-version.entity';
 import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -64,15 +63,6 @@ export abstract class TechnologyNode extends NamedObject {
     deleteRule: 'no action',
   })
   network!: TechnologyNetwork;
-
-  @ApiProperty({ format: 'uuid', type: SystemSoftwareVersion })
-  @ManyToOne(() => SystemSoftwareVersion, {
-    fieldName: 'os_version_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  osVersion!: SystemSoftwareVersion;
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,
