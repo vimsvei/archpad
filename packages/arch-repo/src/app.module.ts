@@ -13,6 +13,7 @@ import { AuditSubscriber } from '@/audit/audit.subscriber';
 import { DirectoriesModule } from '@/endpoints/directories/directories.module';
 import { NamedObjectAutoRegistry } from '@/endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from '@/endpoints/archimate/application-component/application-component.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ApplicationComponentModule } from '@/endpoints/archimate/application-co
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
     DirectoriesModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [

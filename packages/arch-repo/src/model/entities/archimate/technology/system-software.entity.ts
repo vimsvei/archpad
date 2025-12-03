@@ -21,6 +21,7 @@ import { ApiProperty } from '@nestjs/swagger';
   discriminatorColumn: 'kind',
 })
 export class SystemSoftware extends ArchimateElementGeneric {
+  @ApiProperty({ example: SystemSoftwareKind })
   @Enum({
     items: () => SystemSoftwareKind,
     nativeEnumName: 'system_software_kind_enum',
@@ -29,10 +30,10 @@ export class SystemSoftware extends ArchimateElementGeneric {
 
   @ArchimateCode('SOFTWARE')
   override code: string = undefined as any;
-  
+
   @ApiProperty()
   @Property({ type: String, nullable: true })
-  version!: string
+  version!: string;
 
   @ManyToOne(() => SoftwareTypeDirectory, {
     name: 'type_id',
