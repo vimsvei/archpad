@@ -172,7 +172,9 @@ services:
     networks: [appnet]
 
   hasura-repo-sync:
-    image: alpine:3.20
+    build:
+      context: ../packages/hasura-repo-sync
+      dockerfile: Dockerfile
     depends_on:
       arch-repo:
         condition: service_healthy
@@ -183,17 +185,8 @@ services:
       HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
       HASURA_SOURCE: ${HASURA_SOURCE}
       HASURA_SCHEMA: ${HASURA_SCHEMA}
-      ARCH_REPO_HEALTH_URL: ${ARCH_REPO_HEALTH_URL}
-      ARCH_REPO_HEALTH_TIMEOUT_SEC: ${ARCH_REPO_HEALTH_TIMEOUT_SEC:-300}
-    volumes:
-      - ./hasura/scripts/track_all.sh:/work/track_all.sh:ro
-      - ./hasura/scripts/sync_after_arch_repo.sh:/work/sync_after_arch_repo.sh:ro
-    entrypoint:
-      - sh
-      - -lc
-      - >
-        apk add --no-cache bash curl jq &&
-        bash /work/sync_after_arch_repo.sh
+      HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
+      HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
     restart: "no"
     networks: [ appnet ]
     profiles: [ "backend" ]
