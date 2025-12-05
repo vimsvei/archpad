@@ -27,6 +27,7 @@ export class DirectoryItemsMap extends MappedObject {
   @Enum({
     items: () => DirectoryLinkType,
     nativeEnumName: 'directory_link_type_enum',
+    default: DirectoryLinkType.HIERARCHY,
   })
   type!: DirectoryLinkType;
 }

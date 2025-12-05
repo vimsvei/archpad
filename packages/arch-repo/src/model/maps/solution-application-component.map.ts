@@ -1,11 +1,11 @@
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';
+import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 
 @Entity({ tableName: 'map_solution_application_component' })
 @Unique({ properties: ['component', 'solution'] })
-export class SolutionApplicationComponentMap extends MappedObject {
+export class SolutionApplicationComponentMap extends MappedSolutionObject {
   @ManyToOne({
     entity: () => Solution,
     primary: true,

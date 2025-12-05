@@ -13,17 +13,33 @@ import { ApplicationComponentProductMap } from '@/model/maps/application-compone
 import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
+import { SolutionApplicationComponentMap } from '@/model/maps/solution-application-component.map';
+import { ComponentStateDirectory } from '@/model/directories/component-state.directory';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
   @ArchimateCode('COMP')
   override code: string = undefined as any;
 
-  // @ApiProperty({
-  //   format: 'uuid',
-  //   type: LicenseTypeDirectory,
-  //   description: 'Тип лицензии',
-  // })
+  @ApiProperty({
+    format: 'uuid',
+    type: ComponentStateDirectory,
+    description: 'Статус компонента',
+  })
+  @ManyToOne({
+    entity: () => ComponentStateDirectory,
+    name: 'state_id',
+    nullable: true,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  state!: ComponentStateDirectory;
+
+  @ApiProperty({
+    format: 'uuid',
+    type: LicenseTypeDirectory,
+    description: 'Тип лицензии',
+  })
   @ManyToOne({
     entity: () => LicenseTypeDirectory,
     name: 'license_type_id',
@@ -33,11 +49,11 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   license!: LicenseTypeDirectory;
 
-  // @ApiProperty({
-  //   format: 'uuid',
-  //   type: ArchitectureStyleDirectory,
-  //   description: 'Архитектурный стиль компонента',
-  // })
+  @ApiProperty({
+    format: 'uuid',
+    type: ArchitectureStyleDirectory,
+    description: 'Архитектурный стиль компонента',
+  })
   @ManyToOne({
     entity: () => ArchitectureStyleDirectory,
     name: 'style_id',
@@ -47,11 +63,11 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   architectureStyle!: ArchitectureStyleDirectory;
 
-  // @ApiProperty({
-  //   format: 'uuid',
-  //   type: CriticalLevelDirectory,
-  //   description: 'Уровень критичности',
-  // })
+  @ApiProperty({
+    format: 'uuid',
+    type: CriticalLevelDirectory,
+    description: 'Уровень критичности',
+  })
   @ManyToOne({
     entity: () => CriticalLevelDirectory,
     name: 'critical_level_id',
@@ -82,12 +98,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   dataObjects = new Collection<ApplicationComponentDataObjectMap>(this);
 
-  // @OneToMany({
-  //   entity: () => ApplicationFunctionDataObject,
-  //   mappedBy: 'component',
-  // })
-  // dataObjectUsages = new Collection<ApplicationFunctionDataObject>(this);
-
   @OneToMany({
     entity: () => ApplicationComponentProductMap,
     mappedBy: 'component',
@@ -105,4 +115,10 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     mappedBy: 'component',
   })
   nodes = new Collection<ApplicationComponentTechnologyNodeMap>(this);
+
+  @OneToMany({
+    entity: () => SolutionApplicationComponentMap,
+    mappedBy: 'component',
+  })
+  solutions = new Collection<SolutionApplicationComponentMap>(this);
 }
