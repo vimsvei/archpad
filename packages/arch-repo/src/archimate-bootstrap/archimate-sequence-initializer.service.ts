@@ -7,6 +7,9 @@ export class ArchimateSequenceInitializer implements OnApplicationBootstrap {
   constructor(private readonly orm: MikroORM) {}
 
   async onApplicationBootstrap() {
+    const generator = this.orm.getSchemaGenerator();
+    await generator.dropSchema();
+
     const seqNames = getArchimateSequences();
     if (!seqNames.length) return;
 
@@ -24,7 +27,7 @@ export class ArchimateSequenceInitializer implements OnApplicationBootstrap {
       await conn.execute(sql);
     }
 
-    const generator = this.orm.getSchemaGenerator();
+    // await generator.createSchema();
     await generator.updateSchema();
   }
 }

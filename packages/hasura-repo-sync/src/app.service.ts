@@ -34,23 +34,25 @@ export class AppService {
 
   async syncAll(options?: { renameColumnsToCamelCase?: boolean }) {
     this.logger.log('Starting Hasura repo sync...');
-    
+
     if (this.untrackFunctions) {
       await this.untrackAll();
     } else {
-      this.logger.log('Skipping untrack of functions (HASURA_UNTRACK_FUNCTIONS=false)');
-    }
-    
-    const tables = await this.trackAllTables();
-    await this.trackAllRelationships();
-
-    if (this.renameColumnsToCamelCase) {
-      await this.applyCamelCaseColumnNames(tables);
-    } else {
       this.logger.log(
-        'Skipping column customization to camelCase (HASURA_RENAME_COLUMNS_CAMELCASE=false)',
+        'Skipping untrack of functions (HASURA_UNTRACK_FUNCTIONS=false)',
       );
     }
+
+    // const tables = await this.trackAllTables();
+    // await this.trackAllRelationships();
+    //
+    // if (this.renameColumnsToCamelCase) {
+    //   await this.applyCamelCaseColumnNames(tables);
+    // } else {
+    //   this.logger.log(
+    //     'Skipping column customization to camelCase (HASURA_RENAME_COLUMNS_CAMELCASE=false)',
+    //   );
+    // }
 
     await this.reloadMetadata();
     this.logger.log('Hasura repo sync finished.');
@@ -71,26 +73,35 @@ export class AppService {
     if (!source) {
       this.logger.warn(`Source "${sourceName}" not found in metadata.`);
       return;
+    } else {
+      // this.logger.log(`Source "${JSON.stringify(source)}`);
     }
 
-    const funcs: any[] = source.functions || [];
-    if (!funcs.length) {
-      this.logger.log('No tracked functions found. Skipping.');
+    const tables: any[] = source.tables || [];
+    this.logger.log(`Source "${JSON.stringify(tables)}`);
+    if (!tables.length) {
+      this.logger.log('No tracked tables found. Skipping.');
       return;
     }
+    
+    // const funcs: any[] = source.functions || [];
+    // if (!funcs.length) {
+    //   this.logger.log('No tracked functions found. Skipping.');
+    //   return;
+    // }
 
-    for (const f of funcs) {
-      const fn = f.function || f;
+    for (const f of tables) {
+      const fn = f.table || f;
       const schema = fn.schema;
       const name = fn.name;
-      this.logger.log(`Untracking function ${schema}.${name}...`);
+      this.logger.log(`Untracking table ${schema}.${name}...`);
       try {
         await this.hasura.postMetadata({
-          type: 'pg_untrack_function',
-          args: { source: sourceName, function: { schema, name } },
+          type: 'pg_untrack_table',
+          args: { source: sourceName, table: { schema, name }, cascade: true },
         });
       } catch (e) {
-        this.logger.warn(`Failed to untrack function ${schema}.${name}: ${e}`);
+        this.logger.warn(`Failed to untrack table ${schema}.${name}: ${e}`);
       }
     }
   }

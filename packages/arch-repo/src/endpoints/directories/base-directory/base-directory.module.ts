@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
-import { DirectoryItemsMap } from '@/model/entities/maps/directory-items.map';
+import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
 
 export interface BaseDirectoryModuleOptions<
   Entity extends DirectoryObject,

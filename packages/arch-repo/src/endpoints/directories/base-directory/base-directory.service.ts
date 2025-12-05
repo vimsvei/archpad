@@ -2,7 +2,7 @@ import { EntityRepository, FilterQuery } from '@mikro-orm/core';
 import type { EntityName, EntityData } from '@mikro-orm/core';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
-import { DirectoryItemsMap } from '@/model/entities/maps/directory-items.map';
+import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { InjectRepository } from '@mikro-orm/nestjs';
 

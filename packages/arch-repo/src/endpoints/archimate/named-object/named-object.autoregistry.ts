@@ -1,11 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { NamedObjectModule } from '@/endpoints/archimate/named-object/named-object.module';
-import { ApplicationComponent } from '@/model/entities/archimate/application/application-component.entity';
-import { ApplicationFunction } from '@/model/entities/archimate/application/application-function.entity';
-import { ApplicationInterface } from '@/model/entities/archimate/application/application-interface.entity';
-import { TechnologyNetwork } from '@/model/entities/archimate/technology/technology-network.entity';
-import { TechnologyHostNode } from '@/model/entities/archimate/technology/technology-node.entity';
-import { TechnologyClusterNode } from '@/model/entities/archimate/technology/technology-node-cluster.entity';
+import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
+import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
+import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
+import { TechnologyNetwork } from '@/model/archimate/technology/technology-network.entity';
+import { TechnologyHostNode } from '@/model/archimate/technology/technology-node.entity';
+import { TechnologyClusterNode } from '@/model/archimate/technology/technology-node-cluster.entity';
 import { createNamedObjectZodDto } from '@/model/dto/named-object.dto-factory';
 
 @Module({})

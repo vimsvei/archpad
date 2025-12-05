@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ApplicationComponentService } from '@/endpoints/archimate/application-component/application-component.service';
-import { ApplicationComponent } from '@/model/entities/archimate/application/application-component.entity';
+import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 
 @ApiTags('Компонент приложения')
 @ApiExtraModels(ApplicationComponent)
