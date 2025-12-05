@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { NamedObject } from '@/model/abstract/named-object.abstract';
 import { DirectoryKind } from '@/model/enums/directory-kind.enum';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
 @Entity({
   tableName: 'directories',
-  abstract: true,
+  // abstract: true,
   discriminatorColumn: 'kind',
 })
 export abstract class DirectoryObject extends NamedObject {
