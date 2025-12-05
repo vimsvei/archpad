@@ -6,7 +6,7 @@ import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 
 @Entity({
   tableName: 'directories',
-  // abstract: true,
+  abstract: true,
   discriminatorColumn: 'kind',
 })
 export abstract class DirectoryObject extends NamedObject {
