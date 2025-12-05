@@ -8,7 +8,7 @@ import { CriticalLevelDirectory } from '@/model/directories/critical-level.direc
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
-import { ApplicationFunctionDataObject } from '@/model/maps/application-function-data-object.map';
+import { ApplicationFunctionDataObjectMap } from '@/model/maps/application-function-data-object.map';
 import { ApplicationComponentProductMap } from '@/model/maps/application-component-product.map';
 import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
@@ -82,11 +82,11 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   dataObjects = new Collection<ApplicationComponentDataObjectMap>(this);
 
-  @OneToMany({
-    entity: () => ApplicationFunctionDataObject,
-    mappedBy: 'component',
-  })
-  dataObjectUsages = new Collection<ApplicationFunctionDataObject>(this);
+  // @OneToMany({
+  //   entity: () => ApplicationFunctionDataObject,
+  //   mappedBy: 'component',
+  // })
+  // dataObjectUsages = new Collection<ApplicationFunctionDataObject>(this);
 
   @OneToMany({
     entity: () => ApplicationComponentProductMap,

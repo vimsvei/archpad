@@ -6,14 +6,18 @@ import { DirectoryLinkType } from '@/model/enums/directory-link-type.enum';
 @Entity({ tableName: 'map_directory_items' })
 @Unique({ properties: ['source', 'target'] })
 export class DirectoryItemsMap extends MappedObject {
-  @ManyToOne(() => DirectoryObject, {
+  @ManyToOne({
+    entity: () => DirectoryObject,
+    primary: true,
     fieldName: 'source_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
   source!: DirectoryObject;
 
-  @ManyToOne(() => DirectoryObject, {
+  @ManyToOne({
+    entity: () => DirectoryObject,
+    primary: true,
     fieldName: 'target_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

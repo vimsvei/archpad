@@ -8,14 +8,16 @@ import { Solution } from '@/model/solution/solution.entity';
 export class SolutionApplicationComponentMap extends MappedObject {
   @ManyToOne({
     entity: () => Solution,
+    primary: true,
     fieldName: 'solution_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
   solution!: Solution;
-  
+
   @ManyToOne({
     entity: () => ApplicationComponent,
+    primary: true,
     fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

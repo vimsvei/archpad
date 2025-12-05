@@ -9,6 +9,7 @@ import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 export class TechnologyNodeSystemSoftwareMap extends MappedObject {
   @ManyToOne({
     entity: () => TechnologyNode,
+    primary: true,
     fieldName: 'node_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -17,6 +18,7 @@ export class TechnologyNodeSystemSoftwareMap extends MappedObject {
 
   @ManyToOne({
     entity: () => SystemSoftware,
+    primary: true,
     fieldName: 'system_software_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

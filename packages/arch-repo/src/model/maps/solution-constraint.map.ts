@@ -9,14 +9,16 @@ import { Constraint } from '@/model/archimate/motivation/constraint.entity';
 export class SolutionConstraintMap extends MappedObject {
   @ManyToOne({
     entity: () => Solution,
+    primary: true,
     fieldName: 'solution_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
   solution!: Solution;
-  
+
   @ManyToOne({
     entity: () => Constraint,
+    primary: true,
     fieldName: 'constraint_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

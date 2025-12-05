@@ -1,5 +1,5 @@
 import { MappedObject } from '@/model/abstract/mapped-object.abstract';
-import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 import { DataAccessKind } from '@/model/enums/data-access-kind.enum';
@@ -7,32 +7,50 @@ import { ApplicationComponent } from '@/model/archimate/application/application-
 import { DataObject } from '@/model/archimate/application/data-object.entity';
 
 @Entity({ tableName: 'map_application_function_data_object' })
-export class ApplicationFunctionDataObject extends MappedObject {
-  @ManyToOne(() => ApplicationComponent)
-  component!: ApplicationComponent;
-
-  @ManyToOne(() => DataObject)
-  dataObject!: DataObject;
-
+export class ApplicationFunctionDataObjectMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
-    fieldName: 'component_function_id',
+    primary: true,
+    joinColumns: ['component_id', 'function_id'],
+    referencedColumnNames: ['component_id', 'function_id'],
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  functionMap!: ApplicationComponentFunctionMap;
+  componentFunction!: ApplicationComponentFunctionMap;
 
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
-    fieldName: 'component_data_object_id',
+    primary: true,
+    joinColumns: ['component_id', 'data_object_id'],
+    referencedColumnNames: ['component_id', 'data_object_id'],
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  dataObjectMap!: ApplicationComponentDataObjectMap;
+  componentDataObject!: ApplicationComponentDataObjectMap;
+
+  @ManyToOne({
+    entity: () => ApplicationComponent,
+    fieldName: 'component_id',
+    referenceColumnName: 'id',
+    nullable: false,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  component!: ApplicationComponent;
+
+  @ManyToOne({
+    entity: () => DataObject,
+    fieldName: 'data_object_id',
+    referenceColumnName: 'id',
+    nullable: false,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+    inversedBy: 'useInFunctions',
+  })
+  dataObject!: DataObject;
 
   @Enum({
     items: () => DataAccessKind,
-    default: DataAccessKind.READ_WRITE,
     nativeEnumName: 'data_access_kind_enum',
   })
   accessKind!: DataAccessKind;

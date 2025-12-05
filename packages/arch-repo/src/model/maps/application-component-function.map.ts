@@ -4,10 +4,10 @@ import { ApplicationFunction } from '@/model/archimate/application/application-f
 import { MappedObject } from '@/model/abstract/mapped-object.abstract';
 
 @Entity({ tableName: 'map_application_component_function' })
-@Unique({ properties: ['component', 'function'] })
 export class ApplicationComponentFunctionMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
+    primary: true,
     fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -16,6 +16,7 @@ export class ApplicationComponentFunctionMap extends MappedObject {
 
   @ManyToOne({
     entity: () => ApplicationFunction,
+    primary: true,
     fieldName: 'function_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

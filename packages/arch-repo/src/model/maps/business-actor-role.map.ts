@@ -6,14 +6,18 @@ import { BusinessRole } from '@/model/archimate/business/business-role.entity';
 @Entity({ tableName: 'map_business_actor_role' })
 @Unique({ properties: ['actor', 'role'] })
 export class BusinessActorRoleMap extends MappedObject {
-  @ManyToOne(() => BusinessActor, {
+  @ManyToOne({
+    entity: () => BusinessActor,
+    primary: true,
     fieldName: 'actor_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
   actor!: BusinessActor;
 
-  @ManyToOne(() => BusinessRole, {
+  @ManyToOne({
+    entity: () => BusinessRole,
+    primary: true,
     fieldName: 'role_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

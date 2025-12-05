@@ -7,6 +7,7 @@ import { TechnologyNode } from '@/model/archimate/technology/technology-node.ent
 export class TechnologyNodeHierarchyMap extends MappedObject {
   @ManyToOne({
     entity: () => TechnologyNode,
+    primary: true,
     fieldName: 'node_parent_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -15,6 +16,7 @@ export class TechnologyNodeHierarchyMap extends MappedObject {
 
   @ManyToOne({
     entity: () => TechnologyNode,
+    primary: true,
     fieldName: 'node_child_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

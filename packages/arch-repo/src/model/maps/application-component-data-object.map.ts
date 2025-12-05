@@ -4,10 +4,10 @@ import { ApplicationComponent } from '@/model/archimate/application/application-
 import { DataObject } from '@/model/archimate/application/data-object.entity';
 
 @Entity({ tableName: 'map_application_component_data_object' })
-@Unique({ properties: ['component', 'dataObject'] })
 export class ApplicationComponentDataObjectMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
+    primary: true,
     fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -16,6 +16,7 @@ export class ApplicationComponentDataObjectMap extends MappedObject {
 
   @ManyToOne({
     entity: () => DataObject,
+    primary: true,
     fieldName: 'data_object_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

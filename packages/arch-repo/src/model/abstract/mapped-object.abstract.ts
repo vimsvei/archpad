@@ -1,5 +1,5 @@
 import { Entity } from '@mikro-orm/core';
-import { IdentifiedObject } from '@/model/abstract/identified-object.abstract';
+import { BaseObject } from '@/model/abstract/base-object.abstract';
 
 @Entity({ abstract: true })
-export abstract class MappedObject extends IdentifiedObject {}
+export abstract class MappedObject extends BaseObject {}

@@ -2,6 +2,7 @@ import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-elemen
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
+import { ApplicationFunctionDataObjectMap } from '@/model/maps/application-function-data-object.map';
 
 @Entity({ tableName: 'data_objects' })
 export class DataObject extends ArchimateElementGeneric {
@@ -13,4 +14,10 @@ export class DataObject extends ArchimateElementGeneric {
     mappedBy: 'dataObject',
   })
   components = new Collection<ApplicationComponentDataObjectMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationFunctionDataObjectMap,
+    mappedBy: 'dataObject',
+  })
+  useInFunctions = new Collection<ApplicationFunctionDataObjectMap>(this);
 }

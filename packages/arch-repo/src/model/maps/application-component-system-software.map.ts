@@ -5,10 +5,10 @@ import { SystemSoftware } from '@/model/archimate/technology/system-software.ent
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
 @Entity({ tableName: 'map_application_component_system_software' })
-@Unique({ properties: ['component', 'systemSoftware'] })
 export class ApplicationComponentSystemSoftwareMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
+    primary: true,
     fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -17,6 +17,7 @@ export class ApplicationComponentSystemSoftwareMap extends MappedObject {
 
   @ManyToOne({
     entity: () => SystemSoftware,
+    primary: true,
     fieldName: 'system_software_id',
     updateRule: 'cascade',
     deleteRule: 'no action',

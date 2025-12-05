@@ -12,9 +12,9 @@ export class ApplicationFunction extends FunctionGeneric {
   })
   components = new Collection<ApplicationComponentFunctionMap>(this);
 
-  @OneToMany({
-    entity: () => ApplicationInterfaceFunctionMap,
-    mappedBy: 'function',
-  })
-  interfaces = new Collection<ApplicationInterfaceFunctionMap>(this);
+  // @OneToMany({
+  //   entity: () => ApplicationInterfaceFunctionMap,
+  //   mappedBy: 'function',
+  // })
+  // interfaces = new Collection<ApplicationInterfaceFunctionMap>(this);
 }

@@ -4,10 +4,10 @@ import { MappedObject } from '@/model/abstract/mapped-object.abstract';
 import { ApplicationEvent } from '@/model/archimate/application/application-event.entity';
 
 @Entity({ tableName: 'map_application_component_event' })
-@Unique({ properties: ['component', 'event'] })
 export class ApplicationComponentEventMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
+    primary: true,
     fieldName: 'component_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
@@ -16,6 +16,7 @@ export class ApplicationComponentEventMap extends MappedObject {
 
   @ManyToOne({
     entity: () => ApplicationEvent,
+    primary: true,
     fieldName: 'event_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
