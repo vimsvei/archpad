@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HasuraClientService } from './hasura-client/hasura-client.service';
 import { ConfigService } from '@nestjs/config';
+import { toCamelCase, toPlural } from './utils/naming.util';
 
 interface ForeignKeyInfo {
   fk_table_schema: string;
@@ -43,7 +44,7 @@ export class AppService {
       );
     }
 
-    // const tables = await this.trackAllTables();
+    const tables = await this.trackAllTables();
     // await this.trackAllRelationships();
     //
     // if (this.renameColumnsToCamelCase) {
@@ -73,8 +74,6 @@ export class AppService {
     if (!source) {
       this.logger.warn(`Source "${sourceName}" not found in metadata.`);
       return;
-    } else {
-      // this.logger.log(`Source "${JSON.stringify(source)}`);
     }
 
     const tables: any[] = source.tables || [];
@@ -84,12 +83,6 @@ export class AppService {
       return;
     }
     
-    // const funcs: any[] = source.functions || [];
-    // if (!funcs.length) {
-    //   this.logger.log('No tracked functions found. Skipping.');
-    //   return;
-    // }
-
     for (const f of tables) {
       const fn = f.table || f;
       const schema = fn.schema;
@@ -212,16 +205,16 @@ export class AppService {
     if (fk_columns.length === 1) {
       const col = fk_columns[0];
       const base = col.endsWith('_id') ? col.slice(0, -3) : col;
-      objectRelName = this.toCamelCase(base);
+      objectRelName = toCamelCase(base);
     } else {
-      objectRelName = this.toCamelCase(
+      objectRelName = toCamelCase(
         `${pk_table_name}_by_${constraint_name}`,
       );
     }
 
     // array-rel: родительская таблица, имя = plural(childTable) -> camelCase
-    const pluralChild = this.toPlural(fk_table_name);
-    const arrayRelName = this.toCamelCase(pluralChild);
+    const pluralChild = toPlural(fk_table_name);
+    const arrayRelName = toCamelCase(pluralChild);
 
     this.logger.log(
       `FK ${constraint_name}: ${fk_table_schema}.${fk_table_name} -> ${pk_table_schema}.${pk_table_name}`,
@@ -291,12 +284,12 @@ export class AppService {
 
     const res = await this.hasura.runSql(sql);
     const rows = res.result?.slice(1) ?? [];
-    const columns = rows.map(([name]) => name as string);
+    const columns = rows.map(([name]) => name);
 
     const columnConfig: Record<string, { custom_name: string }> = {};
 
     for (const col of columns) {
-      const camel = this.toCamelCase(col);
+      const camel = toCamelCase(col);
       if (camel !== col) {
         columnConfig[col] = { custom_name: camel };
       }
@@ -324,19 +317,6 @@ export class AppService {
         `Failed to set column_config for ${schema}.${table}: ${e}`,
       );
     }
-  }
-
-  private toCamelCase(input: string): string {
-    const lower = input.toLowerCase();
-    return lower.replace(/_+([a-z0-9])/g, (_, ch: string) => ch.toUpperCase());
-  }
-
-  private toPlural(name: string): string {
-    if (/(s|x|z|ch|sh)$/.test(name)) return `${name}es`;
-    if (/[a-zA-Z]y$/.test(name) && !/[aeiou]y$/.test(name)) {
-      return `${name.slice(0, -1)}ies`;
-    }
-    return `${name}s`;
   }
 
   private async reloadMetadata() {
