@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "env:render": "ROOT_ENV_PATH=../../.env scripts/render-env.sh"
+    "env:render": "ROOT_ENV_PATH=../../.env ../scripts/render-env.sh"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
