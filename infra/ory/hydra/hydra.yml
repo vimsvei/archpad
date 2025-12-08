@@ -1,15 +1,50 @@
-dsn: ${DSN}
+version: v25.4.0
 
-serve:
-  public:
-    host: 0.0.0.0
-    port: 4444
-  admin:
-    host: 0.0.0.0
-    port: 4445
+dsn: ${DSN}
 
 log:
   level: info
+  leak_sensitive_values: true
+
+serve:
+  cookies:
+    same_site_mode: Lax
+  public:
+    host: 0.0.0.0
+    port: 4444
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://portal.localhost
+        - http://auth.localhost
+      allowed_methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+  admin:
+    host: 0.0.0.0
+    port: 4445
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost
+      allowed_methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+
 
 secrets:
   system:
@@ -17,13 +52,29 @@ secrets:
 
 urls:
   self:
-    issuer: http://hydra:4444/
-  login: http://${HYDRA_PUBLIC_HOST}/hydra/login
-  consent: http://${HYDRA_PUBLIC_HOST}/hydra/consent
-  logout: http://${HYDRA_PUBLIC_HOST}/hydra/logout
-  error: http://${HYDRA_PUBLIC_HOST}/hydra/error
+    issuer: http://hydra.localhost
+  login: http://hydra.localhost/login
+  consent: http://hydra.localhost/consent
+  logout: http://hydra.localhost/logout
+  error: http://hydra.localhost/error
+  post_logout_redirect: http://portal.localhost/
+
+strategies:
+  access_token: opaque
+  scope: exact
 
 oauth2:
-  # можно оставить opaque токены (по умолчанию access токены opaque)
-  token:
-    strategy: opaque
+  expose_internal_errors: true
+  session:
+    encrypt_at_rest: true
+  hashers:
+    algorithm: pbkdf2
+    pbkdf2:
+      iterations: 25000
+
+ttl:
+  login_consent_request: 10m
+  access_token: 15m
+  refresh_token: 720h
+  id_token: 15m
+  auth_code: 10m

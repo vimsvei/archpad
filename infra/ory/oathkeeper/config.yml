@@ -2,14 +2,12 @@ version: v0.40.0
 
 serve:
   proxy:
-    host: 0.0.0.0
     port: 4455
   api:
-    host: 0.0.0.0
     port: 4456
 
 log:
-  level: debug
+  level: info
 
 access_rules:
   matching_strategy: regexp
@@ -21,62 +19,35 @@ authenticators:
   oauth2_introspection:
     enabled: true
     config:
-      introspection_url: http://hydra:4445/oauth2/introspect
-      introspection_request_headers:
-        Authorization: "Basic BASE64_CLIENTID_SECRET"
-    cookie_session:
-      enabled: true
-      config:
-        # внутренний admin/public URL kratos'а для whoami
-        check_session_url: http://kratos:4433/sessions/whoami
-        preserve_path: true
-        preserve_query: true
-        extra_from: "@this"
-        subject_from: "identity.id"
-        only:
-          - ory_kratos_session
+      introspection_url: http://hydra-admin.localhost/oauth2/introspect
+      scope_strategy: exact
+      preserve_host: false
+      pre_authorization:
+        enabled: true
+        client_id: ${ORY_CLIENT_ID}
+        client_secret: ${ORY_CLIENT_SECRET}
+        scope:
+          - introspect
+        token_url: https://hydra-admin.localhost/oauth2/token
+      token_from:
+        header: Custom-Authorization-Header
+      retry:
+        give_up_after: 1s
+        max_delay: 100ms
+      cache:
+        enabled: false
+        ttl: 60s
+        max_cost: 100000000
 
-  anonymous:
-    enabled: true
-    config:
-      subject: guest
-
-# Авторизатор: на первом шаге можно просто allow.
-# Позже сюда подключим Keto или свой remote_json-авторизатор
 authorizers:
   allow:
     enabled: true
 
-# Мутаторы: будем пробрасывать полезные данные в заголовки
 mutators:
   header:
     enabled: true
-
-  # На будущее — можно генерировать id_token/JWT и отдавать его в upstream
-  # id_token:
-  #   enabled: true
-  #   config:
-  #     issuer_url: http://oathkeeper:4456/
-  #     jwks_url: http://oathkeeper:4456/.well-known/jwks.json
-  #     ttl: 3600
-
-# CORS для браузерного доступа к Oathkeeper
-cors:
-  enabled: true
-  allowed_origins:
-    - http://${APP_HOST}
-  allowed_methods:
-    - GET
-    - POST
-    - PUT
-    - PATCH
-    - DELETE
-    - OPTIONS
-  allowed_headers:
-    - Authorization
-    - Content-Type
-    - Cookie
-    - X-Requested-With
-  exposed_headers:
-    - Content-Type
-  allow_credentials: true
+    config:
+      headers:
+        X-Archpad-User-Id: "{{ print .Subject }}"
+        X-Archpad-Tenant-Id: "{{ index .Extra \"tenant_id\" }}"
+        X-Archpad-Roles: "{{ index .Extra \"roles\" }}"

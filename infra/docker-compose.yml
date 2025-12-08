@@ -58,24 +58,23 @@ services:
       - traefik.enable=true
       - traefik.tcp.routers.pg.rule=HostSNI(`*`)
       - traefik.tcp.routers.pg.entrypoints=pg
-      - traefik.tcp.apps.pg.loadbalancer.server.port=5432
+      - traefik.tcp.services.pg.loadbalancer.server.port=5432
       - traefik.tcp.routers.pg.tls=false
       - traefik.docker.network=appnet
 
   kratos:
-    image: oryd/kratos:latest
-    command: >
-      serve -c /etc/config/kratos.yml --dev
+    image: oryd/kratos:v25.4.0
+    command: ["serve", "-c", "/etc/config/kratos.yml", "--dev", "--watch-courier"]
     environment:
       DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      KRATOS_SELFSERVICE_DEFAULT_BROWSER_RETURN_URL: http://portal.localhost/
     volumes:
       - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
-      - ./ory/kratos/identities:/etc/kratos/identities:ro
+      - ./ory/kratos/identities/default.schema.json:/etc/config/kratos/identities/default.schema.json:ro
     depends_on:
       kratos-migrate:
         condition: service_completed_successfully
     networks: [ appnet ]
-    profiles: [ "app" ]
     labels:
       - traefik.enable=true
 
@@ -90,11 +89,8 @@ services:
       - traefik.http.services.kratos-admin.loadbalancer.server.port=4434
 
   hydra:
-    image: oryd/hydra:latest
-    command:
-      - serve
-      - all
-      - --config=/etc/config/hydra.yml
+    image: oryd/hydra:v25.4.0
+    command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
       # В проде лучше пробрасывать через env, но для PoC достаточно так
@@ -107,10 +103,8 @@ services:
       hydra-migrate:
         condition: service_completed_successfully
     networks: [ appnet ]
-    profiles: [ "app" ]
     labels:
       - traefik.enable=true
-      # public endpoint (OIDC/OAuth2 для портала)
       - traefik.http.routers.hydra-public.rule=Host(`${HYDRA_PUBLIC_HOST}`)
       - traefik.http.routers.hydra-public.entrypoints=web
       - traefik.http.services.hydra-public.loadbalancer.server.port=4444
@@ -121,7 +115,7 @@ services:
       - traefik.http.services.hydra-admin.loadbalancer.server.port=4445
 
   oathkeeper:
-    image: oryd/oathkeeper:latest
+    image: oryd/oathkeeper:v25.4.0
     command:
       - serve
       - --config=/etc/oathkeeper/config.yml
@@ -145,19 +139,19 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      kratos:
-        condition: service_started
-      hydra:
-        condition: service_started
-      hasura-wait:
-        condition: service_completed_successfully
+#      kratos:
+#        condition: service_started
+#      hydra:
+#        condition: service_started
+#      hasura-wait:
+#        condition: service_completed_successfully
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
-      HASURA_GRAPHQL_JWT_SECRETS: |
-        [{"type":"RS256","jwk_url":"http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs","audience":"${KEYCLOAK_AUDIENCE}"}]
+#      HASURA_GRAPHQL_JWT_SECRETS: |
+#        [{"type":"RS256","jwk_url":"http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs","audience":"${KEYCLOAK_AUDIENCE}"}]
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
       HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,pgdump,metrics
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
@@ -167,19 +161,19 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
-      - traefik.http.apps.hasura.loadbalancer.server.port=8080
+      - traefik.http.services.hasura.loadbalancer.server.port=8080
 
-  hasura-wait:
-    image: alpine:3.20
-    depends_on:
-      kratos:
-        condition: service_started
-      hydra:
-        condition: service_started
-    entrypoint: [ "sh", "-lc",
-                  "until wget -q --spider http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs; do echo '[hasura-wait] JWKS not ready; retrying...'; sleep 2; done" ]
-    networks: [ appnet ]
-    restart: "no"
+#  hasura-wait:
+#    image: alpine:3.20
+##    depends_on:
+##      kratos:
+##        condition: service_started
+##      hydra:
+##        condition: service_started
+#    entrypoint: [ "sh", "-lc",
+#                  "until wget -q --spider http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs; do echo '[hasura-wait] JWKS not ready; retrying...'; sleep 2; done" ]
+#    networks: [ appnet ]
+#    restart: "no"
 
   hasura-metadata:
     image: alpine:3.20
@@ -197,28 +191,17 @@ services:
 
   kratos-migrate:
     image: oryd/kratos:latest
-    command: >
-      serve -c /etc/config/kratos.yml --dev --watch-courier --watch-config --migrate sql -e --yes
+    command: ["migrate", "sql", "-e", "--yes"]
     environment:
       DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
-      - ./ory/kratos/identities:/etc/kratos/identities:ro
+      - ./ory/kratos/identities/default.schema.json:/etc/kratos/identities/default.schema.json:ro
     depends_on:
       postgres:
         condition: service_healthy
     restart: "no"
     networks: [ appnet ]
-
-  mailhog:
-    image: mailhog/mailhog:v1.0.1
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
-      - traefik.http.apps.mailhog.loadbalancer.server.port=8025
-    ports:
-      - "1025:1025"
 
   hydra-migrate:
     image: oryd/hydra:v2.2.0
@@ -234,6 +217,16 @@ services:
         condition: service_healthy
     networks: [ appnet ]
     restart: "no"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    networks: [ appnet ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
+      - traefik.http.services.mailhog.loadbalancer.server.port=8025
+    ports:
+      - "1025:1025"
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -254,7 +247,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST}`)
-      - traefik.http.apps.pgadmin.loadbalancer.server.port=80
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
 
   tolgee:
     image: tolgee/tolgee:latest
@@ -278,7 +271,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.tolgee.rule=Host(`${TOLGEE_HOST}`)
       - traefik.http.routers.tolgee.entrypoints=web
-      - traefik.http.apps.tolgee.loadbalancer.server.port=8080
+      - traefik.http.services.tolgee.loadbalancer.server.port=8080
 
   arch-repo:
     build:
@@ -303,7 +296,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
-      - traefik.http.apps.arch-repo.loadbalancer.server.port=3000
+      - traefik.http.services.arch-repo.loadbalancer.server.port=3000
     profiles: [ "backend" ]
 
   hasura-repo-sync:
@@ -352,7 +345,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
-      - traefik.http.apps.portal.loadbalancer.server.port=3000
+      - traefik.http.services.portal.loadbalancer.server.port=3000
     depends_on:
       postgres:
         condition: service_healthy

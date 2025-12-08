@@ -4,23 +4,18 @@
     url: http://oathkeeper:4455/graphql/<**>
     methods: ["GET", "POST", "OPTIONS"]
   authenticators:
-#    - handler: cookie_session
     - handler: oauth2_introspection
   authorizer:
-    handler: allow   # на первом этапе — только аутентификация
+    handler: allow
   mutators:
     - handler: header
       config:
         headers:
-          # subject (identity.id) мы выбрали в cookie_session.subject_from
-          X-Archpad-User-Id: "{{ .Subject }}"
-          # traits.tenant_ids и traits.roles — из identity schema Kratos
-          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.traits.tenant_ids }}"
-          X-Archpad-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
-
+          X-Hasura-User-Id: "{{ .Subject }}"
+          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.traits.tenant_ids }}"
+          X-Hasura-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
   upstream:
     url: http://hasura:8080
-    preserve_host: false
 
 # ==== Arch-repo-service через Oathkeeper ====
 - id: arch-repo-api
@@ -28,7 +23,7 @@
     url: http://oathkeeper:4455/rest/<**>
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   authenticators:
-    - handler: cookie_session
+    - handler: oauth2_introspection
   authorizer:
     handler: allow
   mutators:
@@ -40,4 +35,3 @@
           X-Archpad-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
   upstream:
     url: http://arch-repo:3000
-    preserve_host: false

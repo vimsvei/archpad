@@ -4,22 +4,29 @@
   "title": "ArchPad User",
   "type": "object",
   "properties": {
-    "email": {
-      "type": "string",
-      "format": "email"
-    },
-    "name": {
-      "type": "string"
-    },
-    "tenant_ids": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "roles": {
-      "type": "array",
-      "items": { "type": "string" }
+    "traits": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tenant_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "roles": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "email" ],
+      "additionalProperties": false
     }
   },
-  "required": [ "email" ],
+  "required": ["traits"],
   "additionalProperties": false
 }
