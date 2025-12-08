@@ -39,5 +39,5 @@
           X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.traits.tenant_ids }}"
           X-Archpad-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
   upstream:
-    url: http://arch-repo-service:3000
+    url: http://arch-repo:3000
     preserve_host: false
