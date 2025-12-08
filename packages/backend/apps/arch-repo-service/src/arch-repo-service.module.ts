@@ -55,4 +55,4 @@ import {ArchimateBootstrapModule} from "./archimate-bootstrap/archimate-bootstra
     AuditSubscriber,
   ],
 })
-export class AppModule {}
+export class ArchRepoServiceModule {}

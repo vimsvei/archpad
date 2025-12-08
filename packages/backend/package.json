@@ -6,11 +6,11 @@
     "email": "contact@zelentsov.solutions"
   },
   "scripts": {
-    "start:arch-repo": "nest start arch-repo",
-    "start:hasura-repo-sync": "nest start hasura-repo-sync",
-    "start:dev:arch-repo": "nest start arch-repo --watch",
-    "build:arch-repo": "nest build arch-repo",
-    "build:hasura-repo-sync": "nest build hasura-repo-sync"
+    "start:arch-repo": "nest start arch-repo-service",
+    "start:hasura-repo-sync": "nest start hasura-sync-service",
+    "start:dev:arch-repo": "nest start arch-repo-service --watch",
+    "build:arch-repo": "nest build arch-repo-service",
+    "build:hasura-repo-sync": "nest build hasura-sync-service"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.6.0",

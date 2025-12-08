@@ -3,7 +3,7 @@
   "monorepo": true,
   "root": ".",
   "compilerOptions": {
-    "tsConfigPath": "tsconfig.base.json",
+    "tsConfigPath": "tsconfig.json",
     "deleteOutDir": true,
     "webpack": true
   },
