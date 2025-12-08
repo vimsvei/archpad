@@ -23,6 +23,26 @@ services:
       - traefik.http.routers.traefik8080.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
       - traefik.http.routers.traefik8080.service=api@internal
 
+  oathkeeper:
+    image: oryd/oathkeeper:v0.40.0
+    command:
+      - serve
+      - --config=/etc/oathkeeper/config.yml
+    volumes:
+      - ./ory/oathkeeper/config.yml:/etc/oathkeeper/config.yml:ro
+      - ./ory/oathkeeper/access-rules.yml:/etc/oathkeeper/access-rules.yml:ro
+    environment:
+      LOG_LEVEL: debug
+    depends_on:
+      kratos:
+        condition: service_started
+    networks: [ appnet ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api-gw.rule=Host(`${API_GATEWAY_HOST}`)
+      - traefik.http.routers.api-gw.entrypoints=web
+      - traefik.http.services.api-gw.loadbalancer.server.port=4455
+
   postgres:
     image: postgres:16-alpine
     environment:
@@ -36,12 +56,12 @@ services:
       HASURA_DB: ${HASURA_DB}
       HASURA_DB_USER: ${HASURA_DB_USER}
       HASURA_DB_PASS: ${HASURA_DB_PASS}
-      STRAPI_DB: ${STRAPI_DB}
-      STRAPI_DB_USER: ${STRAPI_DB_USER}
-      STRAPI_DB_PASS: ${STRAPI_DB_PASS}
-      KEYCLOAK_DB: ${KEYCLOAK_DB}
-      KEYCLOAK_DB_USER: ${KEYCLOAK_DB_USER}
-      KEYCLOAK_DB_PASS: ${KEYCLOAK_DB_PASS}
+      KRATOS_DB: ${KRATOS_DB}
+      KRATOS_DB_USER: ${KRATOS_DB_USER}
+      KRATOS_DB_PASS: ${KRATOS_DB_PASS}
+      HYDRA_DB: ${HYDRA_DB}
+      HYDRA_DB_USER: ${HYDRA_DB_USER}
+      HYDRA_DB_PASS: ${HYDRA_DB_PASS}
       TOLGEE_DB: ${TOLGEE_DB}
       TOLGEE_DB_USER: ${TOLGEE_DB_USER}
       TOLGEE_DB_PASS: ${TOLGEE_DB_PASS}
@@ -62,63 +82,61 @@ services:
       - traefik.tcp.routers.pg.tls=false
       - traefik.docker.network=appnet
 
-  arch-repo:
-    build:
-      context: ../packages/backend/apps/arch-repo-service
-      dockerfile: Dockerfile
-    environment:
-      NODE_ENV: development
-      PG_HOST: ${POSTGRES_ENDPOINT}
-      PG_PORT: ${PG_PORT}
-      PROJECT_DB: ${PROJECT_DB}
-      PROJECT_DB_USER: ${PROJECT_DB_USER}
-      PROJECT_DB_PASS: ${PROJECT_DB_PASS}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -q -O- http://localhost:3000/healthz || exit 1" ]
-      interval: 5s
-      timeout: 3s
-      retries: 60
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
-      - traefik.http.apps.arch-repo.loadbalancer.server.port=3000
-    profiles: [ "backend" ]
-
-  portal:
-    image: node:20-alpine
-    working_dir: /app
+  kratos:
+    image: oryd/kratos:latest
     command: >
-      sh -lc "
-        corepack enable &&
-        pnpm i --frozen-lockfile &&
-        pnpm dev
-      "
+      serve -c /etc/config/kratos.yml --dev
     environment:
-      NODE_ENV: development
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
-      NEXT_PUBLIC_CMS_URL: http://${STRAPI_HOST}
-      KEYCLOAK_ISSUER: http://${AUTH_HOST}/realms/${KEYCLOAK_REALM}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_AUDIENCE}
-      WATCHPACK_POLLING: "true"
+      DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
-      - ../portal:/app
-      - portal_node_modules:/app/node_modules
-      - portal_pnpm_store:/root/.local/share/pnpm/store
+      - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
+      - ./ory/kratos/identities:/etc/kratos/identities:ro
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
     networks: [ appnet ]
+    profiles: [ "app" ]
     labels:
       - traefik.enable=true
-      - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
-      - traefik.http.apps.portal.loadbalancer.server.port=3000
+
+      # public API Kratos (браузер, @ory/nextjs)
+      - traefik.http.routers.kratos-public.rule=Host(`${KRATOS_PUBLIC_HOST}`)
+      - traefik.http.routers.kratos-public.entrypoints=web
+      - traefik.http.services.kratos-public.loadbalancer.server.port=4433
+
+      # admin API Kratos (используется Oathkeeper, dev-инструменты)
+      - traefik.http.routers.kratos-admin.rule=Host(`${KRATOS_ADMIN_HOST}`)
+      - traefik.http.routers.kratos-admin.entrypoints=web
+      - traefik.http.services.kratos-admin.loadbalancer.server.port=4434
+
+  hydra:
+    image: oryd/hydra:v2.2.0
+    command:
+      - serve
+      - all
+      - --config=/etc/config/hydra.yml
+    environment:
+      DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      # В проде лучше пробрасывать через env, но для PoC достаточно так
+      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
+    volumes:
+      - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
     depends_on:
-      postgres:
-        condition: service_healthy
+      hydra-migrate:
+        condition: service_completed_successfully
+    networks: [ appnet ]
     profiles: [ "app" ]
+    labels:
+      - traefik.enable=true
+      # public endpoint (OIDC/OAuth2 для портала)
+      - traefik.http.routers.hydra-public.rule=Host(`${HYDRA_PUBLIC_HOST}`)
+      - traefik.http.routers.hydra-public.entrypoints=web
+      - traefik.http.services.hydra-public.loadbalancer.server.port=4444
+
+      # admin endpoint (для управления клиентами, introspection для Oathkeeper и т.п.)
+      - traefik.http.routers.hydra-admin.rule=Host(`${HYDRA_ADMIN_HOST}`)
+      - traefik.http.routers.hydra-admin.entrypoints=web
+      - traefik.http.services.hydra-admin.loadbalancer.server.port=4445
 
   hasura:
     image: hasura/graphql-engine:v2.48.6
@@ -171,66 +189,20 @@ services:
     restart: "no"
     networks: [appnet]
 
-  hasura-repo-sync:
-    build:
-      context: ../packages/hasura-repo-sync
-      dockerfile: Dockerfile
-    depends_on:
-      arch-repo:
-        condition: service_healthy
-      hasura:
-        condition: service_healthy
+  kratos-migrate:
+    image: oryd/kratos:latest
+    command: >
+      serve -c /etc/config/kratos.yml --dev --watch-courier --watch-config --migrate sql -e --yes
     environment:
-      HASURA_ENDPOINT: ${HASURA_ENDPOINT}
-      HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
-      HASURA_SOURCE: ${HASURA_SOURCE}
-      HASURA_SCHEMA: ${HASURA_SCHEMA}
-      HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
-      HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
-    restart: "no"
-    networks: [ appnet ]
-    profiles: [ "backend" ]
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    command: start --hostname-strict=false --http-enabled=true --hostname ${AUTH_HOST} --http-port 8080
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB}
-      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASS}
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_METRICS_ENABLED: "true"
-      KC_HEALTH_ENABLED: "true"
+      DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
-      - ./keycloak/realms:/opt/keycloak/data/import:ro
+      - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
+      - ./ory/kratos/identities:/etc/kratos/identities:ro
     depends_on:
       postgres:
         condition: service_healthy
-    networks: [appnet]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.keycloak.rule=Host(`${AUTH_HOST}`)
-      - traefik.http.apps.keycloak.loadbalancer.server.port=8080
-
-  keycloak-sync:
-    image: alpine:3.20
-    depends_on:
-      keycloak:
-        condition: service_started
-    environment:
-      KEYCLOAK_URL: http://keycloak:8080
-      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-      IMPORT_FILE: /import/partial-import.json
-    volumes:
-      - ./keycloak/imports:/import:ro
-      - ./keycloak/sync.sh:/sync.sh:ro
-    entrypoint: ["/bin/sh","/sync.sh"]
     restart: "no"
-    networks: [appnet]
+    networks: [ appnet ]
 
   mailhog:
     image: mailhog/mailhog:v1.0.1
@@ -241,6 +213,21 @@ services:
       - traefik.http.apps.mailhog.loadbalancer.server.port=8025
     ports:
       - "1025:1025"
+
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    command:
+      - migrate
+      - sql
+      - -e
+      - --yes
+    environment:
+      DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [ appnet ]
+    restart: "no"
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -286,6 +273,84 @@ services:
       - traefik.http.routers.tolgee.rule=Host(`${TOLGEE_HOST}`)
       - traefik.http.routers.tolgee.entrypoints=web
       - traefik.http.apps.tolgee.loadbalancer.server.port=8080
+
+  arch-repo:
+    build:
+      context: ../packages/backend/apps/arch-repo-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      PG_HOST: ${POSTGRES_ENDPOINT}
+      PG_PORT: ${PG_PORT}
+      PROJECT_DB: ${PROJECT_DB}
+      PROJECT_DB_USER: ${PROJECT_DB_USER}
+      PROJECT_DB_PASS: ${PROJECT_DB_PASS}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O- http://localhost:3000/healthz || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    networks: [ appnet ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
+      - traefik.http.apps.arch-repo.loadbalancer.server.port=3000
+    profiles: [ "backend" ]
+
+  hasura-repo-sync:
+    build:
+      context: ../packages/hasura-repo-sync
+      dockerfile: Dockerfile
+    depends_on:
+      arch-repo:
+        condition: service_healthy
+      hasura:
+        condition: service_healthy
+    environment:
+      HASURA_ENDPOINT: ${HASURA_ENDPOINT}
+      HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
+      HASURA_SOURCE: ${HASURA_SOURCE}
+      HASURA_SCHEMA: ${HASURA_SCHEMA}
+      HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
+      HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
+    restart: "no"
+    networks: [ appnet ]
+    profiles: [ "backend" ]
+
+  portal:
+    image: node:20-alpine
+    working_dir: /app
+    command: >
+      sh -lc "
+        corepack enable &&
+        pnpm i --frozen-lockfile &&
+        pnpm dev
+      "
+    environment:
+      NODE_ENV: development
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
+      NEXT_PUBLIC_CMS_URL: http://${STRAPI_HOST}
+      KEYCLOAK_ISSUER: http://${AUTH_HOST}/realms/${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_AUDIENCE}
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ../portal:/app
+      - portal_node_modules:/app/node_modules
+      - portal_pnpm_store:/root/.local/share/pnpm/store
+    networks: [ appnet ]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
+      - traefik.http.apps.portal.loadbalancer.server.port=3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: [ "app" ]
 
 networks:
   appnet:

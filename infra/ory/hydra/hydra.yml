@@ -1,0 +1,29 @@
+dsn: ${DSN}
+
+serve:
+  public:
+    host: 0.0.0.0
+    port: 4444
+  admin:
+    host: 0.0.0.0
+    port: 4445
+
+log:
+  level: info
+
+secrets:
+  system:
+    - ${HYDRA_SYSTEM_SECRET}
+
+urls:
+  self:
+    issuer: http://hydra:4444/
+  login: http://${HYDRA_PUBLIC_HOST}/hydra/login
+  consent: http://${HYDRA_PUBLIC_HOST}/hydra/consent
+  logout: http://${HYDRA_PUBLIC_HOST}/hydra/logout
+  error: http://${HYDRA_PUBLIC_HOST}/hydra/error
+
+oauth2:
+  # можно оставить opaque токены (по умолчанию access токены opaque)
+  token:
+    strategy: opaque
