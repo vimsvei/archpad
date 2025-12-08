@@ -4,7 +4,6 @@ import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
 import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
 import { DirectoriesModule } from './endpoints/directories/directories.module';
@@ -50,7 +49,7 @@ import {HealthCheckerModule} from "archpad/health-checker";
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: RequestLoggerInterceptor,
+      useClass: LoggerModule,
     },
     AuditSubscriber,
   ],
