@@ -139,12 +139,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-#      kratos:
-#        condition: service_started
-#      hydra:
-#        condition: service_started
-#      hasura-wait:
-#        condition: service_completed_successfully
+      kratos:
+        condition: service_started
+      hydra:
+        condition: service_started
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
@@ -162,18 +160,6 @@ services:
       - traefik.enable=true
       - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
       - traefik.http.services.hasura.loadbalancer.server.port=8080
-
-#  hasura-wait:
-#    image: alpine:3.20
-##    depends_on:
-##      kratos:
-##        condition: service_started
-##      hydra:
-##        condition: service_started
-#    entrypoint: [ "sh", "-lc",
-#                  "until wget -q --spider http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs; do echo '[hasura-wait] JWKS not ready; retrying...'; sleep 2; done" ]
-#    networks: [ appnet ]
-#    restart: "no"
 
   hasura-metadata:
     image: alpine:3.20
