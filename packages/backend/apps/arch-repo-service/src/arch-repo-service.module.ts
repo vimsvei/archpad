@@ -27,13 +27,6 @@ import {HealthCheckerModule} from "archpad/health-checker";
         './dist/**/*.directory{.ts,.js}',
         './dist/**/*.abstract{.ts,.js}',
       ],
-      // entitiesTs: [
-      //   './src/model/**/*.entity{.ts}',
-      //   './src/model/**/*.generic{.ts}',
-      //   './src/model/**/*.map{.ts}',
-      //   './src/model/**/*.directory{.ts}',
-      //   './src/model/**/*.abstract{.ts}',
-      // ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,
       port: +(process.env.PG_PORT ?? '5432'),
