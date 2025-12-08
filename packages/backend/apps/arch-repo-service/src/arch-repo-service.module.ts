@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
@@ -19,18 +20,18 @@ import {HealthCheckerModule} from "archpad/health-checker";
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
       entities: [
-        './dist/**/*.entity{.ts,.js}',
-        './dist/**/*.generic{.ts,.js}',
-        './dist/**/*.map{.ts,.js}',
-        './dist/**/*.directory{.ts,.js}',
-        './dist/**/*.abstract{.ts,.js}',
+        path.join(__dirname, '/dist/**/*.entity{.ts,.js}'),
+        path.join(__dirname, '/dist/**/*.generic{.ts,.js}'),
+        path.join(__dirname, '/dist/**/*.map{.ts,.js}'),
+        path.join(__dirname, '/dist/**/*.directory{.ts,.js}'),
+        path.join(__dirname, '/dist/**/*.abstract{.ts,.js}'),
       ],
       entitiesTs: [
-        './src/model/**/*.entity{.ts}',
-        './src/model/**/*.generic{.ts}',
-        './src/model/**/*.map{.ts}',
-        './src/model/**/*.directory{.ts}',
-        './src/model/**/*.abstract{.ts}',
+        path.join(__dirname, '/model/**/*.entity{.ts}'),
+        path.join(__dirname, '/model/**/*.generic{.ts}'),
+        path.join(__dirname, '/model/**/*.map{.ts}'),
+        path.join(__dirname, '/model/**/*.directory{.ts}'),
+        path.join(__dirname, '/model/**/*.abstract{.ts}'),
       ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,
