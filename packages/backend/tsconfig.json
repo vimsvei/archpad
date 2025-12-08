@@ -23,11 +23,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@archimate/*": ["./src/model/entities/archimate/*"],
-      "@directory/*": ["./src/model/entities/directories/*"],
-      "@map/*": ["./src/model/entities/map/*"],
-      "@solution/*": ["./src/model/entities/solution/*"],
-      "@/*": ["./src/*"]
+
     }
   }
 }

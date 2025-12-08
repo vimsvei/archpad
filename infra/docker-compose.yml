@@ -64,7 +64,7 @@ services:
 
   arch-repo:
     build:
-      context: ../packages/arch-repo
+      context: ../packages/backend/services/arch-repo
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -173,7 +173,7 @@ services:
 
   hasura-repo-sync:
     build:
-      context: ../packages/hasura-repo-sync
+      context: ../packages/backend/services/hasura-repo-sync
       dockerfile: Dockerfile
     depends_on:
       arch-repo:

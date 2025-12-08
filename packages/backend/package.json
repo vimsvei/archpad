@@ -1,0 +1,15 @@
+{
+  "name": "@archpad/backend",
+  "private": true,
+  "author": {
+    "name": "Aleksandr Zelentsov",
+    "email": "contact@zelentsov.solutions"
+  },
+  "scripts": {
+    "start:arch-repo": "nest start arch-repo",
+    "start:hasura-repo-sync": "nest start hasura-repo-sync",
+    "start:dev:arch-repo": "nest start arch-repo --watch",
+    "build:arch-repo": "nest build arch-repo",
+    "build:hasura-repo-sync": "nest build hasura-repo-sync"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "outDir": "../../dist/services/arch-repo"
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+    "paths": {
+      "@archimate/*": ["./src/model/entities/archimate/*"],
+      "@directory/*": ["./src/model/entities/directories/*"],
+      "@map/*": ["./src/model/entities/map/*"],
+      "@solution/*": ["./src/model/entities/solution/*"],
+      "@/*": ["./src/*"]
+    }
+  }
+}

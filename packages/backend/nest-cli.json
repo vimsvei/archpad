@@ -1,0 +1,39 @@
+{
+  "collection": "@nestjs/schematics",
+  "monorepo": true,
+  "root": ".",
+  "compilerOptions": {
+    "tsConfigPath": "tsconfig.base.json",
+    "deleteOutDir": true,
+    "webpack": true
+  },
+  "projects": {
+    "arch-repo": {
+      "type": "application",
+      "root": "services/arch-repo",
+      "entryFile": "main",
+      "sourceRoot": "services/arch-repo/src",
+      "compilerOptions": {
+        "tsConfigPath": "services/arch-repo/tsconfig.app.json"
+      }
+    },
+    "hasura-repo-sync": {
+      "type": "application",
+      "root": "services/hasura-repo-sync",
+      "entryFile": "main",
+      "sourceRoot": "services/hasura-repo-sync/src",
+      "compilerOptions": {
+        "tsConfigPath": "services/hasura-repo-sync/tsconfig.app.json"
+      }
+    },
+    "logger": {
+      "type": "library",
+      "root": "libs/logger",
+      "entryFile": "index",
+      "sourceRoot": "libs/logger/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    }
+  }
+}
