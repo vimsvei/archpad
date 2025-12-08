@@ -4,7 +4,8 @@
   "root": ".",
   "compilerOptions": {
     "tsConfigPath": "tsconfig.json",
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true
   },
   "projects": {
     "arch-repo-service": {
@@ -23,6 +24,15 @@
       "sourceRoot": "apps/hasura-sync-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/hasura-sync-service/tsconfig.app.json"
+      }
+    },
+    "health-checker": {
+      "type": "library",
+      "root": "libs/health-checker",
+      "entryFile": "index",
+      "sourceRoot": "libs/health-checker/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/health-checker/tsconfig.lib.json"
       }
     },
     "logger": {

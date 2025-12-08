@@ -1,5 +1,3 @@
-# Мультистейдж: сборка зависимостей -> билд -> рантайм
-# Базовый образ
 FROM node:20-alpine AS base
 WORKDIR /app
 
@@ -11,31 +9,29 @@ RUN corepack enable
 
 # ---------- deps: установка зависимостей для сборки ----------
 FROM base AS deps
-COPY package.json ./
-RUN pnpm install --prod=false
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/backend/package.json packages/backend/package.json
+RUN pnpm install --frozen-lockfile --filter @archpad/backend...
 
 # ---------- build: сборка TypeScript / NestJS ----------
 FROM deps AS build
-COPY . .
-RUN pnpm run build
+COPY packages/backend ./packages/backend
+RUN pnpm --filter @archpad/backend build:arch-repo
+
+
+FROM deps AS prod-deps
+RUN pnpm prune --prod --filter @archpad/backend
 
 # ---------- runtime: минимальный образ только для запуска ----------
 FROM node:20-alpine AS runtime
-
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-RUN corepack enable
-
-COPY --from=build /app/dist ./dist
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json ./
-
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/packages/backend/dist ./dist
 USER node
-
 EXPOSE 3000
-
-CMD ["pnpm", "start:prod"]
+CMD ["node", "dist/apps/arch-repo-service/main.js"]

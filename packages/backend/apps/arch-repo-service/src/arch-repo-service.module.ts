@@ -3,7 +3,6 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerModule } from './logger/logger.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
 import { HealthModule } from './health/health.module';
@@ -12,6 +11,7 @@ import {ApplicationComponentModule} from "./endpoints/archimate/application-comp
 import {DirectoriesModule} from "./endpoints/directories/directories.module";
 import {AuditSubscriber} from "./audit/audit.subscriber";
 import {ArchimateBootstrapModule} from "./archimate-bootstrap/archimate-bootstrap.module";
+import {LoggerModule} from "@archpad/logger";
 
 @Module({
   imports: [

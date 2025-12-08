@@ -23,7 +23,18 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["apps/arch-repo-service/src/*"]
+      "@/*": [
+        "apps/arch-repo-service/src/*"
+      ],
+      "@archpad/logger": [
+        "libs/logger/src"
+      ],
+      "archpad/health-checker": [
+        "libs/health-checker/src"
+      ],
+      "archpad/health-checker/*": [
+        "libs/health-checker/src/*"
+      ]
     }
   }
 }

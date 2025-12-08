@@ -64,7 +64,7 @@ services:
 
   arch-repo:
     build:
-      context: ../packages/arch-repo
+      context: ../packages/backend/apps/arch-repo-service
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development

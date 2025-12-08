@@ -1,0 +1,10 @@
+.git
+node_modules
+packages/backend/node_modules
+packages/backend/dist
+packages/backend/coverage
+dist
+pnpm-store
+.pnpm-store
+.pnpm
+.DS_Store

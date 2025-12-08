@@ -8,7 +8,7 @@ import {
 } from '@nestjs/terminus';
 import checkDiskSpace from 'check-disk-space';
 import { CHECK_DISK_SPACE_LIB } from '@nestjs/terminus/dist/terminus.constants';
-import {LoggerService} from "../logger/logger.service";
+import {LoggerService} from "@archpad/logger";
 
 @Module({
   imports: [
