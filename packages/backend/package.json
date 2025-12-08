@@ -6,6 +6,7 @@
     "email": "contact@zelentsov.solutions"
   },
   "scripts": {
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start:arch-repo": "nest start arch-repo-service",
     "start:hasura-repo-sync": "nest start hasura-sync-service",
     "start:dev:arch-repo": "nest start arch-repo-service --watch",

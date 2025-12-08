@@ -1,5 +1,5 @@
 import { BaseDirectoryService } from './base-directory.service';
-import {DirectoryObject} from "../../../model/abstract/directory-object.abstract";
+import { DirectoryObject } from '../../../model/abstract/directory-object.abstract';
 
 export class BaseDirectoryController<
   Entity extends DirectoryObject,

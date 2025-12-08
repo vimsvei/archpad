@@ -1,19 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
-import {ArchimateCode} from "../../decorators/archimate-code.decorator";
-import {ArchimateElementGeneric} from "../core/archimate-element.generic";
-import {ComponentStateDirectory} from "../../directories/component-state.directory";
-import {LicenseTypeDirectory} from "../../directories/license-type.directory";
-import {ArchitectureStyleDirectory} from "../../directories/architecture-style.directory";
-import {CriticalLevelDirectory} from "../../directories/critical-level.directory";
-import {ApplicationComponentFunctionMap} from "../../maps/application-component-function.map";
-import {ApplicationComponentEventMap} from "../../maps/application-component-event.map";
-import {ApplicationInterface} from "./application-interface.entity";
-import {ApplicationComponentDataObjectMap} from "../../maps/application-component-data-object.map";
-import {ApplicationComponentProductMap} from "../../maps/application-component-product.map";
-import {ApplicationComponentSystemSoftwareMap} from "../../maps/application-component-system-software.map";
-import {ApplicationComponentTechnologyNodeMap} from "../../maps/application-component-technology-node.map";
-import {SolutionApplicationComponentMap} from "../../maps/solution-application-component.map";
+import { ArchimateCode } from '../../decorators/archimate-code.decorator';
+import { ArchimateElementGeneric } from '../core/archimate-element.generic';
+import { ComponentStateDirectory } from '../../directories/component-state.directory';
+import { LicenseTypeDirectory } from '../../directories/license-type.directory';
+import { ArchitectureStyleDirectory } from '../../directories/architecture-style.directory';
+import { CriticalLevelDirectory } from '../../directories/critical-level.directory';
+import { ApplicationComponentFunctionMap } from '../../maps/application-component-function.map';
+import { ApplicationComponentEventMap } from '../../maps/application-component-event.map';
+import { ApplicationInterface } from './application-interface.entity';
+import { ApplicationComponentDataObjectMap } from '../../maps/application-component-data-object.map';
+import { ApplicationComponentProductMap } from '../../maps/application-component-product.map';
+import { ApplicationComponentSystemSoftwareMap } from '../../maps/application-component-system-software.map';
+import { ApplicationComponentTechnologyNodeMap } from '../../maps/application-component-technology-node.map';
+import { SolutionApplicationComponentMap } from '../../maps/solution-application-component.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {

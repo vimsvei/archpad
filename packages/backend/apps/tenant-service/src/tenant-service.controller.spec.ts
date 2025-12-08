@@ -11,7 +11,9 @@ describe('TenantServiceController', () => {
       providers: [TenantServiceService],
     }).compile();
 
-    tenantServiceController = app.get<TenantServiceController>(TenantServiceController);
+    tenantServiceController = app.get<TenantServiceController>(
+      TenantServiceController,
+    );
   });
 
   describe('root', () => {

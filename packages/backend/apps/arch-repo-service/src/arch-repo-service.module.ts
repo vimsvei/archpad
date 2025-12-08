@@ -5,13 +5,13 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './logger/request-logger.interceptor';
-import { HealthModule } from './health/health.module';
-import {NamedObjectAutoRegistry} from "./endpoints/archimate/named-object/named-object.autoregistry";
-import {ApplicationComponentModule} from "./endpoints/archimate/application-component/application-component.module";
-import {DirectoriesModule} from "./endpoints/directories/directories.module";
-import {AuditSubscriber} from "./audit/audit.subscriber";
-import {ArchimateBootstrapModule} from "./archimate-bootstrap/archimate-bootstrap.module";
-import {LoggerModule} from "@archpad/logger";
+import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
+import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
+import { DirectoriesModule } from './endpoints/directories/directories.module';
+import { AuditSubscriber } from './audit/audit.subscriber';
+import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
+import { LoggerModule } from '@archpad/logger';
+import {HealthCheckerModule} from "archpad/health-checker";
 
 @Module({
   imports: [
@@ -44,7 +44,7 @@ import {LoggerModule} from "@archpad/logger";
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
     DirectoriesModule,
-    HealthModule,
+    HealthCheckerModule,
   ],
   controllers: [],
   providers: [

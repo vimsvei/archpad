@@ -15,7 +15,7 @@ export class HealthCheckerController {
     private readonly memory: MemoryHealthIndicator,
     private readonly disk: DiskHealthIndicator,
   ) {}
-  
+
   @Get('/healthz')
   @HealthCheck()
   liveness() {
@@ -25,7 +25,7 @@ export class HealthCheckerController {
       () => this.memory.checkHeap('memory_heap', heapLimit),
     ]);
   }
-  
+
   @Get('/health')
   @HealthCheck()
   full() {
@@ -36,7 +36,7 @@ export class HealthCheckerController {
     const minFreeBytes = Number(
       process.env.DISK_THRESHOLD_BYTES ?? 5 * 1024 * 1024 * 1024,
     );
-    
+
     return this.health.check([
       () => this.db.pingCheck('database'),
       () => this.memory.checkHeap('memory_heap', heapLimit),
