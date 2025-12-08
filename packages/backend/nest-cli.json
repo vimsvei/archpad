@@ -8,22 +8,22 @@
     "webpack": true
   },
   "projects": {
-    "arch-repo": {
+    "arch-repo-service": {
       "type": "application",
-      "root": "services/arch-repo",
+      "root": "apps/arch-repo-service",
       "entryFile": "main",
-      "sourceRoot": "services/arch-repo/src",
+      "sourceRoot": "apps/arch-repo-service/src",
       "compilerOptions": {
-        "tsConfigPath": "services/arch-repo/tsconfig.app.json"
+        "tsConfigPath": "apps/arch-repo-service/tsconfig.app.json"
       }
     },
-    "hasura-repo-sync": {
+    "hasura-sync-service": {
       "type": "application",
-      "root": "services/hasura-repo-sync",
+      "root": "apps/hasura-sync-service",
       "entryFile": "main",
-      "sourceRoot": "services/hasura-repo-sync/src",
+      "sourceRoot": "apps/hasura-sync-service/src",
       "compilerOptions": {
-        "tsConfigPath": "services/hasura-repo-sync/tsconfig.app.json"
+        "tsConfigPath": "apps/hasura-sync-service/tsconfig.app.json"
       }
     },
     "logger": {
@@ -33,6 +33,15 @@
       "sourceRoot": "libs/logger/src",
       "compilerOptions": {
         "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
+    "tenant-service": {
+      "type": "application",
+      "root": "apps/tenant-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/tenant-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/tenant-service/tsconfig.app.json"
       }
     }
   }

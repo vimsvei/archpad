@@ -58,13 +58,13 @@ services:
       - traefik.enable=true
       - traefik.tcp.routers.pg.rule=HostSNI(`*`)
       - traefik.tcp.routers.pg.entrypoints=pg
-      - traefik.tcp.services.pg.loadbalancer.server.port=5432
+      - traefik.tcp.apps.pg.loadbalancer.server.port=5432
       - traefik.tcp.routers.pg.tls=false
       - traefik.docker.network=appnet
 
   arch-repo:
     build:
-      context: ../packages/backend/services/arch-repo
+      context: ../packages/arch-repo
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
@@ -85,7 +85,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
-      - traefik.http.services.arch-repo.loadbalancer.server.port=3000
+      - traefik.http.apps.arch-repo.loadbalancer.server.port=3000
     profiles: [ "backend" ]
 
   portal:
@@ -114,7 +114,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
-      - traefik.http.services.portal.loadbalancer.server.port=3000
+      - traefik.http.apps.portal.loadbalancer.server.port=3000
     depends_on:
       postgres:
         condition: service_healthy
@@ -145,7 +145,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
-      - traefik.http.services.hasura.loadbalancer.server.port=8080
+      - traefik.http.apps.hasura.loadbalancer.server.port=8080
 
   hasura-wait:
     image: alpine:3.20
@@ -173,7 +173,7 @@ services:
 
   hasura-repo-sync:
     build:
-      context: ../packages/backend/services/hasura-repo-sync
+      context: ../packages/hasura-repo-sync
       dockerfile: Dockerfile
     depends_on:
       arch-repo:
@@ -212,7 +212,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.keycloak.rule=Host(`${AUTH_HOST}`)
-      - traefik.http.services.keycloak.loadbalancer.server.port=8080
+      - traefik.http.apps.keycloak.loadbalancer.server.port=8080
 
   keycloak-sync:
     image: alpine:3.20
@@ -238,7 +238,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
-      - traefik.http.services.mailhog.loadbalancer.server.port=8025
+      - traefik.http.apps.mailhog.loadbalancer.server.port=8025
     ports:
       - "1025:1025"
 
@@ -261,7 +261,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST}`)
-      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+      - traefik.http.apps.pgadmin.loadbalancer.server.port=80
 
   tolgee:
     image: tolgee/tolgee:latest
@@ -285,7 +285,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.tolgee.rule=Host(`${TOLGEE_HOST}`)
       - traefik.http.routers.tolgee.entrypoints=web
-      - traefik.http.services.tolgee.loadbalancer.server.port=8080
+      - traefik.http.apps.tolgee.loadbalancer.server.port=8080
 
 networks:
   appnet:
