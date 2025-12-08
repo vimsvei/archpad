@@ -5,7 +5,7 @@
   "compilerOptions": {
     "tsConfigPath": "tsconfig.json",
     "deleteOutDir": true,
-    "webpack": true
+    "webpack": false
   },
   "projects": {
     "arch-repo-service": {
