@@ -26,6 +26,8 @@ import {HealthCheckerModule} from "archpad/health-checker";
         './dist/**/*.map{.ts,.js}',
         './dist/**/*.directory{.ts,.js}',
         './dist/**/*.abstract{.ts,.js}',
+        '../../dist/libs/models/**/*.abstract{.ts,.js}',
+        '../../dist/libs/models/**/*.embeddable{.ts,.js}',
       ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,

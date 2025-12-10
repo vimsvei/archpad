@@ -1,5 +1,3 @@
-import { Entity } from '@mikro-orm/core';
-import { BaseObject } from '@/model/abstract/base-object.abstract';
-
-@Entity({ abstract: true })
-export abstract class MappedObject extends BaseObject {}
+// This file is kept for backward compatibility
+// New code should import MappedObject directly from @archpad/models
+export { MappedObject } from '@archpad/models';

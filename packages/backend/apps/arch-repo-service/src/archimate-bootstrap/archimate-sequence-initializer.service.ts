@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
-import { getArchimateSequences } from '../model/decorators/archimate-code.decorator';
+import { getArchimateSequences } from '@archpad/models';
 
 @Injectable()
 export class ArchimateSequenceInitializer implements OnApplicationBootstrap {

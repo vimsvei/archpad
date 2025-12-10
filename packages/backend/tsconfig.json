@@ -29,6 +29,9 @@
       "@archpad/logger": [
         "libs/logger/src"
       ],
+      "@archpad/models": [
+        "libs/models/src"
+      ],
       "archpad/health-checker": [
         "libs/health-checker/src"
       ],

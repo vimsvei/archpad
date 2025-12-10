@@ -1,32 +1,3 @@
-import { ActionStamp } from '../embeddable/action-stamp.embeddable';
-import { BeforeCreate, BeforeUpdate, Embedded, Entity } from '@mikro-orm/core';
-
-@Entity({ abstract: true })
-export abstract class BaseObject {
-  @Embedded(() => ActionStamp, { prefix: 'created_', prefixMode: 'absolute' })
-  created!: ActionStamp;
-
-  @Embedded(() => ActionStamp, {
-    prefix: 'updated_',
-    prefixMode: 'absolute',
-    nullable: true,
-  })
-  updated?: ActionStamp;
-
-  @Embedded(() => ActionStamp, {
-    prefix: 'deleted_',
-    prefixMode: 'absolute',
-    nullable: true,
-  })
-  deleted?: ActionStamp;
-
-  @BeforeCreate()
-  protected setCreatedStamp(by: string) {
-    this.created = ActionStamp.now(by);
-  }
-
-  @BeforeUpdate()
-  protected setUpdatedStamp(by: string) {
-    this.updated = ActionStamp.now(by);
-  }
-}
+// This file is kept for backward compatibility
+// New code should import BaseObject directly from @archpad/models
+export { BaseObject } from '@archpad/models';

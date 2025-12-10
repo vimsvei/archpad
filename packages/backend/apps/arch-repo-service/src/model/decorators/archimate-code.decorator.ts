@@ -1,22 +1,3 @@
-import { Property, PropertyOptions } from '@mikro-orm/core';
-
-const ARCHIMATE_SEQUENCES = new Set<string>();
-
-export function getArchimateSequences(): string[] {
-  return Array.from(ARCHIMATE_SEQUENCES);
-}
-
-export function ArchimateCode(
-  prefix: string,
-  options: PropertyOptions<any> = {},
-): PropertyDecorator {
-  const seqName = `${prefix.toLowerCase()}_code_seq`;
-  ARCHIMATE_SEQUENCES.add(seqName);
-
-  const defaultRaw = `'${prefix}-' || nextval('${seqName}')::text`;
-
-  return Property({
-    ...options,
-    defaultRaw,
-  }) as PropertyDecorator;
-}
+// This file is kept for backward compatibility
+// New code should import ArchimateCode and getArchimateSequences directly from @archpad/models
+export { ArchimateCode, getArchimateSequences } from '@archpad/models';

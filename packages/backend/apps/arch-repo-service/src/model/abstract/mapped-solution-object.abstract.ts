@@ -1,5 +1,5 @@
 import { Entity, Enum } from '@mikro-orm/core';
-import { BaseObject } from '@/model/abstract/base-object.abstract';
+import { BaseObject } from '@archpad/models';
 import { SolutionItemState } from '@/model/enums/solution-item-state.enum';
 
 @Entity({ abstract: true })
