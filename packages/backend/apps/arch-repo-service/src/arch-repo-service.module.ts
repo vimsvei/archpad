@@ -11,7 +11,7 @@ import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { AuditSubscriber } from './audit/audit.subscriber';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import { LoggerModule } from '@archpad/logger';
-import {HealthCheckerModule} from "archpad/health-checker";
+import { HealthCheckerModule } from 'archpad/health-checker';
 
 @Module({
   imports: [

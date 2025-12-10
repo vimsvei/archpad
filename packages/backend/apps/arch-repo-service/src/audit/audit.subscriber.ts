@@ -1,7 +1,7 @@
 import { EntityManager, EventArgs, EventSubscriber } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseObject } from '@archpad/models';
-import {LoggerService} from "@archpad/logger";
+import { LoggerService } from '@archpad/logger';
 
 @Injectable()
 export class AuditSubscriber implements EventSubscriber<BaseObject> {

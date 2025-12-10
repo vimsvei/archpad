@@ -6,7 +6,6 @@ import { IdentifiedObject } from '@archpad/models';
   tableName: 'user_profiles',
 })
 export abstract class UserProfile extends IdentifiedObject {
-  
   @ApiProperty({ description: 'First name', required: true })
   @Property({ type: 'string', name: 'first_name' })
   firstName!: string;

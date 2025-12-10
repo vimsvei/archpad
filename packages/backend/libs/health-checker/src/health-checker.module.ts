@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthCheckerController } from 'archpad/health-checker/health-checker.controller';
-import {LoggerService} from "@archpad/logger";
+import { LoggerService } from '@archpad/logger';
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ArchRepoServiceModule } from './arch-repo-service.module';
-import {LoggerService} from "@archpad/logger";
+import { LoggerService } from '@archpad/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(ArchRepoServiceModule, {
