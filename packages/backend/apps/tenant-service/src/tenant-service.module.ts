@@ -10,7 +10,11 @@ import {LoggerModule} from "@archpad/logger";
   imports: [
     LoggerModule,
     MikroOrmModule.forRoot({
-      entities: [],
+      entities: [
+        './dist/**/*.entity{.ts,.js}',
+        '../../dist/libs/models/**/*.abstract{.ts,.js}',
+        '../../dist/libs/models/**/*.embeddable{.ts,.js}',
+      ],
       driver: PostgreSqlDriver,
       host: process.env.PG_HOST,
       port: +(process.env.PG_PORT ?? '5432'),
