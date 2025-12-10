@@ -191,11 +191,7 @@ services:
 
   hydra-migrate:
     image: oryd/hydra:v2.2.0
-    command:
-      - migrate
-      - sql
-      - -e
-      - --yes
+    command: ["migrate", "sql", "-e", "--yes"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     depends_on:
@@ -308,20 +304,11 @@ services:
   portal:
     image: node:20-alpine
     working_dir: /app
-    command: >
-      sh -lc "
-        corepack enable &&
-        pnpm i --frozen-lockfile &&
-        pnpm dev
-      "
     environment:
       NODE_ENV: development
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
-      NEXT_PUBLIC_CMS_URL: http://${STRAPI_HOST}
-      KEYCLOAK_ISSUER: http://${AUTH_HOST}/realms/${KEYCLOAK_REALM}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_AUDIENCE}
       WATCHPACK_POLLING: "true"
     volumes:
       - ../portal:/app

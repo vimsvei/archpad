@@ -1,5 +1,5 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { NamedObject } from '@archpad/models';
+import { ArchimateCode } from '@archpad/models';
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { TechnologyNetwork } from '@/model/archimate/technology/technology-network.entity';
 

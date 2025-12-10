@@ -1,4 +1,4 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
+import { NamedObject } from '@archpad/models';
 import {
   Collection,
   Entity,
@@ -12,7 +12,7 @@ import { TechnologyNetwork } from './technology-network.entity';
 import { NodeKind } from '@/model/enums/node-kind.enum';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
 import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.enum';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
 

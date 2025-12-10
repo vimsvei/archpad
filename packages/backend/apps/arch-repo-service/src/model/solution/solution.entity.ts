@@ -1,6 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArchimateCode } from '../decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { ArchimateElementGeneric } from '../archimate/core/archimate-element.generic';
 import { SolutionStateDirectory } from '../directories/solution-state.directory';
 import { SolutionApplicationComponentMap } from '../maps/solution-application-component.map';

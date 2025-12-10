@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { ApplicationEvent } from '@/model/archimate/application/application-event.entity';
 
 @Entity({ tableName: 'map_application_component_event' })

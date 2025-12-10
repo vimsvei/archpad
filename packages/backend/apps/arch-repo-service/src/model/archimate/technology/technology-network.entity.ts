@@ -1,4 +1,4 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
+import { NamedObject } from '@archpad/models';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
 import { TechnologyNode } from './technology-node.entity';
 import { PhysicalLocation } from '@/model/archimate/physical/physical-location.entity';

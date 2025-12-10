@@ -1,4 +1,4 @@
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';

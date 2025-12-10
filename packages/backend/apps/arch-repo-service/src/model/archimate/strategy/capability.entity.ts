@@ -1,6 +1,6 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { Entity } from '@mikro-orm/core';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 
 @Entity({ tableName: 'capabilities' })
 export class Capability extends ArchimateElementGeneric {

@@ -1,4 +1,4 @@
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';

@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 
 @Entity({ tableName: 'map_application_component_function' })
 export class ApplicationComponentFunctionMap extends MappedObject {

@@ -1,5 +1,5 @@
 import { DynamicModule, Module, Type } from '@nestjs/common';
-import { NamedObject } from '@/model/abstract/named-object.abstract';
+import { NamedObject } from '@archpad/models';
 import { createNamedObjectController } from '@/endpoints/archimate/named-object/named-object.controller';
 import { NamedObjectService } from '@/endpoints/archimate/named-object/named-object.service';
 import { getRepositoryToken, MikroOrmModule } from '@mikro-orm/nestjs';

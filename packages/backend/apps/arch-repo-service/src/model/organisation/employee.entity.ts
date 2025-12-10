@@ -1,4 +1,4 @@
-import { IdentifiedObject } from '@/model/abstract/identified-object.abstract';
+import { IdentifiedObject } from '@archpad/models';
 import { Entity, Property, Unique } from '@mikro-orm/core';
 
 @Entity({

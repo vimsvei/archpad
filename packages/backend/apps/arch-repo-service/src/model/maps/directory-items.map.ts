@@ -1,4 +1,4 @@
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { DirectoryLinkType } from '@/model/enums/directory-link-type.enum';

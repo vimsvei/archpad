@@ -8,7 +8,7 @@ import {
   Type,
 } from '@nestjs/common';
 import { NamedObjectService } from './named-object.service';
-import { NamedObject } from '@/model/abstract/named-object.abstract';
+import { NamedObject } from '@archpad/models';
 import {
   ApiBody,
   ApiCreatedResponse,

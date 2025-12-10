@@ -1,4 +1,4 @@
-import { NamedObject } from '@/model/abstract/named-object.abstract';
+import { NamedObject } from '@archpad/models';
 import {
   EntityRepository,
   FilterQuery,

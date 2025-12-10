@@ -6,7 +6,7 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { LicenseTypeDirectory } from '@/model/directories/license-type.directory';
 import { SoftwareTypeDirectory } from '@/model/directories/software-type.directory';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';

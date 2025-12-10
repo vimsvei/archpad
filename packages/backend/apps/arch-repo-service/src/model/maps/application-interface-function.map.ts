@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 
 @Entity({ tableName: 'map_application_interface_function' })

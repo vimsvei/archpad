@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
-import { ArchimateCode } from '../../decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { ArchimateElementGeneric } from '../core/archimate-element.generic';
 import { ComponentStateDirectory } from '../../directories/component-state.directory';
 import { LicenseTypeDirectory } from '../../directories/license-type.directory';

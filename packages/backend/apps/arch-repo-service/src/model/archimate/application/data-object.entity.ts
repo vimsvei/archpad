@@ -1,6 +1,6 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 import { ApplicationFunctionDataObjectMap } from '@/model/maps/application-function-data-object.map';
 

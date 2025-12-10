@@ -1,5 +1,5 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { ApplicationComponentProductMap } from '@/model/maps/application-component-product.map';
 

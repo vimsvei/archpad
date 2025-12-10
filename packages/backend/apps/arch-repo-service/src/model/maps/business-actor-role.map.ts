@@ -1,4 +1,4 @@
-import { MappedObject } from '@/model/abstract/mapped-object.abstract';
+import { MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
 import { BusinessRole } from '@/model/archimate/business/business-role.entity';

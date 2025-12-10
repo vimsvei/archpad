@@ -1,7 +1,7 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { Entity, Enum } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
-import { ArchimateCode } from '@/model/decorators/archimate-code.decorator';
+import { ArchimateCode } from '@archpad/models';
 
 @Entity({
   tableName: 'interfaces',
