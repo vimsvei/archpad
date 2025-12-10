@@ -12,6 +12,7 @@ import {LoggerModule} from "@archpad/logger";
     MikroOrmModule.forRoot({
       entities: [
         './dist/**/*.entity{.ts,.js}',
+        './dist/**/*.map{.ts,.js}',
         '../../dist/libs/models/**/*.abstract{.ts,.js}',
         '../../dist/libs/models/**/*.embeddable{.ts,.js}',
       ],
