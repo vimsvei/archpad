@@ -13,7 +13,7 @@ serve:
 selfservice:
   default_browser_return_url: http://portal.localhost/
   allowed_return_urls:
-    - http://portal.localhost/
+    - http://localhost:3000/
   flows:
     login:
       ui_url: http://portal.localhost/sign-in

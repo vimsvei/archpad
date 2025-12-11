@@ -81,11 +81,13 @@ services:
       # public API Kratos (браузер, @ory/nextjs)
       - traefik.http.routers.kratos-public.rule=Host(`${KRATOS_PUBLIC_HOST}`)
       - traefik.http.routers.kratos-public.entrypoints=web
+      - traefik.http.routers.kratos-public.service=kratos-public
       - traefik.http.services.kratos-public.loadbalancer.server.port=4433
 
       # admin API Kratos (используется Oathkeeper, dev-инструменты)
       - traefik.http.routers.kratos-admin.rule=Host(`${KRATOS_ADMIN_HOST}`)
       - traefik.http.routers.kratos-admin.entrypoints=web
+      - traefik.http.routers.kratos-admin.service=kratos-admin
       - traefik.http.services.kratos-admin.loadbalancer.server.port=4434
 
   hydra:
@@ -107,11 +109,13 @@ services:
       - traefik.enable=true
       - traefik.http.routers.hydra-public.rule=Host(`${HYDRA_PUBLIC_HOST}`)
       - traefik.http.routers.hydra-public.entrypoints=web
+      - traefik.http.routers.hydra-public.service=hydra-public
       - traefik.http.services.hydra-public.loadbalancer.server.port=4444
 
       # admin endpoint (для управления клиентами, introspection для Oathkeeper и т.п.)
       - traefik.http.routers.hydra-admin.rule=Host(`${HYDRA_ADMIN_HOST}`)
       - traefik.http.routers.hydra-admin.entrypoints=web
+      - traefik.http.routers.hydra-admin.service=hydra-admin
       - traefik.http.services.hydra-admin.loadbalancer.server.port=4445
 
   oathkeeper:

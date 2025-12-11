@@ -2,7 +2,7 @@ import type {OryClientConfiguration} from "@ory/elements-react";
 
 const config: OryClientConfiguration = {
   sdk: {
-    url: process.env.ORY_SDK_URL || process.env.NEXT_PUBLIC_ORY_SDK_URL || 'http://kratos:4433',
+    url: process.env.NEXT_PUBLIC_ORY_SDK_URL || 'http://auth.localhost',
     options: {
       credentials: 'include',
     },
