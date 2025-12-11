@@ -16,7 +16,7 @@ export default function Root() {
     if (session) {
       router.replace('/dashboard');
     } else {
-      router.replace('/(auth)/sign-in');
+      router.replace('/sign-in');
     }
   }, [session, isLoading, router]);
   

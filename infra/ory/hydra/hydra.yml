@@ -53,11 +53,14 @@ secrets:
 urls:
   self:
     issuer: http://hydra.localhost
-#  login: http://hydra.localhost/login
+#  login: http://portal.localhost/sign-in
+#  consent: http://hydra.localhost/consent
+#  logout: http://hydra.localhost/logout
+#  error: http://hydra.localhost/error
   login: http://localhost:3000/sign-in
-  consent: http://hydra.localhost/consent
-  logout: http://hydra.localhost/logout
-  error: http://hydra.localhost/error
+  consent: http://localhost:3000/consent
+  logout: http://localhost:3000/logout
+  error: http://localhost:3000/error
 #  post_logout_redirect: http://portal.localhost/
   post_logout_redirect: http://localhost:3000/
 
