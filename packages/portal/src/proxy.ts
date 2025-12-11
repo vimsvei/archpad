@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import {ALL_LANGUAGES, DEFAULT_LANGUAGE} from "@/tolgee/shared";
-import oryConfig from "./ory.config";
+import oryConfig from "../ory.config";
 
 // read more about next-intl middleware configuration
 // https://next-intl-docs.vercel.app/docs/routing/middleware#locale-prefix

@@ -1,13 +1,11 @@
-'use client'
-
 import { Recovery } from '@ory/elements-react/theme'
 import { AuthFormWrapper } from '@/components/auth/auth-form-wrapper'
-import {getRegistrationFlow, OryPageParams} from "@ory/nextjs/app";
-import config from "@/ory.config";
+import {getRecoveryFlow, OryPageParams} from "@ory/nextjs/app";
+import config from "../../../../../../ory.config";
 import {CardHeader} from "@/components/ui/card";
 
 export default async function RecoveryPage(props: OryPageParams) {
-  const flow = await getRegistrationFlow(config, props.searchParams)
+  const flow = await getRecoveryFlow(config, props.searchParams)
   
   if (!flow) { return null }
   return (

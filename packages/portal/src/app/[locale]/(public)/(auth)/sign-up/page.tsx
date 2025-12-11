@@ -1,12 +1,9 @@
-'use client'
-
-import { Verification } from '@ory/elements-react/theme'
+import { Registration } from '@ory/elements-react/theme'
 import { AuthFormWrapper } from '@/components/auth/auth-form-wrapper'
 import {getRegistrationFlow, OryPageParams} from "@ory/nextjs/app";
-import config from "@/ory.config";
-import {CardHeader} from "@/components/ui/card";
+import config from "../../../../../../ory.config";
 
-export default async function VerifyPage(props: OryPageParams) {
+export default async function SignUpPage(props: OryPageParams) {
   const flow = await getRegistrationFlow(config, props.searchParams)
   
   if (!flow) { return null }
@@ -15,18 +12,15 @@ export default async function VerifyPage(props: OryPageParams) {
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
         <AuthFormWrapper
-          title="Verification"
-          subtitle="Verify your email address"
+          title="Sign Up"
+          subtitle="Create a new account to get started"
         >
-          <Verification
+          <Registration
             flow={flow}
             config={config}
             components={{
-              Card: {
-                Header: CardHeader,
-              },
+              Card: {},
             }}
-          
           />
         </AuthFormWrapper>
       </div>

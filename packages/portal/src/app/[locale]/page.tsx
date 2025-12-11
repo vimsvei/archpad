@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession } from '@ory/elements-react';
+import { useSession } from '@ory/elements-react/client';
 
 export default function Root() {
   const router = useRouter();

@@ -1,6 +1,12 @@
 import type {OryClientConfiguration} from "@ory/elements-react";
 
 const config: OryClientConfiguration = {
+  sdk: {
+    url: process.env.ORY_SDK_URL || process.env.NEXT_PUBLIC_ORY_SDK_URL || 'http://kratos:4433',
+    options: {
+      credentials: 'include',
+    },
+  },
   project: {
       default_locale: 'ru-RU',
       default_redirect_url: "/",
@@ -10,10 +16,10 @@ const config: OryClientConfiguration = {
       registration_enabled: true,
       verification_enabled: true,
       recovery_enabled: true,
-      registration_ui_url: "/auth/sign-up",
-      verification_ui_url: "/auth/verify",
-      recovery_ui_url: "/auth/recovery",
-      login_ui_url: "/auth/sign-in",
+      registration_ui_url: "/(auth)/sign-up",
+      verification_ui_url: "/(auth)/verify",
+      recovery_ui_url: "/(auth)/recovery",
+      login_ui_url: "/(auth)/sign-in",
       settings_ui_url: ""
   }
 }

@@ -30,7 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useSession } from '@ory/elements-react'
+import { useSession } from '@ory/elements-react/client'
 
 export function NavUser(
   // { user }: {
