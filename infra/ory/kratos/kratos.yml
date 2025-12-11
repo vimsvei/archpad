@@ -5,6 +5,25 @@ serve:
     base_url: http://kratos:4433/
     host: 0.0.0.0
     port: 4433
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:3000        # for local dev UI
+        - http://portal.localhost      # for container UI
+      allowed_methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Cookie
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+
   admin:
     base_url: http://kratos:4434/
     host: 0.0.0.0
@@ -57,7 +76,7 @@ identity:
       url: file:///etc/config/kratos/identities/default.schema.json
 
 cookies:
-  domain: ${PORTAL_HOST:localhost}
+  domain: .localhost
   path: /
   same_site: Lax
   secure: "auto"
@@ -72,22 +91,3 @@ secrets:
 
 session:
   lifespan: 720h
-
-cors:
-  enabled: true
-  allowed_origins:
-    - http://localhost:3000        # for local dev UI
-    - http://portal.localhost      # for container UI
-  allowed_methods:
-    - GET
-    - POST
-    - PUT
-    - PATCH
-    - DELETE
-  allowed_headers:
-    - Authorization
-    - Cookie
-    - Content-Type
-  exposed_headers:
-    - Content-Type
-    - Set-Cookie
