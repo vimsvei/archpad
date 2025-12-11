@@ -16,9 +16,9 @@ export default function Root() {
     if (session) {
       router.replace('/dashboard');
     } else {
-      router.replace('/sign-in');
+      router.replace('/(auth)/sign-in');
     }
-  }, [session, isLoading, router, next]);
+  }, [session, isLoading, router]);
   
   return <div className="p-6 text-sm opacity-70">Проверяем сессию…</div>;
 }
