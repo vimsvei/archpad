@@ -72,3 +72,22 @@ secrets:
 
 session:
   lifespan: 720h
+
+cors:
+  enabled: true
+  allowed_origins:
+    - http://localhost:3000        # for local dev UI
+    - http://portal.localhost      # for container UI
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+  allowed_headers:
+    - Authorization
+    - Cookie
+    - Content-Type
+  exposed_headers:
+    - Content-Type
+    - Set-Cookie

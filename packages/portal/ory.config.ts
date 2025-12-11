@@ -1,12 +1,12 @@
 import type {OryClientConfiguration} from "@ory/elements-react";
 
 const config: OryClientConfiguration = {
-  sdk: {
-    url: process.env.NEXT_PUBLIC_ORY_SDK_URL,
-    options: {
-      credentials: 'include',
-    },
-  },
+  // sdk: {
+  //   url: process.env.NEXT_PUBLIC_ORY_SDK_URL,
+  //   options: {
+  //     credentials: 'include',
+  //   },
+  // },
   project: {
       default_locale: 'ru-RU',
       default_redirect_url: "/",
