@@ -8,6 +8,7 @@ import {
   LogOut, Send, Settings2,
   Sparkles,
 } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 import {
   Avatar,
@@ -29,7 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import {useSession} from "next-auth/react";
+import { useSession } from '@ory/elements-react'
 
 export function NavUser(
   // { user }: {
@@ -40,7 +41,30 @@ export function NavUser(
   // } }
 ) {
   const { isMobile } = useSidebar()
-  const { data: session } = useSession()
+  const { session } = useSession()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/ory/logout', {
+        method: 'GET',
+        credentials: 'include',
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data.logout_url) {
+          window.location.href = data.logout_url
+        } else {
+          router.push('/sign-in')
+        }
+      } else {
+        router.push('/sign-in')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      router.push('/sign-in')
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -56,9 +80,12 @@ export function NavUser(
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{session?.user?.name}</span>
-                {/*<span className="truncate font-medium">{session?.user?.given_name} {session?.user?.family_name}</span>*/}
-                <span className="truncate text-xs">{session?.user?.email}</span>
+                <span className="truncate font-medium">
+                  {session?.identity?.traits?.name || 
+                   `${session?.identity?.traits?.given_name || ''} ${session?.identity?.traits?.family_name || ''}`.trim() ||
+                   session?.identity?.traits?.email?.split('@')[0]}
+                </span>
+                <span className="truncate text-xs">{session?.identity?.traits?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -76,9 +103,12 @@ export function NavUser(
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{session?.user?.name}</span>
-                  {/*<span className="truncate font-medium">{session?.user?.given_name} {session?.user?.family_name}</span>*/}
-                  <span className="truncate text-xs">{session?.user?.email}</span>
+                  <span className="truncate font-medium">
+                    {session?.identity?.traits?.name || 
+                     `${session?.identity?.traits?.given_name || ''} ${session?.identity?.traits?.family_name || ''}`.trim() ||
+                     session?.identity?.traits?.email?.split('@')[0]}
+                  </span>
+                  <span className="truncate text-xs">{session?.identity?.traits?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -113,7 +143,7 @@ export function NavUser(
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
