@@ -2,26 +2,39 @@ services:
   reverse-proxy:
     image: traefik:v3.6.2
     command:
-      - --api.dashboard=true
-      - --providers.docker=true
-      - --entrypoints.web.address=:80
-      - --entrypoints.traefik.address=:8080
-      - --entrypoints.pg.address=:5432
-      - --ping=true
-      - --ping.entryPoint=traefik
+      - --configFile=/etc/traefik/traefik.yml
+#      - --api.dashboard=true
+#      - --providers.docker=true
+#      - --entrypoints.web.address=:80
+#      - --entrypoints.traefik.address=:8080
+#      - --entrypoints.pg.address=:5432
+#      - --ping=true
+#      - --ping.entryPoint=traefik
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"  # dashboard + /metrics + /ping
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks: [appnet]
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./traefik/certs:/certs:ro
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
+      - traefik.http.routers.traefik-http.entrypoints=web
+      - traefik.http.routers.traefik-http.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)
+      - traefik.http.routers.traefik-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.traefik-http.service=api@internal
+
+      - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DASHBOARD_HOST}`)
+      - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik8080.entrypoints=traefik
-      - traefik.http.routers.traefik8080.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
-      - traefik.http.routers.traefik8080.service=api@internal
+#      - traefik.http.routers.traefik8080.entrypoints=traefik
+#      - traefik.http.routers.traefik8080.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+#      - traefik.http.routers.traefik8080.service=api@internal
 
   postgres:
     image: postgres:16-alpine
@@ -53,14 +66,30 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
-    networks: [appnet]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
       - traefik.tcp.routers.pg.rule=HostSNI(`*`)
       - traefik.tcp.routers.pg.entrypoints=pg
       - traefik.tcp.services.pg.loadbalancer.server.port=5432
       - traefik.tcp.routers.pg.tls=false
-      - traefik.docker.network=appnet
+      - traefik.docker.network=archpad_network
+
+  kratos-migrate:
+    image: oryd/kratos:latest
+    command: ["migrate", "sql", "-e", "--yes"]
+    environment:
+      DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+    volumes:
+      - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
+      - ./ory/kratos/identities/default.schema.json:/etc/kratos/identities/default.schema.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - archpad_network
 
   kratos:
     image: oryd/kratos:v25.4.0
@@ -74,15 +103,22 @@ services:
     depends_on:
       kratos-migrate:
         condition: service_completed_successfully
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
-
       # public API Kratos (браузер, @ory/nextjs)
-      - traefik.http.routers.kratos-public.rule=Host(`${KRATOS_PUBLIC_HOST}`)
-      - traefik.http.routers.kratos-public.entrypoints=web
-      - traefik.http.routers.kratos-public.service=kratos-public
-      - traefik.http.services.kratos-public.loadbalancer.server.port=4433
+      - traefik.http.routers.kratos-http.entrypoints=web
+      - traefik.http.routers.kratos-http.rule=Host(`${KRATOS_HOST}`)
+      - traefik.http.routers.kratos-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.kratos-http.service=kratos
+
+      - traefik.http.routers.kratos.entrypoints=websecure
+      - traefik.http.routers.kratos.rule=Host(`${KRATOS_HOST}`)
+      - traefik.http.routers.kratos.tls=true
+      - traefik.http.routers.kratos.service=kratos
+
+      - traefik.http.services.kratos.loadbalancer.server.port=4433
 
       # admin API Kratos (используется Oathkeeper, dev-инструменты)
       - traefik.http.routers.kratos-admin.rule=Host(`${KRATOS_ADMIN_HOST}`)
@@ -90,13 +126,28 @@ services:
       - traefik.http.routers.kratos-admin.service=kratos-admin
       - traefik.http.services.kratos-admin.loadbalancer.server.port=4434
 
+  hydra-migrate:
+    image: oryd/hydra:v25.4.0
+    command: ["migrate", "sql", "-e", "--yes"]
+    environment:
+      DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - archpad_network
+    restart: "no"
+
   hydra:
     image: oryd/hydra:v25.4.0
     command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-      # В проде лучше пробрасывать через env, но для PoC достаточно так
       SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
+      URLS_SELF_ISSUER: https://${HYDRA_HOST}
+
+      URLS_LOGIN: https://${PORTAL_HOST}/hydra/login
+      URLS_CONSENT: https://${PORTAL_HOST}/hydra/consent
     volumes:
       - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
     depends_on:
@@ -104,13 +155,23 @@ services:
         condition: service_started
       hydra-migrate:
         condition: service_completed_successfully
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.hydra-public.rule=Host(`${HYDRA_PUBLIC_HOST}`)
-      - traefik.http.routers.hydra-public.entrypoints=web
-      - traefik.http.routers.hydra-public.service=hydra-public
-      - traefik.http.services.hydra-public.loadbalancer.server.port=4444
+
+      - traefik.http.routers.hydra-http.entrypoints=web
+      - traefik.http.routers.hydra-http.rule=Host(`${HYDRA_HOST}`)
+      - traefik.http.routers.hydra-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.hydra-http.service=hydra
+
+      - traefik.http.routers.hydra.entrypoints=websecure
+      - traefik.http.routers.hydra.rule=Host(`${HYDRA_HOST}`)
+      - traefik.http.routers.hydra.tls=true
+      - traefik.http.routers.hydra.service=hydra
+
+      - traefik.http.services.hydra.loadbalancer.server.port=4444
+
 
       # admin endpoint (для управления клиентами, introspection для Oathkeeper и т.п.)
       - traefik.http.routers.hydra-admin.rule=Host(`${HYDRA_ADMIN_HOST}`)
@@ -131,12 +192,22 @@ services:
     depends_on:
       reverse-proxy:
         condition: service_started
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
+
+      - traefik.http.routers.api-gw-http.entrypoints=web
+      - traefik.http.routers.api-gw-http.rule=Host(`${API_GATEWAY_HOST}`)
+      - traefik.http.routers.api-gw-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.api-gw-http.service=oathkeeper
+
+      - traefik.http.routers.api-gw.entrypoints=websecure
       - traefik.http.routers.api-gw.rule=Host(`${API_GATEWAY_HOST}`)
-      - traefik.http.routers.api-gw.entrypoints=web
-      - traefik.http.services.api-gw.loadbalancer.server.port=4455
+      - traefik.http.routers.api-gw.tls=true
+      - traefik.http.routers.api-gw.service=oathkeeper
+
+      - traefik.http.services.oathkeeper.loadbalancer.server.port=4455
 
   hasura:
     image: hasura/graphql-engine:v2.48.6
@@ -152,17 +223,25 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
-#      HASURA_GRAPHQL_JWT_SECRETS: |
-#        [{"type":"RS256","jwk_url":"http://keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs","audience":"${KEYCLOAK_AUDIENCE}"}]
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
       HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,pgdump,metrics
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLE_ALLOWLIST: "true"
       PG_PROJECT_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_DB}
-    networks: [appnet]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
+      - traefik.http.routers.hasura-http.entrypoints=web
+      - traefik.http.routers.hasura-http.rule=Host(`${HASURA_HOST}`)
+      - traefik.http.routers.hasura-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.hasura-http.service=hasura
+
+      - traefik.http.routers.hasura.entrypoints=websecure
       - traefik.http.routers.hasura.rule=Host(`${HASURA_HOST}`)
+      - traefik.http.routers.hasura.tls=true
+      - traefik.http.routers.hasura.service=hasura
+
       - traefik.http.services.hasura.loadbalancer.server.port=8080
 
   hasura-metadata:
@@ -177,36 +256,13 @@ services:
       - ./hasura/metadata:/metadata:ro
     entrypoint: ["sh","-lc","(command -v curl >/dev/null 2>&1 || apk add --no-cache curl) && /metadata/apply.sh"]
     restart: "no"
-    networks: [appnet]
-
-  kratos-migrate:
-    image: oryd/kratos:latest
-    command: ["migrate", "sql", "-e", "--yes"]
-    environment:
-      DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-    volumes:
-      - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
-      - ./ory/kratos/identities/default.schema.json:/etc/kratos/identities/default.schema.json:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: "no"
-    networks: [ appnet ]
-
-  hydra-migrate:
-    image: oryd/hydra:v2.2.0
-    command: ["migrate", "sql", "-e", "--yes"]
-    environment:
-      DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks: [ appnet ]
-    restart: "no"
+    networks:
+      - archpad_network
 
   mailhog:
     image: mailhog/mailhog:latest
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
       - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
@@ -229,11 +285,22 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
-    networks: [appnet]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
+      - traefik.http.routers.pgadmin-http.entrypoints=web
+      - traefik.http.routers.pgadmin-http.rule=Host(`${PGADMIN_HOST}`)
+      - traefik.http.routers.pgadmin-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.pgadmin-http.service=pgadmin
+
+      - traefik.http.routers.pgadmin.entrypoints=websecure
       - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST}`)
+      - traefik.http.routers.pgadmin.tls=true
+      - traefik.http.routers.pgadmin.service=pgadmin
+
       - traefik.http.services.pgadmin.loadbalancer.server.port=80
+
 
   tolgee:
     image: tolgee/tolgee:latest
@@ -251,12 +318,22 @@ services:
     volumes:
       - tolgee_data:/data
       - ./tolgee/config.yaml:/config.yaml:ro
-    networks: [appnet]
+    networks:
+      - archpad_network
     restart: no
     labels:
       - traefik.enable=true
+
+      - traefik.http.routers.tolgee-http.entrypoints=web
+      - traefik.http.routers.tolgee-http.rule=Host(`${TOLGEE_HOST}`)
+      - traefik.http.routers.tolgee-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.tolgee-http.service=tolgee
+
+      - traefik.http.routers.tolgee.entrypoints=websecure
       - traefik.http.routers.tolgee.rule=Host(`${TOLGEE_HOST}`)
-      - traefik.http.routers.tolgee.entrypoints=web
+      - traefik.http.routers.tolgee.tls=true
+      - traefik.http.routers.tolgee.service=tolgee
+
       - traefik.http.services.tolgee.loadbalancer.server.port=8080
 
   arch-repo:
@@ -278,7 +355,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 60
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
       - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
@@ -302,34 +380,41 @@ services:
       HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
       HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
     restart: "no"
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     profiles: [ "backend" ]
 
   portal:
     image: node:20-alpine
     working_dir: /app
+    depends_on:
+      hasura:
+        condition: service_started
+      kratos:
+        condition: service_started
+      arch-repo:
+        condition: service_started
     environment:
       NODE_ENV: development
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
       WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: 1
     volumes:
       - ../portal:/app
       - portal_node_modules:/app/node_modules
       - portal_pnpm_store:/root/.local/share/pnpm/store
-    networks: [ appnet ]
+    networks:
+      - archpad_network
     labels:
       - traefik.enable=true
       - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
       - traefik.http.services.portal.loadbalancer.server.port=3000
-    depends_on:
-      postgres:
-        condition: service_healthy
     profiles: [ "app" ]
 
 networks:
-  appnet:
+  archpad_network:
 
 volumes:
   pgdata:

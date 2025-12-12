@@ -2,8 +2,7 @@ dsn: ${DSN}
 
 serve:
   public:
-    base_url: http://kratos:4433/
-    host: 0.0.0.0
+    base_url: http://auth.localhost
     port: 4433
     cors:
       enabled: true
@@ -30,20 +29,17 @@ serve:
     port: 4434
 
 selfservice:
-#  default_browser_return_url: http://portal.localhost/
-  default_browser_return_url: http://localhost:3000/
+  default_browser_return_url: http://portal.localhost/
   allowed_return_urls:
     - http://portal.localhost/
     - http://localhost:3000/
   flows:
     login:
-#      ui_url: http://portal.localhost/sign-in
-      ui_url: http://localhost:3000/sign-in
+      ui_url: http://portal.localhost/sign-in
       lifespan: 1h
       style: unified
     registration:
-#      ui_url: http://portal.localhost/sign-up
-      ui_url: http://localhost:3000/sign-up
+      ui_url: http://portal.localhost/sign-up
       enabled: true
       enable_legacy_one_step: false
       lifespan: 1h
@@ -52,22 +48,19 @@ selfservice:
       lifespan: 1h
       privileged_session_max_age: 1h
       required_aal: highest_available
-#      ui_url: http://portal.localhost/settings
-      ui_url: http://localhost:3000/settings
+      ui_url: http://portal.localhost/settings
     recovery:
       enabled: true
       lifespan: 1h
       notify_unknown_recipients: false
       use: code
-#      ui_url: http://portal.localhost/recovery
-      ui_url: http://localhost:3000/recovery
+      ui_url: http://portal.localhost/recovery
     verification:
       enabled: true
       lifespan: 1h
       notify_unknown_recipients: false
       use: code
-#      ui_url: http://portal.localhost/verify
-      ui_url: http://localhost:3000/verify
+      ui_url: http://portal.localhost/verify
 
 identity:
   default_schema_id: default
