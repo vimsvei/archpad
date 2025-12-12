@@ -15,13 +15,12 @@ const oryMiddleware = createOryMiddleware(oryConfig)
 
 export default async function proxy(request: NextRequest) {
 
-  // if (process.env.NODE_ENV !== 'production') {
-  //   process.env.NODE_TLS_REJECT_UNAUTHORIZED ??= '0'
-  // }
-
   // Proxy Ory SDK endpoints first (self-service, sessions/whoami, etc.)
   try {
+    console.log(JSON.stringify(request))
+    
     const oryResponse = await oryMiddleware(request)
+    
     if (oryResponse) return oryResponse
   } catch (e) {
     console.error('Ory middleware failed, continuing without proxy:', e)

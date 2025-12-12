@@ -42,14 +42,14 @@ WORKDIR /app
 # non-root user
 RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid 1001 nextjs
 
-# Runtime needs built output + node_modules (no `output: 'standalone'` configured)
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/portal ./packages/portal
-COPY --from=builder /app/packages/portal/node_modules ./packages/portal/node_modules
+# Next.js standalone output (small runtime image)
+COPY --from=builder /app/packages/portal/.next/standalone ./
+COPY --from=builder /app/packages/portal/.next/static ./packages/portal/.next/static
+COPY --from=builder /app/packages/portal/public ./packages/portal/public
 
 WORKDIR /app/packages/portal
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["./node_modules/.bin/next", "start", "-p", "3000"]
+CMD ["node", "server.js"]
