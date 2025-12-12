@@ -383,31 +383,37 @@ services:
     profiles: [ "backend" ]
 
   portal:
-    image: node:20-alpine
-    working_dir: /app
+    build:
+      context: ../packages/portal
+      dockerfile: Dockerfile
     depends_on:
       hasura:
         condition: service_started
-      kratos:
-        condition: service_started
-      arch-repo:
+      tolgee:
         condition: service_started
     environment:
       NODE_ENV: development
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: http://${HASURA_HOST}/v1/graphql
+      NEXT_PUBLIC_URL: https://${PORTAL_HOST}
+      NEXT_PUBLIC_TOLGEE_API_URL: ${TOLGEE_HOST}
+      NEXT_PUBLIC_TOLGEE_API_KEY: ${TOLGEE_API_KEY}
+      NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: https://${HASURA_HOST}/v1/graphql
+
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: 1
-    volumes:
-      - ../portal:/app
-      - portal_node_modules:/app/node_modules
-      - portal_pnpm_store:/root/.local/share/pnpm/store
     networks:
       - archpad_network
     labels:
       - traefik.enable=true
+      - traefik.http.routers.portal-http.entrypoints=web
+      - traefik.http.routers.portal-http.rule=Host(`${PORTAL_HOST}`)
+      - traefik.http.routers.portal-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.portal-http.service=portal
+
+      - traefik.http.routers.portal.entrypoints=websecure
       - traefik.http.routers.portal.rule=Host(`${PORTAL_HOST}`)
+      - traefik.http.routers.portal.tls=true
+      - traefik.http.routers.portal.service=portal
+
       - traefik.http.services.portal.loadbalancer.server.port=3000
     profiles: [ "app" ]
 
