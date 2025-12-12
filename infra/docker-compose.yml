@@ -384,8 +384,6 @@ services:
 
   portal:
     build:
-      # IMPORTANT: portal is a pnpm workspace package.
-      # Build context must be repo root to access pnpm-lock.yaml + pnpm-workspace.yaml.
       context: ..
       dockerfile: packages/portal/Dockerfile
     depends_on:
@@ -395,6 +393,7 @@ services:
         condition: service_started
     environment:
       NODE_ENV: development
+      ORY_SDK_URL: https://${KRATOS_HOST}
       NEXT_PUBLIC_URL: https://${PORTAL_HOST}
       NEXT_PUBLIC_TOLGEE_API_URL: ${TOLGEE_HOST}
       NEXT_PUBLIC_TOLGEE_API_KEY: ${TOLGEE_API_KEY}

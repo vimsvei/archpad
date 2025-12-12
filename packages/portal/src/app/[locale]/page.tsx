@@ -1,24 +1,17 @@
-'use client';
+import { redirect } from 'next/navigation'
+import { getServerSession } from '@ory/nextjs/app'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from '@ory/elements-react/client';
+type LocaleRootPageProps = {
+  params: Promise<{ locale: string }>
+}
 
-export default function Root() {
-  const router = useRouter();
-  const { session, isLoading, error } = useSession();
-  
-  console.log(error)
+export default async function LocaleRootPage({ params }: LocaleRootPageProps) {
+  const { locale } = await params
 
-  useEffect(() => {
-    if (isLoading) return;
+  const session = await getServerSession()
+  if (session) {
+    redirect(`/${locale}/dashboard`)
+  }
 
-    if (session) {
-      router.replace('/dashboard');
-    } else {
-      router.replace('/sign-in');
-    }
-  }, [session, isLoading, router]);
-
-  return <div className="p-6 text-sm opacity-70">Проверяем сессию…</div>;
+  redirect(`/${locale}/sign-in`)
 }

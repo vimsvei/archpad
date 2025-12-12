@@ -45,10 +45,11 @@ RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid 100
 # Runtime needs built output + node_modules (no `output: 'standalone'` configured)
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/portal ./packages/portal
+COPY --from=builder /app/packages/portal/node_modules ./packages/portal/node_modules
 
 WORKDIR /app/packages/portal
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "../../node_modules/next/dist/bin/next", "start", "-p", "3000"]
+CMD ["./node_modules/.bin/next", "start", "-p", "3000"]
