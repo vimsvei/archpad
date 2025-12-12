@@ -11,16 +11,29 @@
           "type": "string",
           "format": "email"
         },
-        "name": {
+        "firstName": {
           "type": "string"
         },
-        "tenant_ids": {
+        "lastName": {
+          "type": "string"
+        },
+        "tenants": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": { "type": "string", "format": "uuid" },
+          "ory.sh/kratos": {
+            "ui": {
+              "hidden": true
+            }
+          }
         },
         "roles": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": { "type": "string" },
+          "ory.sh/kratos": {
+            "ui": {
+              "hidden": true
+            }
+          }
         }
       },
       "required": [ "email" ],

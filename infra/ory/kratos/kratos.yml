@@ -33,6 +33,9 @@ selfservice:
   default_browser_return_url: https://portal.192-168-1-119.sslip.io/
   allowed_return_urls:
     - https://portal.192-168-1-119.sslip.io/
+  methods:
+    password:
+      enabled: true
   flows:
     login:
       ui_url: https://portal.192-168-1-119.sslip.io/sign-in

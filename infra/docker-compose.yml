@@ -386,6 +386,7 @@ services:
     build:
       context: ..
       dockerfile: packages/portal/Dockerfile
+      target: dev
     depends_on:
       hasura:
         condition: service_started
@@ -393,16 +394,22 @@ services:
         condition: service_started
     environment:
       NODE_ENV: development
-      ORY_SDK_URL: https://${KRATOS_HOST}
+      NEXT_PUBLIC_ORY_SDK_URL: https://${KRATOS_HOST}
       NEXT_PUBLIC_URL: https://${PORTAL_HOST}
-      NEXT_PUBLIC_TOLGEE_API_URL: ${TOLGEE_HOST}
+      NEXT_PUBLIC_TOLGEE_API_URL: https://${TOLGEE_HOST}
       NEXT_PUBLIC_TOLGEE_API_KEY: ${TOLGEE_API_KEY}
       NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: https://${HASURA_HOST}/v1/graphql
-
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/archpad-rootCA.pem
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: 1
-      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/archpad-rootCA.pem
+      PNPM_STORE_PATH: /pnpm/store
     volumes:
+      # Live reload: mount repo source into container
+      - ..:/app
+      # Keep deps inside docker volumes (don't rely on host node_modules)
+      - portal_node_modules:/app/node_modules
+      - portal_portal_node_modules:/app/packages/portal/node_modules
+      - portal_pnpm_store:/pnpm/store
       - ./traefik/certs/rootCA.pem:/etc/ssl/certs/archpad-rootCA.pem:ro
     networks:
       - archpad_network
@@ -429,4 +436,5 @@ volumes:
   pgadmin_data:
   tolgee_data:
   portal_node_modules:
+  portal_portal_node_modules:
   portal_pnpm_store:

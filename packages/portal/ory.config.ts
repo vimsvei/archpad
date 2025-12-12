@@ -6,7 +6,7 @@ const config: OryClientConfiguration = {
       default_redirect_url: `/dashboard`,
       error_ui_url: `/error`,
       locale_behavior: "force_default",
-      name: "Archpad (next + ory)",
+      name: "",
       registration_enabled: true,
       verification_enabled: true,
       recovery_enabled: true,

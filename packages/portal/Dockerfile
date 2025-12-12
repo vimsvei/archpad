@@ -30,6 +30,27 @@ COPY . .
 RUN pnpm --filter @archpad/portal build
 
 
+FROM base AS dev
+WORKDIR /app
+
+# Install only portal deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/portal/package.json packages/portal/package.json
+RUN pnpm install --frozen-lockfile --filter @archpad/portal...
+
+# Source (will be bind-mounted in docker-compose for live reload)
+COPY packages/portal ./packages/portal
+
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+EXPOSE 3000
+
+CMD ["pnpm", "--filter", "@archpad/portal", "dev", "--port", "3000", "--hostname", "0.0.0.0"]
+
+
 FROM node:20-bookworm-slim AS runner
 
 ENV NODE_ENV=production

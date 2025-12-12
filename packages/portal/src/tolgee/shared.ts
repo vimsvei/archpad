@@ -27,9 +27,5 @@ export function TolgeeBase() {
   .updateDefaults({
     apiKey,
     apiUrl,
-    // staticData: {
-    //   en: () => import('../../public/locales/en.json'),
-    //   ru: () => import('../../public/locales/ru.json'),
-    // }
   });
 }

@@ -28,7 +28,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     <ApplicationProvider>
       <NextIntlClientProvider locale={locale}>
         <TolgeeNextProvider language={locale} staticData={records}>
-          <main className="p-4 pb-8 flex items-center justify-center flex-col gap-8 min-h-screen">
+          {/*<main className="p-4 pb-8 flex items-center justify-center flex-col gap-8 min-h-screen">*/}
+          <main>
             { children }
           </main>
         </TolgeeNextProvider>

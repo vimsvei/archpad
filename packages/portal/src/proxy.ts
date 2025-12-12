@@ -8,7 +8,9 @@ import oryConfig from '../ory.config'
 const intlMiddleware = createIntlMiddleware({
   locales: ALL_LANGUAGES,
   defaultLocale: DEFAULT_LANGUAGE,
-  localePrefix: 'as-needed',
+  // Our App Router lives under /[locale]/..., so locale must always be present in URL.
+  // This makes /sign-in?flow=... become /<detected-locale>/sign-in?flow=...
+  localePrefix: 'always',
 })
 
 const oryMiddleware = createOryMiddleware(oryConfig)
@@ -17,11 +19,13 @@ export default async function proxy(request: NextRequest) {
 
   // Proxy Ory SDK endpoints first (self-service, sessions/whoami, etc.)
   try {
-    console.log(JSON.stringify(request))
-    
     const oryResponse = await oryMiddleware(request)
-    
-    if (oryResponse) return oryResponse
+    // `createOryMiddleware` returns `NextResponse.next()` when the path does not match
+    // any Ory endpoints. In that case we MUST continue to the next-intl middleware,
+    // otherwise locale redirects (e.g. /sign-in -> /<locale>/sign-in) won't happen.
+    if (oryResponse && oryResponse.headers.get('x-middleware-next') !== '1') {
+      return oryResponse
+    }
   } catch (e) {
     console.error('Ory middleware failed, continuing without proxy:', e)
   }
