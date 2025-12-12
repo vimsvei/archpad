@@ -384,8 +384,10 @@ services:
 
   portal:
     build:
-      context: ../packages/portal
-      dockerfile: Dockerfile
+      # IMPORTANT: portal is a pnpm workspace package.
+      # Build context must be repo root to access pnpm-lock.yaml + pnpm-workspace.yaml.
+      context: ..
+      dockerfile: packages/portal/Dockerfile
     depends_on:
       hasura:
         condition: service_started

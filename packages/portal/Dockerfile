@@ -12,11 +12,13 @@ FROM base AS deps
 WORKDIR /app
 
 # Workspace manifests (for better layer caching)
+# We intentionally copy ONLY what affects portal dependency graph,
+# so backend/infra changes won't bust Docker cache.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY infra/package.json infra/package.json
-COPY packages/*/package.json packages/*/package.json
+COPY packages/portal/package.json packages/portal/package.json
 
-RUN pnpm install --frozen-lockfile
+# Install only portal deps (not backend/infra workspace packages)
+RUN pnpm install --frozen-lockfile --filter @archpad/portal...
 
 
 FROM base AS builder
@@ -50,4 +52,3 @@ USER nextjs
 EXPOSE 3000
 
 CMD ["node", "../../node_modules/next/dist/bin/next", "start", "-p", "3000"]
-

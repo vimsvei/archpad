@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../../globals.css";
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/layouts/private/app-sidebar";
@@ -13,16 +12,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import {ModeToggle} from "@/components/toggles/mode-toggle";
 import {LocaleToggle} from "@/components/toggles/locale-toggle";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",

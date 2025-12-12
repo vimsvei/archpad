@@ -1,10 +1,11 @@
 import {getRequestConfig} from "next-intl/server";
+import { defaultLocale } from "./config";
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  const locale = await requestLocale;
+  const locale = (await requestLocale) ?? defaultLocale;
   return {
-    // do this to make next-intl not emmit any warnings
     locale,
-    messages: { locale: locale! },
+    // We use Tolgee for translations; keep next-intl config minimal.
+    messages: {},
   };
 });
