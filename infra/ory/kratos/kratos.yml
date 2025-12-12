@@ -2,13 +2,14 @@ dsn: ${DSN}
 
 serve:
   public:
-    base_url: http://auth.localhost
+    base_url: https://kratos.192-168-1-119.sslip.io
     port: 4433
     cors:
       enabled: true
       allowed_origins:
-        - http://localhost:3000        # for local dev UI
-        - http://portal.localhost      # for container UI
+        - https://portal.192-168-1-119.sslip.io
+        - https://kratos.192-168-1-119.sslip.io
+        - https://hydra.192-168-1-119.sslip.io
       allowed_methods:
         - GET
         - POST
@@ -29,38 +30,37 @@ serve:
     port: 4434
 
 selfservice:
-  default_browser_return_url: http://portal.localhost/
+  default_browser_return_url: https://portal.192-168-1-119.sslip.io/
   allowed_return_urls:
-    - http://portal.localhost/
-    - http://localhost:3000/
+    - https://portal.192-168-1-119.sslip.io/
   flows:
     login:
-      ui_url: http://portal.localhost/sign-in
+      ui_url: https://portal.192-168-1-119.sslip.io/sign-in
       lifespan: 1h
       style: unified
     registration:
-      ui_url: http://portal.localhost/sign-up
+      ui_url: https://portal.192-168-1-119.sslip.io/sign-up
       enabled: true
       enable_legacy_one_step: false
       lifespan: 1h
       style: profile_first
     settings:
+      ui_url: https://portal.192-168-1-119.sslip.io/settings
       lifespan: 1h
       privileged_session_max_age: 1h
       required_aal: highest_available
-      ui_url: http://portal.localhost/settings
     recovery:
       enabled: true
       lifespan: 1h
       notify_unknown_recipients: false
       use: code
-      ui_url: http://portal.localhost/recovery
+      ui_url: https://portal.192-168-1-119.sslip.io/recovery
     verification:
+      ui_url: https://portal.192-168-1-119.sslip.io/verify
       enabled: true
       lifespan: 1h
       notify_unknown_recipients: false
       use: code
-      ui_url: http://portal.localhost/verify
 
 identity:
   default_schema_id: default
@@ -69,7 +69,7 @@ identity:
       url: file:///etc/config/kratos/identities/default.schema.json
 
 cookies:
-  domain: .localhost
+  domain: .192-168-1-119.sslip.io
   path: /
   same_site: Lax
   secure: "auto"
@@ -80,7 +80,7 @@ log:
 
 secrets:
   default:
-    - ${KRATOS_SECRET_DEFAULT}
+    - ReMUeeq8tyEmmAHFBUiKtzkEmX9aMZr7
 
 session:
   lifespan: 720h

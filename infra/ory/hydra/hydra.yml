@@ -15,9 +15,10 @@ serve:
     cors:
       enabled: true
       allowed_origins:
-        - http://portal.localhost
-        - http://auth.localhost
-        - http://localhost:3000
+        - https://portal.192-168-1-119.sslip.io
+        - https://kratos.192-168-1-119.sslip.io
+        - https://hydra.192-168-1-119.sslip.io
+        - https://api.192-168-1-119.sslip.io
       allowed_methods:
         - GET
         - POST
@@ -37,8 +38,7 @@ serve:
     cors:
       enabled: true
       allowed_origins:
-        - http://localhost:3000
-        - http://portal.localhost
+        - https://portal.192-168-1-119.sslip.io
       allowed_methods:
         - GET
         - POST
@@ -53,21 +53,16 @@ serve:
 
 secrets:
   system:
-    - ${HYDRA_SYSTEM_SECRET}
+    - nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL
 
 urls:
   self:
-    issuer: http://hydra.localhost
-#  login: http://portal.localhost/sign-in
-#  consent: http://hydra.localhost/consent
-#  logout: http://hydra.localhost/logout
-#  error: http://hydra.localhost/error
-  login: http://localhost:3000/sign-in
-  consent: http://localhost:3000/consent
-  logout: http://localhost:3000/logout
-  error: http://localhost:3000/error
-#  post_logout_redirect: http://portal.localhost/
-  post_logout_redirect: http://localhost:3000/
+    issuer: https://hydra.192-168-1-119.sslip.io
+  login: https://portal.192-168-1-119.sslip.io/hydra/login
+  consent: https://portal.192-168-1-119.sslip.io/hydra/consent
+  logout: https://portal.192-168-1-119.sslip.io/logout
+  error: https://portal.192-168-1-119.sslip.io/error
+  post_logout_redirect: https://portal.192-168-1-119.sslip.io/
 
 strategies:
   access_token: opaque

@@ -19,7 +19,7 @@ authenticators:
   oauth2_introspection:
     enabled: true
     config:
-      introspection_url: http://hydra-admin.localhost/oauth2/introspect
+      introspection_url: http://hydra:4445/oauth2/introspect
       scope_strategy: exact
       preserve_host: false
       pre_authorization:
@@ -28,9 +28,9 @@ authenticators:
         client_secret: ${ORY_CLIENT_SECRET}
         scope:
           - introspect
-        token_url: https://hydra-admin.localhost/oauth2/token
+        token_url: https://hydra:4445/oauth2/token
       token_from:
-        header: Custom-Authorization-Header
+        header: Authorization
       retry:
         give_up_after: 1s
         max_delay: 100ms

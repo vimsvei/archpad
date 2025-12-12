@@ -1,7 +1,7 @@
 # ==== GraphQL Hasura через Oathkeeper ====
 - id: hasura-graphql
   match:
-    url: http://oathkeeper:4455/graphql/<**>
+    url: ^https?://[^/]+/graphql/.*
     methods: ["GET", "POST", "OPTIONS"]
   authenticators:
     - handler: oauth2_introspection
@@ -20,7 +20,7 @@
 # ==== Arch-repo-service через Oathkeeper ====
 - id: arch-repo-api
   match:
-    url: http://oathkeeper:4455/rest/<**>
+    url: ^https?://[^/]+/rest/.*
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   authenticators:
     - handler: oauth2_introspection

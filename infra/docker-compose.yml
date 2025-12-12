@@ -96,7 +96,6 @@ services:
     command: ["serve", "-c", "/etc/config/kratos.yml", "--dev", "--watch-courier"]
     environment:
       DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-      KRATOS_SELFSERVICE_DEFAULT_BROWSER_RETURN_URL: http://portal.localhost/
     volumes:
       - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
       - ./ory/kratos/identities/default.schema.json:/etc/config/kratos/identities/default.schema.json:ro
@@ -143,11 +142,8 @@ services:
     command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
-      URLS_SELF_ISSUER: https://${HYDRA_HOST}
-
-      URLS_LOGIN: https://${PORTAL_HOST}/hydra/login
-      URLS_CONSENT: https://${PORTAL_HOST}/hydra/consent
+#      URLS_LOGIN: https://${PORTAL_HOST}/hydra/login
+#      URLS_CONSENT: https://${PORTAL_HOST}/hydra/consent
     volumes:
       - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
     depends_on:
@@ -189,6 +185,8 @@ services:
       - ./ory/oathkeeper/access-rules.yml:/etc/oathkeeper/access-rules.yml:ro
     environment:
       LOG_LEVEL: debug
+      ORY_CLIENT_ID: ${ORY_CLIENT_ID}
+      ORY_CLIENT_SECRET: ${ORY_CLIENT_SECRET}
     depends_on:
       reverse-proxy:
         condition: service_started
