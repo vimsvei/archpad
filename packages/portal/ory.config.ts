@@ -9,8 +9,8 @@ const config: OryClientConfiguration = {
   },
   project: {
       default_locale: 'ru-RU',
-      default_redirect_url: "/",
-      error_ui_url: "/error",
+      default_redirect_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
+      error_ui_url: `${process.env.NEXT_PUBLIC_URL}/error`,
       locale_behavior: "force_default",
       name: "Archpad (next + ory)",
       registration_enabled: true,

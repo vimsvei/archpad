@@ -2,6 +2,7 @@ import { Registration } from '@ory/elements-react/theme'
 import { AuthFormWrapper } from '@/components/auth/auth-form-wrapper'
 import {getRegistrationFlow, OryPageParams} from "@ory/nextjs/app";
 import config from "../../../../../../ory.config";
+import {CardContent, CardHeader} from "@/components/ui/card";
 
 export default async function SignUpPage(props: OryPageParams) {
   const flow = await getRegistrationFlow(config, props.searchParams)
@@ -19,7 +20,10 @@ export default async function SignUpPage(props: OryPageParams) {
             flow={flow}
             config={config}
             components={{
-              Card: {},
+              Card: {
+                Header: CardHeader,
+                Content: CardContent
+              },
             }}
           />
         </AuthFormWrapper>

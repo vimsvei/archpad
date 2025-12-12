@@ -14,21 +14,20 @@ export default async function SignInPage(props: OryPageParams) {
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <Login
-          flow={flow}
-          config={config}
-          components={{
-            Card: {
-              Header: CardHeader,
-            },
-          }}
-        />
-        {/*<AuthFormWrapper*/}
-        {/*  title="Sign In"*/}
-        {/*  subtitle="Enter your credentials to access your account"*/}
-        {/*>*/}
-        {/*  */}
-        {/*</AuthFormWrapper>*/}
+        <AuthFormWrapper
+          title="Sign In"
+          subtitle="Enter your credentials to access your account"
+        >
+          <Login
+            flow={flow}
+            config={config}
+            components={{
+              Card: {
+                Header: CardHeader,
+              },
+            }}
+          />
+        </AuthFormWrapper>
       </div>
     </div>
   )

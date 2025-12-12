@@ -6,7 +6,9 @@ import { useSession } from '@ory/elements-react/client';
 
 export default function Root() {
   const router = useRouter();
-  const { session, isLoading } = useSession();
+  const { session, isLoading, error } = useSession();
+  
+  console.log(error)
 
   useEffect(() => {
     if (isLoading) return;
