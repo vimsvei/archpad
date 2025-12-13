@@ -12,8 +12,8 @@
       config:
         headers:
           X-Hasura-User-Id: "{{ .Subject }}"
-          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.traits.tenants }}"
-          X-Hasura-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
+          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
+          X-Hasura-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
   upstream:
     url: http://hasura:8080
 
@@ -31,7 +31,7 @@
       config:
         headers:
           X-Archpad-User-Id: "{{ .Subject }}"
-          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.traits.tenants }}"
-          X-Archpad-Roles: "{{ join \",\" .Extra.identity.traits.roles }}"
+          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
+          X-Archpad-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
   upstream:
     url: http://arch-repo:3000

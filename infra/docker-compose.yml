@@ -263,7 +263,16 @@ services:
       - archpad_network
     labels:
       - traefik.enable=true
+      - traefik.http.routers.mailhog-http.entrypoints=web
+      - traefik.http.routers.mailhog-http.rule=Host(`${MAILHOG_HOST}`)
+      - traefik.http.routers.mailhog-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.mailhog-http.service=mailhog
+
+      - traefik.http.routers.mailhog.entrypoints=websecure
       - traefik.http.routers.mailhog.rule=Host(`${MAILHOG_HOST}`)
+      - traefik.http.routers.mailhog.tls=true
+      - traefik.http.routers.mailhog.service=mailhog
+
       - traefik.http.services.mailhog.loadbalancer.server.port=8025
     ports:
       - "1025:1025"

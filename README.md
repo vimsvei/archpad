@@ -9,3 +9,4 @@
 - pg.192-168-1-119.sslip.io
 - pgadmin.192-168-1-119.sslip.io
 - reverse-proxy.192-168-1-119.sslip.io
+- mail.192-168-1-119.sslip.io

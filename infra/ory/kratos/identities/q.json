@@ -1,53 +1,56 @@
 {
-  "$id": "https://archpad.local/kratos/identities/default.schema.json",
+  "$id": "http://mydomain.com/schemas/v2/customer.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "ArchPad User",
+  "title": "A customer (v2)",
   "type": "object",
   "properties": {
     "traits": {
       "type": "object",
       "properties": {
         "email": {
-          "title": "Email",
+          "title": "E-Mail",
           "type": "string",
           "format": "email",
+
+          // This tells Ory Identities that the field should be used as the "username" for the Username and Password Flow.
           "ory.sh/kratos": {
             "credentials": {
               "password": {
                 "identifier": true
-              },
-              "code": {
-                "identifier": true,
-                "via": "email"
               }
-            },
-            "recovery": {
-              "via": "email"
-            },
-            "verification": {
-              "via": "email"
             }
-          },
-          "maxLength": 320
+          }
         },
         "phone": {
+          "title": "Phone",
           "type": "string",
           "format": "tel",
-          "title": "Phone number"
+
+          // The phone number is marked as an identifier. This allows the user to log in with both email and phone number.
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
+              }
+            }
+          }
         },
         "name": {
           "type": "object",
-          "required": [ "first", "last"],
           "properties": {
             "first": {
-              "title": "First name",
+              "title": "First Name",
               "type": "string"
             },
             "last": {
-              "title": "Last name",
+              "title": "Last Name",
               "type": "string"
             }
           }
+        },
+        "favorite_animal": {
+          "title": "Favourite Animal",
+          "type": "string"
         },
         "accepted_tos": {
           "title": "Terms of Service",
