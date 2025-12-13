@@ -10,8 +10,8 @@ export default async function LocaleRootPage({ params }: LocaleRootPageProps) {
 
   const session = await getServerSession()
   if (session) {
-    redirect(`/${locale}/dashboard`)
+    redirect(`/dashboard`)
   }
 
-  redirect(`/${locale}/sign-in`)
+  redirect(`/sign-in`)
 }

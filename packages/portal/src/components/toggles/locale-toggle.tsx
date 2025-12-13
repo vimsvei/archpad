@@ -12,22 +12,21 @@ import {
 import {useTolgee} from "@tolgee/react";
 import {useTransition} from "react";
 import {LOCALES} from "@/tolgee/shared";
-// import {usePathname, useRouter} from "next/navigation";
-import {usePathname, useRouter} from "@/navigation";
+import {useRouter} from "next/navigation";
 
 export function LocaleToggle() {
   const tolgee = useTolgee(['language']);
   const locale = tolgee.getLanguage();
   const router = useRouter();
-  const pathname = usePathname();
   const [_, startTransition] = useTransition();
   
   const onSelectChange = (newLocale: string) => {
     if (!newLocale || newLocale === locale) return;
     startTransition(() => {
-      router.replace(pathname, { locale: newLocale });
-      // tolgee.changeLanguage(newLocale);
-      // router.refresh();
+      // Persist locale without changing URL (no /<locale>/ prefix).
+      document.cookie = `archpad_locale=${encodeURIComponent(newLocale)}; Path=/; SameSite=Lax`
+      tolgee.changeLanguage(newLocale)
+      router.refresh()
     });
   }
   

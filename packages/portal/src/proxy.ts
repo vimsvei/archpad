@@ -1,36 +1,66 @@
-import { NextRequest } from 'next/server'
-import createIntlMiddleware from 'next-intl/middleware'
-import { createOryMiddleware } from '@ory/nextjs/middleware'
-
+import { NextRequest, NextResponse } from 'next/server'
 import { ALL_LANGUAGES, DEFAULT_LANGUAGE } from '@/tolgee/shared'
-import oryConfig from '../ory.config'
 
-const intlMiddleware = createIntlMiddleware({
-  locales: ALL_LANGUAGES,
-  defaultLocale: DEFAULT_LANGUAGE,
-  // Our App Router lives under /[locale]/..., so locale must always be present in URL.
-  // This makes /sign-in?flow=... become /<detected-locale>/sign-in?flow=...
-  localePrefix: 'always',
-})
+const LOCALE_COOKIE = 'archpad_locale'
 
-const oryMiddleware = createOryMiddleware(oryConfig)
+function stripTrailingSlash(pathname: string) {
+  return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
+}
 
-export default async function proxy(request: NextRequest) {
+function getLocaleFromRequest(request: NextRequest): string {
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value
+  if (cookieLocale && ALL_LANGUAGES.includes(cookieLocale)) return cookieLocale
 
-  // Proxy Ory SDK endpoints first (self-service, sessions/whoami, etc.)
-  try {
-    const oryResponse = await oryMiddleware(request)
-    // `createOryMiddleware` returns `NextResponse.next()` when the path does not match
-    // any Ory endpoints. In that case we MUST continue to the next-intl middleware,
-    // otherwise locale redirects (e.g. /sign-in -> /<locale>/sign-in) won't happen.
-    if (oryResponse && oryResponse.headers.get('x-middleware-next') !== '1') {
-      return oryResponse
-    }
-  } catch (e) {
-    console.error('Ory middleware failed, continuing without proxy:', e)
+  const accept = request.headers.get('accept-language') ?? ''
+  // Very small parser: pick first matching language tag.
+  for (const part of accept.split(',')) {
+    const tag = part.split(';')[0]?.trim()
+    if (!tag) continue
+    const exact = ALL_LANGUAGES.find((l) => l.toLowerCase() === tag.toLowerCase())
+    if (exact) return exact
   }
 
-  return intlMiddleware(request)
+  return DEFAULT_LANGUAGE
+}
+
+export default function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Skip Next internals, API, and files (handled by matcher too, but keep safe).
+  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.includes('.')) {
+    return NextResponse.next()
+  }
+
+  // Ory proxy endpoints are locale-less; do not rewrite them.
+  if (pathname.startsWith('/self-service')) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/api/ory${pathname}`
+    return NextResponse.rewrite(url)
+  }
+  if (pathname.startsWith('/sessions')) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/api/ory${pathname}`
+    return NextResponse.rewrite(url)
+  }
+
+  const cleaned = stripTrailingSlash(pathname)
+  const localeInPath = ALL_LANGUAGES.find(
+    (l) => cleaned === `/${l}` || cleaned.startsWith(`/${l}/`)
+  )
+
+  // Enforce "no-locale URLs": if user hits /<locale>/..., redirect to stripped path.
+  if (localeInPath) {
+    const stripped = cleaned.replace(`/${localeInPath}`, '') || '/'
+    const url = request.nextUrl.clone()
+    url.pathname = stripped
+    return NextResponse.redirect(url)
+  }
+
+  // Internally, we still render from /[locale]/... by rewriting.
+  const locale = getLocaleFromRequest(request)
+  const url = request.nextUrl.clone()
+  url.pathname = `/${locale}${cleaned === '/' ? '' : cleaned}`
+  return NextResponse.rewrite(url)
 }
 
 export const config = {

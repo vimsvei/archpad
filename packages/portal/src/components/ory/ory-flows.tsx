@@ -7,15 +7,16 @@ import {
   Registration,
   Verification,
 } from '@ory/elements-react/theme'
+import * as React from 'react'
 import type { ComponentProps, PropsWithChildren } from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useTranslate } from '@tolgee/react'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { OryInput } from '@/components/ory/ory-input'
 
 // These components are CLIENT components. This is important because Ory Elements flow
 // components are client components, and Next.js does not allow passing function
@@ -55,35 +56,44 @@ function getFallbackLabel(
 }
 
 function OryShadcnInput(props: any) {
-  const { attributes } = props ?? {}
+  // Render native inputs and rely on HTML form serialization by `name`.
+  const { attributes, onClick } = props ?? {}
   const type = attributes?.type
+  const name = attributes?.name as string | undefined
 
-  // Keep hidden inputs unstyled (csrf_token, method, etc.)
   if (type === 'hidden') {
+    return <input type="hidden" name={name} value={attributes?.value ?? ''} />
+  }
+
+  if (type === 'checkbox') {
     return (
       <input
-        type="hidden"
-        name={attributes?.name}
-        value={attributes?.value ?? ''}
+        id={name}
+        name={name}
+        type="checkbox"
+        value="true"
+        defaultChecked={Boolean(attributes?.value)}
+        disabled={attributes?.disabled}
+        required={attributes?.required}
+        onClick={onClick}
+        className="h-4 w-4 rounded border border-input bg-transparent"
       />
     )
   }
 
   return (
-    <Input
-      id={attributes?.name}
-      name={attributes?.name}
+    <OryInput
+      id={name}
+      name={name}
       type={type}
       defaultValue={attributes?.value ?? ''}
       required={attributes?.required}
       disabled={attributes?.disabled}
-      autoComplete={
-        attributes?.autocomplete ??
-        (attributes?.name === 'identifier' ? 'username' : undefined)
-      }
+      autoComplete={attributes?.autocomplete}
       pattern={attributes?.pattern}
       inputMode={attributes?.inputmode}
       placeholder={attributes?.placeholder}
+      onClick={onClick}
     />
   )
 }
@@ -141,9 +151,9 @@ function OryShadcnLabel(props: any) {
           <Label htmlFor={attributes?.name} {...rest}>
             {label ?? fallbackLabel}
           </Label>
-          {isPasswordField && locale ? (
+          {isPasswordField ? (
             <Link
-              href={`/${locale}/recovery`}
+              href={`/recovery`}
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               {forgotPasswordText}
@@ -169,6 +179,106 @@ function normalizeAnchorHref(rawHref: string): string {
     // keep as-is
   }
   return rawHref
+}
+
+function normalizeFormAction(rawAction: string | undefined): string | undefined {
+  if (!rawAction) return rawAction
+  return normalizeAnchorHref(rawAction)
+}
+
+function rewriteHrefsDeep(node: React.ReactNode): React.ReactNode {
+  if (node == null) return node
+
+  if (Array.isArray(node)) {
+    return node.map(rewriteHrefsDeep)
+  }
+
+  if (!React.isValidElement(node)) {
+    return node
+  }
+
+  const props: any = node.props ?? {}
+  const nextChildren = props.children ? rewriteHrefsDeep(props.children) : props.children
+
+  // Normalize raw <a href="http://localhost:3000/..."> to "/..."
+  if (node.type === 'a' && typeof props.href === 'string') {
+    const href = normalizeAnchorHref(props.href)
+    return React.cloneElement(node, { ...props, href, children: nextChildren })
+  }
+
+  // Recurse into children for all other elements.
+  if (nextChildren !== props.children) {
+    return React.cloneElement(node, { ...props, children: nextChildren })
+  }
+
+  return node
+}
+
+function OryCardFooterNormalizeLinks(props: any) {
+  const { children, ...rest } = props ?? {}
+  return <div {...rest}>{rewriteHrefsDeep(children)}</div>
+}
+
+function OryCardHeaderNormalizeLinks(props: any) {
+  const { children, ...rest } = props ?? {}
+  return <div {...rest}>{rewriteHrefsDeep(children)}</div>
+}
+
+function OryNativeFormRoot({ className, children, action, method }: any) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const normalizedAction = normalizeFormAction(action) ?? action
+  const normalizedMethod = (method ?? 'POST') as string
+
+  return (
+    <form
+      className={cn('grid gap-6', className)}
+      action={normalizedAction}
+      method={normalizedMethod}
+      onSubmit={async (e) => {
+        e.preventDefault()
+
+        const form = e.currentTarget as HTMLFormElement
+        const submitUrl = normalizedAction || form.action
+
+        const res = await fetch(submitUrl, {
+          method: normalizedMethod.toUpperCase(),
+          body: new FormData(form),
+          credentials: 'include',
+        })
+
+        // Success flows usually redirect (e.g. to /dashboard).
+        if (res.redirected) {
+          const u = new URL(res.url)
+          router.replace(`${u.pathname}${u.search}${u.hash}`)
+          return
+        }
+
+        // Error/next-step flows return JSON (updated flow) on 4xx.
+        const ct = res.headers.get('content-type') ?? ''
+        if (ct.includes('application/json')) {
+          try {
+            const data: any = await res.json()
+            const flowId = data?.id
+            if (flowId) {
+              const u = new URL(window.location.href)
+              u.pathname = pathname
+              u.searchParams.set('flow', flowId)
+              router.replace(`${u.pathname}${u.search}${u.hash}`)
+              return
+            }
+          } catch {
+            // ignore
+          }
+        }
+
+        router.refresh()
+      }}
+    >
+      {children}
+    </form>
+  )
 }
 
 function OryShadcnAnchor(props: any) {
@@ -198,8 +308,9 @@ export const defaultOryOverrides: OryFlowComponentOverrides = {
   // so we strip Ory's card wrappers to avoid nested cards.
   Card: {
     Root: FragmentCardRoot,
-    Header: FragmentCardRoot,
+    Header: OryCardHeaderNormalizeLinks,
     Content: FragmentCardRoot,
+    Footer: OryCardFooterNormalizeLinks,
   },
   // Apply our app UI components to Ory nodes.
   Node: {
@@ -210,11 +321,7 @@ export const defaultOryOverrides: OryFlowComponentOverrides = {
   },
   // Layout similar to shadcn login-03
   Form: {
-    Root: ({ className, children, ...rest }: any) => (
-      <form className={cn('grid gap-6', className)} {...rest}>
-        {children}
-      </form>
-    ),
+    Root: OryNativeFormRoot,
     Group: ({ className, children, ...rest }: any) => (
       <div className={cn('grid gap-4', className)} {...rest}>
         {children}
@@ -246,6 +353,23 @@ function AuthFlowHeading({
   )
 }
 
+function withLocaleSdk(config: OryClientConfiguration, locale?: string): OryClientConfiguration {
+  const anyConfig: any = config ?? {}
+  return {
+    ...anyConfig,
+    sdk: {
+      ...(anyConfig.sdk ?? {}),
+      // Keep all Ory API calls on same-origin without locale prefix.
+      // Middleware will rewrite to /[locale]/... internally.
+      url: '',
+      options: {
+        ...(anyConfig.sdk?.options ?? {}),
+        credentials: 'include',
+      },
+    },
+  }
+}
+
 export function OryLoginFlow({
   flow,
   config,
@@ -255,6 +379,10 @@ export function OryLoginFlow({
   config: OryClientConfiguration
   components?: OryFlowComponentOverrides
 }) {
+  const params = useParams<{ locale?: string }>()
+  const locale = params?.locale
+  const configWithSdk = withLocaleSdk(config, locale)
+
   return (
     <div className="grid gap-6">
       <AuthFlowHeading
@@ -263,7 +391,7 @@ export function OryLoginFlow({
         subtitleKey="auth.sign_in.subtitle"
         subtitleDefault="Sign in with your email and password"
       />
-      <Login flow={flow} config={config} components={components} />
+      <Login flow={flow} config={configWithSdk} components={components} />
     </div>
   )
 }
@@ -277,6 +405,10 @@ export function OryRegistrationFlow({
   config: OryClientConfiguration
   components?: OryFlowComponentOverrides
 }) {
+  const params = useParams<{ locale?: string }>()
+  const locale = params?.locale
+  const configWithSdk = withLocaleSdk(config, locale)
+
   return (
     <div className="grid gap-6">
       <AuthFlowHeading
@@ -285,7 +417,7 @@ export function OryRegistrationFlow({
         subtitleKey="auth.sign_up.subtitle"
         subtitleDefault="Create a new account to get started"
       />
-      <Registration flow={flow} config={config} components={components} />
+      <Registration flow={flow} config={configWithSdk} components={components} />
     </div>
   )
 }
@@ -299,6 +431,10 @@ export function OryRecoveryFlow({
   config: OryClientConfiguration
   components?: OryFlowComponentOverrides
 }) {
+  const params = useParams<{ locale?: string }>()
+  const locale = params?.locale
+  const configWithSdk = withLocaleSdk(config, locale)
+
   return (
     <div className="grid gap-6">
       <AuthFlowHeading
@@ -307,7 +443,7 @@ export function OryRecoveryFlow({
         subtitleKey="auth.recovery.subtitle"
         subtitleDefault="Enter your email to recover your account"
       />
-      <Recovery flow={flow} config={config} components={components} />
+      <Recovery flow={flow} config={configWithSdk} components={components} />
     </div>
   )
 }
@@ -321,6 +457,10 @@ export function OryVerificationFlow({
   config: OryClientConfiguration
   components?: OryFlowComponentOverrides
 }) {
+  const params = useParams<{ locale?: string }>()
+  const locale = params?.locale
+  const configWithSdk = withLocaleSdk(config, locale)
+
   return (
     <div className="grid gap-6">
       <AuthFlowHeading
@@ -329,7 +469,7 @@ export function OryVerificationFlow({
         subtitleKey="auth.verify.subtitle"
         subtitleDefault="Verify your email address"
       />
-      <Verification flow={flow} config={config} components={components} />
+      <Verification flow={flow} config={configWithSdk} components={components} />
     </div>
   )
 }
