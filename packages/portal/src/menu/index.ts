@@ -100,27 +100,27 @@ export const menu: TMenu = [
       {
         title: 'Architecture-Style',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/directories/architecture-style',
       },
       {
         title: 'Critical-Levels',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/directories/critical-levels',
       },
       {
         title: 'Node-Types',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/directories/node-types',
       },
       {
         title: 'License-Types',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/directories/license-types',
       },
       {
         title: 'Protocol-Types',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/directories/protocol-types',
       },
     ]
   },

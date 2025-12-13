@@ -3,15 +3,9 @@ import "../../globals.css";
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/layouts/private/app-sidebar";
 import {Separator} from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList, BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
 import {ModeToggle} from "@/components/toggles/mode-toggle";
 import {LocaleToggle} from "@/components/toggles/locale-toggle";
+import { PrivateBreadcrumbs } from "@/components/layouts/private/breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -34,19 +28,7 @@ export default function PrivateLayout({
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <PrivateBreadcrumbs />
           </div>
           <div className="flex gap-2">
             <LocaleToggle/>

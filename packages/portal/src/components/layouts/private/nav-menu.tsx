@@ -1,6 +1,7 @@
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
+import * as React from "react"
 
 import {
   Collapsible,
@@ -26,12 +27,21 @@ interface INavMenuProps {
 
 export function NavMenu({ menu }: INavMenuProps) {
   const { t } = useTranslate();
+  // Radix Collapsible uses runtime-generated IDs (`useId()`), and in dev we can get
+  // hydration warnings when server/client IDs don't line up. Render after mount.
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
     <SidebarGroup className='flex flex-col gap-6' >
       {
         menu.map((menuItem, index) => (
-          <div key={index}>
-            <SidebarGroupLabel key={index}>{t(menuItem.title)}</SidebarGroupLabel>
+          <div key={menuItem.title ?? index}>
+            <SidebarGroupLabel>{t(menuItem.title)}</SidebarGroupLabel>
             <SidebarMenu>
               {menuItem.items.map((item) => (
                 <Collapsible
@@ -66,7 +76,7 @@ export function NavMenu({ menu }: INavMenuProps) {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem key={t(subItem.title)}>
+                          <SidebarMenuSubItem key={subItem.url ?? subItem.title}>
                             <SidebarMenuSubButton asChild>
                               <a href={subItem.url}>
                                 <span>{t(subItem.title)}</span>

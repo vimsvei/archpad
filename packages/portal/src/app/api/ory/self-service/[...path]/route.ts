@@ -189,7 +189,24 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
   const hasBody = !(method === 'GET' || method === 'HEAD')
   const headers = forwardedHeaders(request)
 
-  const body = hasBody ? await request.arrayBuffer() : undefined
+  const contentType = request.headers.get('content-type') ?? ''
+  let body: any = undefined
+
+  if (hasBody && contentType.includes('application/x-www-form-urlencoded')) {
+    const raw = await request.text()
+    const params = new URLSearchParams(raw)
+
+    // HTML checkbox default value is "on". Kratos expects boolean for accepted_tos.
+    if (params.get('traits.accepted_tos') === 'on') {
+      params.set('traits.accepted_tos', 'true')
+    }
+
+    body = params.toString()
+    headers.set('content-type', 'application/x-www-form-urlencoded')
+    headers.delete('content-length')
+  } else {
+    body = hasBody ? await request.arrayBuffer() : undefined
+  }
 
   const init: any = {
     method,

@@ -46,7 +46,7 @@ selfservice:
       enabled: true
       enable_legacy_one_step: false
       lifespan: 1h
-      style: profile_first
+      style: unified
     settings:
       ui_url: https://portal.192-168-1-119.sslip.io/settings
       lifespan: 1h

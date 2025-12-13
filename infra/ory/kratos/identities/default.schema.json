@@ -8,7 +8,7 @@
       "type": "object",
       "properties": {
         "email": {
-          "title": "Email",
+          "title": "E-mail",
           "type": "string",
           "format": "email",
           "ory.sh/kratos": {
@@ -28,6 +28,7 @@
               "via": "email"
             }
           },
+          "minLength": 5,
           "maxLength": 320
         },
         "phone": {

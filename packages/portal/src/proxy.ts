@@ -31,7 +31,7 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Ory proxy endpoints are locale-less; do not rewrite them.
+  // Ory proxy endpoints are locale-less; keep them public but route to API handlers.
   if (pathname.startsWith('/self-service')) {
     const url = request.nextUrl.clone()
     url.pathname = `/api/ory${pathname}`
