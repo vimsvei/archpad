@@ -3,11 +3,11 @@ import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { ForeignKeyInfo } from '../db/types';
 import { HasuraRelationshipRef } from '../metadata/types';
 import { arrayRelationshipKey } from './array-relationship-key';
-import { buildRelationshipNamesForFk } from './build-relationship-names';
 import { extractArrayFkUsing } from './extract-array-fk-using';
 import { extractObjectFkColumns } from './extract-object-fk-columns';
 import { objectRelationshipKey } from './object-relationship-key';
-import { upperFirst } from '../utils/naming.util';
+import { buildArrayRelationshipNameForFk } from './build-array-relationship-name';
+import { buildObjectRelationshipNameForFk } from './build-object-relationship-name';
 
 export async function syncForeignKeyRelationships(args: {
   hasura: HasuraClientService;
@@ -21,83 +21,37 @@ export async function syncForeignKeyRelationships(args: {
 
   logger.log(`Syncing FK relationships (count=${foreignKeys.length})...`);
 
-  // Precompute desired relationship names with collision resolution.
   const fkId = (fk: ForeignKeyInfo) =>
     `${fk.fk_table_schema}.${fk.fk_table_name}|${fk.constraint_name}`;
 
-  const objectNameByFkId = new Map<string, string>();
-  const arrayNameByFkId = new Map<string, string>();
-
-  // Group object rels by (fk-table + baseObjectName) to disambiguate multiple FKs to same entity.
-  const groups = new Map<string, ForeignKeyInfo[]>();
-  const namePartsByFkId = new Map<
-    string,
-    ReturnType<typeof buildRelationshipNamesForFk>
-  >();
-
+  // Map-table context: for each FK in a map_* table, determine "the other" referenced table.
+  const mapOtherPkByFkId = new Map<string, string>();
+  const mapGroups = new Map<string, ForeignKeyInfo[]>();
   for (const fk of foreignKeys) {
-    const parts = buildRelationshipNamesForFk({ fk, allTableNames });
-    namePartsByFkId.set(fkId(fk), parts);
-
-    if (fk.fk_columns.length !== 1) continue; // we skip object rels for composite FKs
-
-    const groupKey = `${fk.fk_table_schema}.${fk.fk_table_name}|${parts.baseObjectName}`;
-    groups.set(groupKey, [...(groups.get(groupKey) ?? []), fk]);
+    if (!fk.fk_table_name.startsWith('map_')) continue;
+    mapGroups.set(fk.fk_table_name, [...(mapGroups.get(fk.fk_table_name) ?? []), fk]);
   }
-
-  // Resolve object relationship collisions per table.
-  const usedObjectNamesByTable = new Map<string, Set<string>>();
-  const reserveObjectName = (tableKey: string, desired: string): string => {
-    const used = usedObjectNamesByTable.get(tableKey) ?? new Set<string>();
-    usedObjectNamesByTable.set(tableKey, used);
-
-    if (!used.has(desired)) {
-      used.add(desired);
-      return desired;
-    }
-
-    let n = 2;
-    while (used.has(`${desired}${n}`)) n++;
-    const finalName = `${desired}${n}`;
-    used.add(finalName);
-    return finalName;
-  };
-
-  const sortedGroupKeys = [...groups.keys()].sort();
-  for (const groupKey of sortedGroupKeys) {
-    const fks = (groups.get(groupKey) ?? []).slice().sort((a, b) => {
-      const ak = `${a.constraint_name}|${a.fk_columns.join(',')}`;
-      const bk = `${b.constraint_name}|${b.fk_columns.join(',')}`;
-      return ak.localeCompare(bk);
-    });
-
+  for (const [mapTable, fks] of mapGroups.entries()) {
+    const pkTables = [...new Set(fks.map((x) => x.pk_table_name))].sort();
     for (const fk of fks) {
-      const parts = namePartsByFkId.get(fkId(fk))!;
-      const tableKey = `${fk.fk_table_schema}.${fk.fk_table_name}`;
-
-      let desired = parts.baseObjectName;
-      if (fks.length > 1) {
-        // Strict rule: base is always entity name; disambiguate with FK column.
-        const base = parts.baseObjectName;
-        const dis =
-          parts.disambiguator.fkColumnBaseCamel !== base
-            ? parts.disambiguator.fkColumnBaseCamel
-            : parts.disambiguator.fkColumnCamel; // e.g. userId
-        desired = `${base}By${upperFirst(dis)}`;
+      const other = pkTables.find((t) => t !== fk.pk_table_name);
+      if (other) {
+        mapOtherPkByFkId.set(fkId(fk), other);
       }
-
-      objectNameByFkId.set(
-        fkId(fk),
-        reserveObjectName(tableKey, desired),
-      );
     }
   }
 
-  // Resolve array relationship collisions per PK table.
+  // Collision guards (rare but possible): ensure uniqueness within each table.
+  const usedObjectNamesByTable = new Map<string, Set<string>>();
   const usedArrayNamesByTable = new Map<string, Set<string>>();
-  const reserveArrayName = (tableKey: string, desired: string): string => {
-    const used = usedArrayNamesByTable.get(tableKey) ?? new Set<string>();
-    usedArrayNamesByTable.set(tableKey, used);
+
+  const reserveName = (
+    usedByTable: Map<string, Set<string>>,
+    tableKey: string,
+    desired: string,
+  ): string => {
+    const used = usedByTable.get(tableKey) ?? new Set<string>();
+    usedByTable.set(tableKey, used);
 
     if (!used.has(desired)) {
       used.add(desired);
@@ -110,18 +64,6 @@ export async function syncForeignKeyRelationships(args: {
     used.add(finalName);
     return finalName;
   };
-
-  // Deterministic ordering for stable names
-  const sortedFks = foreignKeys.slice().sort((a, b) => {
-    const ak = `${a.pk_table_schema}.${a.pk_table_name}|${a.fk_table_schema}.${a.fk_table_name}|${a.constraint_name}`;
-    const bk = `${b.pk_table_schema}.${b.pk_table_name}|${b.fk_table_schema}.${b.fk_table_name}|${b.constraint_name}`;
-    return ak.localeCompare(bk);
-  });
-  for (const fk of sortedFks) {
-    const parts = namePartsByFkId.get(fkId(fk))!;
-    const pkKey = `${fk.pk_table_schema}.${fk.pk_table_name}`;
-    arrayNameByFkId.set(fkId(fk), reserveArrayName(pkKey, parts.arrayName));
-  }
 
   const existingObjectByKey = new Map<string, HasuraRelationshipRef>();
   const existingArrayByKey = new Map<string, HasuraRelationshipRef>();
@@ -158,12 +100,21 @@ export async function syncForeignKeyRelationships(args: {
   const desiredObjectKeys = new Set<string>();
   const desiredArrayKeys = new Set<string>();
 
-  for (const fk of foreignKeys) {
-    const objectName = objectNameByFkId.get(fkId(fk));
-    const arrayName = arrayNameByFkId.get(fkId(fk))!;
+  const orderedFks = foreignKeys.slice().sort((a, b) => fkId(a).localeCompare(fkId(b)));
+  for (const fk of orderedFks) {
+    const objectNameRaw = buildObjectRelationshipNameForFk(fk);
+    const arrayNameRaw = buildArrayRelationshipNameForFk({
+      fk,
+      mapOtherPkTableName: mapOtherPkByFkId.get(fkId(fk)),
+    });
 
     // object rel (many -> one)
     if (fk.fk_columns.length === 1) {
+      const objectName = reserveName(
+        usedObjectNamesByTable,
+        `${fk.fk_table_schema}.${fk.fk_table_name}`,
+        objectNameRaw!,
+      );
       const oKey = objectRelationshipKey({
         schema: fk.fk_table_schema,
         table: fk.fk_table_name,
@@ -172,7 +123,7 @@ export async function syncForeignKeyRelationships(args: {
       desiredObjectKeys.add(oKey);
 
       const existing = existingObjectByKey.get(oKey);
-      if (existing && objectName && existing.name !== objectName) {
+      if (existing && existing.name !== objectName) {
         logger.log(
           `Renaming object relationship ${fk.fk_table_name}.${existing.name} -> ${objectName}`,
         );
@@ -198,7 +149,7 @@ export async function syncForeignKeyRelationships(args: {
           args: {
             source: hasura.source,
             table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
-            name: objectName!,
+            name: objectName,
             using: { foreign_key_constraint_on: fk.fk_columns[0] },
           },
         });
@@ -215,6 +166,14 @@ export async function syncForeignKeyRelationships(args: {
     }
 
     // array rel (one -> many)
+    if (!arrayNameRaw) {
+      continue;
+    }
+    const arrayName = reserveName(
+      usedArrayNamesByTable,
+      `${fk.pk_table_schema}.${fk.pk_table_name}`,
+      arrayNameRaw,
+    );
     const aKey = arrayRelationshipKey({
       schema: fk.pk_table_schema,
       table: fk.pk_table_name,

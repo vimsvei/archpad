@@ -345,8 +345,8 @@ services:
 
   arch-repo:
     build:
-      context: ../packages/backend/apps/arch-repo-service
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: packages/backend/apps/arch-repo-service/Dockerfile
     pull_policy: build
     environment:
       NODE_ENV: development
@@ -373,8 +373,8 @@ services:
 
   hasura-repo-sync:
     build:
-      context: ../packages/hasura-repo-sync
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: packages/backend/apps/hasura-sync-service/Dockerfile
     pull_policy: build
     depends_on:
       arch-repo:

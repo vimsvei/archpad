@@ -19,19 +19,21 @@ COPY packages/backend ./packages/backend
 RUN pnpm --filter @archpad/backend build:arch-repo
 
 
-FROM deps AS prod-deps
-RUN pnpm prune --prod --filter @archpad/backend
+FROM base AS prod-deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/backend/package.json packages/backend/package.json
+COPY packages/backend ./packages/backend
+RUN pnpm install --frozen-lockfile --prod --filter @archpad/backend...
 
 # ---------- runtime: минимальный образ только для запуска ----------
 FROM node:20-alpine AS runtime
-WORKDIR /app
+WORKDIR /app/packages/backend
 
 ENV NODE_ENV=production
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 
-COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=prod-deps /app/packages/backend/node_modules ./node_modules
 COPY --from=build /app/packages/backend/dist ./dist
 USER node
 EXPOSE 3000
-CMD ["node", "dist/apps/arch-repo-service/main.js"]
+CMD ["node", "dist/apps/arch-repo-service/apps/arch-repo-service/src/main.js"]

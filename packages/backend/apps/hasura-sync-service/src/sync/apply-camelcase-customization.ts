@@ -30,30 +30,33 @@ export async function applyCamelCaseCustomization(args: {
 
     const customTableName = toCamelCase(table.name);
 
-    const args: any = {
+    const configuration: any = {};
+    const metadataArgs: any = {
       source: hasura.source,
       table: { schema: table.schema, name: table.name },
     };
 
     if (customTableName !== table.name) {
-      args.custom_name = customTableName;
+      // Hasura expects the table custom name under configuration.identifier
+      configuration.identifier = customTableName;
     }
     if (Object.keys(columnConfig).length) {
-      args.column_config = columnConfig;
+      configuration.column_config = columnConfig;
     }
 
-    if (!args.custom_name && !args.column_config) continue;
+    if (!configuration.identifier && !configuration.column_config) continue;
+    metadataArgs.configuration = configuration;
 
     logger.log(
       `Setting customization for ${table.schema}.${table.name} (custom_name=${
-        args.custom_name ?? '—'
+        configuration.identifier ?? '—'
       }, columns=${Object.keys(columnConfig).length})`,
     );
 
     try {
       await hasura.postMetadata({
         type: 'pg_set_table_customization',
-        args,
+        args: metadataArgs,
       });
     } catch (e) {
       logger.warn(`Failed to set customization for ${table.schema}.${table.name}: ${e}`);
