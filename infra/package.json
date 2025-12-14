@@ -8,6 +8,7 @@
     "dev:app": "docker compose --project-name archpad --env-file ../.env --profile app up -d --force-recreate portal",
 
     "dev:backend": "docker compose --project-name archpad --env-file ../.env --profile backend up -d",
+
     "dev:mon": "docker compose --project-name archpad --env-file ../.env --profile monitoring up -d",
     "dev:all": "docker compose --project-name archpad --env-file ../.env --profile app --profile monitoring up -d",
     "dev:up": "docker compose --project-name archpad --env-file ../.env up -d",
