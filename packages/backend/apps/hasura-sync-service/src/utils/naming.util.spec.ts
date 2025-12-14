@@ -11,7 +11,7 @@ describe('naming utils', () => {
     });
 
     it('оставляет уже camelCase как есть (но приведённый к нижнему)', () => {
-      expect(toCamelCase('licenseType')).toBe('licensetype'); // мы опускаем всё в lowercase перед конвертацией
+      expect(toCamelCase('licenseType')).toBe('licenseType');
     });
 
     it('работает с _id окончанием', () => {
