@@ -347,6 +347,7 @@ services:
     build:
       context: ../packages/backend/apps/arch-repo-service
       dockerfile: Dockerfile
+    pull_policy: build
     environment:
       NODE_ENV: development
       PG_HOST: ${POSTGRES_ENDPOINT}
@@ -374,6 +375,7 @@ services:
     build:
       context: ../packages/hasura-repo-sync
       dockerfile: Dockerfile
+    pull_policy: build
     depends_on:
       arch-repo:
         condition: service_healthy
