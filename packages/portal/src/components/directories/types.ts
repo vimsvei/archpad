@@ -1,3 +1,5 @@
+import type { DirectoryKind } from "@archpad/contracts"
+
 export type DirectorySlug = string
 
 export type ActionStamp = {
@@ -27,7 +29,9 @@ export type DirectoryRelation = {
 
 export type DirectoryMeta = {
   slug: DirectorySlug
-  title: string
-  description?: string
+  /** Directory kind (contract), if slug is recognized */
+  kind: DirectoryKind | null
+  /** Tolgee key for human readable directory title */
+  titleKey: string
 }
 

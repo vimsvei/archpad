@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useTranslate } from "@tolgee/react"
 
 type DirectoryRelationsTableProps = {
   sourceDirectorySlug: DirectorySlug
@@ -23,6 +24,7 @@ type DirectoryRelationsTableProps = {
 }
 
 export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: DirectoryRelationsTableProps) {
+  const { t } = useTranslate()
   const relations = useRelations(sourceDirectorySlug, sourceItemId)
 
   const directoryOptions = React.useMemo(() => {
@@ -64,7 +66,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               <SelectContent>
                 {directoryOptions.map((slug) => (
                   <SelectItem key={slug} value={slug}>
-                    {getDirectoryMeta(slug).title}
+                    {t(getDirectoryMeta(slug).titleKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -97,6 +99,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               className="w-full"
               disabled={!targetItemId}
               onClick={() => {
+                if (!targetItemId) return
                 const exists = relations.some(
                   (r) => r.targetDirectorySlug === targetDirectorySlug && r.targetItemId === targetItemId
                 )
@@ -130,7 +133,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                   const target = getDirectoryItem(rel.targetDirectorySlug, rel.targetItemId)
                   return (
                     <TableRow key={rel.id}>
-                      <TableCell>{getDirectoryMeta(rel.targetDirectorySlug).title}</TableCell>
+                      <TableCell>{t(getDirectoryMeta(rel.targetDirectorySlug).titleKey)}</TableCell>
                       <TableCell>
                         {target ? (
                           <div className="flex flex-col">

@@ -1,28 +1,32 @@
+import { DirectoryKind } from "@archpad/contracts"
+
 import type { DirectoryMeta, DirectorySlug } from "@/components/directories/types"
 
-const KNOWN_DIRECTORIES: Record<DirectorySlug, Omit<DirectoryMeta, "slug">> = {
-  "node-types": { title: "Node Types" },
-  "architecture-style": { title: "Architecture Style" },
-  "critical-levels": { title: "Critical Levels" },
-  "license-types": { title: "License Types" },
-  "protocol-types": { title: "Protocol Types" },
+type DirectoryKindKey = keyof typeof DirectoryKind
+
+function slugFromDirectoryKindKey(key: string): DirectorySlug {
+  // ARCHITECTURE_STYLE -> architecture-styles
+  return `${key.toLowerCase().replace(/_/g, "-")}s`
 }
 
-function titleFromSlug(slug: string) {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((p) => p.slice(0, 1).toUpperCase() + p.slice(1))
-    .join(" ")
-}
+const KIND_BY_SLUG: Record<DirectorySlug, DirectoryKind> = Object.fromEntries(
+  (Object.keys(DirectoryKind) as DirectoryKindKey[]).map((key) => [
+    slugFromDirectoryKindKey(key),
+    DirectoryKind[key],
+  ])
+) as Record<DirectorySlug, DirectoryKind>
 
 export function getDirectoryMeta(slug: DirectorySlug): DirectoryMeta {
-  const known = KNOWN_DIRECTORIES[slug]
-  if (known) return { slug, ...known }
-  return { slug, title: titleFromSlug(slug) }
+  const kind = KIND_BY_SLUG[slug] ?? null
+  return {
+    slug,
+    kind,
+    titleKey: kind ?? `directory.${slug}`,
+  }
 }
 
 export function listKnownDirectorySlugs(): DirectorySlug[] {
-  return Object.keys(KNOWN_DIRECTORIES)
+  // stable ordering for UI
+  return Object.keys(KIND_BY_SLUG).sort()
 }
 

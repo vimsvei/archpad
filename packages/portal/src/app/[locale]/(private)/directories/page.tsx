@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { getDirectoryMeta, listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 import { Card } from "@/components/ui/card"
+import { T } from "@/tolgee/server"
 
 export default function DirectoriesIndexPage() {
   const slugs = listKnownDirectorySlugs()
@@ -14,7 +15,9 @@ export default function DirectoriesIndexPage() {
         {slugs.map((slug) => (
           <Card key={slug} className="p-4">
             <Link href={`/directories/${slug}`} className="block">
-              <div className="font-medium">{getDirectoryMeta(slug).title}</div>
+              <div className="font-medium">
+                <T keyName={getDirectoryMeta(slug).titleKey} />
+              </div>
               <div className="text-muted-foreground text-sm">/{slug}</div>
             </Link>
           </Card>

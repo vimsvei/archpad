@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import { getDirectoryItem } from "@/components/directories/storage"
+import { useTranslate } from "@tolgee/react"
 
 type Crumb = {
   href?: string
@@ -21,6 +22,7 @@ function titleFromSegment(seg: string) {
 }
 
 export function PrivateBreadcrumbs() {
+  const { t } = useTranslate()
   const pathname = usePathname() ?? "/"
   const segments = React.useMemo(
     () => pathname.split("?")[0]!.split("#")[0]!.split("/").filter(Boolean).map(decodeURIComponent),
@@ -64,7 +66,7 @@ export function PrivateBreadcrumbs() {
 
       if (!slug) return [...base.slice(0, 2).map((c, idx) => (idx === 1 ? { label: c.label } : c))]
 
-      const dirLabel = getDirectoryMeta(slug).title
+      const dirLabel = t(getDirectoryMeta(slug).titleKey)
       const dirHref = `/directories/${slug}`
 
       if (!id) return [...base, { label: dirLabel }]

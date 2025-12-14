@@ -25,6 +25,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@archpad/contracts": [
+        "../contracts/src"
+      ],
+      "@archpad/contracts/*": [
+        "../contracts/src/*"
       ]
     }
   },

@@ -1,5 +1,18 @@
 import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
 import {BrickWallShield, Folder, House, LayoutDashboard, LifeBuoy, Send, Settings2} from "lucide-react";
+import { DirectoryKind } from "@archpad/contracts";
+
+function slugFromDirectoryKindKey(key: string) {
+  return `${key.toLowerCase().replace(/_/g, "-")}s`;
+}
+
+const DIRECTORY_MENU_ITEMS: TMenuItem[] = (Object.keys(DirectoryKind) as Array<keyof typeof DirectoryKind>)
+  .sort()
+  .map((key) => ({
+    title: DirectoryKind[key], // Tolgee key
+    icon: BrickWallShield,
+    url: `/directories/${slugFromDirectoryKindKey(String(key))}`,
+  }));
 
 export const menu: TMenu = [
   {
@@ -97,31 +110,7 @@ export const menu: TMenu = [
   {
     title: 'Menu-Directory',
     items: [
-      {
-        title: 'Architecture-Style',
-        icon: BrickWallShield,
-        url: '/directories/architecture-style',
-      },
-      {
-        title: 'Critical-Levels',
-        icon: BrickWallShield,
-        url: '/directories/critical-levels',
-      },
-      {
-        title: 'Node-Types',
-        icon: BrickWallShield,
-        url: '/directories/node-types',
-      },
-      {
-        title: 'License-Types',
-        icon: BrickWallShield,
-        url: '/directories/license-types',
-      },
-      {
-        title: 'Protocol-Types',
-        icon: BrickWallShield,
-        url: '/directories/protocol-types',
-      },
+      ...DIRECTORY_MENU_ITEMS,
     ]
   },
 ]

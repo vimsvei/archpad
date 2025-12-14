@@ -10,6 +10,7 @@ import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { DirectoryRelationsTable } from "@/components/directories/directory-relations-table"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useTranslate } from "@tolgee/react"
 
 type DirectoryEditPageProps = {
   directorySlug: DirectorySlug
@@ -17,7 +18,9 @@ type DirectoryEditPageProps = {
 }
 
 export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps) {
+  const { t } = useTranslate()
   const meta = getDirectoryMeta(directorySlug)
+  const title = t(meta.titleKey)
   const items = useDirectoryItems(directorySlug)
   const item = React.useMemo(() => items.find((x) => x.id === id) ?? null, [items, id])
 
@@ -25,7 +28,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">{meta.title}</h1>
+          <h1 className="text-2xl font-semibold">{title}</h1>
           <Button asChild variant="outline">
             <Link href={`/directories/${directorySlug}`}>Back</Link>
           </Button>
@@ -42,7 +45,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col">
           <h1 className="text-2xl font-semibold">
-            {meta.title}: {item.name}
+            {title}: {item.name}
           </h1>
           <p className="text-muted-foreground text-sm">ID: {item.id}</p>
         </div>
