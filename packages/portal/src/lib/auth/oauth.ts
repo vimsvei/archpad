@@ -25,20 +25,25 @@ export async function sha256Base64Url(input: string) {
   return base64UrlEncode(new Uint8Array(hash))
 }
 
-export function getAccessTokenFromCookies() {
-  return cookies().get(ACCESS_TOKEN_COOKIE)?.value ?? null
+export async function getAccessTokenFromCookies() {
+  const c = await cookies()
+  return c.get(ACCESS_TOKEN_COOKIE)?.value ?? null
 }
 
-export function setOAuthTempCookies(input: { state: string; verifier: string; returnTo: string }) {
-  const c = cookies()
+export async function setOAuthTempCookies(input: {
+  state: string
+  verifier: string
+  returnTo: string
+}) {
+  const c = await cookies()
   const opts = { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" }
   c.set(OAUTH_STATE_COOKIE, input.state, { ...opts, maxAge: 10 * 60 })
   c.set(OAUTH_VERIFIER_COOKIE, input.verifier, { ...opts, maxAge: 10 * 60 })
   c.set(OAUTH_RETURN_TO_COOKIE, input.returnTo, { ...opts, maxAge: 10 * 60 })
 }
 
-export function readOAuthTempCookies() {
-  const c = cookies()
+export async function readOAuthTempCookies() {
+  const c = await cookies()
   return {
     state: c.get(OAUTH_STATE_COOKIE)?.value ?? null,
     verifier: c.get(OAUTH_VERIFIER_COOKIE)?.value ?? null,
@@ -46,20 +51,27 @@ export function readOAuthTempCookies() {
   }
 }
 
-export function clearOAuthTempCookies() {
-  const c = cookies()
+export async function clearOAuthTempCookies() {
+  const c = await cookies()
   const opts = { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" }
   c.set(OAUTH_STATE_COOKIE, "", { ...opts, maxAge: 0 })
   c.set(OAUTH_VERIFIER_COOKIE, "", { ...opts, maxAge: 0 })
   c.set(OAUTH_RETURN_TO_COOKIE, "", { ...opts, maxAge: 0 })
 }
 
-export function setTokensCookies(input: { accessToken: string; refreshToken?: string }) {
-  const c = cookies()
+export async function setTokensCookies(input: { accessToken: string; refreshToken?: string }) {
+  const c = await cookies()
   const opts = { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" }
   c.set(ACCESS_TOKEN_COOKIE, input.accessToken, { ...opts, maxAge: 15 * 60 })
   if (input.refreshToken) {
     c.set(REFRESH_TOKEN_COOKIE, input.refreshToken, { ...opts, maxAge: 60 * 60 * 24 * 30 })
   }
+}
+
+export async function clearTokensCookies() {
+  const c = await cookies()
+  const opts = { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" }
+  c.set(ACCESS_TOKEN_COOKIE, "", { ...opts, maxAge: 0 })
+  c.set(REFRESH_TOKEN_COOKIE, "", { ...opts, maxAge: 0 })
 }
 

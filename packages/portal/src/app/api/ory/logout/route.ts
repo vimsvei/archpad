@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { clearTokensCookies } from '@/lib/auth/oauth'
 
 function getOryBaseUrl(): URL | null {
   const raw = process.env.NEXT_PUBLIC_ORY_SDK_URL
@@ -39,6 +40,10 @@ function forwardedHeaders(request: NextRequest): Headers {
 }
 
 export async function GET(request: NextRequest) {
+  // Kratos logout does not automatically clear our Hydra token cookies.
+  // Clear them proactively so the next GraphQL request can re-run OAuth flow.
+  await clearTokensCookies()
+
   const base = getOryBaseUrl()
   if (!base) {
     return NextResponse.json(
@@ -96,6 +101,7 @@ export async function GET(request: NextRequest) {
     { status: 500 }
   )
 }
+
 
 
 

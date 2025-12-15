@@ -1,18 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-  CreateDtoArchitectureStyle,
-  CreateDtoCriticalLevel,
-  CreateDtoLicenseType,
-  CreateDtoNodeType,
-  CreateDtoProtocolType,
-  CreateDtoSoftwareType,
-  UpdateDtoArchitectureStyle,
-  UpdateDtoCriticalLevel,
-  UpdateDtoLicenseType,
-  UpdateDtoNodeType,
-  UpdateDtoProtocolType,
-  UpdateDtoSoftwareType,
-} from '@/model/dto/directories.dto';
+import { CreateDirectoryDto, UpdateDirectoryDto } from '@/model/dto/directory.dto';
 import { BaseDirectoryModule } from './base-directory/base-directory.module';
 import { LicenseTypeDirectory } from '@/model/directories/license-type.directory';
 import { ArchitectureStyleDirectory } from '@/model/directories/architecture-style.directory';
@@ -25,70 +12,70 @@ import { ProtocolTypeDirectory } from '@/model/directories/protocol-type.directo
   imports: [
     BaseDirectoryModule.register<
       ArchitectureStyleDirectory,
-      CreateDtoArchitectureStyle,
-      UpdateDtoArchitectureStyle
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: ArchitectureStyleDirectory,
       path: 'architecture-styles',
       swaggerTag: 'Архитектурный стиль',
-      createDto: CreateDtoArchitectureStyle,
-      updateDto: UpdateDtoArchitectureStyle,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
 
     BaseDirectoryModule.register<
       CriticalLevelDirectory,
-      CreateDtoCriticalLevel,
-      UpdateDtoCriticalLevel
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: CriticalLevelDirectory,
       path: 'critical-levels',
       swaggerTag: 'Уровни критичности',
-      createDto: CreateDtoCriticalLevel,
-      updateDto: UpdateDtoCriticalLevel,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
     BaseDirectoryModule.register<
       LicenseTypeDirectory,
-      CreateDtoLicenseType,
-      UpdateDtoLicenseType
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: LicenseTypeDirectory,
       path: 'license-types',
       swaggerTag: 'Типы лицензий нв ПО',
-      createDto: CreateDtoLicenseType,
-      updateDto: UpdateDtoLicenseType,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
     BaseDirectoryModule.register<
       NodeTypeDirectory,
-      CreateDtoNodeType,
-      UpdateDtoNodeType
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: NodeTypeDirectory,
       path: 'node-types',
       swaggerTag: 'Типы технологических узлов',
-      createDto: CreateDtoNodeType,
-      updateDto: UpdateDtoNodeType,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
     BaseDirectoryModule.register<
       SoftwareTypeDirectory,
-      CreateDtoSoftwareType,
-      UpdateDtoSoftwareType
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: SoftwareTypeDirectory,
       path: 'software-types',
       swaggerTag: 'Тип системного ПО',
-      createDto: CreateDtoSoftwareType,
-      updateDto: UpdateDtoSoftwareType,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
     BaseDirectoryModule.register<
       ProtocolTypeDirectory,
-      CreateDtoProtocolType,
-      UpdateDtoProtocolType
+      CreateDirectoryDto,
+      UpdateDirectoryDto
     >({
       entity: ProtocolTypeDirectory,
       path: 'protocol-types',
       swaggerTag: 'Тип сетевых протоколов',
-      createDto: CreateDtoProtocolType,
-      updateDto: UpdateDtoProtocolType,
+      createDto: CreateDirectoryDto,
+      updateDto: UpdateDirectoryDto,
     }),
   ],
 })

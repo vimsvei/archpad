@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   const state = generateRandomString(32)
   const verifier = generateRandomString(32)
   const challenge = await sha256Base64Url(verifier)
-  setOAuthTempCookies({ state, verifier, returnTo })
+  await setOAuthTempCookies({ state, verifier, returnTo })
 
   const authorize = new URL("/oauth2/auth", hydraPublicUrl)
   authorize.searchParams.set("client_id", clientId)

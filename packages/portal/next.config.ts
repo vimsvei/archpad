@@ -7,8 +7,6 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  transpilePackages: ["@archpad/contracts"],
-
   // Produce minimal runtime bundle for Docker (copies only .next/standalone).
   output: "standalone",
   // Monorepo: ensure tracing can reach workspace root if needed.

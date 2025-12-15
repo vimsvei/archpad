@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   // Prefer our stored Hydra access token (opaque) and send it as Bearer.
   // This is what Oathkeeper expects for /graphql/* and /rest/*.
-  const token = getAccessTokenFromCookies()
+  const token = await getAccessTokenFromCookies()
   const auth = token ? `Bearer ${token}` : request.headers.get("authorization")
 
   const res = await fetch(endpoint, {

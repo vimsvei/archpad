@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
@@ -13,6 +13,7 @@ import { AuditSubscriber } from './audit/audit.subscriber';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import { LoggerModule } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
+import { ArchpadRequestContextMiddleware } from './request-context/archpad-request-context.middleware';
 
 @Module({
   imports: [
@@ -62,4 +63,8 @@ import { HealthCheckerModule } from 'archpad/health-checker';
     AuditSubscriber,
   ],
 })
-export class ArchRepoServiceModule {}
+export class ArchRepoServiceModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ArchpadRequestContextMiddleware).forRoutes('*');
+  }
+}

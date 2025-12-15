@@ -53,7 +53,9 @@ serve:
 
 secrets:
   system:
-    - nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL
+    # IMPORTANT: must stay stable when using a persistent SQL database.
+    # Set it in your root `.env` as SECRETS_SYSTEM=... (or use the default below for fresh dev DBs).
+    - ${SECRETS_SYSTEM:-nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL}
 
 urls:
   self:

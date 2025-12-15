@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ALL_LANGUAGES, DEFAULT_LANGUAGE } from '@/tolgee/shared'
 
 const LOCALE_COOKIE = 'archpad_locale'
+const ACCESS_TOKEN_COOKIE = 'archpad_access_token'
+
+const PRIVATE_PREFIXES = ['/dashboard', '/directories', '/application', '/motivation']
 
 function stripTrailingSlash(pathname: string) {
   return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
@@ -49,6 +52,22 @@ export default function proxy(request: NextRequest) {
   }
 
   const cleaned = stripTrailingSlash(pathname)
+
+  // "Native" auth gate for private routes:
+  // our upstream access rules for /graphql and /rest require a Hydra access token (oauth2_introspection),
+  // stored in an httpOnly cookie. If it's missing, bootstrap OAuth2 code flow via /oauth/login.
+  if (
+    request.method === 'GET' &&
+    PRIVATE_PREFIXES.some((p) => cleaned === p || cleaned.startsWith(`${p}/`)) &&
+    !request.cookies.get(ACCESS_TOKEN_COOKIE)?.value
+  ) {
+    const url = request.nextUrl.clone()
+    const returnTo = `${cleaned}${url.search}`
+    url.pathname = '/oauth/login'
+    url.search = `?return_to=${encodeURIComponent(returnTo)}`
+    return NextResponse.redirect(url)
+  }
+
   const localeInPath = ALL_LANGUAGES.find(
     (l) => cleaned === `/${l}` || cleaned.startsWith(`/${l}/`)
   )

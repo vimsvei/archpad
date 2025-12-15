@@ -22,7 +22,8 @@ type DirectoryItemFormProps = {
   /** i18n prefix like "create.item" or "edit.item" */
   i18nPrefix: string
   submitLabel: string
-  onSubmit: (values: DirectoryItemFormValues) => void
+  disabled?: boolean
+  onSubmit: (values: DirectoryItemFormValues) => void | Promise<void>
   onCancel?: () => void
 }
 
@@ -30,6 +31,7 @@ export function DirectoryItemForm({
   initialValues,
   i18nPrefix,
   submitLabel,
+  disabled,
   onSubmit,
   onCancel,
 }: DirectoryItemFormProps) {
@@ -63,9 +65,10 @@ export function DirectoryItemForm({
       className="flex flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault()
+        if (disabled) return
         setTouched(true)
         if (!isValid) return
-        onSubmit({
+        void onSubmit({
           code: codeTrimmed,
           name: nameTrimmed,
           description: description.trim(),
@@ -82,6 +85,7 @@ export function DirectoryItemForm({
           onChange={(e) => setCode(e.target.value)}
           aria-invalid={touched && !codeTrimmed ? true : undefined}
           autoComplete="off"
+          disabled={disabled}
         />
       </div>
 
@@ -93,6 +97,7 @@ export function DirectoryItemForm({
           onChange={(e) => setName(e.target.value)}
           aria-invalid={touched && !nameTrimmed ? true : undefined}
           autoComplete="off"
+          disabled={disabled}
         />
       </div>
 
@@ -102,6 +107,7 @@ export function DirectoryItemForm({
           id="directory-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          disabled={disabled}
         />
       </div>
 
@@ -114,6 +120,7 @@ export function DirectoryItemForm({
             value={colorPickerValue}
             onChange={(e) => setColor(e.target.value)}
             className="w-12 px-1"
+            disabled={disabled}
           />
           <Input
             id="directory-color"
@@ -121,6 +128,7 @@ export function DirectoryItemForm({
             onChange={(e) => setColor(e.target.value)}
             placeholder="#RRGGBB"
             autoComplete="off"
+            disabled={disabled}
           />
         </div>
       </div>
@@ -130,17 +138,18 @@ export function DirectoryItemForm({
           id="directory-by-default"
           checked={byDefault}
           onCheckedChange={(v) => setByDefault(Boolean(v))}
+          disabled={disabled}
         />
         <Label htmlFor="directory-by-default">{tr(`${i18nPrefix}.by-default`, "By default")}</Label>
       </div>
 
       <div className="flex items-center justify-end gap-2">
         {onCancel ? (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={disabled}>
             {tr("action.cancel", "Cancel")}
           </Button>
         ) : null}
-        <Button type="submit" disabled={!isValid}>
+        <Button type="submit" disabled={!isValid || disabled}>
           {submitLabel}
         </Button>
       </div>

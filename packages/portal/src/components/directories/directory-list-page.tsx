@@ -5,7 +5,7 @@ import { Plus } from "lucide-react"
 
 import type { DirectorySlug } from "@/types/directories"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
-import { createDirectoryItem, deleteDirectoryItem } from "@/components/directories/storage"
+import { deleteDirectoryItem } from "@/components/directories/storage"
 import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { DirectoryDataTable } from "@/components/directories/directory-data-table"
 import { DirectoryItemForm } from "@/components/directories/directory-item-form"
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useTranslate } from "@tolgee/react"
 import { fetchDirectoryItemsByKind } from "@/components/directories/hasura"
+import { createDirectoryItemInArchRepo } from "@/components/directories/arch-repo"
 import {
   Sheet,
   SheetContent,
@@ -33,6 +34,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const localItems = useDirectoryItems(directorySlug)
   const [remoteItems, setRemoteItems] = React.useState(localItems)
   const [remoteError, setRemoteError] = React.useState<string | null>(null)
+  const [saving, setSaving] = React.useState(false)
   const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
@@ -99,9 +101,21 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             <DirectoryItemForm
               i18nPrefix="item"
               submitLabel={t("action.create")}
-              onSubmit={(values) => {
-                createDirectoryItem(directorySlug, values)
-                setOpen(false)
+              disabled={saving}
+              onSubmit={async (values) => {
+                if (!meta.kind) return
+                setSaving(true)
+                try {
+                  setRemoteError(null)
+                  await createDirectoryItemInArchRepo(directorySlug, values)
+                  const data = await fetchDirectoryItemsByKind(meta.kind)
+                  setRemoteItems(data)
+                  setOpen(false)
+                } catch (e: any) {
+                  setRemoteError(e?.message ?? "Failed to create directory item")
+                } finally {
+                  setSaving(false)
+                }
               }}
               onCancel={() => setOpen(false)}
             />

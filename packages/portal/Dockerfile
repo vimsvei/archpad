@@ -16,6 +16,7 @@ WORKDIR /app
 # so backend/infra changes won't bust Docker cache.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
+COPY packages/contracts/package.json packages/contracts/package.json
 
 # Install only portal deps (not backend/infra workspace packages)
 RUN pnpm install --frozen-lockfile --filter @archpad/portal...
@@ -36,10 +37,13 @@ WORKDIR /app
 # Install only portal deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
+COPY packages/contracts/package.json packages/contracts/package.json
 RUN pnpm install --frozen-lockfile --filter @archpad/portal...
 
 # Source (will be bind-mounted in docker-compose for live reload)
 COPY packages/portal ./packages/portal
+# Ensure workspace dependency source exists for dev (when not bind-mounted)
+COPY packages/contracts ./packages/contracts
 
 ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1

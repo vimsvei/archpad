@@ -13,6 +13,7 @@ import {
   Post,
   Type,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { BaseDirectoryService } from './base-directory.service';
 import { InjectRepository, MikroOrmModule } from '@mikro-orm/nestjs';
 import {
@@ -29,6 +30,7 @@ import {
 import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
+import { RequiredArchpadHeadersGuard } from '@/auth/required-archpad-headers.guard';
 
 export interface BaseDirectoryModuleOptions<
   Entity extends DirectoryObject,
@@ -85,6 +87,7 @@ export class BaseDirectoryModule {
     @ApiTags(swaggerTag ?? EntityClass.name ?? path)
     @ApiExtraModels(EntityClass, CreateDtoClass, UpdateDtoClass)
     @Controller(path)
+    @UseGuards(RequiredArchpadHeadersGuard)
     class DirectoryController {
       constructor(private readonly service: DirectoryService) {}
 
@@ -204,7 +207,7 @@ export class BaseDirectoryModule {
     return {
       module: BaseDirectoryModule,
       imports: [MikroOrmModule.forFeature([entity, DirectoryItemsMap])],
-      providers: [DirectoryService],
+      providers: [DirectoryService, RequiredArchpadHeadersGuard],
       controllers: [DirectoryController],
       exports: [DirectoryService],
     };

@@ -1,7 +1,8 @@
 import { EntityManager, EventArgs, EventSubscriber } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { BaseObject } from '@archpad/models';
+import { ActionStamp, BaseObject } from '@archpad/models';
 import { LoggerService } from '@archpad/logger';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 
 @Injectable()
 export class AuditSubscriber implements EventSubscriber<BaseObject> {
@@ -16,6 +17,36 @@ export class AuditSubscriber implements EventSubscriber<BaseObject> {
     return [BaseObject];
   }
 
+  beforeCreate(args: EventArgs<BaseObject>): void {
+    const entity: any = args.entity;
+    const ctx = getArchpadRequestContext();
+    const by = ctx?.userId?.trim();
+    if (!by) return;
+
+    // Ensure created stamp exists and contains actor.
+    if (!entity.created || !entity.created.by) {
+      entity.created = ActionStamp.now(by);
+    }
+  }
+
+  beforeUpdate(args: EventArgs<BaseObject>): void {
+    const entity: any = args.entity;
+    const ctx = getArchpadRequestContext();
+    const by = ctx?.userId?.trim();
+    if (!by) return;
+
+    entity.updated = ActionStamp.now(by);
+  }
+
+  beforeDelete(args: EventArgs<BaseObject>): void {
+    const entity: any = args.entity;
+    const ctx = getArchpadRequestContext();
+    const by = ctx?.userId?.trim();
+    if (!by) return;
+
+    entity.deleted = ActionStamp.now(by);
+  }
+
   afterCreate(args: EventArgs<BaseObject>): void {
     const entity: any = args.entity;
 
@@ -24,7 +55,7 @@ export class AuditSubscriber implements EventSubscriber<BaseObject> {
         event: 'CREATE',
         entity: entity.constructor.name,
         id: entity.id ?? null,
-        createdAt: entity.created?.timestamp ?? null,
+        createdAt: entity.created?.at ?? null,
         createdBy: entity.created?.by ?? null,
       },
       'AuditSubscriber',
@@ -40,7 +71,7 @@ export class AuditSubscriber implements EventSubscriber<BaseObject> {
         event: 'UPDATE',
         entity: entity.constructor.name,
         id: entity.id ?? null,
-        updatedAt: entity.updated?.timestamp ?? null,
+        updatedAt: entity.updated?.at ?? null,
         updatedBy: entity.updated?.by ?? null,
         // Можно логировать diff; у changeSet есть originalEntity и payload
         changes: changeSet
@@ -61,7 +92,7 @@ export class AuditSubscriber implements EventSubscriber<BaseObject> {
         event: 'DELETE',
         entity: entity.constructor.name,
         id: entity.id ?? null,
-        deletedAt: entity.deleted?.timestamp ?? null,
+        deletedAt: entity.deleted?.at ?? null,
         deletedBy: entity.deleted?.by ?? null,
       },
       'AuditSubscriber',

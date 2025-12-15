@@ -130,6 +130,7 @@ services:
     command: ["migrate", "sql", "-e", "--yes"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
@@ -142,6 +143,7 @@ services:
     command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
     volumes:
       - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
     depends_on:

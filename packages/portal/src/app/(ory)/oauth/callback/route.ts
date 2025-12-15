@@ -41,9 +41,9 @@ export async function GET(request: Request) {
     )
   }
 
-  const tmp = readOAuthTempCookies()
+  const tmp = await readOAuthTempCookies()
   if (!tmp.state || !tmp.verifier || tmp.state !== state) {
-    clearOAuthTempCookies()
+    await clearOAuthTempCookies()
     return NextResponse.json({ error: "Invalid state" }, { status: 400 })
   }
 
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
     error_description?: string
   }
   if (!res.ok || !json.access_token) {
-    clearOAuthTempCookies()
+    await clearOAuthTempCookies()
     return NextResponse.json(
       {
         error: json.error ?? "token_exchange_failed",
@@ -87,8 +87,23 @@ export async function GET(request: Request) {
     )
   }
 
-  setTokensCookies({ accessToken: json.access_token, refreshToken: json.refresh_token })
-  clearOAuthTempCookies()
+  await setTokensCookies({ accessToken: json.access_token, refreshToken: json.refresh_token })
+  await clearOAuthTempCookies()
 
-  return NextResponse.redirect(tmp.returnTo ?? "/dashboard")
+  // Next expects an absolute URL for redirects from route handlers.
+  // Also avoid open-redirect: allow only same-origin absolute URLs; otherwise treat as relative.
+  const rawReturnTo = tmp.returnTo ?? "/dashboard"
+  const forwardedProto = request.headers.get("x-forwarded-proto")
+  const forwardedHost = request.headers.get("x-forwarded-host")
+  const host = forwardedHost ?? request.headers.get("host")
+  const origin = host ? `${forwardedProto ?? url.protocol.replace(":", "")}://${host}` : url.origin
+
+  let target: URL
+  try {
+    target = new URL(rawReturnTo)
+    if (target.origin !== origin) target = new URL("/dashboard", origin)
+  } catch {
+    target = new URL(rawReturnTo, origin)
+  }
+  return NextResponse.redirect(target)
 }

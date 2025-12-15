@@ -3,6 +3,7 @@
   match:
     url: ^https?://[^/]+/graphql/.*
     methods: ["GET", "POST", "OPTIONS"]
+  strip_path: /graphql
   authenticators:
     - handler: oauth2_introspection
   authorizer:
@@ -22,6 +23,7 @@
   match:
     url: ^https?://[^/]+/rest/.*
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  strip_path: /rest
   authenticators:
     - handler: oauth2_introspection
   authorizer:
