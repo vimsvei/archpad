@@ -142,8 +142,6 @@ services:
     command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
-#      URLS_LOGIN: https://${PORTAL_HOST}/hydra/login
-#      URLS_CONSENT: https://${PORTAL_HOST}/hydra/consent
     volumes:
       - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
     depends_on:
@@ -168,12 +166,34 @@ services:
 
       - traefik.http.services.hydra.loadbalancer.server.port=4444
 
-
       # admin endpoint (для управления клиентами, introspection для Oathkeeper и т.п.)
       - traefik.http.routers.hydra-admin.rule=Host(`${HYDRA_ADMIN_HOST}`)
       - traefik.http.routers.hydra-admin.entrypoints=web
       - traefik.http.routers.hydra-admin.service=hydra-admin
       - traefik.http.services.hydra-admin.loadbalancer.server.port=4445
+
+  hydra-init-client:
+    image: alpine:3.20
+    depends_on:
+      hydra:
+        condition: service_started
+    environment:
+      HYDRA_ADMIN_URL: http://hydra:4445
+      # Portal OAuth2 client (PKCE)
+      PORTAL_PUBLIC_URL: https://${PORTAL_HOST}
+      NEXT_PUBLIC_OAUTH_CLIENT_ID: ${NEXT_PUBLIC_OAUTH_CLIENT_ID:-archpad-portal}
+      NEXT_PUBLIC_OAUTH_REDIRECT_URI: ${NEXT_PUBLIC_OAUTH_REDIRECT_URI:-https://${PORTAL_HOST}/oauth/callback}
+      NEXT_PUBLIC_OAUTH_SCOPE: ${NEXT_PUBLIC_OAUTH_SCOPE:-openid offline_access}
+      # Oathkeeper introspection client (client_credentials)
+      ORY_CLIENT_ID: ${ORY_CLIENT_ID}
+      ORY_CLIENT_SECRET: ${ORY_CLIENT_SECRET}
+      ORY_INTROSPECT_SCOPE: ${ORY_INTROSPECT_SCOPE:-introspect}
+    volumes:
+      - ./ory/hydra/init-client:/init-client:ro
+    entrypoint: ["sh", "-lc", "(command -v curl >/dev/null 2>&1 || apk add --no-cache curl) && sh /init-client/entrypoint.sh"]
+    restart: "no"
+    networks:
+      - archpad_network
 
   oathkeeper:
     image: oryd/oathkeeper:v25.4.0
@@ -403,6 +423,8 @@ services:
         condition: service_started
       tolgee:
         condition: service_started
+      hydra-init-client:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_ORY_SDK_URL: https://${KRATOS_HOST}

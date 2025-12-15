@@ -1,8 +1,4 @@
-"use client"
-
-import * as React from "react"
-
-import type { ActionStamp, DirectoryItem, DirectoryRelation, DirectorySlug } from "@/components/directories/types"
+import type { ActionStamp, DirectoryItem, DirectoryRelation, DirectorySlug } from "@/types/directories"
 
 const ITEMS_KEY_PREFIX = "archpad:directory:"
 const RELATIONS_KEY = "archpad:directory-relations"
@@ -212,55 +208,5 @@ export function removeRelation(relationId: string) {
   const all = readAllRelations()
   const next = all.filter((r) => r.id !== relationId)
   writeAllRelations(next)
-}
-
-export function useDirectoryItems(slug: DirectorySlug) {
-  const [items, setItems] = React.useState<DirectoryItem[]>(() => getDirectoryItems(slug))
-
-  React.useEffect(() => {
-    setItems(getDirectoryItems(slug))
-
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === itemsKey(slug)) setItems(getDirectoryItems(slug))
-    }
-    const onCustom = (e: Event) => {
-      const ce = e as CustomEvent
-      if (ce.detail?.slug === slug) setItems(getDirectoryItems(slug))
-    }
-
-    window.addEventListener("storage", onStorage)
-    window.addEventListener("archpad:directory-items-changed", onCustom as EventListener)
-    return () => {
-      window.removeEventListener("storage", onStorage)
-      window.removeEventListener("archpad:directory-items-changed", onCustom as EventListener)
-    }
-  }, [slug])
-
-  return items
-}
-
-export function useRelations(sourceDirectorySlug: DirectorySlug, sourceItemId: string) {
-  const [relations, setRelations] = React.useState<DirectoryRelation[]>(() =>
-    getRelationsForSource(sourceDirectorySlug, sourceItemId)
-  )
-
-  React.useEffect(() => {
-    setRelations(getRelationsForSource(sourceDirectorySlug, sourceItemId))
-
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === RELATIONS_KEY) setRelations(getRelationsForSource(sourceDirectorySlug, sourceItemId))
-    }
-    const onCustom = () => {
-      setRelations(getRelationsForSource(sourceDirectorySlug, sourceItemId))
-    }
-    window.addEventListener("storage", onStorage)
-    window.addEventListener("archpad:directory-relations-changed", onCustom as EventListener)
-    return () => {
-      window.removeEventListener("storage", onStorage)
-      window.removeEventListener("archpad:directory-relations-changed", onCustom as EventListener)
-    }
-  }, [sourceDirectorySlug, sourceItemId])
-
-  return relations
 }
 

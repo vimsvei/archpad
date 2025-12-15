@@ -2,9 +2,11 @@
 
 import * as React from "react"
 
-import type { DirectorySlug } from "@/components/directories/types"
+import type { DirectorySlug } from "@/types/directories"
 import { getDirectoryMeta, listKnownDirectorySlugs } from "@/components/directories/directory-meta"
-import { addRelation, getDirectoryItem, removeRelation, useDirectoryItems, useRelations } from "@/components/directories/storage"
+import { addRelation, getDirectoryItem, removeRelation } from "@/components/directories/storage"
+import { useDirectoryItems } from "@/hooks/use-directory-items"
+import { useDirectoryRelations } from "@/hooks/use-directory-relations"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -25,7 +27,7 @@ type DirectoryRelationsTableProps = {
 
 export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: DirectoryRelationsTableProps) {
   const { t } = useTranslate()
-  const relations = useRelations(sourceDirectorySlug, sourceItemId)
+  const relations = useDirectoryRelations(sourceDirectorySlug, sourceItemId)
 
   const directoryOptions = React.useMemo(() => {
     const known = listKnownDirectorySlugs()

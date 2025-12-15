@@ -31,6 +31,11 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // OAuth2 / Hydra endpoints are locale-less (Hydra is configured to call them without locale).
+  if (pathname.startsWith('/oauth') || pathname.startsWith('/hydra')) {
+    return NextResponse.next()
+  }
+
   // Ory proxy endpoints are locale-less; keep them public but route to API handlers.
   if (pathname.startsWith('/self-service')) {
     const url = request.nextUrl.clone()

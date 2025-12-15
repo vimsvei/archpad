@@ -3,9 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 
-import type { DirectorySlug } from "@/components/directories/types"
+import type { DirectorySlug } from "@/types/directories"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
-import { deleteDirectoryItem, updateDirectoryItem, useDirectoryItems } from "@/components/directories/storage"
+import { deleteDirectoryItem, updateDirectoryItem } from "@/components/directories/storage"
+import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { DirectoryRelationsTable } from "@/components/directories/directory-relations-table"
 import { Button } from "@/components/ui/button"

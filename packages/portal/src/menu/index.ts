@@ -68,11 +68,11 @@ export const menu: TMenu = [
         items: [
           {
             title: 'application.component',
-            url: '/components',
+            url: '/application/components',
           },
           {
             title: 'application.data-objects',
-            url: '/data-objects',
+            url: '/application/data-objects',
           }
         ]
       },
@@ -83,19 +83,19 @@ export const menu: TMenu = [
         items: [
           {
             title: 'technologies.networks',
-            url: '/networks',
+            url: '/technologies/networks',
           },
           {
             title: 'technologies.nodes',
-            url: '/nodes',
+            url: '/technologies/nodes',
           },
           {
             title: 'technologies.system-software',
-            url: '/system-software',
+            url: '/technologies/system-software',
           },
           {
             title: 'technologies.location',
-            url: '/locations',
+            url: '/technologies/locations',
           }
         ]
       },

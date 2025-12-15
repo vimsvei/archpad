@@ -3,14 +3,16 @@
 import * as React from "react"
 import { Plus } from "lucide-react"
 
-import type { DirectorySlug } from "@/components/directories/types"
+import type { DirectorySlug } from "@/types/directories"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
-import { createDirectoryItem, deleteDirectoryItem, useDirectoryItems } from "@/components/directories/storage"
+import { createDirectoryItem, deleteDirectoryItem } from "@/components/directories/storage"
+import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { DirectoryDataTable } from "@/components/directories/directory-data-table"
 import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useTranslate } from "@tolgee/react"
+import { fetchDirectoryItemsByKind } from "@/components/directories/hasura"
 import {
   Sheet,
   SheetContent,
@@ -28,8 +30,34 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const { t } = useTranslate()
   const meta = getDirectoryMeta(directorySlug)
   const title = t(meta.titleKey)
-  const items = useDirectoryItems(directorySlug)
+  const localItems = useDirectoryItems(directorySlug)
+  const [remoteItems, setRemoteItems] = React.useState(localItems)
+  const [remoteError, setRemoteError] = React.useState<string | null>(null)
   const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    let cancelled = false
+    async function run() {
+      if (!meta.kind) {
+        setRemoteItems(localItems)
+        return
+      }
+      try {
+        setRemoteError(null)
+        const data = await fetchDirectoryItemsByKind(meta.kind)
+        if (!cancelled) setRemoteItems(data)
+      } catch (e: any) {
+        if (!cancelled) {
+          setRemoteError(e?.message ?? "Failed to load directory items")
+          setRemoteItems(localItems)
+        }
+      }
+    }
+    run()
+    return () => {
+      cancelled = true
+    }
+  }, [meta.kind, localItems])
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,7 +71,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         <Card className="p-4">
           <DirectoryDataTable
             directorySlug={directorySlug}
-            data={items}
+            data={remoteItems}
             toolbarActions={
               <SheetTrigger asChild>
                 <Button size="icon" aria-label={t("action.create")}>
@@ -57,6 +85,9 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               deleteDirectoryItem(directorySlug, id)
             }}
           />
+          {remoteError ? (
+            <div className="text-destructive mt-2 text-sm">{remoteError}</div>
+          ) : null}
         </Card>
 
         <SheetContent side="right" className="sm:max-w-md">

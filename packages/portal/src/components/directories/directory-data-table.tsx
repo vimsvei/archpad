@@ -16,7 +16,7 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useTranslate } from "@tolgee/react"
 
-import type { DirectoryItem, DirectorySlug } from "@/components/directories/types"
+import type { DirectoryItem, DirectorySlug } from "@/types/directories"
 import { EmptyBlock } from "@/components/empty/empty"
 import { Button } from "@/components/ui/button"
 import {

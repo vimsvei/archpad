@@ -1,6 +1,6 @@
 import { DirectoryKind } from "@archpad/contracts"
 
-import type { DirectoryMeta, DirectorySlug } from "@/components/directories/types"
+import type { DirectoryMeta, DirectorySlug } from "@/types/directories"
 
 type DirectoryKindKey = keyof typeof DirectoryKind
 
