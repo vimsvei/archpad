@@ -1,4 +1,4 @@
-import type { DirectoryKind } from "@archpad/contracts"
+import type { DirectoryKind } from "@/types/directory-kind"
 
 import type { DirectoryItem } from "@/types/directories"
 import { graphqlRequest } from "@/lib/graphql"

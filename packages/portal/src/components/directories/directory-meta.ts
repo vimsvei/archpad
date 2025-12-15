@@ -1,4 +1,4 @@
-import { DirectoryKind } from "@archpad/contracts"
+import { DirectoryKind } from "@/types/directory-kind"
 
 import type { DirectoryMeta, DirectorySlug } from "@/types/directories"
 

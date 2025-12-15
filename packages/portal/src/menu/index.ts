@@ -1,6 +1,6 @@
 import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
 import {BrickWallShield, Folder, House, LayoutDashboard, LifeBuoy, Send, Settings2} from "lucide-react";
-import { DirectoryKind } from "@archpad/contracts";
+import { DirectoryKind } from "@/types/directory-kind";
 
 function slugFromDirectoryKindKey(key: string) {
   return `${key.toLowerCase().replace(/_/g, "-")}s`;

@@ -26,12 +26,6 @@
       "@/*": [
         "apps/arch-repo-service/src/*"
       ],
-      "@archpad/contracts": [
-        "../contracts/src"
-      ],
-      "@archpad/contracts/*": [
-        "../contracts/src/*"
-      ],
       "@archpad/logger": [
         "libs/logger/src"
       ],

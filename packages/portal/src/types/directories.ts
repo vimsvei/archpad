@@ -1,4 +1,4 @@
-import type { DirectoryKind } from "@archpad/contracts"
+import type { DirectoryKind } from "./directory-kind"
 
 export type DirectorySlug = string
 
