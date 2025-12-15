@@ -14,8 +14,10 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { useTranslate } from "@tolgee/react"
 
 import type { DirectoryItem, DirectorySlug } from "@/components/directories/types"
+import { EmptyBlock } from "@/components/empty/empty"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -39,9 +41,11 @@ type DirectoryDataTableProps = {
   directorySlug: DirectorySlug
   data: DirectoryItem[]
   onDelete: (id: string) => void
+  toolbarActions?: React.ReactNode
 }
 
-export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryDataTableProps) {
+export function DirectoryDataTable({ directorySlug, data, onDelete, toolbarActions }: DirectoryDataTableProps) {
+  const { t } = useTranslate()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
@@ -55,7 +59,7 @@ export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryD
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-3"
           >
-            Code <ArrowUpDown />
+            {t("table.code")} <ArrowUpDown />
           </Button>
         ),
         cell: ({ row }) => <div className="font-mono text-sm">{row.getValue("code")}</div>,
@@ -68,32 +72,44 @@ export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryD
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="-ml-3"
           >
-            Name <ArrowUpDown />
+            {t("table.name")} <ArrowUpDown />
           </Button>
         ),
+        cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+      },
+      {
+        accessorKey: "description",
+        header: t("table.description"),
+        cell: ({ row }) => {
+          const v = (row.getValue("description") as string | undefined | null) ?? ""
+          return v ? <div className="text-muted-foreground line-clamp-2 text-sm">{v}</div> : null
+        },
+      },
+      {
+        accessorKey: "color",
+        header: t("table.color"),
+        enableSorting: false,
         cell: ({ row }) => {
           const item = row.original
+          if (!item.color) return <span className="text-muted-foreground text-sm">—</span>
           return (
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                {item.color ? (
-                  <span
-                    className="inline-block size-2.5 rounded-full border"
-                    style={{ backgroundColor: item.color }}
-                    aria-label="Color"
-                    title={item.color}
-                  />
-                ) : null}
-                <span className="font-medium">{row.getValue("name")}</span>
-                {item.byDefault ? (
-                  <span className="text-muted-foreground rounded-md border px-2 py-0.5 text-xs">Default</span>
-                ) : null}
-              </div>
-              {item.description ? (
-                <div className="text-muted-foreground line-clamp-2 text-sm">{item.description}</div>
-              ) : null}
+            <div className="flex items-center gap-2">
+              <span
+                className="inline-block size-3 rounded-full border"
+                style={{ backgroundColor: item.color }}
+                aria-label="Color"
+              />
+              <span className="font-mono text-xs">{item.color}</span>
             </div>
           )
+        },
+      },
+      {
+        accessorKey: "byDefault",
+        header: t("table.by-default"),
+        cell: ({ row }) => {
+          const v = Boolean(row.getValue("byDefault"))
+          return v ? <span>Yes</span> : <span className="text-muted-foreground">No</span>
         },
       },
       {
@@ -135,7 +151,7 @@ export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryD
         },
       },
     ],
-    [directorySlug, onDelete]
+    [directorySlug, onDelete, t]
   )
 
   const table = useReactTable({
@@ -162,6 +178,7 @@ export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryD
           onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
+        {toolbarActions ? <div className="ml-auto flex items-center gap-2">{toolbarActions}</div> : null}
       </div>
 
       <div className="overflow-hidden rounded-md border">
@@ -199,7 +216,9 @@ export function DirectoryDataTable({ directorySlug, data, onDelete }: DirectoryD
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  <div className="mx-auto max-w-md py-6">
+                    <EmptyBlock title={t("table.directory.no-results")} description={t("table.directory.no-results.description")} />
+                  </div>
                 </TableCell>
               </TableRow>
             )}

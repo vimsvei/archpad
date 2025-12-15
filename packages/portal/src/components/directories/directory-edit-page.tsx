@@ -76,6 +76,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
             color: item.color ?? "",
             byDefault: item.byDefault,
           }}
+          i18nPrefix="item"
           submitLabel="Save"
           onSubmit={(values) => {
             updateDirectoryItem(directorySlug, item.id, values)

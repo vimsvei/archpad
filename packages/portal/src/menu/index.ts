@@ -9,17 +9,17 @@ function slugFromDirectoryKindKey(key: string) {
 const DIRECTORY_MENU_ITEMS: TMenuItem[] = (Object.keys(DirectoryKind) as Array<keyof typeof DirectoryKind>)
   .sort()
   .map((key) => ({
-    title: DirectoryKind[key], // Tolgee key
+    title: DirectoryKind[key],
     icon: BrickWallShield,
     url: `/directories/${slugFromDirectoryKindKey(String(key))}`,
   }));
 
 export const menu: TMenu = [
   {
-    title: 'Menu-Dashboards',
+    title: 'dashboards',
     items: [
       {
-        title: 'Main-Dashboards',
+        title: 'dashboards.main',
         icon: House,
         // icon: LayoutDashboard,
         url: '/dashboard',
@@ -27,92 +27,126 @@ export const menu: TMenu = [
     ]
   },
   {
-    title: 'Menu-Portfolio',
+    title: 'architecture.layer',
     items: [
       {
-        title: 'Strategy',
+        title: 'architecture.layer.strategy',
         icon: Folder,
-        color: '#fcca56',
+        // color: '#fcca56',
         isActive: false,
         items: [
           {
-            title: 'Strategy-Resource',
+            title: 'strategy.resource',
             url: '/resources',
           },
           {
-            title: 'Strategy-Capability',
+            title: 'strategy.capability',
             url: '/capabilities',
           }
         ]
       },
       {
-        title: 'Business',
+        title: 'architecture.layer.business',
         icon: Folder,
-        color: '#ffffaf',
+        // color: '#ffffaf',
         items: [
           {
-            title: 'Business-Actors',
+            title: 'business.actors',
             url: '/actors',
           },
           {
-            title: 'Business-Roles',
+            title: 'business.roles',
             url: '/roles',
           }
         ]
       },
       {
-        title: 'Application',
+        title: 'architecture.layer.application',
         icon: Folder,
-        color: '#62fcfc',
+        // color: '#62fcfc',
         isActive: true,
         items: [
           {
-            title: 'Application-Component',
+            title: 'application.component',
             url: '/components',
           },
           {
-            title: 'Application-DataObjects',
+            title: 'application.data-objects',
             url: '/data-objects',
           }
         ]
       },
       {
-        title: 'Technologies',
+        title: 'architecture.layer.technologies',
         icon: Folder,
-        color: '#77fc77',
+        // color: '#77fc77',
         items: [
           {
-            title: 'Technologies-Networks',
+            title: 'technologies.networks',
             url: '/networks',
           },
           {
-            title: 'Technologies-System-Software',
+            title: 'technologies.nodes',
+            url: '/nodes',
+          },
+          {
+            title: 'technologies.system-software',
             url: '/system-software',
           },
           {
-            title: 'Technologies-Location',
+            title: 'technologies.location',
             url: '/locations',
           }
         ]
-      }
+      },
+      {
+        title: 'architecture.layer.motivation',
+        icon: Folder,
+        // color: '#77fc77',
+        items: [
+          {
+            title: 'motivation.stakeholders',
+            url: '/motivation/stakeholders',
+          },
+          {
+            title: 'motivation.motivation-items',
+            url: '/motivation/items',
+          },
+        ]
+      },
     ]
   },
   {
-    title: 'Menu-Catalog',
+    title: 'portfolio',
     items: [
       {
-        title: 'Solutions',
+        title: 'portfolio.solutions',
+        icon: BrickWallShield,
+        url: '/solutions',
+      },
+      {
+        title: 'portfolio.flows',
         icon: BrickWallShield,
         url: '/solutions',
       }
     ]
   },
   {
-    title: 'Menu-Directory',
+    title: 'management',
     items: [
-      ...DIRECTORY_MENU_ITEMS,
+      {
+        title: 'management.directories',
+        items: [
+          ...DIRECTORY_MENU_ITEMS,
+        ]
+      },
+      
     ]
   },
+  {
+    title: 'admin-level',
+    items: []
+  }
 ]
 
 export const secondaryMenu: TSecondaryMenu = [

@@ -422,6 +422,17 @@ services:
       - portal_portal_node_modules:/app/packages/portal/node_modules
       - portal_pnpm_store:/pnpm/store
       - ./traefik/certs/rootCA.pem:/etc/ssl/certs/archpad-rootCA.pem:ro
+    command:
+      - sh
+      - -lc
+      - |
+        if [ ! -e /app/node_modules/@radix-ui/react-checkbox/package.json ] && [ ! -e /app/packages/portal/node_modules/@radix-ui/react-checkbox/package.json ]; then
+          echo "Installing portal dependencies (node_modules volume is empty)..."
+          # pnpm may want to remove existing node_modules; in containers there's no TTY.
+          # CI=true makes pnpm non-interactive, --force allows cleanup/reinstall.
+          CI=true pnpm install --frozen-lockfile --force --filter @archpad/portal...
+        fi
+        pnpm --filter @archpad/portal dev --port 3000 --hostname 0.0.0.0
     networks:
       - archpad_network
     labels:
