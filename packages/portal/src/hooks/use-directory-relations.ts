@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import type { DirectoryRelation, DirectorySlug } from "@/types/directories"
+import type { DirectoryRelation, DirectorySlug } from "@/@types/directories"
 import { getRelationsForSource } from "@/components/directories/storage"
 
 const RELATIONS_KEY = "archpad:directory-relations"

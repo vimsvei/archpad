@@ -1,8 +1,8 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 
-import type { DirectoryItem, DirectorySlug } from "@/types/directories"
-import type { CreateDirectoryItemInput } from "@/lib/api/directories"
-import * as DirectoryAPI from "@/lib/api/directories"
+import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
+import type { CreateDirectoryItemInput } from "@/services/directories-service"
+import * as DirectoryAPI from "@/services/directories-service"
 
 /**
  * Directories RTK Query API
@@ -13,7 +13,10 @@ import * as DirectoryAPI from "@/lib/api/directories"
 export const directoryApi = createApi({
   reducerPath: "directoryApi",
   baseQuery: fakeBaseQuery<unknown>(),
-  tagTypes: ["DirectoryItems"],
+  // Keep cached directory data while user navigates inside /directories/*.
+  // We'll explicitly clear it when leaving the section (see directories layout scope).
+  keepUnusedDataFor: 60 * 10,
+  tagTypes: ["DirectoryItems", "DirectoryItem"],
   endpoints: (builder) => ({
     getDirectoryItems: builder.query<DirectoryItem[], DirectorySlug>({
       async queryFn(slug) {
@@ -25,6 +28,21 @@ export const directoryApi = createApi({
         }
       },
       providesTags: (_result, _error, slug) => [{ type: "DirectoryItems", id: slug }],
+    }),
+
+    getDirectoryItem: builder.query<DirectoryItem, { slug: DirectorySlug; id: string }>({
+      async queryFn({ slug, id }) {
+        try {
+          const data = await DirectoryAPI.getDirectoryItem(slug, id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { slug, id }) => [
+        { type: "DirectoryItems", id: slug },
+        { type: "DirectoryItem", id: `${slug}:${id}` },
+      ],
     }),
 
     createDirectoryItem: builder.mutation<
@@ -41,9 +59,72 @@ export const directoryApi = createApi({
       },
       invalidatesTags: (_result, _error, { slug }) => [{ type: "DirectoryItems", id: slug }],
     }),
+
+    updateDirectoryItem: builder.mutation<
+      DirectoryItem,
+      { slug: DirectorySlug; id: string; input: Partial<CreateDirectoryItemInput> }
+    >({
+      async queryFn({ slug, id, input }) {
+        try {
+          const data = await DirectoryAPI.updateDirectoryItem(slug, id, input)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      // We intentionally DO NOT invalidate to avoid an automatic refetch when user navigates back to the list.
+      // Instead we patch cached queries in onQueryStarted.
+      async onQueryStarted({ slug, id }, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(
+            directoryApi.util.updateQueryData("getDirectoryItem", { slug, id }, () => data)
+          )
+          dispatch(
+            directoryApi.util.updateQueryData("getDirectoryItems", slug, (draft) => {
+              const idx = draft.findIndex((x) => x.id === id)
+              if (idx >= 0) draft[idx] = data
+            })
+          )
+        } catch {
+          // ignore
+        }
+      },
+    }),
+
+    deleteDirectoryItem: builder.mutation<void, { slug: DirectorySlug; id: string }>({
+      async queryFn({ slug, id }) {
+        try {
+          await DirectoryAPI.deleteDirectoryItem(slug, id)
+          return { data: undefined }
+        } catch (error) {
+          return { error }
+        }
+      },
+      // Same rationale as update: keep list cache consistent without refetch.
+      async onQueryStarted({ slug, id }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(
+            directoryApi.util.updateQueryData("getDirectoryItems", slug, (draft) => {
+              const idx = draft.findIndex((x) => x.id === id)
+              if (idx >= 0) draft.splice(idx, 1)
+            })
+          )
+        } catch {
+          // ignore
+        }
+      },
+    }),
   }),
 })
 
-export const { useGetDirectoryItemsQuery, useCreateDirectoryItemMutation } = directoryApi
+export const {
+  useGetDirectoryItemsQuery,
+  useGetDirectoryItemQuery,
+  useCreateDirectoryItemMutation,
+  useUpdateDirectoryItemMutation,
+  useDeleteDirectoryItemMutation,
+} = directoryApi
 
 

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import type { DirectoryItem, DirectorySlug } from "@/types/directories"
+import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import { getDirectoryItems } from "@/components/directories/storage"
 
 const ITEMS_KEY_PREFIX = "archpad:directory:"

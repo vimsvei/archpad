@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import type { DirectorySlug } from "@/types/directories"
+import type { DirectorySlug } from "@/@types/directories"
 import { getDirectoryMeta, listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 import { addRelation, getDirectoryItem, removeRelation } from "@/components/directories/storage"
 import { useDirectoryItems } from "@/hooks/use-directory-items"

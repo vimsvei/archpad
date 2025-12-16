@@ -1,19 +1,22 @@
 "use client"
 
 import * as React from "react"
-import { Plus } from "lucide-react"
+import { Plus, RefreshCcw } from "lucide-react"
 import { toast } from "sonner"
 
-import type { DirectorySlug } from "@/types/directories"
+import type { DirectorySlug } from "@/@types/directories"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
-import { deleteDirectoryItem } from "@/components/directories/storage"
-import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { DirectoryDataTable } from "@/components/directories/directory-data-table"
 import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTranslate } from "@tolgee/react"
-import { useGetDirectoryItemsQuery, useCreateDirectoryItemMutation } from "@/store/apis/directory-api"
+import {
+  useDeleteDirectoryItemMutation,
+  useGetDirectoryItemsQuery,
+  useCreateDirectoryItemMutation,
+} from "@/store/apis/directory-api"
 import {
   Sheet,
   SheetContent,
@@ -31,7 +34,6 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const { t } = useTranslate()
   const meta = getDirectoryMeta(directorySlug)
   const title = t(meta.titleKey)
-  const localItems = useDirectoryItems(directorySlug)
   const [open, setOpen] = React.useState(false)
 
   const tr = React.useCallback(
@@ -62,9 +64,12 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     data: remoteItems,
     error: remoteError,
     refetch,
+    isLoading,
+    isFetching,
   } = useGetDirectoryItemsQuery(directorySlug)
 
   const [createItem, createState] = useCreateDirectoryItemMutation()
+  const [deleteItem] = useDeleteDirectoryItemMutation()
 
   return (
     <div className="flex flex-col gap-4">
@@ -78,18 +83,48 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         <Card className="p-4">
           <DirectoryDataTable
             directorySlug={directorySlug}
-            data={remoteItems ?? localItems}
+            data={remoteItems ?? []}
+            loading={isLoading || isFetching}
             toolbarActions={
-              <SheetTrigger asChild>
-                <Button size="icon" aria-label={t("action.create")}>
-                  <Plus />
-                </Button>
-              </SheetTrigger>
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      aria-label={tr("action.refresh", "Refresh")}
+                      onClick={() => void refetch()}
+                      disabled={isFetching}
+                    >
+                      <RefreshCcw />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">{tr("action.refresh", "Refresh")}</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SheetTrigger asChild>
+                      <Button size="icon" aria-label={tr("action.create", "Create")}>
+                        <Plus />
+                      </Button>
+                    </SheetTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">{tr("action.create", "Create")}</TooltipContent>
+                </Tooltip>
+              </div>
             }
             onDelete={(id) => {
               const ok = window.confirm("Delete this item?")
               if (!ok) return
-              deleteDirectoryItem(directorySlug, id)
+              void (async () => {
+                try {
+                  await deleteItem({ slug: directorySlug, id }).unwrap()
+                  toast.success("Deleted")
+                } catch (e: any) {
+                  toast.error(e?.message ?? "Failed to delete")
+                }
+              })()
             }}
           />
           {remoteError ? (

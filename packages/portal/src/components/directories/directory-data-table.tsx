@@ -16,9 +16,10 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useTranslate } from "@tolgee/react"
 
-import type { DirectoryItem, DirectorySlug } from "@/types/directories"
+import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import { EmptyBlock } from "@/components/empty/empty"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,11 +41,18 @@ import {
 type DirectoryDataTableProps = {
   directorySlug: DirectorySlug
   data: DirectoryItem[]
+  loading?: boolean
   onDelete: (id: string) => void
   toolbarActions?: React.ReactNode
 }
 
-export function DirectoryDataTable({ directorySlug, data, onDelete, toolbarActions }: DirectoryDataTableProps) {
+export function DirectoryDataTable({
+  directorySlug,
+  data,
+  loading,
+  onDelete,
+  toolbarActions,
+}: DirectoryDataTableProps) {
   const { t } = useTranslate()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -123,16 +131,18 @@ export function DirectoryDataTable({ directorySlug, data, onDelete, toolbarActio
             <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
+                  <Button variant="ghost" className="h-8 w-8 p-0" aria-label={t("table.item.actions")}>
+                    <span className="sr-only">{t("table.item.actions")}</span>
                     <MoreHorizontal />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuLabel>{t("table.item.actions")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/directories/${directorySlug}/${item.id}`}>Edit</Link>
+                    <Link href={`/directories/${directorySlug}/${item.id}`}>
+                      {t("item.action.edit")}
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
@@ -142,7 +152,7 @@ export function DirectoryDataTable({ directorySlug, data, onDelete, toolbarActio
                       onDelete(item.id)
                     }}
                   >
-                    Delete
+                    {t("item.action.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -200,7 +210,15 @@ export function DirectoryDataTable({ directorySlug, data, onDelete, toolbarActio
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-48">
+                  <div className="flex items-center justify-center">
+                    <Spinner className="h-6 w-6" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

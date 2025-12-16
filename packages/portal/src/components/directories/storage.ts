@@ -1,4 +1,4 @@
-import type { ActionStamp, DirectoryItem, DirectoryRelation, DirectorySlug } from "@/types/directories"
+import type { ActionStamp, DirectoryItem, DirectoryRelation, DirectorySlug } from "@/@types/directories"
 
 const ITEMS_KEY_PREFIX = "archpad:directory:"
 const RELATIONS_KEY = "archpad:directory-relations"

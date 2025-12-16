@@ -1,12 +1,12 @@
 /**
- * Directory API functions
+ * Directory API functions (directories-service)
  * Centralized API calls for directory operations
  */
 
-import type { DirectoryKind } from "@/types/directory-kind"
-import type { DirectoryItem, DirectorySlug } from "@/types/directories"
-import { restPost, restGet } from "./rest"
-import { graphqlRequest } from "./graphql"
+import type { DirectoryKind } from "@/@types/directory-kind"
+import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
+import { restRequest } from "@/services/http/rest-service"
+import { graphqlRequest } from "@/services/http/graphql-service"
 
 // ============================================================================
 // Types
@@ -76,57 +76,45 @@ function mapHasuraToDirectoryItem(row: HasuraDirectoryRow): DirectoryItem {
 // REST API (Arch-Repo)
 // ============================================================================
 
-/**
- * Create a new directory item via REST API
- */
 export async function createDirectoryItem(
   slug: DirectorySlug,
   input: CreateDirectoryItemInput
 ): Promise<DirectoryItem> {
-  const response = await restPost<ArchRepoDirectoryItem>(slug, input)
+  const response = await restRequest<ArchRepoDirectoryItem>(slug, {
+    method: "POST",
+    body: input,
+  })
   return mapToDirectoryItem(response)
 }
 
-/**
- * Get a directory item by ID via REST API
- */
 export async function getDirectoryItem(
   slug: DirectorySlug,
   id: string
 ): Promise<DirectoryItem> {
-  const response = await restGet<ArchRepoDirectoryItem>([slug, id])
+  const response = await restRequest<ArchRepoDirectoryItem>([slug, id], {
+    method: "GET",
+  })
   return mapToDirectoryItem(response)
 }
 
-/**
- * Update a directory item via REST API
- */
 export async function updateDirectoryItem(
   slug: DirectorySlug,
   id: string,
   input: UpdateDirectoryItemInput
 ): Promise<DirectoryItem> {
-  const response = await restPost<ArchRepoDirectoryItem>([slug, id], input)
+  const response = await restRequest<ArchRepoDirectoryItem>([slug, id], {
+    method: "PATCH",
+    body: input,
+  })
   return mapToDirectoryItem(response)
 }
 
-/**
- * Delete a directory item via REST API
- */
-export async function deleteDirectoryItem(
-  slug: DirectorySlug,
-  id: string
-): Promise<void> {
-  await restDelete([slug, id])
+export async function deleteDirectoryItem(slug: DirectorySlug, id: string): Promise<void> {
+  await restRequest([slug, id], { method: "DELETE" })
 }
 
-/**
- * Get all directory items for a given slug via REST API
- */
-export async function getDirectoryItems(
-  slug: DirectorySlug
-): Promise<DirectoryItem[]> {
-  const response = await restGet<ArchRepoDirectoryItem[]>(slug)
+export async function getDirectoryItems(slug: DirectorySlug): Promise<DirectoryItem[]> {
+  const response = await restRequest<ArchRepoDirectoryItem[]>(slug, { method: "GET" })
   return response.map(mapToDirectoryItem)
 }
 
@@ -134,9 +122,6 @@ export async function getDirectoryItems(
 // GraphQL API (Hasura)
 // ============================================================================
 
-/**
- * Fetch directory items by kind via GraphQL (Hasura)
- */
 export async function fetchDirectoryItemsByKind(kind: DirectoryKind): Promise<DirectoryItem[]> {
   // Note: column names are Hasura snake_case.
   const query = /* GraphQL */ `
@@ -155,4 +140,5 @@ export async function fetchDirectoryItemsByKind(kind: DirectoryKind): Promise<Di
   const data = await graphqlRequest<GetDirectoriesData, { kind: DirectoryKind }>(query, { kind })
   return data.directories.map(mapHasuraToDirectoryItem)
 }
+
 

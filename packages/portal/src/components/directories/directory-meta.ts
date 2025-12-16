@@ -1,6 +1,6 @@
-import { DirectoryKind } from "@/types/directory-kind"
+import { DirectoryKind } from "@/@types/directory-kind"
 
-import type { DirectoryMeta, DirectorySlug } from "@/types/directories"
+import type { DirectoryMeta, DirectorySlug } from "@/@types/directories"
 
 type DirectoryKindKey = keyof typeof DirectoryKind
 

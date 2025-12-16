@@ -17,21 +17,35 @@ type DirectoryItemFormValues = {
   byDefault: boolean
 }
 
+export type { DirectoryItemFormValues }
+
 type DirectoryItemFormProps = {
+  formId?: string
+  /**
+   * Create-mode: use initialValues (uncontrolled, internal state).
+   * Edit-mode: use values+onChange (controlled, external state).
+   */
   initialValues?: Partial<DirectoryItemFormValues>
+  values?: DirectoryItemFormValues
+  onChange?: (values: DirectoryItemFormValues) => void
   /** i18n prefix like "create.item" or "edit.item" */
   i18nPrefix: string
   submitLabel: string
   disabled?: boolean
+  hideActions?: boolean
   onSubmit: (values: DirectoryItemFormValues) => void | Promise<void>
   onCancel?: () => void
 }
 
 export function DirectoryItemForm({
+  formId,
   initialValues,
+  values,
+  onChange,
   i18nPrefix,
   submitLabel,
   disabled,
+  hideActions,
   onSubmit,
   onCancel,
 }: DirectoryItemFormProps) {
@@ -44,6 +58,8 @@ export function DirectoryItemForm({
     },
     [t]
   )
+  const isControlled = values !== undefined
+
   const [code, setCode] = React.useState(initialValues?.code ?? "")
   const [name, setName] = React.useState(initialValues?.name ?? "")
   const [description, setDescription] = React.useState(initialValues?.description ?? "")
@@ -51,17 +67,49 @@ export function DirectoryItemForm({
   const [byDefault, setByDefault] = React.useState(Boolean(initialValues?.byDefault))
   const [touched, setTouched] = React.useState(false)
 
-  const codeTrimmed = code.trim()
-  const nameTrimmed = name.trim()
+  // Uncontrolled mode only: allow initialValues update (e.g. when edit page loads async and uses uncontrolled mode).
+  React.useEffect(() => {
+    if (isControlled) return
+    if (!initialValues) return
+    setCode(initialValues.code ?? "")
+    setName(initialValues.name ?? "")
+    setDescription(initialValues.description ?? "")
+    setColor(initialValues.color ?? "")
+    setByDefault(Boolean(initialValues.byDefault))
+    setTouched(false)
+  }, [
+    isControlled,
+    initialValues?.code,
+    initialValues?.name,
+    initialValues?.description,
+    initialValues?.color,
+    initialValues?.byDefault,
+  ])
+
+  const current: DirectoryItemFormValues = isControlled
+    ? (values as DirectoryItemFormValues)
+    : { code, name, description, color, byDefault }
+
+  const emitChange = React.useCallback(
+    (next: DirectoryItemFormValues) => {
+      if (!onChange) return
+      onChange(next)
+    },
+    [onChange]
+  )
+
+  const codeTrimmed = current.code.trim()
+  const nameTrimmed = current.name.trim()
   const isValid = Boolean(codeTrimmed && nameTrimmed)
 
   const colorPickerValue = React.useMemo(() => {
-    const m = color.trim().match(/^#([0-9a-fA-F]{6})$/)
+    const m = current.color.trim().match(/^#([0-9a-fA-F]{6})$/)
     return m ? `#${m[1]!.toLowerCase()}` : "#000000"
-  }, [color])
+  }, [current.color])
 
   return (
     <form
+      id={formId}
       className="flex flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault()
@@ -71,9 +119,9 @@ export function DirectoryItemForm({
         void onSubmit({
           code: codeTrimmed,
           name: nameTrimmed,
-          description: description.trim(),
-          color: color.trim(),
-          byDefault,
+          description: current.description.trim(),
+          color: current.color.trim(),
+          byDefault: current.byDefault,
         })
       }}
     >
@@ -81,8 +129,12 @@ export function DirectoryItemForm({
         <Label htmlFor="directory-code">{tr(`${i18nPrefix}.code`, "Code")}</Label>
         <Input
           id="directory-code"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
+          value={current.code}
+          onChange={(e) => {
+            const next = e.target.value
+            if (isControlled) emitChange({ ...current, code: next })
+            else setCode(next)
+          }}
           aria-invalid={touched && !codeTrimmed ? true : undefined}
           autoComplete="off"
           disabled={disabled}
@@ -93,8 +145,12 @@ export function DirectoryItemForm({
         <Label htmlFor="directory-name">{tr(`${i18nPrefix}.name`, "Name")}</Label>
         <Input
           id="directory-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={current.name}
+          onChange={(e) => {
+            const next = e.target.value
+            if (isControlled) emitChange({ ...current, name: next })
+            else setName(next)
+          }}
           aria-invalid={touched && !nameTrimmed ? true : undefined}
           autoComplete="off"
           disabled={disabled}
@@ -105,8 +161,12 @@ export function DirectoryItemForm({
         <Label htmlFor="directory-description">{tr(`${i18nPrefix}.description`, "Description")}</Label>
         <Textarea
           id="directory-description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={current.description}
+          onChange={(e) => {
+            const next = e.target.value
+            if (isControlled) emitChange({ ...current, description: next })
+            else setDescription(next)
+          }}
           disabled={disabled}
         />
       </div>
@@ -118,14 +178,22 @@ export function DirectoryItemForm({
             aria-label={tr(`${i18nPrefix}.color`, "Color")}
             type="color"
             value={colorPickerValue}
-            onChange={(e) => setColor(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value
+              if (isControlled) emitChange({ ...current, color: next })
+              else setColor(next)
+            }}
             className="w-12 px-1"
             disabled={disabled}
           />
           <Input
             id="directory-color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
+            value={current.color}
+            onChange={(e) => {
+              const next = e.target.value
+              if (isControlled) emitChange({ ...current, color: next })
+              else setColor(next)
+            }}
             placeholder="#RRGGBB"
             autoComplete="off"
             disabled={disabled}
@@ -136,23 +204,29 @@ export function DirectoryItemForm({
       <div className="flex items-center gap-2">
         <Checkbox
           id="directory-by-default"
-          checked={byDefault}
-          onCheckedChange={(v) => setByDefault(Boolean(v))}
+          checked={current.byDefault}
+          onCheckedChange={(v) => {
+            const next = Boolean(v)
+            if (isControlled) emitChange({ ...current, byDefault: next })
+            else setByDefault(next)
+          }}
           disabled={disabled}
         />
         <Label htmlFor="directory-by-default">{tr(`${i18nPrefix}.by-default`, "By default")}</Label>
       </div>
 
-      <div className="flex items-center justify-end gap-2">
-        {onCancel ? (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={disabled}>
-            {tr("action.cancel", "Cancel")}
+      {!hideActions ? (
+        <div className="flex items-center justify-end gap-2">
+          {onCancel ? (
+            <Button type="button" variant="outline" onClick={onCancel} disabled={disabled}>
+              {tr("action.cancel", "Cancel")}
+            </Button>
+          ) : null}
+          <Button type="submit" disabled={!isValid || disabled}>
+            {submitLabel}
           </Button>
-        ) : null}
-        <Button type="submit" disabled={!isValid || disabled}>
-          {submitLabel}
-        </Button>
-      </div>
+        </div>
+      ) : null}
     </form>
   )
 }

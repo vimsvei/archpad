@@ -4,10 +4,14 @@
   "scripts": {
     "dev:infra": "docker compose --project-name archpad --env-file ../.env up -d",
 
-    "dev:app:build": "docker compose --project-name archpad --env-file ../.env --profile app build --no-cache portal",
-    "dev:app": "docker compose --project-name archpad --env-file ../.env --profile app up -d --force-recreate portal",
+    "dev:app:build_OLD": "docker compose --project-name archpad --env-file ../.env --profile app build --no-cache portal",
+    "dev:app_OLD": "docker compose --project-name archpad --env-file ../.env --profile app up -d --force-recreate portal",
 
     "dev:backend": "docker compose --project-name archpad --env-file ../.env --profile backend up -d",
+
+    "dev:app:build": "docker compose --project-name archpad --env-file ../.env --profile app build portal",
+    "dev:app": "docker compose --project-name archpad --env-file ../.env --profile app up -d portal",
+    "dev:app:deps": "docker compose --project-name archpad --env-file ../.env --profile app exec portal sh -lc \"pnpm install --frozen-lockfile --filter @archpad/portal...\"",
 
     "dev:mon": "docker compose --project-name archpad --env-file ../.env --profile monitoring up -d",
     "dev:all": "docker compose --project-name archpad --env-file ../.env --profile app --profile monitoring up -d",
