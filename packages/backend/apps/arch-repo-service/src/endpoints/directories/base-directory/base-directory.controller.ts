@@ -1,5 +1,6 @@
 import { BaseDirectoryService } from './base-directory.service';
 import { DirectoryObject } from '../../../model/abstract/directory-object.abstract';
+import type {ArchpadRequestContext} from "@/request-context/archpad-request-context";
 
 export class BaseDirectoryController<
   Entity extends DirectoryObject,
@@ -25,12 +26,12 @@ export class BaseDirectoryController<
     return this.service.findOne(id);
   }
 
-  create(dto: CreateDto) {
-    return this.service.create(dto);
+  create(dto: CreateDto, context: ArchpadRequestContext) {
+    return this.service.create(dto, context);
   }
 
-  update(id: string, dto: UpdateDto) {
-    return this.service.update(id, dto);
+  update(id: string, dto: UpdateDto, context: ArchpadRequestContext) {
+    return this.service.update(id, dto, context);
   }
 
   async remove(id: string) {

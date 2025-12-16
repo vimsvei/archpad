@@ -12,7 +12,6 @@ import {
   Post,
   Type,
 } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
 import { BaseDirectoryService } from './base-directory.service';
 import { InjectRepository, MikroOrmModule } from '@mikro-orm/nestjs';
 import {
@@ -29,7 +28,9 @@ import {
 import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
-import { RequiredArchpadHeadersGuard } from '@/auth/required-archpad-headers.guard';
+import { LoggerService } from '@archpad/logger';
+import { type ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
 
 export interface BaseDirectoryModuleOptions<
   Entity extends DirectoryObject,
@@ -78,15 +79,15 @@ export class BaseDirectoryModule {
         repo: EntityRepository<Entity>,
         @InjectRepository(DirectoryItemsMap)
         mapRepo: EntityRepository<DirectoryItemsMap>,
+        logger: LoggerService,
       ) {
-        super(repo, mapRepo, entity);
+        super(repo, mapRepo, entity, logger);
       }
     }
 
     @ApiTags(swaggerTag ?? EntityClass.name ?? path)
     @ApiExtraModels(EntityClass, CreateDtoClass, UpdateDtoClass)
     @Controller(path)
-    @UseGuards(RequiredArchpadHeadersGuard)
     class DirectoryController {
       constructor(private readonly service: DirectoryService) {}
 
@@ -139,8 +140,11 @@ export class BaseDirectoryModule {
         description: 'Элемент успешно создан.',
         type: EntityClass,
       })
-      create(@Body() dto: CreateDto) {
-        return this.service.create(dto);
+      create(
+        @Body() dto: CreateDto,
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.create(dto, context);
       }
 
       @Patch(':id')
@@ -163,8 +167,12 @@ export class BaseDirectoryModule {
         type: EntityClass,
       })
       @ApiNotFoundResponse({ description: 'Элемент с таким ID не найден.' })
-      update(@Param('id') id: string, @Body() dto: UpdateDto) {
-        return this.service.update(id, dto);
+      update(
+        @Param('id') id: string,
+        @Body() dto: UpdateDto,
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.update(id, dto, context);
       }
 
       @Delete(':id')
@@ -206,7 +214,7 @@ export class BaseDirectoryModule {
     return {
       module: BaseDirectoryModule,
       imports: [MikroOrmModule.forFeature([entity, DirectoryItemsMap])],
-      providers: [DirectoryService, RequiredArchpadHeadersGuard],
+      providers: [DirectoryService, LoggerService],
       controllers: [DirectoryController],
       exports: [DirectoryService],
     };

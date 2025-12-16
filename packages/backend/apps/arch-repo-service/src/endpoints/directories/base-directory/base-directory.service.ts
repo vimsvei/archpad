@@ -6,6 +6,7 @@ import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { LoggerService } from '@archpad/logger';
+import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 
 export class BaseDirectoryService<
   Entity extends DirectoryObject,
@@ -37,9 +38,17 @@ export class BaseDirectoryService<
     return entity;
   }
 
-  async create(dto: CreateDto): Promise<Entity> {
+  async create(
+    dto: CreateDto,
+    context: ArchpadRequestContext,
+  ): Promise<Entity> {
     try {
-      const entity = this.repo.create(dto as any);
+      const entity = this.repo.create({
+        ...(dto as any),
+        created: {
+          by: context.userId,
+        },
+      });
       await this.repo.getEntityManager().persistAndFlush(entity);
       return entity;
     } catch (error) {
@@ -48,10 +57,15 @@ export class BaseDirectoryService<
     }
   }
 
-  async update(id: string, dto: UpdateDto): Promise<Entity> {
+  async update(id: string, dto: UpdateDto, context: ArchpadRequestContext): Promise<Entity> {
     try {
       const entity = await this.findOne(id);
-      this.repo.assign(entity, dto as any);
+      this.repo.assign(entity, {
+        ...(dto as any),
+        updated: {
+          by: context.userId,
+        }
+      });
       await this.repo.getEntityManager().flush();
       return entity;
     } catch (error) {
