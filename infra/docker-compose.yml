@@ -372,9 +372,7 @@ services:
     pull_policy: build
     environment:
       NODE_ENV: development
-      # In docker network Postgres is reachable as "postgres".
-      # Allow overriding via .env when using an external DB.
-      PG_HOST: ${POSTGRES_ENDPOINT:-postgres}
+      PG_ENDPOINT: ${POSTGRES_ENDPOINT}
       PG_PORT: ${PG_PORT:-5432}
       PROJECT_DB: ${PROJECT_DB}
       PROJECT_DB_USER: ${PROJECT_DB_USER}

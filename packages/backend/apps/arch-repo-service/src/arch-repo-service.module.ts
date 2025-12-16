@@ -38,7 +38,7 @@ import { RequiredHeadersGuard } from '@/common/guards/required-headers.guard';
       driver: PostgreSqlDriver,
       host:
         process.env.NODE_ENV === 'local'
-          ? process.env.PPG_HOST
+          ? process.env.PG_HOST
           : process.env.PG_ENDPOINT,
       port: +(process.env.PG_PORT ?? '5432'),
       dbName: process.env.PROJECT_DB,
