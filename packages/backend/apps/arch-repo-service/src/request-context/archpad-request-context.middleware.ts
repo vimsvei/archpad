@@ -14,11 +14,8 @@ export class ArchpadRequestContextMiddleware implements NestMiddleware {
 
     // Even if headers are missing, we still run ALS to avoid undefined store access.
     // Guards will enforce required headers where needed.
-    return runWithArchpadRequestContext(
-      { userId, tenantIds, roles },
-      () => next(),
+    return runWithArchpadRequestContext({ userId, tenantIds, roles }, () =>
+      next(),
     );
   }
 }
-
-

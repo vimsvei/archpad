@@ -8,4 +8,3 @@ export interface HasuraRelationshipRef {
   name: string;
   using: any;
 }
-

@@ -26,5 +26,3 @@ export function parseCsvHeader(raw: unknown): string[] {
     .map((s) => s.trim())
     .filter(Boolean);
 }
-
-

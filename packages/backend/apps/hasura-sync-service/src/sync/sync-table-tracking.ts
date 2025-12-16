@@ -58,4 +58,3 @@ export async function syncTableTracking(args: {
 
   return { tracked: toTrack, untracked: toUntrack };
 }
-

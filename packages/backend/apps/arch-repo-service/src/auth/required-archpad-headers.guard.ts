@@ -15,15 +15,15 @@ export class RequiredArchpadHeadersGuard implements CanActivate {
 
     // Oathkeeper sets these headers. If someone bypasses the gateway, we want a hard fail.
     const userId = headerValue(req, 'x-archpad-user-id');
-    const tenantIds = headerValue(req, 'x-archpad-tenant-ids');
-    const roles = headerValue(req, 'x-archpad-roles');
+    // TEMPORARY: allow missing tenant/roles headers while Oathkeeper templates/claims are being aligned.
+    // Keep User-Id as the minimum required signal that the request passed through the gateway.
+    // const tenantIds = headerValue(req, 'x-archpad-tenant-ids');
+    // const roles = headerValue(req, 'x-archpad-roles');
 
     if (!userId) throw new UnauthorizedException('Missing X-Archpad-User-Id');
-    if (!tenantIds) throw new UnauthorizedException('Missing X-Archpad-Tenant-Ids');
-    if (!roles) throw new UnauthorizedException('Missing X-Archpad-Roles');
+    // if (!tenantIds) throw new UnauthorizedException('Missing X-Archpad-Tenant-Ids');
+    // if (!roles) throw new UnauthorizedException('Missing X-Archpad-Roles');
 
     return true;
   }
 }
-
-

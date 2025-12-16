@@ -16,4 +16,3 @@ export async function getSchemaTables(
   const rows = res.result?.slice(1) ?? [];
   return rows.map(([schema, name]) => ({ schema, name }));
 }
-

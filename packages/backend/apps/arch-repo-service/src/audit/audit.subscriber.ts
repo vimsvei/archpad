@@ -21,10 +21,14 @@ export class AuditSubscriber implements EventSubscriber<BaseObject> {
     const entity: any = args.entity;
     const ctx = getArchpadRequestContext();
     const by = ctx?.userId?.trim();
-    if (!by) return;
+    // Ensure created stamp always exists (even for internal calls without request context),
+    // and attach actor only when we have it.
+    if (!entity.created) {
+      entity.created = ActionStamp.now(by ?? null);
+      return;
+    }
 
-    // Ensure created stamp exists and contains actor.
-    if (!entity.created || !entity.created.by) {
+    if (by && !entity.created.by) {
       entity.created = ActionStamp.now(by);
     }
   }

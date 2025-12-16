@@ -8,7 +8,7 @@ export class ArchimateSequenceInitializer implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     const generator = this.orm.getSchemaGenerator();
-    
+
     const seqNames = getArchimateSequences();
     if (!seqNames.length) return;
 
@@ -25,7 +25,7 @@ export class ArchimateSequenceInitializer implements OnApplicationBootstrap {
       `;
       await conn.execute(sql);
     }
-    
+
     await generator.updateSchema({ safe: true } as any);
   }
 }

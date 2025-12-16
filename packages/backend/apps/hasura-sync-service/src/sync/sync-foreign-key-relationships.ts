@@ -29,7 +29,10 @@ export async function syncForeignKeyRelationships(args: {
   const mapGroups = new Map<string, ForeignKeyInfo[]>();
   for (const fk of foreignKeys) {
     if (!fk.fk_table_name.startsWith('map_')) continue;
-    mapGroups.set(fk.fk_table_name, [...(mapGroups.get(fk.fk_table_name) ?? []), fk]);
+    mapGroups.set(fk.fk_table_name, [
+      ...(mapGroups.get(fk.fk_table_name) ?? []),
+      fk,
+    ]);
   }
   for (const [mapTable, fks] of mapGroups.entries()) {
     const pkTables = [...new Set(fks.map((x) => x.pk_table_name))].sort();
@@ -100,7 +103,9 @@ export async function syncForeignKeyRelationships(args: {
   const desiredObjectKeys = new Set<string>();
   const desiredArrayKeys = new Set<string>();
 
-  const orderedFks = foreignKeys.slice().sort((a, b) => fkId(a).localeCompare(fkId(b)));
+  const orderedFks = foreignKeys
+    .slice()
+    .sort((a, b) => fkId(a).localeCompare(fkId(b)));
   for (const fk of orderedFks) {
     const objectNameRaw = buildObjectRelationshipNameForFk(fk);
     const arrayNameRaw = buildArrayRelationshipNameForFk({
@@ -241,7 +246,9 @@ export async function syncForeignKeyRelationships(args: {
       });
       if (desiredObjectKeys.has(k)) continue;
 
-      logger.log(`Dropping stale object relationship ${r.table.name}.${r.name}...`);
+      logger.log(
+        `Dropping stale object relationship ${r.table.name}.${r.name}...`,
+      );
       try {
         await hasura.postMetadata({
           type: 'pg_drop_relationship',
@@ -252,7 +259,9 @@ export async function syncForeignKeyRelationships(args: {
           },
         });
       } catch (e) {
-        logger.warn(`Failed to drop relationship ${r.table.name}.${r.name}: ${e}`);
+        logger.warn(
+          `Failed to drop relationship ${r.table.name}.${r.name}: ${e}`,
+        );
       }
     }
 
@@ -268,7 +277,9 @@ export async function syncForeignKeyRelationships(args: {
       });
       if (desiredArrayKeys.has(k)) continue;
 
-      logger.log(`Dropping stale array relationship ${r.table.name}.${r.name}...`);
+      logger.log(
+        `Dropping stale array relationship ${r.table.name}.${r.name}...`,
+      );
       try {
         await hasura.postMetadata({
           type: 'pg_drop_relationship',
@@ -279,9 +290,10 @@ export async function syncForeignKeyRelationships(args: {
           },
         });
       } catch (e) {
-        logger.warn(`Failed to drop relationship ${r.table.name}.${r.name}: ${e}`);
+        logger.warn(
+          `Failed to drop relationship ${r.table.name}.${r.name}: ${e}`,
+        );
       }
     }
   }
 }
-

@@ -39,4 +39,3 @@ export function getExistingRelationshipsFromSource(
 
   return out;
 }
-

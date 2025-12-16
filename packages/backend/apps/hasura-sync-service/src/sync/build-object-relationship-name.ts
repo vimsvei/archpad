@@ -8,4 +8,3 @@ export function buildObjectRelationshipNameForFk(
   const base = stripIdSuffixSnake(fk.fk_columns[0]);
   return toCamelCase(base);
 }
-

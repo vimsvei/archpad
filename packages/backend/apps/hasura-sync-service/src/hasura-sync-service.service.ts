@@ -60,7 +60,11 @@ export class HasuraSyncService {
       hasura: this.hasura,
       logger: this.logger,
     });
-    await trackTables({ hasura: this.hasura, logger: this.logger, tables: dbTables });
+    await trackTables({
+      hasura: this.hasura,
+      logger: this.logger,
+      tables: dbTables,
+    });
 
     const foreignKeys = await getSchemaForeignKeys(this.hasura);
     // After full reset we can just create relationships from scratch.

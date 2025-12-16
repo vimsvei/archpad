@@ -1,4 +1,3 @@
-import { NamedObject } from '@archpad/models';
 import { EntityName, EntityRepository } from '@mikro-orm/core';
 import {
   Body,

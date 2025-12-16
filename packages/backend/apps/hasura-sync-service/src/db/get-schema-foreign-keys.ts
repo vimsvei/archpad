@@ -40,4 +40,3 @@ export async function getSchemaForeignKeys(
   const rows = res.result?.slice(1) ?? [];
   return rows.map(([json]) => JSON.parse(json) as ForeignKeyInfo);
 }
-

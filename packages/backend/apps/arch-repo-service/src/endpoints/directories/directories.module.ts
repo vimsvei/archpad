@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { CreateDirectoryDto, UpdateDirectoryDto } from '@/model/dto/directory.dto';
+import {
+  CreateDirectoryDto,
+  UpdateDirectoryDto,
+} from '@/model/dto/directory.dto';
 import { BaseDirectoryModule } from './base-directory/base-directory.module';
 import { LicenseTypeDirectory } from '@/model/directories/license-type.directory';
 import { ArchitectureStyleDirectory } from '@/model/directories/architecture-style.directory';

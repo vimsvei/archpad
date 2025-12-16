@@ -1,4 +1,5 @@
 import { cookies } from "next/headers"
+import type { NextResponse } from "next/server"
 
 const ACCESS_TOKEN_COOKIE = "archpad_access_token"
 const REFRESH_TOKEN_COOKIE = "archpad_refresh_token"
@@ -28,6 +29,25 @@ export async function sha256Base64Url(input: string) {
 export async function getAccessTokenFromCookies() {
   const c = await cookies()
   return c.get(ACCESS_TOKEN_COOKIE)?.value ?? null
+}
+
+export async function getRefreshTokenFromCookies() {
+  const c = await cookies()
+  return c.get(REFRESH_TOKEN_COOKIE)?.value ?? null
+}
+
+export function setTokensOnResponse(
+  response: NextResponse,
+  input: { accessToken: string; refreshToken?: string }
+) {
+  const opts = { httpOnly: true, sameSite: "lax" as const, secure: true, path: "/" }
+  response.cookies.set(ACCESS_TOKEN_COOKIE, input.accessToken, { ...opts, maxAge: 15 * 60 })
+  if (input.refreshToken) {
+    response.cookies.set(REFRESH_TOKEN_COOKIE, input.refreshToken, {
+      ...opts,
+      maxAge: 60 * 60 * 24 * 30,
+    })
+  }
 }
 
 export async function setOAuthTempCookies(input: {

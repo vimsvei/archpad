@@ -41,4 +41,3 @@ export function buildArrayRelationshipNameForFk(args: {
   const fkPluralSnake = toPlural(toSingular(fk.fk_table_name));
   return toCamelCase(fkPluralSnake);
 }
-

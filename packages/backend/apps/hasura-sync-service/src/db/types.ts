@@ -11,4 +11,3 @@ export interface ForeignKeyInfo {
   fk_columns: string[];
   constraint_name: string;
 }
-

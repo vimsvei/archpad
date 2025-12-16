@@ -1,3 +1,4 @@
+import helmet from 'helmet';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ArchRepoServiceModule } from './arch-repo-service.module';
@@ -10,6 +11,7 @@ async function bootstrap() {
 
   const appLogger = app.get(LoggerService);
   app.useLogger(appLogger);
+  app.use(helmet());
 
   const config = new DocumentBuilder()
     .setTitle('Archpad API')

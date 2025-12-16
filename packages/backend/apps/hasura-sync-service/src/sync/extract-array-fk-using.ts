@@ -9,4 +9,3 @@ export function extractArrayFkUsing(
   }
   return { fkSchema: tbl.schema, fkTable: tbl.name, cols };
 }
-

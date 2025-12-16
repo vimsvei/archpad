@@ -18,4 +18,3 @@ export async function getTableColumns(args: {
   const rows = res.result?.slice(1) ?? [];
   return rows.map(([name]) => name);
 }
-

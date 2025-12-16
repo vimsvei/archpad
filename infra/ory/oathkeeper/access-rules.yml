@@ -1,9 +1,12 @@
 # ==== GraphQL Hasura через Oathkeeper ====
 - id: hasura-graphql
   match:
-    url: ^https?://[^/]+/graphql/.*
+    url: <https|http>://api.192-168-1-119.sslip.io/graphql<(/.*)?>
     methods: ["GET", "POST", "OPTIONS"]
-  strip_path: /graphql
+  upstream:
+    url: http://hasura:8080
+    preserve_host: true
+    strip_path: /graphql
   authenticators:
     - handler: oauth2_introspection
   authorizer:
@@ -13,17 +16,18 @@
       config:
         headers:
           X-Hasura-User-Id: "{{ .Subject }}"
-          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
-          X-Hasura-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
-  upstream:
-    url: http://hasura:8080
+#          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
+#          X-Hasura-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
 
 # ==== Arch-repo-service через Oathkeeper ====
 - id: arch-repo-api
   match:
-    url: ^https?://[^/]+/rest/.*
+    url: <https|http>://api.192-168-1-119.sslip.io/rest<(/.*)>
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-  strip_path: /rest
+  upstream:
+    url: http://arch-repo:3000
+    preserve_host: true
+    strip_path: /rest
   authenticators:
     - handler: oauth2_introspection
   authorizer:
@@ -33,7 +37,5 @@
       config:
         headers:
           X-Archpad-User-Id: "{{ .Subject }}"
-          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
-          X-Archpad-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
-  upstream:
-    url: http://arch-repo:3000
+#          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
+#          X-Archpad-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"

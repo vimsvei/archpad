@@ -20,7 +20,9 @@ export async function fetchDbTables(args: {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const tables = await getSchemaTables(hasura);
     if (tables.length) {
-      logger.log(`Fetched ${tables.length} tables from DB (attempt ${attempt}/${retries}).`);
+      logger.log(
+        `Fetched ${tables.length} tables from DB (attempt ${attempt}/${retries}).`,
+      );
       return tables;
     }
 
@@ -34,4 +36,3 @@ export async function fetchDbTables(args: {
   logger.log(`Fetched ${tables.length} tables from DB (final attempt).`);
   return tables;
 }
-

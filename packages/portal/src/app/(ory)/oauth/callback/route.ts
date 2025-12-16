@@ -87,6 +87,20 @@ export async function GET(request: Request) {
     )
   }
 
+  // Debug logging (dev only). WARNING: do not enable token printing in production.
+  if (process.env.NODE_ENV === "development") {
+    const shouldPrintToken = process.env.DEBUG_OAUTH_TOKENS === "true"
+    const tokenPreview =
+      typeof json.access_token === "string"
+        ? `${json.access_token.slice(0, 12)}…${json.access_token.slice(-8)} (len=${json.access_token.length})`
+        : "missing"
+
+    console.info(
+      `[oauth.callback] token_exchange ok: access_token=${shouldPrintToken ? json.access_token : tokenPreview
+      } refresh_token=${json.refresh_token ? "present" : "missing"}`
+    )
+  }
+
   await setTokensCookies({ accessToken: json.access_token, refreshToken: json.refresh_token })
   await clearOAuthTempCookies()
 

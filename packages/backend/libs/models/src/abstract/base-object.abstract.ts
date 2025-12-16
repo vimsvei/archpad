@@ -1,5 +1,5 @@
 import { ActionStamp } from '../embeddable/action-stamp.embeddable';
-import { BeforeCreate, BeforeUpdate, Embedded, Entity } from '@mikro-orm/core';
+import { BeforeCreate, Embedded, Entity } from '@mikro-orm/core';
 
 @Entity({ abstract: true })
 export abstract class BaseObject {
@@ -21,12 +21,12 @@ export abstract class BaseObject {
   deleted?: ActionStamp;
 
   @BeforeCreate()
-  protected setCreatedStamp(by: string) {
-    this.created = ActionStamp.now(by);
-  }
-
-  @BeforeUpdate()
-  protected setUpdatedStamp(by: string) {
-    this.updated = ActionStamp.now(by);
+  protected ensureCreatedStamp() {
+    // Never accept arguments here: MikroORM passes lifecycle EventArgs to hook params,
+    // which can accidentally end up persisted (and even be circular).
+    // Actor (user id) should be set by an app-level subscriber (e.g. AuditSubscriber).
+    if (!this.created) {
+      this.created = ActionStamp.now(null);
+    }
   }
 }

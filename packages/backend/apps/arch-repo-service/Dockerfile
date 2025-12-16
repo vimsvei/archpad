@@ -36,4 +36,5 @@ COPY --from=prod-deps /app/packages/backend/node_modules ./node_modules
 COPY --from=build /app/packages/backend/dist ./dist
 USER node
 EXPOSE 3000
-CMD ["node", "dist/apps/arch-repo-service/backend/apps/arch-repo-service/src/main.js"]
+# Nest monorepo build output (see apps/arch-repo-service/tsconfig.app.json outDir)
+CMD ["node", "dist/apps/arch-repo-service/apps/arch-repo-service/src/main.js"]

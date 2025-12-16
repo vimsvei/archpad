@@ -8,13 +8,10 @@
   "scripts": {
     "start:arch-repo": "nest start arch-repo-service",
     "start:hasura-repo-sync": "nest start hasura-sync-service",
-
     "start:dev:arch-repo": "nest start arch-repo-service --watch",
     "start:dev:hasura-repo-sync": "nest start hasura-sync-service --watch",
-
     "build:arch-repo": "nest build arch-repo-service",
     "build:hasura-repo-sync": "nest build hasura-sync-service",
-
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "env:render": "ROOT_ENV_PATH=../../.env ../scripts/render-env.sh"
   },
@@ -31,6 +28,7 @@
     "@nestjs/swagger": "^11.2.3",
     "@nestjs/terminus": "^11.0.0",
     "check-disk-space": "^3.4.0",
+    "helmet": "^8.1.0",
     "nestjs-zod": "^5.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

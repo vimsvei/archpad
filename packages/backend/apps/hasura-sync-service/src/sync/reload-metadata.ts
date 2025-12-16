@@ -16,4 +16,3 @@ export async function reloadMetadata(args: {
     logger.warn(`Failed to reload metadata: ${e}`);
   }
 }
-

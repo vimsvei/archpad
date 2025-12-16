@@ -16,4 +16,3 @@ export function getTrackedTablesFromSource(
   if (!schemaFilter) return tracked;
   return tracked.filter((t) => t.schema === schemaFilter);
 }
-

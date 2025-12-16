@@ -9,13 +9,14 @@ export class ActionStamp {
 
   @ApiProperty({ format: 'uuid' })
   @Property({ type: 'uuid', nullable: true })
-  by: string;
+  by: string | null = null;
 
-  protected constructor(by: string) {
-    this.by = by;
+  protected constructor(by?: string | null) {
+    const v = typeof by === 'string' ? by.trim() : '';
+    this.by = v.length ? v : null;
   }
 
-  static now(by: string) {
+  static now(by?: string | null) {
     return new ActionStamp(by);
   }
 }

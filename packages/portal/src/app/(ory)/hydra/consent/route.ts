@@ -35,6 +35,11 @@ export async function GET(request: Request) {
   const grantScope = consentReq.requested_scope ?? []
   const audience = consentReq.requested_access_token_audience ?? []
 
+  // Add identity metadata into Hydra session, so it becomes available in token introspection `ext`.
+  // Oathkeeper can then forward X-Archpad-* / X-Hasura-* headers based on roles/tenants.
+  const identity = (session as any)?.identity
+  const metadataPublic = identity?.metadata_public ?? null
+
   const accept = await fetch(
     `${hydraAdminUrl}/oauth2/auth/requests/consent/accept?consent_challenge=${encodeURIComponent(challenge)}`,
     {
@@ -43,6 +48,14 @@ export async function GET(request: Request) {
       body: JSON.stringify({
         grant_scope: grantScope,
         grant_access_token_audience: audience,
+        session: {
+          access_token: {
+            identity: metadataPublic ? { metadata_public: metadataPublic } : undefined,
+          },
+          id_token: {
+            identity: metadataPublic ? { metadata_public: metadataPublic } : undefined,
+          },
+        },
         remember: true,
         remember_for: 3600,
       }),

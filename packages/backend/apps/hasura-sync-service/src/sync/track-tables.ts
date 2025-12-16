@@ -21,11 +21,13 @@ export async function trackTables(args: {
     try {
       await hasura.postMetadata({
         type: 'pg_track_table',
-        args: { source: hasura.source, table: { schema: t.schema, name: t.name } },
+        args: {
+          source: hasura.source,
+          table: { schema: t.schema, name: t.name },
+        },
       });
     } catch (e) {
       logger.warn(`Failed to track table ${t.schema}.${t.name}: ${e}`);
     }
   }
 }
-

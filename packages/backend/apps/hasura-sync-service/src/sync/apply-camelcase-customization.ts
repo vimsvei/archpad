@@ -59,8 +59,9 @@ export async function applyCamelCaseCustomization(args: {
         args: metadataArgs,
       });
     } catch (e) {
-      logger.warn(`Failed to set customization for ${table.schema}.${table.name}: ${e}`);
+      logger.warn(
+        `Failed to set customization for ${table.schema}.${table.name}: ${e}`,
+      );
     }
   }
 }
-

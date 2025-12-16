@@ -9,4 +9,3 @@ export function objectRelationshipKey(args: {
 }): string {
   return `object|${args.schema}.${args.table}|${normCols(args.cols)}`;
 }
-

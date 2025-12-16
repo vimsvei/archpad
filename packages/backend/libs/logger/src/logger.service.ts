@@ -47,12 +47,50 @@ export class LoggerService implements NestLoggerService {
     const payload: Record<string, any> = {
       timestamp: now,
       level,
-      message: typeof message === 'string' ? message : JSON.stringify(message),
+      // Keep message structured where possible (avoid "JSON inside JSON" strings).
+      message: toJsonSafe(message),
     };
 
     if (context) payload.context = context;
     if (trace) payload.trace = trace;
 
-    console.log(JSON.stringify(payload));
+    console.log(JSON.stringify(payload, null, 2));
+  }
+}
+
+function toJsonSafe(input: unknown): unknown {
+  if (typeof input === 'string') return input;
+
+  // Errors don't stringify well by default (message/stack are not enumerable).
+  // Normalize them into a JSON-friendly object.
+  if (input instanceof Error) {
+    const out: Record<string, unknown> = {
+      name: input.name,
+      message: input.message,
+      stack: input.stack,
+    };
+
+    // Node 16+ supports Error.cause
+    const anyErr = input as any;
+    if (anyErr?.cause instanceof Error) {
+      out.cause = {
+        name: anyErr.cause.name,
+        message: anyErr.cause.message,
+        stack: anyErr.cause.stack,
+      };
+    } else if (anyErr?.cause != null) {
+      out.cause = anyErr.cause;
+    }
+
+    return out;
+  }
+
+  // If it's already JSON-safe, keep it structured.
+  try {
+    JSON.stringify(input);
+    return input;
+  } catch {
+    // Fallback for circular structures
+    return String(input);
   }
 }

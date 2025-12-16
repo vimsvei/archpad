@@ -12,8 +12,7 @@ import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useTranslate } from "@tolgee/react"
-import { fetchDirectoryItemsByKind } from "@/components/directories/hasura"
-import { createDirectoryItemInArchRepo } from "@/components/directories/arch-repo"
+import { useApi } from "@/components/providers/api-provider"
 import {
   Sheet,
   SheetContent,
@@ -29,6 +28,7 @@ type DirectoryListPageProps = {
 
 export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const { t } = useTranslate()
+  const api = useApi()
   const meta = getDirectoryMeta(directorySlug)
   const title = t(meta.titleKey)
   const localItems = useDirectoryItems(directorySlug)
@@ -46,7 +46,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       }
       try {
         setRemoteError(null)
-        const data = await fetchDirectoryItemsByKind(meta.kind)
+        const data = await api.directories.fetchDirectoryItemsByKind(meta.kind)
         if (!cancelled) setRemoteItems(data)
       } catch (e: any) {
         if (!cancelled) {
@@ -107,8 +107,8 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                 setSaving(true)
                 try {
                   setRemoteError(null)
-                  await createDirectoryItemInArchRepo(directorySlug, values)
-                  const data = await fetchDirectoryItemsByKind(meta.kind)
+                  await api.directories.createDirectoryItem(directorySlug, values)
+                  const data = await api.directories.fetchDirectoryItemsByKind(meta.kind)
                   setRemoteItems(data)
                   setOpen(false)
                 } catch (e: any) {

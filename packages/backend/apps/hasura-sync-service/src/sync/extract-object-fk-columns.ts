@@ -5,4 +5,3 @@ export function extractObjectFkColumns(using: any): string[] | null {
   if (Array.isArray(on)) return on;
   return null;
 }
-

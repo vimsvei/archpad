@@ -13,4 +13,3 @@ export function arrayRelationshipKey(args: {
     args.cols,
   )}`;
 }
-
