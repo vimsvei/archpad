@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Plus } from "lucide-react"
+import { toast } from "sonner"
 
 import type { DirectorySlug } from "@/types/directories"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
@@ -12,7 +13,7 @@ import { DirectoryItemForm } from "@/components/directories/directory-item-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useTranslate } from "@tolgee/react"
-import { useApi } from "@/components/providers/api-provider"
+import { useGetDirectoryItemsQuery, useCreateDirectoryItemMutation } from "@/store/apis/directory-api"
 import {
   Sheet,
   SheetContent,
@@ -28,38 +29,42 @@ type DirectoryListPageProps = {
 
 export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const { t } = useTranslate()
-  const api = useApi()
   const meta = getDirectoryMeta(directorySlug)
   const title = t(meta.titleKey)
   const localItems = useDirectoryItems(directorySlug)
-  const [remoteItems, setRemoteItems] = React.useState(localItems)
-  const [remoteError, setRemoteError] = React.useState<string | null>(null)
-  const [saving, setSaving] = React.useState(false)
   const [open, setOpen] = React.useState(false)
 
-  React.useEffect(() => {
-    let cancelled = false
-    async function run() {
-      if (!meta.kind) {
-        setRemoteItems(localItems)
-        return
-      }
-      try {
-        setRemoteError(null)
-        const data = await api.directories.fetchDirectoryItemsByKind(meta.kind)
-        if (!cancelled) setRemoteItems(data)
-      } catch (e: any) {
-        if (!cancelled) {
-          setRemoteError(e?.message ?? "Failed to load directory items")
-          setRemoteItems(localItems)
-        }
-      }
+  const tr = React.useCallback(
+    (key: string, fallback: string) => {
+      const v = t(key)
+      return v === key ? fallback : v
+    },
+    [t]
+  )
+
+  const formatNowWithTz = React.useCallback(() => {
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZoneName: "short",
+      }).format(new Date())
+    } catch {
+      return new Date().toString()
     }
-    run()
-    return () => {
-      cancelled = true
-    }
-  }, [meta.kind, localItems])
+  }, [])
+
+  const {
+    data: remoteItems,
+    error: remoteError,
+    refetch,
+  } = useGetDirectoryItemsQuery(directorySlug)
+
+  const [createItem, createState] = useCreateDirectoryItemMutation()
 
   return (
     <div className="flex flex-col gap-4">
@@ -73,7 +78,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         <Card className="p-4">
           <DirectoryDataTable
             directorySlug={directorySlug}
-            data={remoteItems}
+            data={remoteItems ?? localItems}
             toolbarActions={
               <SheetTrigger asChild>
                 <Button size="icon" aria-label={t("action.create")}>
@@ -88,7 +93,9 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             }}
           />
           {remoteError ? (
-            <div className="text-destructive mt-2 text-sm">{remoteError}</div>
+            <div className="text-destructive mt-2 text-sm">
+              {(remoteError as any)?.message ?? "Failed to load directory items"}
+            </div>
           ) : null}
         </Card>
 
@@ -101,20 +108,31 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             <DirectoryItemForm
               i18nPrefix="item"
               submitLabel={t("action.create")}
-              disabled={saving}
+              disabled={createState.isLoading}
               onSubmit={async (values) => {
-                if (!meta.kind) return
-                setSaving(true)
                 try {
-                  setRemoteError(null)
-                  await api.directories.createDirectoryItem(directorySlug, values)
-                  const data = await api.directories.fetchDirectoryItemsByKind(meta.kind)
-                  setRemoteItems(data)
                   setOpen(false)
+                  await createItem({ slug: directorySlug, input: values }).unwrap()
+                  toast.success(`${tr("directory.item.created", "Created")} ${title}`, {
+                    description: formatNowWithTz(),
+                    className:
+                      "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
+                  })
                 } catch (e: any) {
-                  setRemoteError(e?.message ?? "Failed to create directory item")
+                  setOpen(false)
+                  toast.error(
+                    `${tr(
+                      "directory.item.error",
+                      tr("ditectory.item.error", "Error")
+                    )} ${title}`,
+                    {
+                      className:
+                        "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",
+                    }
+                  )
                 } finally {
-                  setSaving(false)
+                  // Explicit refetch as requested (even though invalidation should update it automatically).
+                  void refetch()
                 }
               }}
               onCancel={() => setOpen(false)}

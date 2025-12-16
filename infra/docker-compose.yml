@@ -450,11 +450,23 @@ services:
       - sh
       - -lc
       - |
-        if [ ! -e /app/node_modules/@radix-ui/react-checkbox/package.json ] && [ ! -e /app/packages/portal/node_modules/@radix-ui/react-checkbox/package.json ]; then
-          echo "Installing portal dependencies (node_modules volume is empty)..."
+        # Dependencies live in docker volumes; host `pnpm install` does NOT update them.
+        # We re-install automatically when dependency inputs (lockfile/manifests) change.
+        HASH_FILE="/app/node_modules/.archpad_portal_deps_hash"
+        INPUT_HASH="$(
+          cat /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml /app/packages/portal/package.json 2>/dev/null \
+            | sha256sum \
+            | awk '{print $1}'
+        )"
+        NEED_INSTALL="0"
+        if [ ! -f "$HASH_FILE" ]; then NEED_INSTALL="1"; fi
+        if [ "$NEED_INSTALL" = "0" ] && [ "$(cat "$HASH_FILE" 2>/dev/null || true)" != "$INPUT_HASH" ]; then NEED_INSTALL="1"; fi
+        if [ "$NEED_INSTALL" = "1" ]; then
+          echo "Installing portal dependencies (deps changed or node_modules volume is empty)..."
           # pnpm may want to remove existing node_modules; in containers there's no TTY.
           # CI=true makes pnpm non-interactive, --force allows cleanup/reinstall.
           CI=true pnpm install --frozen-lockfile --force --filter @archpad/portal...
+          echo "$INPUT_HASH" > "$HASH_FILE"
         fi
         pnpm --filter @archpad/portal dev --port 3000 --hostname 0.0.0.0
     networks:

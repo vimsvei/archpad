@@ -4,6 +4,7 @@ import {TolgeeNextProvider} from "@/components/providers/tolgee-next-provider";
 import {ALL_LANGUAGES} from "@/tolgee/shared";
 import {notFound} from "next/navigation";
 import {NextIntlClientProvider} from "next-intl";
+import { ToasterHost } from "@/components/layouts/toaster-host";
 
 type RootLayoutProps = {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
           {/*<main className="p-4 pb-8 flex items-center justify-center flex-col gap-8 min-h-screen">*/}
           <main>
             { children }
+            <ToasterHost />
           </main>
         </TolgeeNextProvider>
       </NextIntlClientProvider>
