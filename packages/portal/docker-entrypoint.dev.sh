@@ -13,3 +13,5 @@ echo "[portal] starting next dev server..."
 exec pnpm --filter @archpad/portal dev --port "${PORT:-3000}" --hostname "${HOSTNAME:-0.0.0.0}"
 
 
+
+
