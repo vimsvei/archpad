@@ -57,14 +57,18 @@ export class BaseDirectoryService<
     }
   }
 
-  async update(id: string, dto: UpdateDto, context: ArchpadRequestContext): Promise<Entity> {
+  async update(
+    id: string,
+    dto: UpdateDto,
+    context: ArchpadRequestContext,
+  ): Promise<Entity> {
     try {
       const entity = await this.findOne(id);
       this.repo.assign(entity, {
         ...(dto as any),
         updated: {
           by: context.userId,
-        }
+        },
       });
       await this.repo.getEntityManager().flush();
       return entity;

@@ -7,13 +7,12 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { ArchimateCode } from '@archpad/models';
-import { LicenseTypeDirectory } from '@/model/directories/license-type.directory';
-import { SoftwareTypeDirectory } from '@/model/directories/software-type.directory';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
 import { ApiProperty } from '@nestjs/swagger';
+import {LicenseTypeDirectory, SoftwareTypeDirectory} from "@/model/directories/directories";
 
 @Entity({
   tableName: 'system_software',

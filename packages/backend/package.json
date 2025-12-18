@@ -14,6 +14,7 @@
 
     "build:arch-repo": "nest build arch-repo-service",
     "build:hasura-repo-sync": "nest build hasura-sync-service",
+
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "env:render": "ROOT_ENV_PATH=../../.env ../scripts/render-env.sh"
   },

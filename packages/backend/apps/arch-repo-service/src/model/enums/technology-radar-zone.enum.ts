@@ -1,6 +1,6 @@
 export enum TechnologyRadarZone {
-  ADOPT='radar.zone.adopt',
-  TRIAL='radar.zone.trial',
-  ACCESS='radar.zone.access',
-  HOLD='radar.zone.hold',
+  ADOPT = 'radar.zone.adopt',
+  TRIAL = 'radar.zone.trial',
+  ACCESS = 'radar.zone.access',
+  HOLD = 'radar.zone.hold',
 }

@@ -1,6 +1,6 @@
 import { BaseDirectoryService } from './base-directory.service';
 import { DirectoryObject } from '../../../model/abstract/directory-object.abstract';
-import type {ArchpadRequestContext} from "@/request-context/archpad-request-context";
+import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 
 export class BaseDirectoryController<
   Entity extends DirectoryObject,

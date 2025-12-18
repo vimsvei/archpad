@@ -55,6 +55,16 @@ export interface BaseDirectoryModuleOptions<
 
 @Module({})
 export class BaseDirectoryModule {
+  /**
+   * Утилита для более компактной регистрации нескольких справочников сразу.
+   * Возвращает массив DynamicModule, который можно "распылить" в imports.
+   */
+  static registerMany(
+    options: Array<BaseDirectoryModuleOptions<any, any, any>>,
+  ): DynamicModule[] {
+    return options.map((o) => BaseDirectoryModule.register(o));
+  }
+
   static register<
     Entity extends DirectoryObject,
     CreateDto extends object = any,

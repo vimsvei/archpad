@@ -7,7 +7,6 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { NodeTypeDirectory } from '@/model/directories/node-type.directory';
 import { TechnologyNetwork } from './technology-network.entity';
 import { NodeKind } from '@/model/enums/node-kind.enum';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
@@ -15,6 +14,7 @@ import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.e
 import { ArchimateCode } from '@archpad/models';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
+import {NodeTypeDirectory} from "@/model/directories/directories";
 
 @Entity({
   tableName: 'technology_nodes',
