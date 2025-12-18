@@ -4,14 +4,4 @@ import { NamedObject } from '@archpad/models';
 import { Employee } from '../../organisation/employee.entity';
 
 @Entity({ abstract: true })
-export abstract class ArchimateElementGeneric extends NamedObject {
-  @ApiProperty({ type: Employee, format: 'uuid', description: 'Owner' })
-  @ManyToOne({
-    entity: () => Employee,
-    name: 'owner_id',
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  owner!: Employee;
-}
+export abstract class ArchimateElementGeneric extends NamedObject {}

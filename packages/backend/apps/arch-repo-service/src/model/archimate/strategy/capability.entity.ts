@@ -1,9 +1,24 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
-import { Entity } from '@mikro-orm/core';
+import { Entity, ManyToOne} from '@mikro-orm/core';
 import { ArchimateCode } from '@archpad/models';
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity({ tableName: 'capabilities' })
 export class Capability extends ArchimateElementGeneric {
   @ArchimateCode('CPB')
   override code: string = undefined as any;
+  
+  @ApiProperty({
+    format: 'uuid',
+    type: "string",
+    description: 'Родительский объект',
+  })
+  @ManyToOne({
+    entity: () => Capability,
+    primary: true,
+    fieldName: 'parent_id',
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  parent!: Capability
 }
