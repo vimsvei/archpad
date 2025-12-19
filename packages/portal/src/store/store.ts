@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { directoryApi } from "@/store/apis/directory-api"
+import logger from 'redux-logger';
 
 export function makeStore() {
   return configureStore({
@@ -7,7 +8,11 @@ export function makeStore() {
       [directoryApi.reducerPath]: directoryApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(directoryApi.middleware),
+      getDefaultMiddleware({
+        serializableCheck: false,
+        immutableCheck: false,
+      }).concat(directoryApi.middleware).concat(logger),
+    devTools: process.env.NODE_ENV !== "production",
   })
 }
 
