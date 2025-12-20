@@ -1,0 +1,15 @@
+query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
+  components(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+    id
+    code
+    name
+    description
+  }
+  components_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+
