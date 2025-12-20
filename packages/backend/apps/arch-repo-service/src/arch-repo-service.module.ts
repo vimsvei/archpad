@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
@@ -8,7 +8,6 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
 import { DirectoriesModule } from './endpoints/directories/directories.module';
-import { AuditSubscriber } from './audit/audit.subscriber';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import {
   LoggerModule,
@@ -17,6 +16,7 @@ import {
 } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
 import { RequiredHeadersGuard } from '@/common/guards/required-headers.guard';
+import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-request-context.middleware';
 
 @Module({
   imports: [
@@ -29,6 +29,9 @@ import { RequiredHeadersGuard } from '@/common/guards/required-headers.guard';
         './dist/**/*.generic{.ts,.js}',
         './dist/**/*.map{.ts,.js}',
         './dist/**/*.directory{.ts,.js}',
+        // directory discriminator entities are defined in `model/directories/directories.ts`
+        // (compiled to `.../directories.js`), so include it explicitly.
+        './dist/**/directories{.ts,.js}',
 
         './dist/**/directory-object.abstract{.ts,.js}',
         './dist/**/mapped-solution-object.abstract{.ts,.js}',
@@ -76,14 +79,13 @@ import { RequiredHeadersGuard } from '@/common/guards/required-headers.guard';
       provide: APP_GUARD,
       useClass: RequiredHeadersGuard,
     },
-    AuditSubscriber,
   ],
 })
 export class ArchRepoServiceModule {
   private readonly loggerContext = ArchRepoServiceModule.name;
 
   constructor(private readonly logger: LoggerService) {}
-
+  
   async onModuleInit() {
     const mode = process.env.NODE_ENV;
 

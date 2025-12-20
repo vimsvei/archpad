@@ -8,17 +8,18 @@ const cache = new Map<string, Promise<string>>()
  */
 export function loadGql(pathFromPublicGraphql: string): Promise<string> {
   const key = pathFromPublicGraphql.replace(/^\/+/, "")
+  const isDev = process.env.NODE_ENV === "development"
   const existing = cache.get(key)
-  if (existing) return existing
+  if (existing && !isDev) return existing
 
-  const p = fetch(`/graphql/${key}`, { cache: "force-cache" })
+  const p = fetch(`/graphql/${key}`, { cache: isDev ? "no-store" : "force-cache" })
     .then(async (res) => {
       if (!res.ok) throw new Error(`Failed to load gql (${res.status})`)
       return res.text()
     })
     .then((txt) => txt.trim())
 
-  cache.set(key, p)
+  if (!isDev) cache.set(key, p)
   return p
 }
 

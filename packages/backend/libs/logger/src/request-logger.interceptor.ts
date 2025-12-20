@@ -19,6 +19,12 @@ export class RequestLoggerInterceptor implements NestInterceptor {
     const method = (req as any).method;
     const url = (req as any).url;
 
+    // Skip noisy health checks completely.
+    // HealthCheckerController exposes /health and /healthz (and may be probed very frequently).
+    if (typeof url === 'string' && (url === '/health' || url === '/healthz' || url.startsWith('/health/') || url.startsWith('/healthz/'))) {
+      return next.handle();
+    }
+
     // correlation / request id
     const requestId =
       (req as any).headers?.['x-request-id'] ?? (req as any).id ?? randomUUID();

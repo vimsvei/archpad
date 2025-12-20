@@ -9,7 +9,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { ApplicationComponentForm } from "@/components/application-components/application-component-form"
+import { ApplicationComponentForm } from "@/components/archimate/application-component/application-component-form"
 import {
   useCreateApplicationComponentMutation,
   useGetApplicationComponentsQuery,
@@ -73,7 +73,7 @@ export function ApplicationComponentsListPage() {
   const pageCount = data?.pageCount ?? 1
 
   const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(
-    "application-components"
+    "application-component"
   )
 
   const columns = React.useMemo<ColumnDef<ApplicationComponent>[]>(

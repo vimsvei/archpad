@@ -1,5 +1,5 @@
-import { ApplicationComponentsListPage } from "@/components/application-components/application-components-list-page"
+import { ListPage } from "@/components/archimate/application-component/list-page"
 
 export default function ApplicationComponentsPage() {
-  return <ApplicationComponentsListPage />
+  return <ListPage />
 }

@@ -7,6 +7,7 @@ import { getHasuraSource } from './metadata/get-source';
 import { getTrackedTablesFromSource } from './metadata/get-tracked-tables';
 import { normalizeHasuraMetadata } from './metadata/normalize-metadata';
 import { applyCamelCaseCustomization } from './sync/apply-camelcase-customization';
+import { applyDefaultSelectPermissions } from './sync/apply-default-permissions';
 import { fetchDbTables } from './sync/fetch-db-tables';
 import { reloadMetadata } from './sync/reload-metadata';
 import { syncForeignKeyRelationships } from './sync/sync-foreign-key-relationships';
@@ -17,6 +18,8 @@ import { untrackTables } from './sync/untrack-tables';
 export class HasuraSyncService {
   private readonly logger = new Logger(HasuraSyncService.name);
   private readonly renameToCamelCase: boolean;
+  private readonly applyDefaultPermissions: boolean;
+  private readonly defaultRole: string;
 
   constructor(
     private readonly hasura: HasuraClientService,
@@ -28,7 +31,17 @@ export class HasuraSyncService {
       true,
     );
 
+    this.applyDefaultPermissions = readBool(
+      this.config,
+      'HASURA_APPLY_DEFAULT_PERMISSIONS',
+      true,
+    );
+    this.defaultRole = this.config.get<string>('HASURA_DEFAULT_ROLE') ?? 'user';
+
     this.logger.log(`Config: renameToCamelCase=${this.renameToCamelCase}`);
+    this.logger.log(
+      `Config: applyDefaultPermissions=${this.applyDefaultPermissions} defaultRole=${this.defaultRole}`,
+    );
   }
 
   async syncAll(options?: { renameColumnsToCamelCase?: boolean }) {
@@ -78,6 +91,17 @@ export class HasuraSyncService {
       existingRelationships,
       allTableNames,
     });
+
+    if (this.applyDefaultPermissions) {
+      await applyDefaultSelectPermissions({
+        hasura: this.hasura,
+        logger: this.logger,
+        role: this.defaultRole,
+        tables: dbTables,
+      });
+    } else {
+      this.logger.log('Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)');
+    }
 
     if (renameToCamelCase) {
       await applyCamelCaseCustomization({

@@ -3,6 +3,11 @@ export type ApplicationComponent = {
   code: string
   name: string
   description?: string | null
+  state?: { name: string; color?: string | null } | null
+  createdAt?: string | null
+  createdBy?: string | null
+  updatedAt?: string | null
+  updatedBy?: string | null
 }
 
 export type Paginated<T> = {

@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ApplicationComponentForm, type ApplicationComponentFormValues } from "@/components/application-components/application-component-form"
+import { ApplicationComponentForm, type ApplicationComponentFormValues } from "@/components/archimate/application-component/application-component-form"
 import {
   useGetApplicationComponentQuery,
   useUpdateApplicationComponentMutation,

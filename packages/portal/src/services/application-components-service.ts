@@ -2,7 +2,7 @@ import type { ApplicationComponent, Paginated } from "@/@types/application-compo
 import { restRequest } from "@/services/http/rest-service"
 
 export type CreateApplicationComponentInput = {
-  code: string
+  code?: string
   name: string
   description?: string
 }

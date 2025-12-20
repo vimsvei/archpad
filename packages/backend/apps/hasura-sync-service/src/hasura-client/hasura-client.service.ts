@@ -16,10 +16,33 @@ export class HasuraClientService {
     private readonly http: HttpService,
     private readonly config: ConfigService,
   ) {
-    this.endpoint = this.config.get<string>('HASURA_ENDPOINT')!;
+    const nodeEnv =
+      this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+
+    // Policy:
+    // - NODE_ENV=local  -> use HASURA_HOST (host-friendly, with TLS + local CA)
+    // - otherwise       -> use HASURA_ENDPOINT (docker-network-friendly)
+    const rawEndpoint =
+      nodeEnv === 'local'
+        ? this.config.get<string>('HASURA_HOST')
+        : this.config.get<string>('HASURA_ENDPOINT');
+
+    if (!rawEndpoint) {
+      throw new Error(
+        nodeEnv === 'local'
+          ? 'NODE_ENV=local: HASURA_HOST is not set. Set HASURA_HOST to something like "hasura.192-168-1-119.sslip.io".'
+          : 'HASURA_ENDPOINT is not set. Inside Docker use "http://hasura:8080".',
+      );
+    }
+
+    this.endpoint = normalizeHasuraEndpoint(rawEndpoint);
     this.secret = this.config.get<string>('HASURA_ADMIN_SECRET')!;
     this.source = this.config.get<string>('HASURA_SOURCE')!;
     this.schema = this.config.get<string>('HASURA_SCHEMA')!;
+
+    this.logger.log(
+      `Hasura endpoint=${this.endpoint} source=${this.source} schema=${this.schema} NODE_ENV=${nodeEnv}`,
+    );
   }
 
   private buildHeaders() {
@@ -71,4 +94,23 @@ export class HasuraClientService {
       args: {},
     });
   }
+}
+
+function normalizeHasuraEndpoint(input: string): string {
+  let url = input.trim();
+
+  // If someone passed a bare host (no scheme), assume https.
+  if (!/^https?:\/\//i.test(url)) {
+    url = `https://${url}`;
+  }
+
+  // Strip known GraphQL paths if user accidentally passed them.
+  url = url.replace(/\/graphql\/v1\/graphql\/?$/i, '');
+  url = url.replace(/\/v1\/graphql\/?$/i, '');
+  url = url.replace(/\/graphql\/?$/i, '');
+
+  // Remove trailing slashes.
+  url = url.replace(/\/+$/g, '');
+
+  return url;
 }

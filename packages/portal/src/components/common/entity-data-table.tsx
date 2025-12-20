@@ -66,6 +66,13 @@ export function EntityDataTable<TData>({
     state: { columnVisibility },
   })
 
+  const fixedWidthClass = React.useCallback((columnId: string) => {
+    if (columnId === "created" || columnId === "updated") {
+      return "w-[320px] min-w-[320px] max-w-[320px]"
+    }
+    return ""
+  }, [])
+
   return (
     <div className={cn("w-full", className)}>
       <div className={cn("overflow-auto rounded-md border", maxHeightClassName)}>
@@ -74,7 +81,10 @@ export function EntityDataTable<TData>({
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {hg.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className={cn(fixedWidthClass(header.column.id))}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -96,7 +106,10 @@ export function EntityDataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(fixedWidthClass(cell.column.id))}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

@@ -15,10 +15,10 @@ export class Capability extends ArchimateElementGeneric {
   })
   @ManyToOne({
     entity: () => Capability,
-    primary: true,
     fieldName: 'parent_id',
+    nullable: true,
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  parent!: Capability
+  parent?: Capability
 }

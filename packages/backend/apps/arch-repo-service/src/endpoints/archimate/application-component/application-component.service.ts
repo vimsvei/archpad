@@ -11,6 +11,8 @@ import type {
   CreateDtoApplicationComponent,
   UpdateDtoApplicationComponent,
 } from '@/model/dto/application-component.dto';
+import {ArchpadRequestContext} from "@/request-context/archpad-request-context";
+import {ActionStamp} from "@archpad/models";
 
 export type ApplicationComponentListQuery = {
   search?: string;
@@ -73,7 +75,9 @@ export class ApplicationComponentService {
     return this.repo.findOneOrFail({ id } as FilterQuery<ApplicationComponent>);
   }
 
-  async create(dto: CreateDtoApplicationComponent): Promise<ApplicationComponent> {
+  async create(
+    dto: CreateDtoApplicationComponent, context: ArchpadRequestContext
+  ): Promise<ApplicationComponent> {
     const em = this.repo.getEntityManager();
 
     const entity = this.repo.create({
@@ -89,6 +93,10 @@ export class ApplicationComponentService {
       criticalLevel: dto.criticalLevelId
         ? em.getReference(CriticalLevelDirectory, dto.criticalLevelId)
         : undefined,
+      created: {
+        at: new Date(),
+        by: context.userId,
+      } as ActionStamp,
     } as any);
 
     await em.persistAndFlush(entity);
@@ -98,6 +106,7 @@ export class ApplicationComponentService {
   async update(
     id: string,
     dto: UpdateDtoApplicationComponent,
+    context: ArchpadRequestContext
   ): Promise<ApplicationComponent> {
     const em = this.repo.getEntityManager();
     const entity = await this.findOne(id);
@@ -110,23 +119,27 @@ export class ApplicationComponentService {
         ? {
             license: dto.licenseTypeId
               ? em.getReference(LicenseTypeDirectory, dto.licenseTypeId)
-              : null,
+              : undefined,
           }
         : {}),
       ...(dto.styleId !== undefined
         ? {
             architectureStyle: dto.styleId
               ? em.getReference(ArchitectureStyleDirectory, dto.styleId)
-              : null,
+              : undefined,
           }
         : {}),
       ...(dto.criticalLevelId !== undefined
         ? {
             criticalLevel: dto.criticalLevelId
               ? em.getReference(CriticalLevelDirectory, dto.criticalLevelId)
-              : null,
+              : undefined,
           }
         : {}),
+      updated: {
+        at: new Date(),
+        by: context.userId,
+      }
     };
 
     this.repo.assign(entity, patch as any);

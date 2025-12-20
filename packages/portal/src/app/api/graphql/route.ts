@@ -21,8 +21,9 @@ function getGraphqlGatewayBaseUrl(): string {
 export async function POST(request: Request) {
   const base = getGraphqlGatewayBaseUrl()
   const target = new URL(base)
-  // Oathkeeper rule expects /graphql and forwards to Hasura.
-  target.pathname = "/graphql"
+  // Oathkeeper rule matches /graphql<...> and strips "/graphql", so:
+  // - request to /graphql/v1/graphql -> upstream /v1/graphql (Hasura GraphQL endpoint)
+  target.pathname = "/graphql/v1/graphql"
 
   const body = (await request.json()) as GraphQLRequestBody
 

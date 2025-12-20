@@ -18,6 +18,8 @@
           X-Hasura-User-Id: "{{ .Subject }}"
 #          X-Hasura-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
 #          X-Hasura-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
+          X-Hasura-Role: "public"
+          X-Hasura-Allowed-Roles: "public"
 
 # ==== Arch-repo-service через Oathkeeper ====
 - id: arch-repo-api

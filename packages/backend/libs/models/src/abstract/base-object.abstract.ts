@@ -28,5 +28,10 @@ export abstract class BaseObject {
     if (!this.created) {
       this.created = ActionStamp.now(null);
     }
+    // Some environments may not apply onCreate hooks on embeddable properties reliably
+    // (e.g. missing reflection metadata). Ensure created.at is always present.
+    if (!this.created.at) {
+      this.created.at = new Date();
+    }
   }
 }

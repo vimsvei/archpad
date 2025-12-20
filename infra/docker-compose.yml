@@ -410,6 +410,7 @@ services:
       HASURA_SCHEMA: ${HASURA_SCHEMA}
       HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
       HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
+      HASURA_DEFAULT_ROLE: public
     restart: "no"
     networks:
       - archpad_network

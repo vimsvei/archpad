@@ -13,6 +13,8 @@ import {
   CreateDtoApplicationComponent,
   UpdateDtoApplicationComponent,
 } from '@/model/dto/application-component.dto';
+import {ArchpadContext} from "@/common/decorators/archpad-context.decorator";
+import type {ArchpadRequestContext} from "@/request-context/archpad-request-context";
 
 class ApplicationComponentListResponse {
   // NOTE: swagger decorators on properties are optional here; we keep response shape minimal.
@@ -76,15 +78,15 @@ export class ApplicationComponentController {
   @Post()
   @ApiOperation({ summary: `Создание компонента приложения` })
   @ApiOkResponse({ type: ApplicationComponent })
-  create(@Body() dto: CreateDtoApplicationComponent) {
-    return this.service.create(dto);
+  create(@Body() dto: CreateDtoApplicationComponent, @ArchpadContext() context: ArchpadRequestContext) {
+    return this.service.create(dto, context);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: `Изменение компонента приложения` })
   @ApiParam({ name: 'id', description: 'UUID объекта' })
   @ApiOkResponse({ type: ApplicationComponent })
-  update(@Param('id') id: string, @Body() dto: UpdateDtoApplicationComponent) {
-    return this.service.update(id, dto);
+  update(@Param('id') id: string, @Body() dto: UpdateDtoApplicationComponent, @ArchpadContext() context: ArchpadRequestContext) {
+    return this.service.update(id, dto, context);
   }
 }
