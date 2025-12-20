@@ -8,14 +8,21 @@ type GraphQLRequestBody = {
   operationName?: string
 }
 
+function getGraphqlGatewayBaseUrl(): string {
+  // Prefer explicit public endpoint (if you want browser->gateway directly),
+  // otherwise use internal Docker network URL.
+  return (
+    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT ??
+    process.env.API_GATEWAY_INTERNAL_URL ??
+    "http://oathkeeper:4455"
+  )
+}
+
 export async function POST(request: Request) {
-  const endpoint = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
-  if (!endpoint) {
-    return NextResponse.json(
-      { error: "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set" },
-      { status: 500 }
-    )
-  }
+  const base = getGraphqlGatewayBaseUrl()
+  const target = new URL(base)
+  // Oathkeeper rule expects /graphql and forwards to Hasura.
+  target.pathname = "/graphql"
 
   const body = (await request.json()) as GraphQLRequestBody
 
@@ -26,7 +33,7 @@ export async function POST(request: Request) {
   const auth = token ? `Bearer ${token}` : request.headers.get("authorization")
 
   async function doFetch(currentAuth: string | null) {
-    return fetch(endpoint!, {
+    return fetch(target.toString(), {
       method: "POST",
       headers: {
         "content-type": "application/json",

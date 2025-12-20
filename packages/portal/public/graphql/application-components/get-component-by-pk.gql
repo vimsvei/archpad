@@ -4,6 +4,14 @@ query GetComponentByPk($id: uuid!) {
     code
     name
     description
+    state {
+      name
+      color
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
   }
 }
 

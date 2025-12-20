@@ -4,6 +4,14 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
     code
     name
     description
+    state {
+      name
+      color
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
   }
   components_aggregate(where: $where) {
     aggregate {
