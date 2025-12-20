@@ -3,10 +3,11 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { ApplicationComponent, Paginated } from "@/@types/application-component"
 import type {
   CreateApplicationComponentInput,
-  GetApplicationComponentsParams,
   UpdateApplicationComponentInput,
 } from "@/services/application-components-service"
 import * as ApplicationComponentAPI from "@/services/application-components-service"
+import type { GetApplicationComponentsParams } from "@/services/application-components-hasura"
+import * as ApplicationComponentHasura from "@/services/application-components-hasura"
 
 export const applicationComponentApi = createApi({
   reducerPath: "applicationComponentApi",
@@ -20,7 +21,7 @@ export const applicationComponentApi = createApi({
     >({
       async queryFn(params) {
         try {
-          const data = await ApplicationComponentAPI.getApplicationComponents(params)
+          const data = await ApplicationComponentHasura.getApplicationComponentsHasura(params)
           return { data }
         } catch (error) {
           return { error }
@@ -32,7 +33,7 @@ export const applicationComponentApi = createApi({
     getApplicationComponent: builder.query<ApplicationComponent, { id: string }>({
       async queryFn({ id }) {
         try {
-          const data = await ApplicationComponentAPI.getApplicationComponent(id)
+          const data = await ApplicationComponentHasura.getApplicationComponentHasura(id)
           return { data }
         } catch (error) {
           return { error }

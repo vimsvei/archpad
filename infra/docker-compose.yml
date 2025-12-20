@@ -246,7 +246,7 @@ services:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
       HASURA_GRAPHQL_ENABLED_APIS: graphql,metadata,config,pgdump,metrics
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-      HASURA_GRAPHQL_ENABLE_ALLOWLIST: "true"
+      HASURA_GRAPHQL_ENABLE_ALLOWLIST: "false"
       PG_PROJECT_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_DB}
     networks:
       - archpad_network
