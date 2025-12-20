@@ -2,11 +2,12 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
+import { skipToken } from "@reduxjs/toolkit/query"
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
-import { getDirectoryItem } from "@/components/directories/storage"
 import { useTranslate } from "@tolgee/react"
+import { useGetDirectoryItemQuery } from "@/store/apis/directory-api"
 
 type Crumb = {
   href?: string
@@ -29,24 +30,20 @@ export function PrivateBreadcrumbs() {
     [pathname]
   )
 
-  const [directoryItemTitle, setDirectoryItemTitle] = React.useState<string | null>(null)
+  const directorySlug = segments[0] === "directories" ? segments[1] : undefined
+  const directoryItemId = segments[0] === "directories" ? segments[2] : undefined
 
-  React.useEffect(() => {
-    // If we are on /directories/<slug>/<id>, try to show item name.
-    if (segments[0] !== "directories") {
-      setDirectoryItemTitle(null)
-      return
-    }
-    const slug = segments[1]
-    const id = segments[2]
-    if (!slug || !id) {
-      setDirectoryItemTitle(null)
-      return
-    }
-
-    const item = getDirectoryItem(slug, id)
-    setDirectoryItemTitle(item?.name ?? null)
-  }, [segments])
+  const { data: directoryItem } = useGetDirectoryItemQuery(
+    directorySlug && directoryItemId ? { slug: directorySlug, id: directoryItemId } : skipToken,
+    { refetchOnMountOrArgChange: false }
+  )
+  const directoryItemLabel = React.useMemo(() => {
+    const code = directoryItem?.code?.trim()
+    if (code) return code
+    const name = directoryItem?.name?.trim()
+    if (name) return name
+    return null
+  }, [directoryItem?.code, directoryItem?.name])
 
   const crumbs = React.useMemo<Crumb[]>(() => {
     if (segments.length === 0) return [{ label: "Dashboard" }]
@@ -71,7 +68,7 @@ export function PrivateBreadcrumbs() {
 
       if (!id) return [...base, { label: dirLabel }]
 
-      const itemLabel = directoryItemTitle ?? id
+      const itemLabel = directoryItemLabel ?? id
       return [...base, { href: dirHref, label: dirLabel }, { label: itemLabel }]
     }
 
@@ -84,7 +81,7 @@ export function PrivateBreadcrumbs() {
       else items.push({ href: acc, label: titleFromSegment(seg) })
     })
     return items
-  }, [segments, directoryItemTitle])
+  }, [segments, directoryItemLabel, t])
 
   return (
     <Breadcrumb>

@@ -1,12 +1,13 @@
 import type { ActionStamp, DirectoryItem, DirectoryRelation, DirectorySlug } from "@/@types/directories"
+import { DirectoryLinkType } from "@/@types/directory-link-type"
 
 const ITEMS_KEY_PREFIX = "archpad:directory:"
 const RELATIONS_KEY = "archpad:directory-relations"
 const STORE_VERSION_KEY = "archpad:directory-store-version"
-const STORE_VERSION = 2
+const STORE_VERSION = 3
 
 type CreateDirectoryItemInput = {
-  code: string
+  code?: string
   name: string
   description?: string
   color?: string | null
@@ -33,6 +34,16 @@ function safeJsonParse<T>(raw: string | null, fallback: T): T {
   } catch {
     return fallback
   }
+}
+
+function normalizeRelationType(raw: unknown): DirectoryLinkType {
+  // Current values are i18n keys. We also accept legacy persisted values.
+  if (raw === DirectoryLinkType.HIERARCHY || raw === DirectoryLinkType.ASSOCIATION) {
+    return raw as DirectoryLinkType
+  }
+  if (raw === "hierarchy") return DirectoryLinkType.HIERARCHY
+  if (raw === "association") return DirectoryLinkType.ASSOCIATION
+  return DirectoryLinkType.ASSOCIATION
 }
 
 function ensureVersion() {
@@ -115,7 +126,34 @@ function readAllRelations(): DirectoryRelation[] {
   if (typeof window === "undefined") return []
   ensureVersion()
   const raw = window.localStorage.getItem(RELATIONS_KEY)
-  return safeJsonParse<DirectoryRelation[]>(raw, [])
+  const parsed = safeJsonParse<DirectoryRelation[]>(raw, [])
+
+  let changed = false
+  const normalized = parsed
+    .filter(Boolean)
+    .map((r: any) => {
+      const nextType = normalizeRelationType(r.type)
+      const next: DirectoryRelation = {
+        id: String(r.id ?? createId()),
+        sourceDirectorySlug: String(r.sourceDirectorySlug ?? "").trim(),
+        sourceItemId: String(r.sourceItemId ?? "").trim(),
+        targetDirectorySlug: String(r.targetDirectorySlug ?? "").trim(),
+        targetItemId: String(r.targetItemId ?? "").trim(),
+        type: nextType,
+        createdAt: typeof r.createdAt === "string" ? r.createdAt : nowIso(),
+      }
+
+      if (!r.id || !r.createdAt || !r.type || nextType !== r.type) changed = true
+      return next
+    })
+    // Drop obviously broken records.
+    .filter((r) => r.sourceDirectorySlug && r.sourceItemId && r.targetDirectorySlug && r.targetItemId)
+
+  if (changed && typeof window !== "undefined") {
+    window.localStorage.setItem(RELATIONS_KEY, JSON.stringify(normalized))
+  }
+
+  return normalized
 }
 
 function writeAllRelations(relations: DirectoryRelation[]) {
@@ -139,7 +177,7 @@ export function createDirectoryItem(slug: DirectorySlug, input: CreateDirectoryI
   const createdStamp = stamp(null)
   const created: DirectoryItem = {
     id: createId(),
-    code: input.code.trim(),
+    code: (input.code ?? "").trim(),
     name: input.name.trim(),
     description: input.description?.trim() ?? "",
     color: input.color?.trim() ? input.color.trim() : null,

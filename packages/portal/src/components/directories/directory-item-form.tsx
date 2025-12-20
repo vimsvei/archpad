@@ -100,7 +100,7 @@ export function DirectoryItemForm({
 
   const codeTrimmed = current.code.trim()
   const nameTrimmed = current.name.trim()
-  const isValid = Boolean(codeTrimmed && nameTrimmed)
+  const isValid = Boolean(nameTrimmed)
 
   const colorPickerValue = React.useMemo(() => {
     const m = current.color.trim().match(/^#([0-9a-fA-F]{6})$/)
@@ -135,7 +135,7 @@ export function DirectoryItemForm({
             if (isControlled) emitChange({ ...current, code: next })
             else setCode(next)
           }}
-          aria-invalid={touched && !codeTrimmed ? true : undefined}
+          aria-invalid={undefined}
           autoComplete="off"
           disabled={disabled}
         />

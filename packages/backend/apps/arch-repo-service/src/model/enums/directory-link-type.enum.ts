@@ -1,4 +1,4 @@
 export enum DirectoryLinkType {
-  HIERARCHY = 'hierarchy', // Внутри справочника (например, родитель → потомок)
-  ASSOCIATION = 'association', // Между разными справочниками
+  HIERARCHY = 'directory.item.relations.type.hierarchy',
+  ASSOCIATION = 'directory.item.relations.type.association',
 }

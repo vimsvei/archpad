@@ -147,7 +147,13 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               onSubmit={async (values) => {
                 try {
                   setOpen(false)
-                  await createItem({ slug: directorySlug, input: values }).unwrap()
+                  await createItem({
+                    slug: directorySlug,
+                    input: {
+                      ...values,
+                      code: values.code ? values.code : undefined,
+                    },
+                  }).unwrap()
                   toast.success(`${tr("directory.item.created", "Created")} ${title}`, {
                     description: formatNowWithTz(),
                     className:

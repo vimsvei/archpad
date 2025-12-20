@@ -1,4 +1,5 @@
 import type { DirectoryKind } from "./directory-kind"
+import type { DirectoryLinkType } from "./directory-link-type"
 
 export type DirectorySlug = string
 
@@ -24,6 +25,7 @@ export type DirectoryRelation = {
   sourceItemId: string
   targetDirectorySlug: DirectorySlug
   targetItemId: string
+  type: DirectoryLinkType
   createdAt: string
 }
 

@@ -70,7 +70,25 @@ export function DirectoryDataTable({
             {t("table.code")} <ArrowUpDown />
           </Button>
         ),
-        cell: ({ row }) => <div className="font-mono text-sm">{row.getValue("code")}</div>,
+        cell: ({ row }) => {
+          const item = row.original
+          const code = String(row.getValue("code") ?? "").trim()
+          const href = `/directories/${directorySlug}/${item.id}`
+          return (
+            <Link
+              href={href}
+              className={[
+                "font-mono text-sm",
+                "text-primary underline-offset-4 hover:underline",
+                !code ? "text-muted-foreground" : "",
+              ].join(" ")}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={t("item.action.edit")}
+            >
+              {code || "—"}
+            </Link>
+          )
+        },
       },
       {
         accessorKey: "name",

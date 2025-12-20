@@ -78,6 +78,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
     byDefault: false,
   })
   const [confirmOpen, setConfirmOpen] = React.useState(false)
+  const [tab, setTab] = React.useState<"general" | "relations">("general")
 
   React.useEffect(() => {
     if (!item) return
@@ -99,8 +100,8 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   }, [draft, normalize])
 
   const isDraftValid = React.useMemo(() => {
-    return Boolean(draft.code.trim() && draft.name.trim())
-  }, [draft.code, draft.name])
+    return Boolean(draft.name.trim())
+  }, [draft.name])
 
   const formId = `directory-edit-form-${directorySlug}-${id}`
 
@@ -122,7 +123,12 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
       toast.error(tr("form.invalid", "Please fill required fields"))
       return
     }
-    await updateItem({ slug: directorySlug, id: item.id, input: draft }).unwrap()
+    const normalized = normalize(draft)
+    await updateItem({
+      slug: directorySlug,
+      id: item.id,
+      input: { ...normalized, code: normalized.code ? normalized.code : undefined },
+    }).unwrap()
     toast.success(tr("action.saved", "Saved"))
     // Update baseline so Back won't ask again.
     baselineRef.current = normalize(draft)
@@ -185,7 +191,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-2">
           <Tooltip>
@@ -254,28 +260,58 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
         </div>
       </div>
 
-      <Card className="p-6">
-        <DirectoryItemForm
-          formId={formId}
-          values={draft}
-          onChange={setDraft}
-          i18nPrefix="item"
-          submitLabel={tr("item.action.save", "Save")}
-          hideActions
-          disabled={updateState.isLoading}
-          onSubmit={async (values) => {
-            try {
-              await updateItem({ slug: directorySlug, id: item.id, input: values }).unwrap()
-              toast.success(tr("action.saved", "Saved"))
-              baselineRef.current = normalize(values)
-            } catch (e: any) {
-              toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
-            }
-          }}
-        />
-      </Card>
+      <div className="flex items-center gap-2 border-b pb-2">
+        <Button
+          type="button"
+          variant={tab === "general" ? "default" : "ghost"}
+          onClick={() => setTab("general")}
+        >
+          {tr("tabs.general", "Общие")}
+        </Button>
+        <Button
+          type="button"
+          variant={tab === "relations" ? "default" : "ghost"}
+          onClick={() => setTab("relations")}
+        >
+          {tr("tabs.relations", "Связи")}
+        </Button>
+      </div>
 
-      <DirectoryRelationsTable sourceDirectorySlug={directorySlug} sourceItemId={item.id} />
+      <div className="flex min-h-0 flex-1 flex-col">
+        {tab === "general" ? (
+          <Card className="flex min-h-0 flex-1 flex-col p-6">
+            <div className="min-h-0 flex-1 overflow-auto">
+              <DirectoryItemForm
+                formId={formId}
+                values={draft}
+                onChange={setDraft}
+                i18nPrefix="item"
+                submitLabel={tr("item.action.save", "Save")}
+                hideActions
+                disabled={updateState.isLoading}
+                onSubmit={async (values) => {
+                  try {
+                    const normalized = normalize(values)
+                    await updateItem({
+                      slug: directorySlug,
+                      id: item.id,
+                      input: { ...normalized, code: normalized.code ? normalized.code : undefined },
+                    }).unwrap()
+                    toast.success(tr("action.saved", "Saved"))
+                    baselineRef.current = normalize(values)
+                  } catch (e: any) {
+                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                  }
+                }}
+              />
+            </div>
+          </Card>
+        ) : (
+          <div className="flex min-h-0 flex-1 flex-col">
+            <DirectoryRelationsTable sourceDirectorySlug={directorySlug} sourceItemId={item.id} />
+          </div>
+        )}
+      </div>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>

@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { Eraser, Plus } from "lucide-react"
 
 import type { DirectorySlug } from "@/@types/directories"
+import { DirectoryLinkType } from "@/@types/directory-link-type"
 import { getDirectoryMeta, listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 import { addRelation, getDirectoryItem, removeRelation } from "@/components/directories/storage"
-import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { useDirectoryRelations } from "@/hooks/use-directory-relations"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTranslate } from "@tolgee/react"
+import { useGetDirectoryItemsQuery } from "@/store/apis/directory-api"
 
 type DirectoryRelationsTableProps = {
   sourceDirectorySlug: DirectorySlug
@@ -29,6 +31,14 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
   const { t } = useTranslate()
   const relations = useDirectoryRelations(sourceDirectorySlug, sourceItemId)
 
+  const tr = React.useCallback(
+    (key: string, fallback: string) => {
+      const v = t(key)
+      return v === key ? fallback : v
+    },
+    [t]
+  )
+
   const directoryOptions = React.useMemo(() => {
     const known = listKnownDirectorySlugs()
     const all = new Set<DirectorySlug>([sourceDirectorySlug, ...known])
@@ -38,8 +48,13 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
   const [targetDirectorySlug, setTargetDirectorySlug] = React.useState<DirectorySlug>(() =>
     directoryOptions.includes(sourceDirectorySlug) ? sourceDirectorySlug : directoryOptions[0]!
   )
-  const targetItems = useDirectoryItems(targetDirectorySlug)
+  const {
+    data: targetItems = [],
+    isLoading: isTargetItemsLoading,
+    isFetching: isTargetItemsFetching,
+  } = useGetDirectoryItemsQuery(targetDirectorySlug)
   const [targetItemId, setTargetItemId] = React.useState<string | undefined>(undefined)
+  const [linkType, setLinkType] = React.useState<DirectoryLinkType>(DirectoryLinkType.ASSOCIATION)
 
   React.useEffect(() => {
     // Reset selection when directory changes.
@@ -53,16 +68,16 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
   }, [targetItems, targetItemId])
 
   return (
-    <Card>
+    <Card className="flex min-h-0 flex-1 flex-col">
       <CardHeader className="pb-0">
-        <CardTitle>Relations</CardTitle>
+        <CardTitle>{t('directory.item.relations')}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="grid gap-2">
-            <Label>Target directory</Label>
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-4">
+        <div className="grid w-full gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+          <div className="grid min-w-0 gap-2">
+            <Label>{t('directory.item.relations.target.directory')}</Label>
             <Select value={targetDirectorySlug} onValueChange={(v) => setTargetDirectorySlug(v)}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full min-w-0">
                 <SelectValue placeholder="Select directory" />
               </SelectTrigger>
               <SelectContent>
@@ -75,15 +90,23 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
             </Select>
           </div>
 
-          <div className="grid gap-2">
-            <Label>Target item</Label>
+          <div className="grid min-w-0 gap-2">
+            <Label>{t('directory.item.relations.target.item')}</Label>
             <Select
               value={targetItemId}
               onValueChange={(v) => setTargetItemId(v)}
-              disabled={targetItems.length === 0}
+              disabled={isTargetItemsLoading || isTargetItemsFetching || targetItems.length === 0}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={targetItems.length ? "Select item" : "No items"} />
+              <SelectTrigger className="w-full min-w-0">
+                <SelectValue
+                  placeholder={
+                    isTargetItemsLoading || isTargetItemsFetching
+                      ? "Loading..."
+                      : targetItems.length
+                        ? "Select item"
+                        : "No items"
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
                 {targetItems.map((it) => (
@@ -95,15 +118,36 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
             </Select>
           </div>
 
-          <div className="flex items-end">
+          <div className="grid min-w-0 gap-2">
+            <Label>{tr("directory.item.relations.type", "Link type")}</Label>
+            <Select value={linkType} onValueChange={(v) => setLinkType(v as DirectoryLinkType)}>
+              <SelectTrigger className="w-full min-w-0">
+                <SelectValue placeholder={tr("directory.item.relations.type.placeholder", "Select type")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={DirectoryLinkType.ASSOCIATION}>
+                  {tr(DirectoryLinkType.ASSOCIATION, "Association")}
+                </SelectItem>
+                <SelectItem value={DirectoryLinkType.HIERARCHY}>
+                  {tr(DirectoryLinkType.HIERARCHY, "Hierarchy")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-end justify-end">
             <Button
               type="button"
-              className="w-full"
+              size="icon"
+              aria-label={tr("action.add", "Add")}
               disabled={!targetItemId}
               onClick={() => {
                 if (!targetItemId) return
                 const exists = relations.some(
-                  (r) => r.targetDirectorySlug === targetDirectorySlug && r.targetItemId === targetItemId
+                  (r) =>
+                    r.targetDirectorySlug === targetDirectorySlug &&
+                    r.targetItemId === targetItemId &&
+                    r.type === linkType
                 )
                 if (exists) return
                 addRelation({
@@ -111,22 +155,39 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                   sourceItemId,
                   targetDirectorySlug,
                   targetItemId,
+                  type: linkType,
                 })
                 setTargetItemId(undefined)
               }}
             >
-              Add relation
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
+        <div className="min-h-0 flex-1 overflow-auto rounded-md border">
+          <Table
+            className="table-fixed"
+            style={
+              {
+                // 3 equal columns + fixed actions column, aligned with the top grid
+                "--actions-col": "56px",
+                "--data-col": "calc((100% - var(--actions-col)) / 3)",
+              } as React.CSSProperties
+            }
+          >
+            <colgroup>
+              <col style={{ width: "var(--data-col)" }} />
+              <col style={{ width: "var(--data-col)" }} />
+              <col style={{ width: "var(--data-col)" }} />
+              <col style={{ width: "var(--actions-col)" }} />
+            </colgroup>
+            <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>
-                <TableHead>Target directory</TableHead>
-                <TableHead>Target item</TableHead>
-                <TableHead className="w-[120px]"></TableHead>
+                <TableHead>{t('directory.item.relations.target.directory')}</TableHead>
+                <TableHead>{t('directory.item.relations.target.item')}</TableHead>
+                <TableHead>{tr("directory.item.relations.type", "Link type")}</TableHead>
+                <TableHead className="w-[56px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -135,24 +196,36 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                   const target = getDirectoryItem(rel.targetDirectorySlug, rel.targetItemId)
                   return (
                     <TableRow key={rel.id}>
-                      <TableCell>{t(getDirectoryMeta(rel.targetDirectorySlug).titleKey)}</TableCell>
-                      <TableCell>
+                      <TableCell className="overflow-hidden text-ellipsis">
+                        <span className="block truncate">{t(getDirectoryMeta(rel.targetDirectorySlug).titleKey)}</span>
+                      </TableCell>
+                      <TableCell className="overflow-hidden">
                         {target ? (
-                          <div className="flex flex-col">
-                            <span className="font-medium">
+                          <div className="flex min-w-0 flex-col">
+                            <span className="font-medium truncate">
                               {target.code} — {target.name}
                             </span>
                             {target.description ? (
-                              <span className="text-muted-foreground text-xs">{target.description}</span>
+                              <span className="text-muted-foreground text-xs truncate">{target.description}</span>
                             ) : null}
                           </div>
                         ) : (
-                          <span className="text-muted-foreground text-sm">Missing item</span>
+                          <span className="text-muted-foreground text-sm truncate">Missing item</span>
                         )}
                       </TableCell>
+                      <TableCell className="text-muted-foreground text-sm overflow-hidden text-ellipsis">
+                        <span className="block truncate">
+                          {tr(rel.type, rel.type === DirectoryLinkType.HIERARCHY ? "Hierarchy" : "Association")}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="outline" size="sm" onClick={() => removeRelation(rel.id)}>
-                          Remove
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          aria-label={tr("action.remove", "Remove")}
+                          onClick={() => removeRelation(rel.id)}
+                        >
+                          <Eraser className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -160,7 +233,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No relations yet.
                   </TableCell>
                 </TableRow>
