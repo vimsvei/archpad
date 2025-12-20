@@ -37,11 +37,11 @@ export const menu: TMenu = [
         items: [
           {
             title: 'strategy.resource',
-            url: '/resources',
+            url: '/strategy/resources',
           },
           {
             title: 'strategy.capability',
-            url: '/capabilities',
+            url: '/strategy/capabilities',
           }
         ]
       },
@@ -51,12 +51,16 @@ export const menu: TMenu = [
         // color: '#ffffaf',
         items: [
           {
+            title: 'business.products',
+            url: '/business/products',
+          },
+          {
             title: 'business.actors',
-            url: '/actors',
+            url: '/business/actors',
           },
           {
             title: 'business.roles',
-            url: '/roles',
+            url: '/business/roles',
           }
         ]
       },
@@ -114,6 +118,16 @@ export const menu: TMenu = [
           },
         ]
       },
+      {
+        title: 'architecture.layer.implementation',
+        icon: Folder,
+        items: [
+          {
+            title: 'implementation.plateau',
+            url: '/implementation/plateau',
+          },
+        ]
+      },
     ]
   },
   {
@@ -127,7 +141,7 @@ export const menu: TMenu = [
       {
         title: 'portfolio.flows',
         icon: BrickWallShield,
-        url: '/solutions',
+        url: '/flows',
       }
     ]
   },
