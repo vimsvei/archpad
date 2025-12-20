@@ -4,12 +4,6 @@ import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { CreateDirectoryItemInput } from "@/services/directories-service"
 import * as DirectoryAPI from "@/services/directories-service"
 
-/**
- * Directories RTK Query API
- *
- * Uses existing centralized API functions (`lib/api/directories`) so auth/refresh/proxy logic
- * stays in one place, while Redux provides caching + invalidation + status flags.
- */
 export const directoryApi = createApi({
   reducerPath: "directoryApi",
   baseQuery: fakeBaseQuery<unknown>(),
@@ -72,8 +66,6 @@ export const directoryApi = createApi({
           return { error }
         }
       },
-      // We intentionally DO NOT invalidate to avoid an automatic refetch when user navigates back to the list.
-      // Instead we patch cached queries in onQueryStarted.
       async onQueryStarted({ slug, id }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled

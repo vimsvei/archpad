@@ -1,4 +1,4 @@
-import { AuthFormWrapper } from '@/components/auth/auth-form-wrapper'
+import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
 import { OryRegistrationFlow } from '@/components/ory/ory-flows'
 import { getRegistrationFlow, getServerSession, OryPageParams } from '@ory/nextjs/app'
 import config from "../../../../../../ory.config";
