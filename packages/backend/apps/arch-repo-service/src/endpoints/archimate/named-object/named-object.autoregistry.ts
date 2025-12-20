@@ -17,7 +17,7 @@ export class NamedObjectAutoRegistry {
         NamedObjectModule.register({
           tag: 'Компонент приложения',
           entity: ApplicationComponent,
-          path: 'application-components',
+          path: 'application-component',
           createDto: createNamedObjectZodDto('CreateDtoApplicationComponent'),
         }),
         NamedObjectModule.register({
