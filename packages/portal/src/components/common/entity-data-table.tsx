@@ -68,15 +68,16 @@ export function EntityDataTable<TData>({
 
   const fixedWidthClass = React.useCallback((columnId: string) => {
     if (columnId === "created" || columnId === "updated") {
-      return "w-[320px] min-w-[320px] max-w-[320px]"
+      return "w-[300px] min-w-[300px] max-w-[300px]"
     }
     return ""
   }, [])
 
   return (
-    <div className={cn("w-full", className)}>
-      <div className={cn("overflow-auto rounded-md border", maxHeightClassName)}>
-        <Table>
+    <div className={cn("w-full min-w-0 max-w-full", className)}>
+      {/* Vertical scroll lives here; horizontal scroll lives inside Table (table-container) */}
+      <div className={cn("overflow-y-auto overflow-x-hidden rounded-md border max-w-full", maxHeightClassName)}>
+        <Table className="min-w-max">
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>

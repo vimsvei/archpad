@@ -6,7 +6,6 @@
 import type { DirectoryKind } from "@/@types/directory-kind"
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import { restRequest } from "@/services/http/rest-service"
-import { graphqlRequest } from "@/services/http/graphql-service"
 
 // ============================================================================
 // Types
@@ -32,25 +31,20 @@ type ArchRepoDirectoryItem = {
   byDefault?: boolean
 }
 
-// Hasura types for GraphQL queries
-type HasuraDirectoryRow = {
-  id: string
-  code: string
-  name: string
-  description: string | null
-  color: string | null
-  by_default: boolean
-}
-
-type GetDirectoriesData = {
-  directories: HasuraDirectoryRow[]
-}
-
 // ============================================================================
 // Mappers
 // ============================================================================
 
+function normalizeActionStamp(input: any): { at: string; by?: string | null } | undefined {
+  if (!input) return undefined
+  const at = typeof input.at === "string" ? input.at : ""
+  const by = typeof input.by === "string" ? input.by : input.by ?? null
+  if (!at && !by) return undefined
+  return { at, by }
+}
+
 function mapToDirectoryItem(row: ArchRepoDirectoryItem): DirectoryItem {
+  const anyRow: any = row as any
   return {
     id: row.id,
     code: row.code ?? "",
@@ -58,17 +52,16 @@ function mapToDirectoryItem(row: ArchRepoDirectoryItem): DirectoryItem {
     description: row.description ?? "",
     color: row.color ?? null,
     byDefault: Boolean(row.byDefault),
-  }
-}
-
-function mapHasuraToDirectoryItem(row: HasuraDirectoryRow): DirectoryItem {
-  return {
-    id: row.id,
-    code: row.code,
-    name: row.name,
-    description: row.description ?? "",
-    color: row.color,
-    byDefault: row.by_default,
+    created:
+      normalizeActionStamp(anyRow.created) ??
+      (anyRow.createdAt || anyRow.createdBy
+        ? { at: String(anyRow.createdAt ?? ""), by: anyRow.createdBy ?? null }
+        : undefined),
+    updated:
+      normalizeActionStamp(anyRow.updated) ??
+      (anyRow.updatedAt || anyRow.updatedBy
+        ? { at: String(anyRow.updatedAt ?? ""), by: anyRow.updatedBy ?? null }
+        : undefined),
   }
 }
 
@@ -116,29 +109,6 @@ export async function deleteDirectoryItem(slug: DirectorySlug, id: string): Prom
 export async function getDirectoryItems(slug: DirectorySlug): Promise<DirectoryItem[]> {
   const response = await restRequest<ArchRepoDirectoryItem[]>(slug, { method: "GET" })
   return response.map(mapToDirectoryItem)
-}
-
-// ============================================================================
-// GraphQL API (Hasura)
-// ============================================================================
-
-export async function fetchDirectoryItemsByKind(kind: DirectoryKind): Promise<DirectoryItem[]> {
-  // Note: column names are Hasura snake_case.
-  const query = /* GraphQL */ `
-    query GetDirectories($kind: directory_kind_enum!) {
-      directories(where: { kind: { _eq: $kind } }, order_by: { name: asc }) {
-        id
-        code
-        name
-        description
-        color
-        by_default
-      }
-    }
-  `
-
-  const data = await graphqlRequest<GetDirectoriesData, { kind: DirectoryKind }>(query, { kind })
-  return data.directories.map(mapHasuraToDirectoryItem)
 }
 
 

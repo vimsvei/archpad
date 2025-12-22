@@ -20,7 +20,7 @@ export default function PrivateLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0 overflow-x-hidden">
         <header className="flex justify-between h-16 pr-4 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -35,7 +35,7 @@ export default function PrivateLayout({
             <ModeToggle/>
           </div>
         </header>
-        <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 p-4 pt-0 overflow-x-hidden">
           {children}
         </div>
       </SidebarInset>

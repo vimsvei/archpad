@@ -3,6 +3,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { CreateDirectoryItemInput } from "@/services/directories-service"
 import * as DirectoryAPI from "@/services/directories-service"
+import * as DirectoryHasura from "@/services/directories-hasura"
 
 export const directoryApi = createApi({
   reducerPath: "directoryApi",
@@ -15,7 +16,7 @@ export const directoryApi = createApi({
     getDirectoryItems: builder.query<DirectoryItem[], DirectorySlug>({
       async queryFn(slug) {
         try {
-          const data = await DirectoryAPI.getDirectoryItems(slug)
+          const data = await DirectoryHasura.getDirectoryItemsHasura(slug)
           return { data }
         } catch (error) {
           return { error }
@@ -27,7 +28,7 @@ export const directoryApi = createApi({
     getDirectoryItem: builder.query<DirectoryItem, { slug: DirectorySlug; id: string }>({
       async queryFn({ slug, id }) {
         try {
-          const data = await DirectoryAPI.getDirectoryItem(slug, id)
+          const data = await DirectoryHasura.getDirectoryItemHasura(slug, id)
           return { data }
         } catch (error) {
           return { error }

@@ -76,7 +76,9 @@ export function ListPage() {
         cell: ({ row }) => {
           const v = row.original.description
           return v ? (
-            <div className="text-muted-foreground line-clamp-2 text-sm">{v}</div>
+            <div className="text-muted-foreground text-sm max-w-[400px] whitespace-normal break-words line-clamp-2">
+              {v}
+            </div>
           ) : (
             <span className="text-muted-foreground text-sm">—</span>
           )

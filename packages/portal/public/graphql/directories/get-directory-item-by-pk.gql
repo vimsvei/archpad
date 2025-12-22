@@ -1,0 +1,16 @@
+query GetDirectoryItemByPk($id: uuid!) {
+  directories_by_pk(id: $id) {
+    id
+    code
+    name
+    description
+    color
+    byDefault
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+}
+
+
