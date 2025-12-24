@@ -1,0 +1,10 @@
+mutation DeleteComponentHierarchy($parentId: uuid!, $childId: uuid!) {
+  delete_map_application_component_hierarchy_by_pk(
+    component_parent_id: $parentId
+    component_child_id: $childId
+  ) {
+    component_parent_id
+    component_child_id
+  }
+}
+

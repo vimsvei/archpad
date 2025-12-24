@@ -11,6 +11,14 @@
     "gql:codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@lexical/code": "0.39.0",
+    "@lexical/link": "0.39.0",
+    "@lexical/list": "0.39.0",
+    "@lexical/markdown": "^0.39.0",
+    "@lexical/overflow": "0.39.0",
+    "@lexical/react": "^0.39.0",
+    "@lexical/rich-text": "^0.39.0",
+    "@lexical/table": "0.39.0",
     "@ory/client": "^1.22.15",
     "@ory/elements-react": "^1.1.0",
     "@ory/nextjs": "1.0.0-rc.0",
@@ -32,6 +40,7 @@
     "@xyflow/react": "^12.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lexical": "^0.39.0",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.26",
     "next": "16.0.10",

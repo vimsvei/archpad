@@ -1,0 +1,18 @@
+mutation InsertComponentHierarchy($parentId: uuid!, $childId: uuid!, $order: Int) {
+  insert_map_application_component_hierarchy_one(
+    object: {
+      component_parent_id: $parentId
+      component_child_id: $childId
+      order: $order
+    }
+    on_conflict: {
+      constraint: map_application_component_hierarchy_pkey
+      update_columns: [order]
+    }
+  ) {
+    component_parent_id
+    component_child_id
+    order
+  }
+}
+

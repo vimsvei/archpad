@@ -1,0 +1,15 @@
+query GetComponentSystemSoftware($componentId: uuid!) {
+  map_application_component_system_software(
+    where: { component_id: { _eq: $componentId } }
+  ) {
+    component_id
+    system_software_id
+    kind
+    systemSoftware: systemSoftware {
+      id
+      code
+      name
+    }
+  }
+}
+
