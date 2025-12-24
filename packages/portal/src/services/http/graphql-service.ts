@@ -15,6 +15,7 @@ export async function graphqlRequest<
   const json = await httpRequestJson<GraphQLResponse<TData>>("/api/graphql", {
     method: "POST",
     body: { query, variables },
+    credentials: "include",
   })
 
   if ("errors" in json && json.errors?.length) {

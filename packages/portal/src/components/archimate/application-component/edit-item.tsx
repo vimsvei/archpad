@@ -11,6 +11,13 @@ import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/components/animate-ui/components/animate/tabs"
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -18,12 +25,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { BaseObjectItem } from "@/components/archimate/base-object/base-object-item"
-import type { BaseObjectValues } from "@/components/archimate/base-object/base-object-types"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { BaseObjectItem } from "@/components/shared/base-object/base-object-item"
+import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
 import {
   useGetApplicationComponentQuery,
   useUpdateApplicationComponentMutation,
 } from "@/store/apis/application-component-api"
+import { useGetDirectoryItemsQuery } from "@/store/apis/directory-api"
+import type { ApplicationComponentDirectoryFields } from "@/@types/application-component"
+import { MarkdownEditor } from "./markdown-editor"
+import { ParentTable, ChildrenTable } from "./hierarchy-tables"
+import { SystemSoftwareTable } from "./system-software-table"
+import { DataObjectsTable } from "./data-objects-table"
+import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 
 type EditItemProps = {
   id: string
@@ -56,14 +78,45 @@ export function EditItem({ id }: EditItemProps) {
   }, [])
 
   const baselineRef = React.useRef<ReturnType<typeof normalize> | null>(null)
+  const directoryFieldsBaselineRef = React.useRef<ApplicationComponentDirectoryFields | null>(null)
   const [draft, setDraft] = React.useState<BaseObjectValues>({
     code: "",
     name: "",
     description: "",
   })
 
+  const [directoryFields, setDirectoryFields] = React.useState<ApplicationComponentDirectoryFields>({
+    stateId: null,
+    licenseTypeId: null,
+    architectureStyleId: null,
+    criticalLevelId: null,
+    failoverTypeId: null,
+    recoveryTimeId: null,
+    redundancyTypeId: null,
+    monitoringLevelId: null,
+    scalingTypeId: null,
+  })
   const [confirmOpen, setConfirmOpen] = React.useState(false)
-  const [tab, setTab] = React.useState<"general" | "relations">("general")
+  const [tab, setTab] = React.useState<string>("general")
+
+  // Add existing items sheet state
+  const [sheetOpen, setSheetOpen] = React.useState(false)
+  const [sheetType, setSheetType] = React.useState<"system-software" | "data-objects" | "parent" | "child" | null>(null)
+  const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
+  const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
+  const [sheetAvailableItems, setSheetAvailableItems] = React.useState<SelectableItem[]>([])
+  const [sheetIsLoading, setSheetIsLoading] = React.useState(false)
+
+  // Load directory items for all directories from Redux (database)
+  const { data: componentStates = [] } = useGetDirectoryItemsQuery("component-states")
+  const { data: licenseTypes = [] } = useGetDirectoryItemsQuery("license-types")
+  const { data: architectureStyles = [] } = useGetDirectoryItemsQuery("architecture-styles")
+  const { data: criticalLevels = [] } = useGetDirectoryItemsQuery("critical-levels")
+  const { data: failoverTypes = [] } = useGetDirectoryItemsQuery("failover-types")
+  const { data: recoveryTimes = [] } = useGetDirectoryItemsQuery("recovery-times")
+  const { data: redundancyTypes = [] } = useGetDirectoryItemsQuery("redundancy-types")
+  const { data: monitoringLevels = [] } = useGetDirectoryItemsQuery("monitoring-levels")
+  const { data: scalingTypes = [] } = useGetDirectoryItemsQuery("scaling-types")
 
   React.useEffect(() => {
     if (!item) return
@@ -76,10 +129,47 @@ export function EditItem({ id }: EditItemProps) {
     setDraft(initial)
   }, [item, normalize])
 
+  // Initialize directory fields from item data
+  React.useEffect(() => {
+    if (!item) return
+    
+    const updateDirectoryField = (directoryItems: typeof componentStates, itemField?: { name: string } | null) => {
+      if (!itemField?.name || directoryItems.length === 0) {
+        return null
+      }
+      const found = directoryItems.find((item) => item.name === itemField.name)
+      return found?.id ?? null
+    }
+
+    const initialFields: ApplicationComponentDirectoryFields = {
+      stateId: updateDirectoryField(componentStates, item.state) ?? null,
+      licenseTypeId: null, // TODO: add to item type when API supports it
+      architectureStyleId: null,
+      criticalLevelId: null,
+      failoverTypeId: null,
+      recoveryTimeId: null,
+      redundancyTypeId: null,
+      monitoringLevelId: null,
+      scalingTypeId: null,
+    }
+    
+    directoryFieldsBaselineRef.current = initialFields
+    setDirectoryFields(initialFields)
+  }, [item, componentStates])
+
   const isDirty = React.useMemo(() => {
     if (!baselineRef.current) return false
-    return JSON.stringify(normalize(draft)) !== JSON.stringify(baselineRef.current)
-  }, [draft, normalize])
+    
+    // Check basic fields
+    const basicFieldsChanged = JSON.stringify(normalize(draft)) !== JSON.stringify(baselineRef.current)
+    
+    // Check directory fields
+    const directoryFieldsChanged = directoryFieldsBaselineRef.current
+      ? JSON.stringify(directoryFields) !== JSON.stringify(directoryFieldsBaselineRef.current)
+      : false
+    
+    return basicFieldsChanged || directoryFieldsChanged
+  }, [draft, normalize, directoryFields])
 
   const isDraftValid = React.useMemo(() => {
     return Boolean(draft.code.trim()) && Boolean(draft.name.trim())
@@ -111,12 +201,97 @@ export function EditItem({ id }: EditItemProps) {
         code: normalized.code,
         name: normalized.name,
         description: normalized.description ? normalized.description : undefined,
+        // TODO: Add directory fields when API supports them
+        // stateId: directoryFields.stateId,
+        // licenseTypeId: directoryFields.licenseTypeId,
+        // architectureStyleId: directoryFields.architectureStyleId,
+        // criticalLevelId: directoryFields.criticalLevelId,
+        // failoverTypeId: directoryFields.failoverTypeId,
+        // recoveryTimeId: directoryFields.recoveryTimeId,
+        // redundancyTypeId: directoryFields.redundancyTypeId,
+        // monitoringLevelId: directoryFields.monitoringLevelId,
+        // scalingTypeId: directoryFields.scalingTypeId,
       },
     }).unwrap()
 
     toast.success(tr("action.saved", "Saved"))
     baselineRef.current = normalize(draft)
-  }, [draft, isDraftValid, item, normalize, tr, updateItem])
+    directoryFieldsBaselineRef.current = { ...directoryFields }
+  }, [draft, directoryFields, isDraftValid, item, normalize, tr, updateItem])
+
+  const handleDirectoryFieldChange = React.useCallback(
+    (fieldName: keyof ApplicationComponentDirectoryFields, value: string | null) => {
+      setDirectoryFields((prev) => ({ ...prev, [fieldName]: value }))
+    },
+    []
+  )
+
+  // Handler for opening add existing items sheet
+  const handleOpenAddExistingSheet = React.useCallback((type: "system-software" | "data-objects" | "parent" | "child") => {
+    setSheetType(type)
+    setSheetSearchQuery("")
+    setSheetSelectedItems(new Set())
+    setSheetAvailableItems([])
+    setSheetOpen(true)
+    // TODO: Load available items based on type
+  }, [])
+
+  // Handler for toggling item selection in sheet
+  const handleSheetToggleItem = React.useCallback((itemId: string) => {
+    setSheetSelectedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
+      }
+      return next
+    })
+  }, [])
+
+  // Handler for adding selected items
+  const handleSheetAdd = React.useCallback(() => {
+    if (!sheetType) return
+    
+    const itemsToAdd = sheetAvailableItems.filter((item) => sheetSelectedItems.has(item.id))
+    console.log(`Adding ${sheetType}:`, itemsToAdd)
+    // TODO: Add items via Redux mutation based on sheetType
+    // After adding, refresh the appropriate table and close the sheet
+    setSheetOpen(false)
+  }, [sheetType, sheetAvailableItems, sheetSelectedItems])
+
+  // Get sheet title and icon based on type
+  const getSheetConfig = React.useCallback(() => {
+    switch (sheetType) {
+      case "system-software":
+        return {
+          title: tr("sheet.addSystemSoftware", "Добавить системное ПО"),
+          iconType: "system-software" as const,
+        }
+      case "data-objects":
+        return {
+          title: tr("sheet.addDataObjects", "Добавить объекты данных"),
+          iconType: "application-data-object" as const,
+        }
+      case "parent":
+        return {
+          title: tr("sheet.addParents", "Добавить родителей"),
+          iconType: "application-component" as const,
+        }
+      case "child":
+        return {
+          title: tr("sheet.addChildren", "Добавить детей"),
+          iconType: "application-component" as const,
+        }
+      default:
+        return {
+          title: "",
+          iconType: "application-component" as const,
+        }
+    }
+  }, [sheetType, tr])
+
+  const sheetConfig = getSheetConfig()
 
   if (isLoading || isFetching) {
     return (
@@ -214,56 +389,298 @@ export function EditItem({ id }: EditItemProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-b pb-2">
-        <Button
-          type="button"
-          variant={tab === "general" ? "default" : "ghost"}
-          onClick={() => setTab("general")}
-        >
-          {tr("tabs.general", "Общие")}
-        </Button>
-        <Button
-          type="button"
-          variant={tab === "relations" ? "default" : "ghost"}
-          onClick={() => setTab("relations")}
-        >
-          {tr("tabs.relations", "Связи")}
-        </Button>
-      </div>
+      <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
+        <TabsList className="relative w-fit">
+          <TabsTrigger value="general">
+            {tr("tabs.general", "Общие")}
+          </TabsTrigger>
+          <TabsTrigger value="description">
+            {tr("tabs.description", "Description")}
+          </TabsTrigger>
+          <TabsTrigger value="hierarchy">
+            {tr("tabs.hierarchy", "Структура")}
+          </TabsTrigger>
+          <TabsTrigger value="relations">
+            {tr("tabs.relations", "Связи")}
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="flex min-h-0 flex-1 flex-col">
-        {tab === "general" ? (
-          <Card className="flex min-h-0 flex-1 flex-col p-6">
-            <div className="min-h-0 flex-1 overflow-auto">
-              <BaseObjectItem
-                values={draft}
-                onChange={setDraft}
-                submitLabel={tr("item.action.save", "Save")}
-                hideActions
-                disabled={updateState.isLoading}
-                onSubmit={async (values) => {
-                  try {
-                    const normalized = normalize(values)
-                    await updateItem({
-                      id: item.id,
-                      input: {
-                        code: normalized.code,
-                        name: normalized.name,
-                        description: normalized.description ? normalized.description : undefined,
-                      },
-                    }).unwrap()
-                    toast.success(tr("action.saved", "Saved"))
-                    baselineRef.current = normalize(values)
-                  } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
-                  }
-                }}
-              />
+        <TabsContents className="flex min-h-0 flex-1 flex-col">
+          <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-0">
+          <div className="min-h-0 flex-1 overflow-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left area: 2/3 - General fields + State + Tables */}
+              <div className="lg:col-span-2 flex flex-col gap-6 min-h-0">
+                {/* General fields card - ужат по содержимому */}
+                <Card className="flex-shrink-0 flex flex-col gap-4 p-6">
+                  <BaseObjectItem
+                    values={draft}
+                    onChange={setDraft}
+                    submitLabel={tr("item.action.save", "Save")}
+                    hideActions
+                    hideDescription
+                    disabled={updateState.isLoading}
+                    onSubmit={async (values) => {
+                      try {
+                        const normalized = normalize(values)
+                        await updateItem({
+                          id: item.id,
+                          input: {
+                            code: normalized.code,
+                            name: normalized.name,
+                            description: normalized.description ? normalized.description : undefined,
+                          },
+                        }).unwrap()
+                        toast.success(tr("action.saved", "Saved"))
+                        baselineRef.current = normalize(values)
+                      } catch (e: any) {
+                        toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                      }
+                    }}
+                  />
+                  
+                  {/* State field */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="component-state">{tr("item.state", "Состояние")}</Label>
+                    <Select
+                      value={directoryFields.stateId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("stateId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                      <SelectTrigger id="component-state" className="w-full">
+                        <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {componentStates.map((state) => (
+                          <SelectItem key={state.id} value={state.id}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </Card>
+
+                {/* System Software and Data Objects Tables */}
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+                  <SystemSoftwareTable 
+                    componentId={item.id} 
+                    onAddExisting={() => handleOpenAddExistingSheet("system-software")}
+                  />
+                  <DataObjectsTable 
+                    componentId={item.id}
+                    onAddExisting={() => handleOpenAddExistingSheet("data-objects")}
+                  />
+                </div>
+              </div>
+
+              {/* Right area: 1/3 - Directory fields */}
+              <Card className="lg:col-span-1 flex flex-col gap-4 p-6">
+                  
+                {/* License Type */}
+                <div className="grid gap-2">
+                  <Label htmlFor="license-type">{tr("directory.license.type", "Тип лицензии")}</Label>
+                    <Select
+                      value={directoryFields.licenseTypeId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("licenseTypeId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="license-type" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {licenseTypes.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Architecture Style */}
+                <div className="grid gap-2">
+                  <Label htmlFor="architecture-style">{tr("directory.architecture.style", "Архитектурный стиль")}</Label>
+                    <Select
+                      value={directoryFields.architectureStyleId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("architectureStyleId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="architecture-style" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {architectureStyles.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Critical Level */}
+                <div className="grid gap-2">
+                  <Label htmlFor="critical-level">{tr("directory.critical.level", "Уровень критичности")}</Label>
+                    <Select
+                      value={directoryFields.criticalLevelId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("criticalLevelId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="critical-level" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {criticalLevels.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Failover Type */}
+                <div className="grid gap-2">
+                  <Label htmlFor="failover-type">{tr("directory.failover.type", "Тип отказоустойчивости")}</Label>
+                    <Select
+                      value={directoryFields.failoverTypeId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("failoverTypeId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="failover-type" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {failoverTypes.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Recovery Time */}
+                <div className="grid gap-2">
+                  <Label htmlFor="recovery-time">{tr("directory.recovery.time", "Время восстановления")}</Label>
+                    <Select
+                      value={directoryFields.recoveryTimeId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("recoveryTimeId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="recovery-time" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {recoveryTimes.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Redundancy Type */}
+                <div className="grid gap-2">
+                  <Label htmlFor="redundancy-type">{tr("directory.redundancy.type", "Тип избыточности")}</Label>
+                    <Select
+                      value={directoryFields.redundancyTypeId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("redundancyTypeId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="redundancy-type" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {redundancyTypes.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Monitoring Level */}
+                <div className="grid gap-2">
+                  <Label htmlFor="monitoring-level">{tr("directory.monitoring.level", "Уровень мониторинга")}</Label>
+                    <Select
+                      value={directoryFields.monitoringLevelId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("monitoringLevelId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="monitoring-level" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {monitoringLevels.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Scaling Type */}
+                <div className="grid gap-2">
+                  <Label htmlFor="scaling-type">{tr("directory.scaling.type", "Тип масштабирования")}</Label>
+                    <Select
+                      value={directoryFields.scalingTypeId ?? ""}
+                      onValueChange={(value) => handleDirectoryFieldChange("scalingTypeId", value || null)}
+                      disabled={updateState.isLoading || !item}
+                    >
+                    <SelectTrigger id="scaling-type" className="w-full">
+                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {scalingTypes.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </Card>
             </div>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="p-4">
+          </div>
+          </TabsContent>
+
+          <TabsContent value="description" className="flex min-h-0 flex-1 flex-col mt-0">
+            <Card className="flex min-h-0 flex-1 flex-col p-6">
+              <MarkdownEditor
+                key={item.id}
+                value={draft.description}
+                onChange={(markdown) => {
+                  setDraft((prev) => ({ ...prev, description: markdown }))
+                }}
+                disabled={updateState.isLoading || !item}
+                placeholder={tr("description.placeholder", "Enter description...")}
+              />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="hierarchy" className="flex min-h-0 flex-1 flex-col mt-0">
+            <div className="min-h-0 flex-1 overflow-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+                <ParentTable 
+                  componentId={item.id}
+                  onAddExisting={() => handleOpenAddExistingSheet("parent")}
+                />
+                <ChildrenTable 
+                  componentId={item.id}
+                  onAddExisting={() => handleOpenAddExistingSheet("child")}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="relations" className="flex min-h-0 flex-1 flex-col mt-0">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="p-4">
               <div className="font-medium">Functions</div>
               <div className="text-muted-foreground text-sm">
                 Application functions linked to this component (таблица `ApplicationComponentFunctionMap`).
@@ -311,9 +728,10 @@ export function EditItem({ id }: EditItemProps) {
                 Solutions using this component (таблица `SolutionApplicationComponentMap`).
               </div>
             </Card>
-          </div>
-        )}
-      </div>
+            </div>
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
@@ -355,6 +773,23 @@ export function EditItem({ id }: EditItemProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Existing Items Sheet */}
+      {sheetType && (
+        <AddExistingItemsSheet
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          title={sheetConfig.title}
+          iconType={sheetConfig.iconType}
+          items={sheetAvailableItems}
+          isLoading={sheetIsLoading}
+          searchQuery={sheetSearchQuery}
+          onSearchChange={setSheetSearchQuery}
+          selectedItems={sheetSelectedItems}
+          onToggleItem={handleSheetToggleItem}
+          onAdd={handleSheetAdd}
+        />
+      )}
     </div>
   )
 }

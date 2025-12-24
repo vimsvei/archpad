@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-import type { BaseObjectValues } from "@/components/archimate/base-object/base-object-types"
+import type { BaseObjectValues } from "./base-object-types"
 
 type BaseObjectItemProps = {
   values: BaseObjectValues
@@ -16,6 +16,7 @@ type BaseObjectItemProps = {
   submitLabel?: string
   disabled?: boolean
   hideActions?: boolean
+  hideDescription?: boolean
   onSubmit: (values: BaseObjectValues) => void | Promise<void>
 }
 
@@ -25,6 +26,7 @@ export function BaseObjectItem({
   submitLabel,
   disabled,
   hideActions,
+  hideDescription,
   onSubmit,
 }: BaseObjectItemProps) {
   const { t } = useTranslate()
@@ -73,15 +75,17 @@ export function BaseObjectItem({
         />
       </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="base-object-edit-description">{t("table.description")}</Label>
-        <Textarea
-          id="base-object-edit-description"
-          value={values.description}
-          onChange={(e) => onChange({ ...values, description: e.target.value })}
-          disabled={disabled}
-        />
-      </div>
+      {!hideDescription ? (
+        <div className="grid gap-2">
+          <Label htmlFor="base-object-edit-description">{t("table.description")}</Label>
+          <Textarea
+            id="base-object-edit-description"
+            value={values.description}
+            onChange={(e) => onChange({ ...values, description: e.target.value })}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
 
       {!hideActions ? (
         <div className="flex items-center justify-end gap-2">

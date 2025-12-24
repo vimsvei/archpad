@@ -7,14 +7,14 @@ import { useTranslate } from "@tolgee/react"
 import { MoreHorizontal } from "lucide-react"
 
 import type { ApplicationComponent } from "@/@types/application-component"
-import { BaseObjectList } from "@/components/archimate/base-object/base-object-list"
-import type { BaseObjectValues } from "@/components/archimate/base-object/base-object-types"
+import { BaseObjectList } from "@/components/shared/base-object/base-object-list"
+import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
 import {
   useCreateApplicationComponentMutation,
   useGetApplicationComponentsQuery,
 } from "@/store/apis/application-component-api"
 import { Badge } from "@/components/ui/badge"
-import { ArchimateObjectIcon } from "@/components/archimate/base-object/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/shared/base-object/archimate-object-icon"
 import {
   DropdownMenu,
   DropdownMenuContent,

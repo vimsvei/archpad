@@ -1,0 +1,13 @@
+query GetSystemSoftwareList($where: system_software_bool_exp!, $limit: Int!, $offset: Int!) {
+  system_software(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+    id
+    code
+    name
+  }
+  system_software_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
