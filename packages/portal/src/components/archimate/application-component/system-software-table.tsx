@@ -38,7 +38,7 @@ export function SystemSoftwareTable({ componentId, onAddExisting }: SystemSoftwa
 
   return (
     <RelatedItemsTable<SystemSoftware>
-      title={t("component.systemSoftware", "Системное ПО")}
+      title={t("technologies.system-software", "Системное ПО")}
       items={items}
       isLoading={isLoading}
       iconType="system-software"

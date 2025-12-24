@@ -75,7 +75,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>
-            {t("sheet.addExisting.description", "Search and select items to add")}
+            {t("action.add.description", "Search and select items to add")}
           </SheetDescription>
         </SheetHeader>
 

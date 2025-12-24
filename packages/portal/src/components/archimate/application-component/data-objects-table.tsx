@@ -36,7 +36,7 @@ export function DataObjectsTable({ componentId, onAddExisting }: DataObjectsTabl
 
   return (
     <RelatedItemsTable<DataObject>
-      title={t("component.dataObjects", "Объекты данных")}
+      title={t("application.data-objects", "Объекты данных")}
       items={items}
       isLoading={isLoading}
       iconType="application-data-object"
