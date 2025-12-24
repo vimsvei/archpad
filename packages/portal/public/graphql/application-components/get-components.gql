@@ -5,8 +5,86 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
     name
     description
     state {
+      id
+      code
       name
       color
+    }
+    mapFunctions {
+      function {
+        id
+        code
+        name
+      }
+    }
+    mapProducts {
+      product {
+        id
+        code
+        name
+      }
+    }
+    interfaces {
+      id
+      code
+      name
+      layer
+    }
+    criticalLevel {
+      id
+      code
+      name
+    }
+    failoverType {
+      id
+      code
+      name
+    }
+    licenseType {
+      code
+      id
+      name
+    }
+    monitoringLevel {
+      code
+      id
+      name
+    }
+    recoveryTime {
+      id
+      code
+      name
+    }
+    redundancyType {
+      id
+      code
+      name
+      color
+    }
+    scalingType {
+      id
+      code
+      name
+      color
+    }
+    style {
+      id
+      code
+      name
+    }
+    mapSystemSoftwares {
+      kind
+      systemSoftware {
+        id
+        code
+        kind
+        licenseType {
+          code
+          color
+          id
+          name
+        }
+      }
     }
     createdAt
     createdBy

@@ -11,6 +11,7 @@ import {
   RecoveryTimeDirectory,
   RedundancyTypeDirectory,
   ScalingTypeDirectory,
+  SecurityZoneDirectory,
   SoftwareTypeDirectory,
   SolutionStateDirectory,
   StakeholderRoleDirectory,
@@ -91,5 +92,10 @@ export const DIRECTORIES = [
     entity: ScalingTypeDirectory,
     path: 'scaling-types',
     swaggerTag: 'Типы масштабирования',
+  },
+  {
+    entity: SecurityZoneDirectory,
+    path: 'security-zones',
+    swaggerTag: 'Зоны безопасности',
   },
 ] as const;

@@ -14,7 +14,8 @@ import { SystemArchitectureKind } from '@/model/enums/system-architecture-kind.e
 import { ArchimateCode } from '@archpad/models';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
-import {NodeTypeDirectory} from "@/model/directories/directories";
+import { NodeTypeDirectory } from '@/model/directories/directories';
+import { Environment } from '@/model/enums/environment.enum';
 
 @Entity({
   tableName: 'technology_nodes',
@@ -27,6 +28,13 @@ export abstract class TechnologyNode extends NamedObject {
 
   @ArchimateCode('NODE')
   override code: string = undefined as any;
+
+  @Enum({
+    items: () => Environment,
+    nativeEnumName: 'environment_enum',
+    default: Environment.DEV,
+  })
+  environment!: Environment;
 
   @Enum({
     items: () => SystemArchitectureKind,

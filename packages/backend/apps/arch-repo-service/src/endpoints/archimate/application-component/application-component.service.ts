@@ -11,8 +11,8 @@ import type {
   CreateDtoApplicationComponent,
   UpdateDtoApplicationComponent,
 } from '@/model/dto/application-component.dto';
-import {ArchpadRequestContext} from "@/request-context/archpad-request-context";
-import {ActionStamp} from "@archpad/models";
+import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { ActionStamp } from '@archpad/models';
 
 export type ApplicationComponentListQuery = {
   search?: string;
@@ -76,7 +76,8 @@ export class ApplicationComponentService {
   }
 
   async create(
-    dto: CreateDtoApplicationComponent, context: ArchpadRequestContext
+    dto: CreateDtoApplicationComponent,
+    context: ArchpadRequestContext,
   ): Promise<ApplicationComponent> {
     const em = this.repo.getEntityManager();
 
@@ -106,7 +107,7 @@ export class ApplicationComponentService {
   async update(
     id: string,
     dto: UpdateDtoApplicationComponent,
-    context: ArchpadRequestContext
+    context: ArchpadRequestContext,
   ): Promise<ApplicationComponent> {
     const em = this.repo.getEntityManager();
     const entity = await this.findOne(id);
@@ -114,7 +115,9 @@ export class ApplicationComponentService {
     const patch: Partial<ApplicationComponent> = {
       ...(dto.code !== undefined ? { code: dto.code } : {}),
       ...(dto.name !== undefined ? { name: dto.name } : {}),
-      ...(dto.description !== undefined ? { description: dto.description } : {}),
+      ...(dto.description !== undefined
+        ? { description: dto.description }
+        : {}),
       ...(dto.licenseTypeId !== undefined
         ? {
             license: dto.licenseTypeId
@@ -139,7 +142,7 @@ export class ApplicationComponentService {
       updated: {
         at: new Date(),
         by: context.userId,
-      }
+      },
     };
 
     this.repo.assign(entity, patch as any);

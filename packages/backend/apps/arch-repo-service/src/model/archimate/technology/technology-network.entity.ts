@@ -1,21 +1,45 @@
-import { NamedObject } from '@archpad/models';
-import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
+import { ArchimateCode } from '@archpad/models';
+import {
+  Collection,
+  Entity,
+  Enum,
+  ManyToOne,
+  OneToMany,
+} from '@mikro-orm/core';
 import { TechnologyNode } from './technology-node.entity';
-import { PhysicalLocation } from '@/model/archimate/physical/physical-location.entity';
+import { NetworkAbstractionLevel } from '@/model/enums/network-abstraction-level.enum.';
+import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
+import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
 
-@Entity({ tableName: 'technology_networks' })
-export class TechnologyNetwork extends NamedObject {
+@Entity({
+  abstract: true,
+  tableName: 'technology_networks',
+  discriminatorColumn: 'level',
+})
+export class TechnologyNetwork extends ArchimateElementGeneric {
+  @Enum({
+    items: () => NetworkAbstractionLevel,
+    nativeEnumName: 'network_abstraction_level_enum',
+  })
+  level!: NetworkAbstractionLevel;
+
+  @ArchimateCode('NET')
+  override code: string = undefined as any;
+
   @OneToMany({
     entity: () => TechnologyNode,
     mappedBy: 'network',
   })
   nodes = new Collection<TechnologyNode>(this);
+}
 
-  @ManyToOne({
-    entity: () => PhysicalLocation,
-    nullable: true,
-    updateRule: 'cascade',
-    deleteRule: 'no action',
+@Entity({ discriminatorValue: NetworkAbstractionLevel.LOGICAL })
+export class TechnologyLogicalNetwork extends TechnologyNetwork {
+  @OneToMany({
+    entity: () => ApplicationComponentTechnologyLogicalNetworkMap,
+    mappedBy: 'logicalNetwork',
   })
-  location!: PhysicalLocation;
+  components = new Collection<ApplicationComponentTechnologyLogicalNetworkMap>(
+    this,
+  );
 }

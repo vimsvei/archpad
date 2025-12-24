@@ -1,10 +1,10 @@
 import { MappedObject } from '@archpad/models';
-import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
-import { TechnologyNode } from '@/model/archimate/technology/technology-node.entity';
+import { TechnologyLogicalNetwork } from '@/model/archimate/technology/technology-network.entity';
 
-@Entity({ tableName: 'map_application_component_technology_node' })
-export class ApplicationComponentTechnologyNodeMap extends MappedObject {
+@Entity({ tableName: 'map_application_component_technology_logical_network' })
+export class ApplicationComponentTechnologyLogicalNetworkMap extends MappedObject {
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -15,11 +15,11 @@ export class ApplicationComponentTechnologyNodeMap extends MappedObject {
   component!: ApplicationComponent;
 
   @ManyToOne({
-    entity: () => TechnologyNode,
+    entity: () => TechnologyLogicalNetwork,
     primary: true,
-    fieldName: 'node_id',
+    fieldName: 'logical_network_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  node!: TechnologyNode;
+  logicalNetwork!: TechnologyLogicalNetwork;
 }

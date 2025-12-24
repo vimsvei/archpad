@@ -12,7 +12,10 @@ import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-elemen
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
 import { ApiProperty } from '@nestjs/swagger';
-import {LicenseTypeDirectory, SoftwareTypeDirectory} from "@/model/directories/directories";
+import {
+  LicenseTypeDirectory,
+  SoftwareTypeDirectory,
+} from '@/model/directories/directories';
 
 @Entity({
   tableName: 'system_software',

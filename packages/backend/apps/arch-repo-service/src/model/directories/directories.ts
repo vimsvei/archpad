@@ -46,3 +46,6 @@ export class MonitoringLevelDirectory extends DirectoryObject {}
 
 @Entity({ discriminatorValue: DirectoryKind.SCALING_TYPE })
 export class ScalingTypeDirectory extends DirectoryObject {}
+
+@Entity({ discriminatorValue: DirectoryKind.SECURITY_ZONE })
+export class SecurityZoneDirectory extends DirectoryObject {}

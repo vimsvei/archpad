@@ -12,13 +12,16 @@ import { ApplicationComponentTechnologyNodeMap } from '../../maps/application-co
 import { SolutionApplicationComponentMap } from '../../maps/solution-application-component.map';
 import {
   ArchitectureStyleDirectory,
-  ComponentStateDirectory, CriticalLevelDirectory,
-  FailoverTypeDirectory, LicenseTypeDirectory,
+  ComponentStateDirectory,
+  CriticalLevelDirectory,
+  FailoverTypeDirectory,
+  LicenseTypeDirectory,
   MonitoringLevelDirectory,
   RecoveryTimeDirectory,
   RedundancyTypeDirectory,
   ScalingTypeDirectory,
 } from '@/model/directories/directories';
+import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
@@ -183,6 +186,14 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     mappedBy: 'component',
   })
   systemSoftware = new Collection<ApplicationComponentSystemSoftwareMap>(this);
+
+  @OneToMany({
+    entity: () => ApplicationComponentTechnologyLogicalNetworkMap,
+    mappedBy: 'component',
+  })
+  networks = new Collection<ApplicationComponentTechnologyLogicalNetworkMap>(
+    this,
+  );
 
   @OneToMany({
     entity: () => ApplicationComponentTechnologyNodeMap,

@@ -21,7 +21,13 @@ export class RequestLoggerInterceptor implements NestInterceptor {
 
     // Skip noisy health checks completely.
     // HealthCheckerController exposes /health and /healthz (and may be probed very frequently).
-    if (typeof url === 'string' && (url === '/health' || url === '/healthz' || url.startsWith('/health/') || url.startsWith('/healthz/'))) {
+    if (
+      typeof url === 'string' &&
+      (url === '/health' ||
+        url === '/healthz' ||
+        url.startsWith('/health/') ||
+        url.startsWith('/healthz/'))
+    ) {
       return next.handle();
     }
 

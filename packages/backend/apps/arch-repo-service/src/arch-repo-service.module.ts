@@ -29,10 +29,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
         './dist/**/*.generic{.ts,.js}',
         './dist/**/*.map{.ts,.js}',
         './dist/**/*.directory{.ts,.js}',
-        // directory discriminator entities are defined in `model/directories/directories.ts`
-        // (compiled to `.../directories.js`), so include it explicitly.
         './dist/**/directories{.ts,.js}',
-
         './dist/**/directory-object.abstract{.ts,.js}',
         './dist/**/mapped-solution-object.abstract{.ts,.js}',
         '../../dist/libs/models/**/*.abstract{.ts,.js}',
@@ -85,7 +82,7 @@ export class ArchRepoServiceModule {
   private readonly loggerContext = ArchRepoServiceModule.name;
 
   constructor(private readonly logger: LoggerService) {}
-  
+
   async onModuleInit() {
     const mode = process.env.NODE_ENV;
 

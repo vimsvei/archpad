@@ -100,7 +100,9 @@ export class HasuraSyncService {
         tables: dbTables,
       });
     } else {
-      this.logger.log('Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)');
+      this.logger.log(
+        'Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)',
+      );
     }
 
     if (renameToCamelCase) {
