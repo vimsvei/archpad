@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -15,36 +16,36 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { ApplicationComponentService } from './application-component.service';
-import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
+import { SystemSoftwareService } from './system-software.service';
+import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import {
-  CreateDtoApplicationComponent,
-  UpdateDtoApplicationComponent,
-} from '@/model/dto/application-component.dto';
+  CreateDtoSystemSoftware,
+  UpdateDtoSystemSoftware,
+} from '@/model/dto/system-software.dto';
 import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 
-class ApplicationComponentListResponse {
+class SystemSoftwareListResponse {
   // NOTE: swagger decorators on properties are optional here; we keep response shape minimal.
-  items!: ApplicationComponent[];
+  items!: SystemSoftware[];
   total!: number;
   page!: number;
   pageSize!: number;
   pageCount!: number;
 }
 
-@ApiTags('Компонент приложения')
+@ApiTags('Системное ПО')
 @ApiExtraModels(
-  ApplicationComponent,
-  CreateDtoApplicationComponent,
-  UpdateDtoApplicationComponent,
+  SystemSoftware,
+  CreateDtoSystemSoftware,
+  UpdateDtoSystemSoftware,
 )
-@Controller('application-components')
-export class ApplicationComponentController {
-  constructor(protected readonly service: ApplicationComponentService) {}
+@Controller('system-software')
+export class SystemSoftwareController {
+  constructor(protected readonly service: SystemSoftwareService) {}
 
   @Get()
-  @ApiOperation({ summary: `Получение списка компонентов приложений` })
+  @ApiOperation({ summary: `Получение списка системного ПО` })
   @ApiQuery({
     name: 'search',
     required: false,
@@ -62,7 +63,7 @@ export class ApplicationComponentController {
     description: 'Размер страницы (1..100)',
     example: 25,
   })
-  @ApiOkResponse({ type: ApplicationComponentListResponse as any })
+  @ApiOkResponse({ type: SystemSoftwareListResponse as any })
   findAll(
     @Query('search') search?: string,
     @Query('page') page?: string,
@@ -76,32 +77,41 @@ export class ApplicationComponentController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: `Получение компонента приложения по id` })
+  @ApiOperation({ summary: `Получение системного ПО по id` })
   @ApiParam({ name: 'id', description: 'UUID объекта' })
-  @ApiOkResponse({ type: ApplicationComponent })
+  @ApiOkResponse({ type: SystemSoftware })
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: `Создание компонента приложения` })
-  @ApiOkResponse({ type: ApplicationComponent })
+  @ApiOperation({ summary: `Создание системного ПО` })
+  @ApiOkResponse({ type: SystemSoftware })
   create(
-    @Body() dto: CreateDtoApplicationComponent,
+    @Body() dto: CreateDtoSystemSoftware,
     @ArchpadContext() context: ArchpadRequestContext,
   ) {
     return this.service.create(dto, context);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: `Изменение компонента приложения` })
+  @ApiOperation({ summary: `Изменение системного ПО` })
   @ApiParam({ name: 'id', description: 'UUID объекта' })
-  @ApiOkResponse({ type: ApplicationComponent })
+  @ApiOkResponse({ type: SystemSoftware })
   update(
     @Param('id') id: string,
-    @Body() dto: UpdateDtoApplicationComponent,
+    @Body() dto: UpdateDtoSystemSoftware,
     @ArchpadContext() context: ArchpadRequestContext,
   ) {
     return this.service.update(id, dto, context);
   }
+
+  @Delete(':id')
+  @ApiOperation({ summary: `Удаление системного ПО` })
+  @ApiParam({ name: 'id', description: 'UUID объекта' })
+  @ApiOkResponse()
+  delete(@Param('id') id: string) {
+    return this.service.delete(id);
+  }
 }
+

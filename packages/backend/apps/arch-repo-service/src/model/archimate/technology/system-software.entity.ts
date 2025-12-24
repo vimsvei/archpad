@@ -7,7 +7,6 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { ArchimateCode } from '@archpad/models';
-import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
@@ -27,6 +26,7 @@ export class SystemSoftware extends ArchimateElementGeneric {
   @Enum({
     items: () => SystemSoftwareKind,
     nativeEnumName: 'system_software_kind_enum',
+    default: SystemSoftwareKind.OTHER,
   })
   kind!: SystemSoftwareKind;
 
@@ -54,12 +54,6 @@ export class SystemSoftware extends ArchimateElementGeneric {
     deleteRule: 'no action',
   })
   license!: LicenseTypeDirectory;
-
-  @OneToMany({
-    entity: () => TechnologyNodeSystemSoftwareMap,
-    mappedBy: 'systemSoftware',
-  })
-  nodes = new Collection<TechnologyNodeSystemSoftwareMap>(this);
 
   @OneToMany({
     entity: () => ApplicationComponentSystemSoftwareMap,

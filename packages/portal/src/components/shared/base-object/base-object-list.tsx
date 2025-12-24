@@ -47,6 +47,7 @@ type BaseObjectListProps<TItem extends BaseObject> = {
     titleKey: string
     descriptionKey: string
   }
+  initialColumnVisibility?: import("@tanstack/react-table").VisibilityState
 }
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -60,7 +61,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 
 export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListProps<TItem>) {
   const { t } = useTranslate()
-  const { titleKey, tableId, columns, useListQuery, create, empty } = props
+  const { titleKey, tableId, columns, useListQuery, create, empty, initialColumnVisibility } = props
 
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
@@ -73,7 +74,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
     setPage(1)
   }, [debouncedSearch, pageSize])
 
-  const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(tableId)
+  const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(tableId, initialColumnVisibility)
 
   const { data, error, refetch, isLoading, isFetching } = useListQuery({
     search: debouncedSearch.trim() ? debouncedSearch.trim() : undefined,

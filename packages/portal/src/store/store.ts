@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { directoryApi } from "@/store/apis/directory-api"
 import { applicationComponentApi } from "@/store/apis/application-component-api"
+import { systemSoftwareApi } from "@/store/apis/system-software-api"
 import logger from 'redux-logger';
 
 export function makeStore() {
@@ -8,6 +9,7 @@ export function makeStore() {
     reducer: {
       [directoryApi.reducerPath]: directoryApi.reducer,
       [applicationComponentApi.reducerPath]: applicationComponentApi.reducer,
+      [systemSoftwareApi.reducerPath]: systemSoftwareApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -16,6 +18,7 @@ export function makeStore() {
       })
         .concat(directoryApi.middleware)
         .concat(applicationComponentApi.middleware)
+        .concat(systemSoftwareApi.middleware)
         .concat(logger),
     devTools: process.env.NODE_ENV !== "production",
   })

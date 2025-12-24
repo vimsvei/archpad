@@ -1,7 +1,10 @@
 export enum SystemSoftwareKind {
-  OS = 'Operating System',
-  DATABASE = 'database',
-  RUNTIME = 'Runtime',
-  PLATFORM = 'Platform',
-  LIBRARY = 'Library',
+  OS = 'system.software.os',
+  DATABASE = 'system.software.database',
+  RUNTIME = 'system.software.runtime',
+  PLATFORM = 'system.software.platform',
+  LIBRARY = 'system.software.library',
+  MESSAGE_BROKER = 'system.software.message.broker',
+  OBJECT_STORAGE = 'system.software.storage',
+  OTHER = 'system.software.other',
 }

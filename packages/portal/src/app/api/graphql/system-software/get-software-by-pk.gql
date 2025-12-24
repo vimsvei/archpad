@@ -1,0 +1,23 @@
+query GetSystemSoftwareByPk($id: uuid!) {
+  system_software_by_pk(id: $id) {
+    id
+    code
+    name
+    description
+    version
+    kind
+    type {
+      id
+      name
+    }
+    licenseType {
+      id
+      name
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+}
+

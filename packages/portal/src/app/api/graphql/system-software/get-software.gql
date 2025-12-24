@@ -1,0 +1,28 @@
+query GetSystemSoftware($where: system_software_bool_exp!, $limit: Int!, $offset: Int!) {
+  system_software(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+    id
+    code
+    name
+    description
+    version
+    kind
+    type {
+      id
+      name
+    }
+    licenseType {
+      id
+      name
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+  system_software_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+

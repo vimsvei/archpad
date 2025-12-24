@@ -16,6 +16,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
 import { NodeTypeDirectory } from '@/model/directories/directories';
 import { Environment } from '@/model/enums/environment.enum';
+import { OperatingSystem } from './operating-system.entity';
 
 @Entity({
   tableName: 'technology_nodes',
@@ -73,6 +74,14 @@ export abstract class TechnologyNode extends NamedObject {
     deleteRule: 'no action',
   })
   network!: TechnologyNetwork;
+  
+  @ManyToOne({
+    entity: () => OperatingSystem,
+    name: 'operating_system_id',
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  operatingSystem!: OperatingSystem;
 
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,

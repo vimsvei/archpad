@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
+import { SystemSoftwareModule } from './endpoints/archimate/system-software/system-software.module';
 import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import {
@@ -63,6 +64,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     }),
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
+    SystemSoftwareModule,
     DirectoriesModule,
     HealthCheckerModule,
   ],
