@@ -201,16 +201,6 @@ export function EditItem({ id }: EditItemProps) {
         code: normalized.code,
         name: normalized.name,
         description: normalized.description ? normalized.description : undefined,
-        // TODO: Add directory fields when API supports them
-        // stateId: directoryFields.stateId,
-        // licenseTypeId: directoryFields.licenseTypeId,
-        // architectureStyleId: directoryFields.architectureStyleId,
-        // criticalLevelId: directoryFields.criticalLevelId,
-        // failoverTypeId: directoryFields.failoverTypeId,
-        // recoveryTimeId: directoryFields.recoveryTimeId,
-        // redundancyTypeId: directoryFields.redundancyTypeId,
-        // monitoringLevelId: directoryFields.monitoringLevelId,
-        // scalingTypeId: directoryFields.scalingTypeId,
       },
     }).unwrap()
 
@@ -262,25 +252,35 @@ export function EditItem({ id }: EditItemProps) {
 
   // Get sheet title and icon based on type
   const getSheetConfig = React.useCallback(() => {
+    const tableKeyMap: Record<NonNullable<typeof sheetType>, string> = {
+      "system-software": "technologies.system-software",
+      "data-objects": "application.data-objects",
+      "parent": "hierarchy.parent",
+      "child": "hierarchy.children",
+    }
+    
+    const tableKey = sheetType ? tableKeyMap[sheetType] : ""
+    const titleKey = tableKey ? `${t('action.add')} ${t(tableKey)}` : ""
+    
     switch (sheetType) {
       case "system-software":
         return {
-          title: tr("sheet.addSystemSoftware", "Добавить системное ПО"),
+          title: tr(titleKey, "Добавить системное ПО"),
           iconType: "system-software" as const,
         }
       case "data-objects":
         return {
-          title: tr("sheet.addDataObjects", "Добавить объекты данных"),
+          title: tr(titleKey, "Добавить объекты данных"),
           iconType: "application-data-object" as const,
         }
       case "parent":
         return {
-          title: tr("sheet.addParents", "Добавить родителей"),
+          title: tr(titleKey, "Добавить родителей"),
           iconType: "application-component" as const,
         }
       case "child":
         return {
-          title: tr("sheet.addChildren", "Добавить детей"),
+          title: tr(titleKey, "Добавить детей"),
           iconType: "application-component" as const,
         }
       default:
@@ -403,6 +403,15 @@ export function EditItem({ id }: EditItemProps) {
           <TabsTrigger value="relations">
             {tr("tabs.relations", "Связи")}
           </TabsTrigger>
+          <TabsTrigger value="application">
+            {tr("tabs.application", "Приложение")}
+          </TabsTrigger>
+          <TabsTrigger value="technology">
+            {tr("tabs.technology", "Технологии")}
+          </TabsTrigger>
+          <TabsTrigger value="schema">
+            {tr("tabs.schema", "Схема")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContents className="flex min-h-0 flex-1 flex-col">
@@ -463,11 +472,11 @@ export function EditItem({ id }: EditItemProps) {
 
                 {/* System Software and Data Objects Tables */}
                 <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
-                  <SystemSoftwareTable 
-                    componentId={item.id} 
+                  <SystemSoftwareTable
+                    componentId={item.id}
                     onAddExisting={() => handleOpenAddExistingSheet("system-software")}
                   />
-                  <DataObjectsTable 
+                  <DataObjectsTable
                     componentId={item.id}
                     onAddExisting={() => handleOpenAddExistingSheet("data-objects")}
                   />
@@ -476,7 +485,7 @@ export function EditItem({ id }: EditItemProps) {
 
               {/* Right area: 1/3 - Directory fields */}
               <Card className="lg:col-span-1 flex flex-col gap-4 p-6">
-                  
+                
                 {/* License Type */}
                 <div className="grid gap-2">
                   <Label htmlFor="license-type">{tr("directory.license.type", "Тип лицензии")}</Label>
@@ -664,17 +673,15 @@ export function EditItem({ id }: EditItemProps) {
           </TabsContent>
 
           <TabsContent value="hierarchy" className="flex min-h-0 flex-1 flex-col mt-0">
-            <div className="min-h-0 flex-1 overflow-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-                <ParentTable 
-                  componentId={item.id}
-                  onAddExisting={() => handleOpenAddExistingSheet("parent")}
-                />
-                <ChildrenTable 
-                  componentId={item.id}
-                  onAddExisting={() => handleOpenAddExistingSheet("child")}
-                />
-              </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0 flex-1">
+              <ParentTable
+                componentId={item.id}
+                onAddExisting={() => handleOpenAddExistingSheet("parent")}
+              />
+              <ChildrenTable
+                componentId={item.id}
+                onAddExisting={() => handleOpenAddExistingSheet("child")}
+              />
             </div>
           </TabsContent>
 
@@ -729,6 +736,24 @@ export function EditItem({ id }: EditItemProps) {
               </div>
             </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-0">
+            <Card className="flex min-h-0 flex-1 flex-col p-6">
+              <div className="text-muted-foreground">Application tab content</div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-0">
+            <Card className="flex min-h-0 flex-1 flex-col p-6">
+              <div className="text-muted-foreground">Technology tab content</div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schema" className="flex min-h-0 flex-1 flex-col mt-0">
+            <Card className="flex min-h-0 flex-1 flex-col p-6">
+              <div className="text-muted-foreground">Schema tab content</div>
+            </Card>
           </TabsContent>
         </TabsContents>
       </Tabs>
