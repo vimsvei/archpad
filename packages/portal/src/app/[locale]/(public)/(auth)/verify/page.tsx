@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryVerificationFlow } from '@/components/ory/ory-flows'
+import { OryVerificationFlow } from '@/components/ory'
 import {getVerificationFlow, OryPageParams} from "@ory/nextjs/app";
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'

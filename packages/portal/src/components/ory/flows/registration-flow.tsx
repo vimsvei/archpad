@@ -13,7 +13,7 @@ import {
   defaultOryOverrides,
   OryNativeFormRoot,
   withLocaleSdk,
-} from '@/components/ory/flows/common'
+} from '@/components/ory/common'
 
 export function OryRegistrationFlow({
   flow,

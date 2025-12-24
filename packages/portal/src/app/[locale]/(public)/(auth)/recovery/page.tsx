@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryRecoveryFlow } from '@/components/ory/ory-flows'
+import { OryRecoveryFlow } from '@/components/ory'
 import {getRecoveryFlow, OryPageParams} from "@ory/nextjs/app";
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
