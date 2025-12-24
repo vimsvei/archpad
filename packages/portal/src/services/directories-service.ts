@@ -5,6 +5,7 @@
 
 import type { DirectoryKind } from "@/@types/directory-kind"
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
+import type { DirectoryLinkType } from "@/@types/directory-link-type"
 import { restRequest } from "@/services/http/rest-service"
 
 // ============================================================================
@@ -109,6 +110,59 @@ export async function deleteDirectoryItem(slug: DirectorySlug, id: string): Prom
 export async function getDirectoryItems(slug: DirectorySlug): Promise<DirectoryItem[]> {
   const response = await restRequest<ArchRepoDirectoryItem[]>(slug, { method: "GET" })
   return response.map(mapToDirectoryItem)
+}
+
+export async function bulkCreateDirectoryItems(
+  slug: DirectorySlug,
+  inputs: CreateDirectoryItemInput[]
+): Promise<DirectoryItem[]> {
+  const response = await restRequest<ArchRepoDirectoryItem[]>([slug, "bulk"], {
+    method: "POST",
+    body: inputs,
+  })
+  return response.map(mapToDirectoryItem)
+}
+
+export async function bulkUpsertDirectoryItems(
+  slug: DirectorySlug,
+  inputs: CreateDirectoryItemInput[]
+): Promise<DirectoryItem[]> {
+  const response = await restRequest<ArchRepoDirectoryItem[]>([slug, "bulk", "upsert"], {
+    method: "POST",
+    body: inputs,
+  })
+  return response.map(mapToDirectoryItem)
+}
+
+export async function createDirectoryLink(
+  slug: DirectorySlug,
+  sourceId: string,
+  input: { targetId: string; type: DirectoryLinkType }
+): Promise<void> {
+  await restRequest([slug, sourceId, "links"], {
+    method: "POST",
+    body: input,
+  })
+}
+
+export async function bulkCreateDirectoryLinks(
+  slug: DirectorySlug,
+  inputs: Array<{ sourceId: string; targetId: string; type: DirectoryLinkType }>
+): Promise<void> {
+  await restRequest([slug, "links", "bulk"], {
+    method: "POST",
+    body: inputs,
+  })
+}
+
+export async function deleteDirectoryLink(
+  slug: DirectorySlug,
+  sourceId: string,
+  targetId: string
+): Promise<void> {
+  await restRequest([slug, sourceId, "links", targetId], {
+    method: "DELETE",
+  })
 }
 
 

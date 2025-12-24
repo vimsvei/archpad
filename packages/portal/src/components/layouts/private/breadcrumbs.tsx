@@ -58,7 +58,7 @@ export function PrivateBreadcrumbs() {
 
       const base: Crumb[] = [
         { href: "/dashboard", label: "Dashboard" },
-        { href: "/directories", label: "Directories" },
+        { href: "/directories", label: t("directories.title") },
       ]
 
       if (!slug) return [...base.slice(0, 2).map((c, idx) => (idx === 1 ? { label: c.label } : c))]

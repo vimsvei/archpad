@@ -26,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DirectoryLinkDto } from '@/model/dto/directory-link.dto';
+import { BulkDirectoryLinkDto } from '@/model/dto/directory-link-bulk.dto';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { DirectoryItemsMap } from '@/model/maps/directory-items.map';
 import { LoggerService } from '@archpad/logger';
@@ -96,7 +97,7 @@ export class BaseDirectoryModule {
     }
 
     @ApiTags(swaggerTag ?? EntityClass.name ?? path)
-    @ApiExtraModels(EntityClass, CreateDtoClass, UpdateDtoClass)
+    @ApiExtraModels(EntityClass, CreateDtoClass, UpdateDtoClass, DirectoryItemsMap, BulkDirectoryLinkDto)
     @Controller(path)
     class DirectoryController {
       constructor(private readonly service: DirectoryService) {}
@@ -157,6 +158,42 @@ export class BaseDirectoryModule {
         return this.service.create(dto, context);
       }
 
+      @Post('bulk')
+      @ApiOperation({
+        summary: 'Bulk create directory items',
+        description:
+          'Создать несколько элементов справочника на основе переданного массива данных.',
+      })
+      @ApiBody({
+        description: 'Массив данных для создания элементов справочника',
+        type: [CreateDtoClass],
+      })
+      @ApiCreatedResponse({
+        description: 'Элементы успешно созданы.',
+        type: [EntityClass],
+      })
+      bulkCreate(
+        @Body() dtos: CreateDto[],
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.bulkCreate(dtos, context);
+      }
+
+      @Post('bulk/upsert')
+      @ApiOperation({
+        summary: 'Bulk upsert directory items (by code)',
+        description:
+          'Идемпотентная пакетная загрузка: элементы с уже существующим code будут обновлены, остальные созданы.',
+      })
+      @ApiBody({ type: [CreateDtoClass] })
+      @ApiCreatedResponse({ type: [EntityClass] })
+      bulkUpsert(
+        @Body() dtos: CreateDto[],
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.bulkUpsert(dtos, context);
+      }
+
       @Patch(':id')
       @ApiOperation({
         summary: 'Update an existing directory item',
@@ -207,8 +244,23 @@ export class BaseDirectoryModule {
       @Post(':id/links')
       @ApiOperation({ summary: 'Создать связь' })
       @ApiBody({ type: DirectoryLinkDto })
-      async linkItem(@Param('id') id: string, @Body() dto: DirectoryLinkDto) {
-        return this.service.addLink(id, dto);
+      async linkItem(
+        @Param('id') id: string,
+        @Body() dto: DirectoryLinkDto,
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.addLink(id, dto, context);
+      }
+
+      @Post('links/bulk')
+      @ApiOperation({ summary: 'Создать связи пакетно' })
+      @ApiBody({ type: [BulkDirectoryLinkDto] })
+      @ApiCreatedResponse({ type: [DirectoryItemsMap] })
+      async bulkLinkItems(
+        @Body() dtos: BulkDirectoryLinkDto[],
+        @ArchpadContext() context: ArchpadRequestContext,
+      ) {
+        return this.service.bulkAddLinks(dtos, context);
       }
 
       @Delete(':id/links/:targetId')

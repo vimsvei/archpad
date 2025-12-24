@@ -1,7 +1,7 @@
 "use client"
 
 import type { DirectoryKind } from "@/@types/directory-kind"
-import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
+import type { DirectoryItem, DirectoryRelation, DirectorySlug } from "@/@types/directories"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
@@ -17,6 +17,14 @@ type HasuraDirectoryRow = {
   createdBy: string | null
   updatedAt: string | null
   updatedBy: string | null
+}
+
+type HasuraDirectoryRelationRow = {
+  createdAt: string
+  type: string
+  sourceId: string
+  targetId: string
+  target: HasuraDirectoryRow & { kind?: string | null }
 }
 
 function toDirectoryItem(row: HasuraDirectoryRow): DirectoryItem {
@@ -68,6 +76,44 @@ export async function getDirectoryItemHasura(
   const row = data.directories_by_pk
   if (!row) throw new Error("Item not found")
   return toDirectoryItem(row)
+}
+
+export async function getDirectoryCountHasura(slug: DirectorySlug): Promise<number> {
+  const kind = requireDirectoryKind(slug)
+  const query = await loadGql("directories/get-directory-count.gql")
+  const data = await graphqlRequest<
+    { directories_aggregate: { aggregate: { count: number } } },
+    { kind: DirectoryKind }
+  >(query, {
+    kind,
+  })
+  return data.directories_aggregate?.aggregate?.count ?? 0
+}
+
+export async function getDirectoryRelationsHasura(
+  slug: DirectorySlug,
+  sourceId: string
+): Promise<Array<DirectoryRelation & { target: DirectoryItem }>> {
+  // slug is only used for guarding kind; relations query doesn't need kind
+  void requireDirectoryKind(slug)
+  const query = await loadGql("directories/get-directory-relations.gql")
+  const data = await graphqlRequest<
+    { map_directory_items: HasuraDirectoryRelationRow[] },
+    { sourceId: string }
+  >(query, {
+    sourceId,
+  })
+
+  return (data.map_directory_items ?? []).map((r) => ({
+    id: `${r.sourceId}:${r.targetId}:${r.type}`,
+    sourceDirectorySlug: slug,
+    sourceItemId: r.sourceId,
+    targetDirectorySlug: slug,
+    targetItemId: r.targetId,
+    type: r.type as any,
+    createdAt: r.createdAt,
+    target: toDirectoryItem(r.target),
+  }))
 }
 
 

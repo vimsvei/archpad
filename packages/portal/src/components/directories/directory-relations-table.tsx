@@ -3,11 +3,9 @@
 import * as React from "react"
 import { Eraser, Plus } from "lucide-react"
 
-import type { DirectorySlug } from "@/@types/directories"
+import type { DirectoryItem, DirectoryRelation, DirectorySlug } from "@/@types/directories"
 import { DirectoryLinkType } from "@/@types/directory-link-type"
-import { getDirectoryMeta, listKnownDirectorySlugs } from "@/components/directories/directory-meta"
-import { addRelation, getDirectoryItem, removeRelation } from "@/components/directories/storage"
-import { useDirectoryRelations } from "@/hooks/use-directory-relations"
+import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -20,16 +18,26 @@ import {
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTranslate } from "@tolgee/react"
-import { useGetDirectoryItemsQuery } from "@/store/apis/directory-api"
+import {
+  useCreateDirectoryLinkMutation,
+  useDeleteDirectoryLinkMutation,
+  useGetDirectoryItemsQuery,
+  useGetDirectoryRelationsQuery,
+} from "@/store/apis/directory-api"
 
 type DirectoryRelationsTableProps = {
   sourceDirectorySlug: DirectorySlug
   sourceItemId: string
 }
 
+type DirectoryRelationRow = DirectoryRelation & { target: DirectoryItem }
+
 export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: DirectoryRelationsTableProps) {
   const { t } = useTranslate()
-  const relations = useDirectoryRelations(sourceDirectorySlug, sourceItemId)
+  const { data: relations = [], isLoading: isRelationsLoading, isFetching: isRelationsFetching } =
+    useGetDirectoryRelationsQuery({ slug: sourceDirectorySlug, sourceId: sourceItemId })
+  const [createLink, { isLoading: isCreateLinkLoading }] = useCreateDirectoryLinkMutation()
+  const [deleteLink, { isLoading: isDeleteLinkLoading }] = useDeleteDirectoryLinkMutation()
 
   const tr = React.useCallback(
     (key: string, fallback: string) => {
@@ -39,15 +47,9 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
     [t]
   )
 
-  const directoryOptions = React.useMemo(() => {
-    const known = listKnownDirectorySlugs()
-    const all = new Set<DirectorySlug>([sourceDirectorySlug, ...known])
-    return Array.from(all)
-  }, [sourceDirectorySlug])
-
-  const [targetDirectorySlug, setTargetDirectorySlug] = React.useState<DirectorySlug>(() =>
-    directoryOptions.includes(sourceDirectorySlug) ? sourceDirectorySlug : directoryOptions[0]!
-  )
+  // NOTE: server-side directory links currently support linking items within the same directory kind.
+  // Keep UI constrained to the current directory to avoid confusing cross-directory options.
+  const targetDirectorySlug = sourceDirectorySlug
   const {
     data: targetItems = [],
     isLoading: isTargetItemsLoading,
@@ -55,11 +57,6 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
   } = useGetDirectoryItemsQuery(targetDirectorySlug)
   const [targetItemId, setTargetItemId] = React.useState<string | undefined>(undefined)
   const [linkType, setLinkType] = React.useState<DirectoryLinkType>(DirectoryLinkType.ASSOCIATION)
-
-  React.useEffect(() => {
-    // Reset selection when directory changes.
-    setTargetItemId(undefined)
-  }, [targetDirectorySlug])
 
   React.useEffect(() => {
     if (!targetItemId) return
@@ -76,16 +73,12 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
         <div className="grid w-full gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
           <div className="grid min-w-0 gap-2">
             <Label>{t('directory.item.relations.target.directory')}</Label>
-            <Select value={targetDirectorySlug} onValueChange={(v) => setTargetDirectorySlug(v)}>
+            <Select value={targetDirectorySlug} onValueChange={() => {}} disabled>
               <SelectTrigger className="w-full min-w-0">
-                <SelectValue placeholder="Select directory" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {directoryOptions.map((slug) => (
-                  <SelectItem key={slug} value={slug}>
-                    {t(getDirectoryMeta(slug).titleKey)}
-                  </SelectItem>
-                ))}
+                <SelectItem value={targetDirectorySlug}>{t(getDirectoryMeta(targetDirectorySlug).titleKey)}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -111,7 +104,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               <SelectContent>
                 {targetItems.map((it) => (
                   <SelectItem key={it.id} value={it.id}>
-                    {it.code} — {it.name}
+                    {it.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -140,8 +133,8 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               type="button"
               size="icon"
               aria-label={tr("action.add", "Add")}
-              disabled={!targetItemId}
-              onClick={() => {
+              disabled={!targetItemId || isCreateLinkLoading}
+              onClick={async () => {
                 if (!targetItemId) return
                 const exists = relations.some(
                   (r) =>
@@ -150,13 +143,12 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                     r.type === linkType
                 )
                 if (exists) return
-                addRelation({
-                  sourceDirectorySlug,
-                  sourceItemId,
-                  targetDirectorySlug,
-                  targetItemId,
+                await createLink({
+                  slug: sourceDirectorySlug,
+                  sourceId: sourceItemId,
+                  targetId: targetItemId,
                   type: linkType,
-                })
+                }).unwrap()
                 setTargetItemId(undefined)
               }}
             >
@@ -192,8 +184,8 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
             </TableHeader>
             <TableBody>
               {relations.length ? (
-                relations.map((rel) => {
-                  const target = getDirectoryItem(rel.targetDirectorySlug, rel.targetItemId)
+                (relations as DirectoryRelationRow[]).map((rel) => {
+                  const target = rel.target
                   return (
                     <TableRow key={rel.id}>
                       <TableCell className="overflow-hidden text-ellipsis">
@@ -202,9 +194,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                       <TableCell className="overflow-hidden">
                         {target ? (
                           <div className="flex min-w-0 flex-col">
-                            <span className="font-medium truncate">
-                              {target.code} — {target.name}
-                            </span>
+                            <span className="font-medium truncate">{target.name}</span>
                             {target.description ? (
                               <span className="text-muted-foreground text-xs truncate">{target.description}</span>
                             ) : null}
@@ -223,7 +213,14 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                           variant="outline"
                           size="icon"
                           aria-label={tr("action.remove", "Remove")}
-                          onClick={() => removeRelation(rel.id)}
+                          disabled={isDeleteLinkLoading}
+                          onClick={async () => {
+                            await deleteLink({
+                              slug: sourceDirectorySlug,
+                              sourceId: sourceItemId,
+                              targetId: rel.targetItemId,
+                            }).unwrap()
+                          }}
                         >
                           <Eraser className="h-4 w-4" />
                         </Button>
@@ -234,7 +231,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
-                    No relations yet.
+                    {isRelationsLoading || isRelationsFetching ? "Loading..." : "No relations yet."}
                   </TableCell>
                 </TableRow>
               )}

@@ -83,7 +83,7 @@ export function EntityListPageShell(props: EntityListPageShellProps) {
   const pageCountSafe = Math.max(1, pagination.pageCount || 1)
 
   const content = (
-    <Card className="flex min-h-0 min-w-0 flex-1 flex-col p-4">
+    <Card className="flex min-h-0 min-w-0 flex-1 flex-col px-6">
       <div className="flex flex-wrap items-center gap-2 py-2">
         <Input
           placeholder={search.placeholder ?? "Filter by name..."}
@@ -94,7 +94,7 @@ export function EntityListPageShell(props: EntityListPageShellProps) {
         {actions ? <div className="ml-auto flex items-center gap-2">{actions}</div> : null}
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {table}
       </div>
 

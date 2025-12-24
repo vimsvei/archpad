@@ -2,13 +2,16 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { MoreHorizontal, Plus, RefreshCcw } from "lucide-react"
+import { LibraryBig, MoreHorizontal, Plus, RefreshCcw, Upload } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import type { DirectorySlug } from "@/@types/directories"
+import { DirectoryLinkType } from "@/@types/directory-link-type"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import { DirectoryItemForm } from "@/components/directories/directory-item-form"
+import { parseDirectoryCSV } from "@/components/directories/parse-directory-csv"
+import { parseDirectoryJSON } from "@/components/directories/parse-directory-json"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTranslate } from "@tolgee/react"
@@ -16,6 +19,10 @@ import {
   useDeleteDirectoryItemMutation,
   useGetDirectoryItemsQuery,
   useCreateDirectoryItemMutation,
+  useBulkCreateDirectoryItemsMutation,
+  useBulkUpsertDirectoryItemsMutation,
+  useCreateDirectoryLinkMutation,
+  useBulkCreateDirectoryLinksMutation,
 } from "@/store/apis/directory-api"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { EntityListPageShell, type PageSizeOption } from "@/components/common/entity-list-page-shell"
@@ -96,6 +103,13 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
 
   const [createItem, createState] = useCreateDirectoryItemMutation()
   const [deleteItem] = useDeleteDirectoryItemMutation()
+  const [bulkCreateItems, bulkCreateState] = useBulkCreateDirectoryItemsMutation()
+  const [bulkUpsertItems, bulkUpsertState] = useBulkUpsertDirectoryItemsMutation()
+  const [createLink] = useCreateDirectoryLinkMutation()
+  const [bulkCreateLinks] = useBulkCreateDirectoryLinksMutation()
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const [isImporting, setIsImporting] = React.useState(false)
 
   const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(
     `directory:${directorySlug}`
@@ -119,8 +133,90 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const pageStart = (safePage - 1) * pageSize
   const pageItems = filtered.slice(pageStart, pageStart + pageSize)
 
+  const handleFileUpload = React.useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      if (!file) return
+
+      const lower = file.name.toLowerCase()
+      const isCsv = lower.endsWith(".csv")
+      const isJson = lower.endsWith(".json")
+      if (!isCsv && !isJson) {
+        toast.error("Пожалуйста, выберите файл формата CSV или JSON")
+        return
+      }
+
+      try {
+        setIsImporting(true)
+        const text = await file.text()
+        const parsed = isCsv
+          ? { inputs: parseDirectoryCSV(text), links: [] as Array<{ parentIndex: number; childIndex: number }> }
+          : parseDirectoryJSON(text)
+
+        if (parsed.inputs.length === 0) {
+          toast.error("Файл не содержит данных для загрузки")
+          return
+        }
+
+        // Idempotent import: create only missing by code where possible
+        const created = await bulkUpsertItems({ slug: directorySlug, inputs: parsed.inputs }).unwrap()
+
+        if (parsed.links.length > 0) {
+          // Для JSON: создаём связи parent->child (иерархия) после создания записей.
+          // Предполагаем, что порядок ответа совпадает с порядком входного массива.
+          const linkInputs = parsed.links.map(({ parentIndex, childIndex }) => {
+            const parent = created[parentIndex]!
+            const child = created[childIndex]!
+            // Prefer linking by code when available (matches JSON id_strategy=code and supports future linking to existing records)
+            const sourceCode = parent.code?.trim() ? parent.code.trim() : undefined
+            const targetCode = child.code?.trim() ? child.code.trim() : undefined
+            return {
+              ...(sourceCode ? { sourceCode } : { sourceId: parent.id }),
+              ...(targetCode ? { targetCode } : { targetId: child.id }),
+              type: DirectoryLinkType.HIERARCHY,
+            }
+          })
+          await bulkCreateLinks({ slug: directorySlug, inputs: linkInputs }).unwrap()
+        }
+
+        toast.success(
+          `Импорт завершён: создано/обновлено ${created.length}`,
+          {
+          description: formatNowWithTz(),
+          className:
+            "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
+          }
+        )
+        void refetch()
+      } catch (error: any) {
+        toast.error("Ошибка при загрузке файла", {
+          description: error?.message ?? "Не удалось загрузить данные из файла",
+          className:
+            "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",
+        })
+      } finally {
+        setIsImporting(false)
+        // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      }
+    },
+    [bulkCreateLinks, bulkUpsertItems, directorySlug, formatNowWithTz, refetch]
+  )
+
+  const handleUploadClick = React.useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
   const columns = React.useMemo<ColumnDef<DirectoryItem>[]>(
     () => [
+      {
+        id: "icon",
+        header: "",
+        enableHiding: false,
+        cell: () => <LibraryBig className="text-foreground opacity-80 size-4" />,
+      },
       {
         accessorKey: "code",
         header: t("table.code"),
@@ -275,6 +371,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       }}
       actions={
         <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.json,application/json,text/csv"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+            aria-label="Загрузить из файла (CSV/JSON)"
+          />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -288,6 +392,21 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">{tr("action.refresh", "Refresh")}</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="outline"
+                aria-label={tr("action.upload", "Upload from file")}
+                onClick={handleUploadClick}
+                disabled={isImporting || bulkCreateState.isLoading || bulkUpsertState.isLoading}
+              >
+                <Upload />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{tr("action.upload", "Upload from file")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -362,13 +481,17 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             tableId={`directory:${directorySlug}`}
             data={pageItems}
             columns={columns}
-            loading={isLoading || isFetching}
+            loading={
+              isLoading || isFetching || bulkCreateState.isLoading || bulkUpsertState.isLoading || isImporting
+            }
             columnVisibility={columnVisibility}
             onColumnVisibilityChange={setColumnVisibility}
             emptyTitle={t("table.directory.no-results")}
             emptyDescription={t("table.directory.no-results.description")}
-            className="flex min-h-0 flex-1 flex-col"
-            maxHeightClassName="min-h-0 flex-1"
+            // Важно: ограничиваем высоту таблицы, чтобы скролл был ВНУТРИ,
+            // а не растягивалась вся страница (особенно при pageSize=50/100).
+            // `EntityDataTable` по умолчанию использует `max-h-[60vh]`,
+            // поэтому для справочников не переопределяем maxHeightClassName.
           />
           {remoteError ? (
             <div className="text-destructive mt-2 text-sm">

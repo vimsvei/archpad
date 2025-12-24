@@ -30,6 +30,10 @@ export class BaseDirectoryController<
     return this.service.create(dto, context);
   }
 
+  bulkCreate(dtos: CreateDto[], context: ArchpadRequestContext) {
+    return this.service.bulkCreate(dtos, context);
+  }
+
   update(id: string, dto: UpdateDto, context: ArchpadRequestContext) {
     return this.service.update(id, dto, context);
   }

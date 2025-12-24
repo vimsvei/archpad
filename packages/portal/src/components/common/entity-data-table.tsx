@@ -76,15 +76,19 @@ export function EntityDataTable<TData>({
   return (
     <div className={cn("w-full min-w-0 max-w-full", className)}>
       {/* Vertical scroll lives here; horizontal scroll lives inside Table (table-container) */}
-      <div className={cn("overflow-y-auto overflow-x-hidden rounded-md border max-w-full", maxHeightClassName)}>
-        <Table className="min-w-max">
+      <div className={cn("overflow-auto rounded-md border max-w-full", maxHeightClassName)}>
+        <Table className="min-w-max" containerClassName="overflow-x-visible overflow-y-visible">
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {hg.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={cn(fixedWidthClass(header.column.id))}
+                    className={cn(
+                      // Keep header visible when table content scrolls
+                      "sticky top-0 z-10 bg-card",
+                      fixedWidthClass(header.column.id)
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
