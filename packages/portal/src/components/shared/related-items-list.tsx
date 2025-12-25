@@ -1,24 +1,14 @@
 "use client"
 
 import * as React from "react"
-import type { ColumnDef } from "@tanstack/react-table"
 import { useTranslate } from "@tolgee/react"
-import { MoreHorizontal, Plus, RefreshCw, Grid2x2Plus, Edit, Trash2 } from "lucide-react"
-import Link from "next/link"
+import { Plus, RefreshCw, Grid2x2Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Icon, type IconType } from "./icon-mapping"
+import type { IconType } from "./icon-mapping"
+import { RelatedItemCard } from "@/components/shared/related-item-card"
 
 export type RelatedItem = {
   id: string
@@ -38,7 +28,6 @@ type RelatedItemsListProps<T extends RelatedItem> = {
   onAdd?: () => void
   onAddExisting?: () => void
   onDelete?: (item: T) => void
-  additionalColumns?: ColumnDef<T>[]
   hideHeader?: boolean
   hideActions?: boolean
   onToggleItem?: (itemId: string) => void
@@ -67,7 +56,7 @@ export function RelatedItemsList<T extends RelatedItem>({
   const content = (
     <>
       {!hideHeader && title && (
-        <div className="flex items-center justify-between border-b px-6 py-4 flex-shrink-0">
+        <div className="flex items-center justify-between border-b px-6 py-4 flex-shrink-0 min-h-20">
           <h3 className="font-semibold">{title}</h3>
           <div className="flex items-center gap-2">
             {onRefresh && (
@@ -128,81 +117,17 @@ export function RelatedItemsList<T extends RelatedItem>({
         ) : (
           <div className="flex flex-col gap-3">
             {items.map((item) => (
-              <Card 
-                key={item.id} 
-                className={`p-4 ${onToggleItem ? 'cursor-pointer hover:bg-accent/50' : ''} ${selectedItems?.has(item.id) ? 'ring-2 ring-primary bg-primary/5' : ''}`}
-                onClick={onToggleItem ? () => onToggleItem(item.id) : undefined}
-              >
-                <div className="flex items-center gap-4">
-                  {/* Checkbox (for selection) */}
-                  {showCheckbox && onToggleItem && (
-                    <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedItems?.has(item.id) || false}
-                        onCheckedChange={() => onToggleItem(item.id)}
-                      />
-                    </div>
-                  )}
-
-                  {/* Icon */}
-                  {iconType && (
-                    <div className="flex-shrink-0">
-                      <Icon iconType={iconType} className="w-6 h-6" />
-                    </div>
-                  )}
-
-                  {/* Name and Description */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="font-medium truncate">{item.name || item.code}</div>
-                    {item.description && (
-                      <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                        {item.description}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  {!hideActions && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {editPath && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              asChild
-                              className="h-8 w-8"
-                            >
-                              <Link href={editPath(item)}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.edit", "Редактировать")}</TooltipContent>
-                        </Tooltip>
-                      )}
-                      {onDelete && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                onDelete(item)
-                              }}
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.delete", "Удалить")}</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </Card>
+              <RelatedItemCard
+                key={item.id}
+                item={item}
+                iconType={iconType}
+                editPath={editPath}
+                onDelete={onDelete}
+                hideActions={hideActions}
+                onToggleItem={onToggleItem}
+                selected={selectedItems?.has(item.id) || false}
+                showCheckbox={showCheckbox}
+              />
             ))}
           </div>
         )}
@@ -214,6 +139,7 @@ export function RelatedItemsList<T extends RelatedItem>({
     return <div className="flex flex-col h-full min-h-0">{content}</div>
   }
 
-  return <Card className="flex flex-col h-full min-h-0">{content}</Card>
+  // Card has default `py-6`; for these list cards we want no top padding (effectively `pb-6` only).
+  return <Card className="flex flex-col h-full min-h-0 pt-0">{content}</Card>
 }
 

@@ -3,10 +3,11 @@ import { NamedObjectModule } from './named-object.module';
 import { ApplicationComponent } from '../../../model/archimate/application/application-component.entity';
 import { createNamedObjectZodDto } from '../../../model/dto/named-object.dto-factory';
 import { ApplicationFunction } from '../../../model/archimate/application/application-function.entity';
-import { ApplicationInterface } from '../../../model/archimate/application/application-interface.entity';
 import { TechnologyNetwork } from '../../../model/archimate/technology/technology-network.entity';
 import { TechnologyHostNode } from '../../../model/archimate/technology/technology-node.entity';
 import { TechnologyClusterNode } from '../../../model/archimate/technology/technology-node-cluster.entity';
+import { DataObject } from '../../../model/archimate/application/data-object.entity';
+import { ApplicationEvent } from '../../../model/archimate/application/application-event.entity';
 
 @Module({})
 export class NamedObjectAutoRegistry {
@@ -27,10 +28,16 @@ export class NamedObjectAutoRegistry {
           createDto: createNamedObjectZodDto('CreateDtoApplicationFunction'),
         }),
         NamedObjectModule.register({
-          tag: 'Интерфейс компонента приложения',
-          entity: ApplicationInterface,
-          path: 'application-interfaces',
-          createDto: createNamedObjectZodDto('CreateDtoApplicationInterface'),
+          tag: 'Объект данных',
+          entity: DataObject,
+          path: 'data-objects',
+          createDto: createNamedObjectZodDto('CreateDtoDataObject'),
+        }),
+        NamedObjectModule.register({
+          tag: 'Событие приложения',
+          entity: ApplicationEvent,
+          path: 'application-events',
+          createDto: createNamedObjectZodDto('CreateDtoApplicationEvent'),
         }),
         NamedObjectModule.register({
           tag: 'Технологическая сеть',

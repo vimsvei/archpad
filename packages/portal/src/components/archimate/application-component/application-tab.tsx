@@ -15,6 +15,14 @@ type ApplicationTabProps = {
   onAddExistingFunctions?: () => void
   onAddExistingInterfaces?: () => void
   onAddExistingEvents?: () => void
+  onCreateDataObjects?: () => void
+  onCreateFunctions?: () => void
+  onCreateInterfaces?: () => void
+  onCreateEvents?: () => void
+  refreshDataObjectsToken?: number
+  refreshFunctionsToken?: number
+  refreshInterfacesToken?: number
+  refreshEventsToken?: number
 }
 
 export function ApplicationTab({
@@ -25,6 +33,14 @@ export function ApplicationTab({
   onAddExistingFunctions,
   onAddExistingInterfaces,
   onAddExistingEvents,
+  onCreateDataObjects,
+  onCreateFunctions,
+  onCreateInterfaces,
+  onCreateEvents,
+  refreshDataObjectsToken,
+  refreshFunctionsToken,
+  refreshInterfacesToken,
+  refreshEventsToken,
 }: ApplicationTabProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col h-full">
@@ -34,6 +50,8 @@ export function ApplicationTab({
           <FunctionsTable
             componentId={componentId}
             onAddExisting={onAddExistingFunctions}
+            onCreate={onCreateFunctions}
+            refreshToken={refreshFunctionsToken}
           />
         </div>
         
@@ -42,6 +60,8 @@ export function ApplicationTab({
           <DataObjectsTable
             componentId={componentId}
             onAddExisting={onAddExistingDataObjects}
+            onCreate={onCreateDataObjects}
+            refreshToken={refreshDataObjectsToken}
           />
         </div>
         
@@ -51,12 +71,16 @@ export function ApplicationTab({
             <InterfacesTable
               componentId={componentId}
               onAddExisting={onAddExistingInterfaces}
+              onCreate={onCreateInterfaces}
+              refreshToken={refreshInterfacesToken}
             />
           </div>
           <div className="flex-1 min-h-0 h-full">
             <EventsTable
               componentId={componentId}
               onAddExisting={onAddExistingEvents}
+              onCreate={onCreateEvents}
+              refreshToken={refreshEventsToken}
             />
           </div>
         </div>

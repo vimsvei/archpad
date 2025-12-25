@@ -36,6 +36,12 @@ import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 import { ArchimateObjectIcon } from "@/components/shared/base-object/archimate-object-icon"
+import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
+import * as ApplicationComponentRest from "@/services/application-component.rest"
+import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
+import * as ApplicationFunctionRest from "@/services/application-function.rest"
+import * as DataObjectRest from "@/services/data-object.rest"
+import * as ApplicationEventRest from "@/services/application-event.rest"
 
 type EditItemProps = {
   id: string
@@ -96,6 +102,22 @@ export function EditItem({ id }: EditItemProps) {
   const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
   const [sheetAvailableItems, setSheetAvailableItems] = React.useState<SelectableItem[]>([])
   const [sheetIsLoading, setSheetIsLoading] = React.useState(false)
+
+  // Create named-object sheet state (right sidebar)
+  const [createSheetOpen, setCreateSheetOpen] = React.useState(false)
+  const [createSheetType, setCreateSheetType] = React.useState<"data-objects" | "functions" | "interfaces" | "events" | null>(null)
+  const [createSheetDraft, setCreateSheetDraft] = React.useState<NamedObjectDraft>({
+    code: "",
+    name: "",
+    description: "",
+  })
+  const [createSheetIsSubmitting, setCreateSheetIsSubmitting] = React.useState(false)
+  const [refreshTokens, setRefreshTokens] = React.useState<{ dataObjects: number; functions: number; interfaces: number; events: number }>({
+    dataObjects: 0,
+    functions: 0,
+    interfaces: 0,
+    events: 0,
+  })
 
   React.useEffect(() => {
     if (!item) return
@@ -186,6 +208,97 @@ export function EditItem({ id }: EditItemProps) {
     },
     []
   )
+
+  const bumpRefresh = React.useCallback((key: "dataObjects" | "functions" | "interfaces" | "events") => {
+    setRefreshTokens((prev) => ({ ...prev, [key]: prev[key] + 1 }))
+  }, [])
+
+  const handleOpenCreateSheet = React.useCallback((type: "data-objects" | "functions" | "interfaces" | "events") => {
+    setCreateSheetType(type)
+    setCreateSheetDraft({ code: "", name: "", description: "" })
+    setCreateSheetOpen(true)
+  }, [])
+
+  const createSheetConfig = React.useMemo(() => {
+    const tableKeyMap: Record<NonNullable<typeof createSheetType>, string> = {
+      "data-objects": "application.data-objects",
+      "functions": "application.functions",
+      "interfaces": "application.interfaces",
+      "events": "application.events",
+    }
+    const tableKey = createSheetType ? tableKeyMap[createSheetType] : ""
+    const titleKey = tableKey ? `${t("action.create")} ${t(tableKey)}` : ""
+    const title =
+      createSheetType === "data-objects"
+        ? tr(titleKey, "Создать объект данных")
+        : createSheetType === "functions"
+          ? tr(titleKey, "Создать функцию")
+          : createSheetType === "interfaces"
+            ? tr(titleKey, "Создать интерфейс")
+            : createSheetType === "events"
+              ? tr(titleKey, "Создать событие")
+            : ""
+    return { title }
+  }, [createSheetType, t, tr])
+
+  const handleCreateNamedObject = React.useCallback(() => {
+    if (!item || !createSheetType) return
+
+    void (async () => {
+      const code = createSheetDraft.code.trim()
+      const name = createSheetDraft.name.trim()
+      const description = createSheetDraft.description.trim()
+      if (!name) {
+        toast.error(tr("action.validationFailed", "Fill required fields"))
+        return
+      }
+
+      try {
+        setCreateSheetIsSubmitting(true)
+
+        if (createSheetType === "data-objects") {
+          const created = await DataObjectRest.createDataObjectRest({
+            code: code ? code : undefined,
+            name,
+            description: description ? description : undefined,
+          })
+          await ApplicationComponentRest.addApplicationComponentDataObjectRest(item.id, created.id)
+          bumpRefresh("dataObjects")
+        } else if (createSheetType === "functions") {
+          const created = await ApplicationFunctionRest.createApplicationFunctionRest({
+            code: code ? code : undefined,
+            name,
+            description: description ? description : undefined,
+          })
+          await ApplicationComponentRest.addApplicationComponentFunctionRest(item.id, created.id)
+          bumpRefresh("functions")
+        } else if (createSheetType === "interfaces") {
+          await ApplicationInterfaceRest.createApplicationInterfaceRest({
+            code: code ? code : undefined,
+            name,
+            description: description ? description : undefined,
+            componentId: item.id,
+          })
+          bumpRefresh("interfaces")
+        } else if (createSheetType === "events") {
+          const created = await ApplicationEventRest.createApplicationEventRest({
+            code: code ? code : undefined,
+            name,
+            description: description ? description : undefined,
+          })
+          await ApplicationComponentRest.addApplicationComponentEventRest(item.id, created.id)
+          bumpRefresh("events")
+        }
+
+        toast.success(tr("action.created", "Created"))
+        setCreateSheetOpen(false)
+      } catch (e: any) {
+        toast.error(e?.message ?? tr("action.createFailed", "Failed to create"))
+      } finally {
+        setCreateSheetIsSubmitting(false)
+      }
+    })()
+  }, [bumpRefresh, createSheetDraft, createSheetType, item, tr])
 
   // Handler for opening add existing items sheet
   const handleOpenAddExistingSheet = React.useCallback((type: "system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events") => {
@@ -406,7 +519,7 @@ export function EditItem({ id }: EditItemProps) {
         </TabsList>
 
         <TabsContents className="flex min-h-0 flex-1 flex-col">
-          <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             {item && (
               <GeneralTab
                 item={item}
@@ -422,7 +535,7 @@ export function EditItem({ id }: EditItemProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             {item && (
               <ApplicationTab
                 componentId={item.id}
@@ -432,11 +545,19 @@ export function EditItem({ id }: EditItemProps) {
                 onAddExistingFunctions={() => handleOpenAddExistingSheet("functions")}
                 onAddExistingInterfaces={() => handleOpenAddExistingSheet("interfaces")}
                 onAddExistingEvents={() => handleOpenAddExistingSheet("events")}
+                onCreateDataObjects={() => handleOpenCreateSheet("data-objects")}
+                onCreateFunctions={() => handleOpenCreateSheet("functions")}
+                onCreateInterfaces={() => handleOpenCreateSheet("interfaces")}
+                onCreateEvents={() => handleOpenCreateSheet("events")}
+                refreshDataObjectsToken={refreshTokens.dataObjects}
+                refreshFunctionsToken={refreshTokens.functions}
+                refreshInterfacesToken={refreshTokens.interfaces}
+                refreshEventsToken={refreshTokens.events}
               />
             )}
           </TabsContent>
 
-          <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             {item && (
               <TechnologyTab
                 componentId={item.id}
@@ -445,19 +566,19 @@ export function EditItem({ id }: EditItemProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="flows" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="flows" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <Card className="flex min-h-0 flex-1 flex-col p-6">
               <div className="text-muted-foreground">Flows tab content</div>
             </Card>
           </TabsContent>
           
-          <TabsContent value="solutions" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="solutions" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <Card className="flex min-h-0 flex-1 flex-col p-6">
               <div className="text-muted-foreground">Solutions tab content</div>
             </Card>
           </TabsContent>
 
-          <TabsContent value="schemas" className="flex min-h-0 flex-1 flex-col mt-4">
+          <TabsContent value="schemas" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <Card className="flex min-h-0 flex-1 flex-col p-6">
               <div className="text-muted-foreground">Schemas tab content</div>
             </Card>
@@ -520,6 +641,19 @@ export function EditItem({ id }: EditItemProps) {
           selectedItems={sheetSelectedItems}
           onToggleItem={handleSheetToggleItem}
           onAdd={handleSheetAdd}
+        />
+      )}
+
+      {/* Create Named Object Sheet */}
+      {createSheetType && (
+        <CreateNamedObjectSheet
+          open={createSheetOpen}
+          onOpenChange={setCreateSheetOpen}
+          title={createSheetConfig.title}
+          isSubmitting={createSheetIsSubmitting}
+          draft={createSheetDraft}
+          onDraftChange={setCreateSheetDraft}
+          onSubmit={handleCreateNamedObject}
         />
       )}
     </div>

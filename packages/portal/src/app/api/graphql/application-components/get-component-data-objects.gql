@@ -1,13 +1,14 @@
 query GetComponentDataObjects($componentId: uuid!) {
   map_application_component_data_object(
-    where: { component_id: { _eq: $componentId } }
+    where: { componentId: { _eq: $componentId } }
   ) {
-    component_id
-    data_object_id
+    componentId
+    dataObjectId
     dataObject: dataObject {
       id
       code
       name
+      description
     }
   }
 }

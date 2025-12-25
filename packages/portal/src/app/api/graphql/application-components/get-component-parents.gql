@@ -1,12 +1,12 @@
 query GetComponentParents($childId: uuid!) {
   map_application_component_hierarchy(
-    where: { component_child_id: { _eq: $childId } }
+    where: { componentChildId: { _eq: $childId } }
     order_by: { order: asc_nulls_last }
   ) {
-    component_parent_id
-    component_child_id
+    componentParentId
+    componentChildId
     order
-    parent: parent {
+    parent: componentParent {
       id
       code
       name

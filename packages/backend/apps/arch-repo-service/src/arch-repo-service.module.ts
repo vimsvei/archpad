@@ -10,6 +10,7 @@ import { ApplicationComponentModule } from './endpoints/archimate/application-co
 import { SystemSoftwareModule } from './endpoints/archimate/system-software/system-software.module';
 import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
+import { ApplicationInterfaceModule } from './endpoints/archimate/application-interface/application-interface.module';
 import {
   LoggerModule,
   LoggerService,
@@ -64,6 +65,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     }),
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
+    ApplicationInterfaceModule,
     SystemSoftwareModule,
     DirectoriesModule,
     HealthCheckerModule,

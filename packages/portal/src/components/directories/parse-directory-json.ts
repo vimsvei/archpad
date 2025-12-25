@@ -1,4 +1,4 @@
-import type { CreateDirectoryItemInput } from "@/services/directories-service"
+import type { CreateDirectoryItemInput } from "@/services/directories.rest"
 
 export type DirectoryImportLink = {
   parentIndex: number

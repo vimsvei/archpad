@@ -2,9 +2,9 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { DirectoryLinkType } from "@/@types/directory-link-type"
-import type { CreateDirectoryItemInput } from "@/services/directories-service"
-import * as DirectoryAPI from "@/services/directories-service"
-import * as DirectoryHasura from "@/services/directories-hasura"
+import type { CreateDirectoryItemInput } from "@/services/directories.rest"
+import * as DirectoryAPI from "@/services/directories.rest"
+import * as DirectoryHasura from "@/services/directories.graphql"
 
 export const directoryApi = createApi({
   reducerPath: "directoryApi",
@@ -17,7 +17,7 @@ export const directoryApi = createApi({
     getDirectoryItems: builder.query<DirectoryItem[], DirectorySlug>({
       async queryFn(slug) {
         try {
-          const data = await DirectoryHasura.getDirectoryItemsHasura(slug)
+          const data = await DirectoryHasura.getDirectoryItemsGraphql(slug)
           return { data }
         } catch (error) {
           return { error }
@@ -29,7 +29,7 @@ export const directoryApi = createApi({
     getDirectoryCount: builder.query<number, DirectorySlug>({
       async queryFn(slug) {
         try {
-          const data = await DirectoryHasura.getDirectoryCountHasura(slug)
+          const data = await DirectoryHasura.getDirectoryCountGraphql(slug)
           return { data }
         } catch (error) {
           return { error }
@@ -42,7 +42,7 @@ export const directoryApi = createApi({
     getDirectoryItem: builder.query<DirectoryItem, { slug: DirectorySlug; id: string }>({
       async queryFn({ slug, id }) {
         try {
-          const data = await DirectoryHasura.getDirectoryItemHasura(slug, id)
+          const data = await DirectoryHasura.getDirectoryItemGraphql(slug, id)
           return { data }
         } catch (error) {
           return { error }
@@ -60,7 +60,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, sourceId }) {
         try {
-          const data = await DirectoryHasura.getDirectoryRelationsHasura(slug, sourceId)
+          const data = await DirectoryHasura.getDirectoryRelationsGraphql(slug, sourceId)
           return { data }
         } catch (error) {
           return { error }
@@ -78,7 +78,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, input }) {
         try {
-          const data = await DirectoryAPI.createDirectoryItem(slug, input)
+          const data = await DirectoryAPI.createDirectoryItemRest(slug, input)
           return { data }
         } catch (error) {
           return { error }
@@ -93,7 +93,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, inputs }) {
         try {
-          const data = await DirectoryAPI.bulkCreateDirectoryItems(slug, inputs)
+          const data = await DirectoryAPI.bulkCreateDirectoryItemsRest(slug, inputs)
           return { data }
         } catch (error) {
           return { error }
@@ -108,7 +108,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, inputs }) {
         try {
-          const data = await DirectoryAPI.bulkUpsertDirectoryItems(slug, inputs)
+          const data = await DirectoryAPI.bulkUpsertDirectoryItemsRest(slug, inputs)
           return { data }
         } catch (error) {
           return { error }
@@ -123,7 +123,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, sourceId, targetId, type }) {
         try {
-          await DirectoryAPI.createDirectoryLink(slug, sourceId, { targetId, type })
+          await DirectoryAPI.createDirectoryLinkRest(slug, sourceId, { targetId, type })
           return { data: undefined }
         } catch (error) {
           return { error }
@@ -141,7 +141,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, inputs }) {
         try {
-          await DirectoryAPI.bulkCreateDirectoryLinks(slug, inputs)
+          await DirectoryAPI.bulkCreateDirectoryLinksRest(slug, inputs)
           return { data: undefined }
         } catch (error) {
           return { error }
@@ -153,7 +153,7 @@ export const directoryApi = createApi({
     deleteDirectoryLink: builder.mutation<void, { slug: DirectorySlug; sourceId: string; targetId: string }>({
       async queryFn({ slug, sourceId, targetId }) {
         try {
-          await DirectoryAPI.deleteDirectoryLink(slug, sourceId, targetId)
+          await DirectoryAPI.deleteDirectoryLinkRest(slug, sourceId, targetId)
           return { data: undefined }
         } catch (error) {
           return { error }
@@ -171,7 +171,7 @@ export const directoryApi = createApi({
     >({
       async queryFn({ slug, id, input }) {
         try {
-          const data = await DirectoryAPI.updateDirectoryItem(slug, id, input)
+          const data = await DirectoryAPI.updateDirectoryItemRest(slug, id, input)
           return { data }
         } catch (error) {
           return { error }
@@ -198,7 +198,7 @@ export const directoryApi = createApi({
     deleteDirectoryItem: builder.mutation<void, { slug: DirectorySlug; id: string }>({
       async queryFn({ slug, id }) {
         try {
-          await DirectoryAPI.deleteDirectoryItem(slug, id)
+          await DirectoryAPI.deleteDirectoryItemRest(slug, id)
           return { data: undefined }
         } catch (error) {
           return { error }

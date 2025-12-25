@@ -4,10 +4,10 @@ import type { ApplicationComponent, Paginated } from "@/@types/application-compo
 import type {
   CreateApplicationComponentInput,
   UpdateApplicationComponentInput,
-} from "@/services/application-components-service"
-import * as ApplicationComponentAPI from "@/services/application-components-service"
-import type { GetApplicationComponentsParams } from "@/services/application-components-hasura"
-import * as ApplicationComponentHasura from "@/services/application-components-hasura"
+} from "@/services/application-component.rest"
+import * as ApplicationComponentAPI from "@/services/application-component.rest"
+import type { GetApplicationComponentsParams } from "@/services/application-component.graphql"
+import * as ApplicationComponentHasura from "@/services/application-component.graphql"
 
 export const applicationComponentApi = createApi({
   reducerPath: "applicationComponentApi",
@@ -21,7 +21,7 @@ export const applicationComponentApi = createApi({
     >({
       async queryFn(params) {
         try {
-          const data = await ApplicationComponentHasura.getApplicationComponentsHasura(params)
+          const data = await ApplicationComponentHasura.getApplicationComponentsGraphql(params)
           return { data }
         } catch (error) {
           return { error }
@@ -33,7 +33,7 @@ export const applicationComponentApi = createApi({
     getApplicationComponent: builder.query<ApplicationComponent, { id: string }>({
       async queryFn({ id }) {
         try {
-          const data = await ApplicationComponentHasura.getApplicationComponentHasura(id)
+          const data = await ApplicationComponentHasura.getApplicationComponentGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -48,7 +48,7 @@ export const applicationComponentApi = createApi({
     createApplicationComponent: builder.mutation<ApplicationComponent, { input: CreateApplicationComponentInput }>({
       async queryFn({ input }) {
         try {
-          const data = await ApplicationComponentAPI.createApplicationComponent(input)
+          const data = await ApplicationComponentAPI.createApplicationComponentRest(input)
           return { data }
         } catch (error) {
           return { error }
@@ -63,7 +63,7 @@ export const applicationComponentApi = createApi({
     >({
       async queryFn({ id, input }) {
         try {
-          const data = await ApplicationComponentAPI.updateApplicationComponent(id, input)
+          const data = await ApplicationComponentAPI.updateApplicationComponentRest(id, input)
           return { data }
         } catch (error) {
           return { error }

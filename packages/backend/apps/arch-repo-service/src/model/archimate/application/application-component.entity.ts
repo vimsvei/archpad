@@ -4,7 +4,6 @@ import { ArchimateCode } from '@archpad/models';
 import { ArchimateElementGeneric } from '../core/archimate-element.generic';
 import { ApplicationComponentFunctionMap } from '../../maps/application-component-function.map';
 import { ApplicationComponentEventMap } from '../../maps/application-component-event.map';
-import { ApplicationInterface } from './application-interface.entity';
 import { ApplicationComponentDataObjectMap } from '../../maps/application-component-data-object.map';
 import { ApplicationComponentProductMap } from '../../maps/application-component-product.map';
 import { ApplicationComponentSystemSoftwareMap } from '../../maps/application-component-system-software.map';
@@ -22,6 +21,7 @@ import {
   ScalingTypeDirectory,
 } from '@/model/directories/directories';
 import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
+import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 
 @Entity({ tableName: 'components' })
 export class ApplicationComponent extends ArchimateElementGeneric {
@@ -166,8 +166,11 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   events = new Collection<ApplicationComponentEventMap>(this);
 
-  @OneToMany({ entity: () => ApplicationInterface, mappedBy: 'component' })
-  interfaces = new Collection<ApplicationInterface>(this);
+  @OneToMany({
+    entity: () => ApplicationComponentInterfaceMap,
+    mappedBy: 'component',
+  })
+  interfaces = new Collection<ApplicationComponentInterfaceMap>(this);
 
   @OneToMany({
     entity: () => ApplicationComponentDataObjectMap,

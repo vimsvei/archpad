@@ -20,6 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { RequiredEntityData } from '@mikro-orm/core';
+import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
+import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 
 export function createNamedObjectController<
   TEntity extends NamedObject,
@@ -48,8 +50,11 @@ export function createNamedObjectController<
       description: 'Элемент успешно создан.',
       type: entityClass,
     })
-    create(@Body() dto: TCreateDto): Promise<TEntity> {
-      return this.service.create(dto as RequiredEntityData<TEntity>);
+    create(
+      @Body() dto: TCreateDto,
+      @ArchpadContext() context: ArchpadRequestContext,
+    ): Promise<TEntity> {
+      return this.service.create(dto as RequiredEntityData<TEntity>, context);
     }
 
     // @Get()

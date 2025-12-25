@@ -1,4 +1,4 @@
-import type { CreateDirectoryItemInput } from "@/services/directories-service"
+import type { CreateDirectoryItemInput } from "@/services/directories.rest"
 
 /**
  * Парсит одну строку CSV с учетом кавычек и экранированных кавычек.

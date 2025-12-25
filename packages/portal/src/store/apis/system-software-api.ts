@@ -4,10 +4,10 @@ import type { SystemSoftware, Paginated } from "@/@types/system-software"
 import type {
   CreateSystemSoftwareInput,
   UpdateSystemSoftwareInput,
-} from "@/services/system-software-service"
-import * as SystemSoftwareAPI from "@/services/system-software-service"
-import type { GetSystemSoftwareParams } from "@/services/system-software-hasura"
-import * as SystemSoftwareHasura from "@/services/system-software-hasura"
+} from "@/services/system-software.rest"
+import * as SystemSoftwareAPI from "@/services/system-software.rest"
+import type { GetSystemSoftwareParams } from "@/services/system-software.graphql"
+import * as SystemSoftwareHasura from "@/services/system-software.graphql"
 
 export const systemSoftwareApi = createApi({
   reducerPath: "systemSoftwareApi",
@@ -21,7 +21,7 @@ export const systemSoftwareApi = createApi({
     >({
       async queryFn(params) {
         try {
-          const data = await SystemSoftwareHasura.getSystemSoftwareHasura(params)
+          const data = await SystemSoftwareHasura.getSystemSoftwareGraphql(params)
           return { data }
         } catch (error) {
           return { error }
@@ -33,7 +33,7 @@ export const systemSoftwareApi = createApi({
     getSystemSoftwareById: builder.query<SystemSoftware, { id: string }>({
       async queryFn({ id }) {
         try {
-          const data = await SystemSoftwareHasura.getSystemSoftwareByPkHasura(id)
+          const data = await SystemSoftwareHasura.getSystemSoftwareByPkGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -48,7 +48,7 @@ export const systemSoftwareApi = createApi({
     createSystemSoftware: builder.mutation<SystemSoftware, { input: CreateSystemSoftwareInput }>({
       async queryFn({ input }) {
         try {
-          const data = await SystemSoftwareAPI.createSystemSoftware(input)
+          const data = await SystemSoftwareAPI.createSystemSoftwareRest(input)
           return { data }
         } catch (error) {
           return { error }
@@ -63,7 +63,7 @@ export const systemSoftwareApi = createApi({
     >({
       async queryFn({ id, input }) {
         try {
-          const data = await SystemSoftwareAPI.updateSystemSoftware(id, input)
+          const data = await SystemSoftwareAPI.updateSystemSoftwareRest(id, input)
           return { data }
         } catch (error) {
           return { error }
@@ -86,7 +86,7 @@ export const systemSoftwareApi = createApi({
     deleteSystemSoftware: builder.mutation<void, { id: string }>({
       async queryFn({ id }) {
         try {
-          await SystemSoftwareAPI.deleteSystemSoftware(id)
+          await SystemSoftwareAPI.deleteSystemSoftwareRest(id)
           return { data: undefined }
         } catch (error) {
           return { error }
