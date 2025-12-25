@@ -147,26 +147,26 @@ export function MarkdownEditor({
 
   return (
     <div className="bg-background w-full h-full overflow-hidden rounded-lg border flex flex-col">
-      <LexicalComposer initialConfig={initialConfig}>
+    <LexicalComposer initialConfig={initialConfig}>
         <div className="relative flex-1 flex flex-col min-h-0">
           <div className="relative flex-1 flex flex-col min-h-0">
-            <RichTextPlugin
-              contentEditable={
+        <RichTextPlugin
+          contentEditable={
                 <div className="flex-1 flex flex-col min-h-0">
                   <div className="flex-1 flex flex-col min-h-0">
-                    <ContentEditable
-                      placeholder={placeholder}
+            <ContentEditable
+              placeholder={placeholder}
                       className="ContentEditable__root relative flex-1 block min-h-full overflow-auto px-8 py-4 focus:outline-none"
-                    />
+            />
                   </div>
                 </div>
-              }
-              ErrorBoundary={LexicalErrorBoundary}
-            />
-            <TablePlugin />
-            <HorizontalRulePlugin />
-            <CheckListPlugin />
-            <ListPlugin />
+          }
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+        <TablePlugin />
+        <HorizontalRulePlugin />
+        <CheckListPlugin />
+        <ListPlugin />
             <MarkdownShortcutPlugin
               transformers={[
                 CHECK_LIST,
@@ -176,11 +176,11 @@ export function MarkdownEditor({
                 ...TEXT_MATCH_TRANSFORMERS,
               ]}
             />
-            <MarkdownInitializerPlugin initialMarkdown={value} />
-            <MarkdownChangePlugin onChange={onChange} disabled={disabled} />
+        <MarkdownInitializerPlugin initialMarkdown={value} />
+        <MarkdownChangePlugin onChange={onChange} disabled={disabled} />
           </div>
-        </div>
-      </LexicalComposer>
+      </div>
+    </LexicalComposer>
     </div>
   )
 }

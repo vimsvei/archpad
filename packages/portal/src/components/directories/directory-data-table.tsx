@@ -83,7 +83,7 @@ export function DirectoryDataTable({
                 !code ? "text-muted-foreground" : "",
               ].join(" ")}
               onClick={(e) => e.stopPropagation()}
-              aria-label={t("item.action.edit")}
+              aria-label={t("action.edit")}
             >
               {code || "—"}
             </Link>
@@ -159,7 +159,7 @@ export function DirectoryDataTable({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href={`/directories/${directorySlug}/${item.id}`}>
-                      {t("item.action.edit")}
+                      {t("action.edit")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -170,7 +170,7 @@ export function DirectoryDataTable({
                       onDelete(item.id)
                     }}
                   >
-                    {t("item.action.delete")}
+                    {t("action.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
