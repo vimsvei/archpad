@@ -122,14 +122,14 @@ export function RelatedItemsTable<T extends RelatedItem>({
                   <DropdownMenuSeparator />
                   {href && (
                     <DropdownMenuItem asChild>
-                      <Link href={href}>{t("item.action.edit")}</Link>
+                      <Link href={href}>{t("action.edit")}</Link>
                     </DropdownMenuItem>
                   )}
                   {onDelete && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => onDelete(item)}>
-                        {t("item.action.delete", "Delete")}
+                        {t("action.delete", "Delete")}
                       </DropdownMenuItem>
                     </>
                   )}
@@ -150,15 +150,15 @@ export function RelatedItemsTable<T extends RelatedItem>({
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onRefresh}
-                disabled={isLoading}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onRefresh}
+            disabled={isLoading}
                 aria-label={t("action.update", "Update")}
-              >
-                <RefreshCw className={isLoading ? "animate-spin" : ""} />
-              </Button>
+          >
+            <RefreshCw className={isLoading ? "animate-spin" : ""} />
+          </Button>
             </TooltipTrigger>
             <TooltipContent>{t("action.update", "Update")}</TooltipContent>
           </Tooltip>
@@ -179,14 +179,14 @@ export function RelatedItemsTable<T extends RelatedItem>({
           )}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onAdd}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onAdd}
                 aria-label={t("action.create", "Create")}
-              >
-                <Plus />
-              </Button>
+          >
+            <Plus />
+          </Button>
             </TooltipTrigger>
             <TooltipContent>{t("action.create", "Create")}</TooltipContent>
           </Tooltip>

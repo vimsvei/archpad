@@ -143,13 +143,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{title}</h1>
         </div>
@@ -171,13 +171,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{title}</h1>
         </div>
@@ -199,13 +199,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold">
@@ -222,7 +222,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 variant="outline"
                 className="text-destructive border-destructive/40 hover:bg-destructive/10"
                 size="icon"
-                aria-label={tr("item.action.delete", "Delete")}
+                aria-label={tr("action.delete", "Delete")}
                 onClick={() => {
                   const ok = window.confirm("Delete this item?")
                   if (!ok) return
@@ -241,21 +241,21 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 <Trash2 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.delete", "Delete")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.delete", "Delete")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                aria-label={tr("item.action.save", "Save")}
+                aria-label={tr("action.save", "Save")}
                 onClick={() => void handleSave()}
                 disabled={!isDirty || updateState.isLoading || !isDraftValid}
               >
                 <Save />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.save", "Save")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -286,7 +286,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 values={draft}
                 onChange={setDraft}
                 i18nPrefix="item"
-                submitLabel={tr("item.action.save", "Save")}
+                submitLabel={tr("action.save", "Save")}
                 hideActions
                 disabled={updateState.isLoading}
                 onSubmit={async (values) => {
@@ -348,7 +348,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               }}
               disabled={updateState.isLoading || !isDraftValid}
             >
-              {tr("item.action.save", "Save")}
+              {tr("action.save", "Save")}
             </Button>
           </DialogFooter>
         </DialogContent>

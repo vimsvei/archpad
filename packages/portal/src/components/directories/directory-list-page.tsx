@@ -331,7 +331,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                   <DropdownMenuLabel>{t("table.item.actions")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/directories/${directorySlug}/${item.id}`}>{t("item.action.edit")}</Link>
+                    <Link href={`/directories/${directorySlug}/${item.id}`}>{t("action.edit")}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
@@ -349,7 +349,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                       })()
                     }}
                   >
-                    {t("item.action.delete")}
+                    {t("action.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

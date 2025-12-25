@@ -16,11 +16,13 @@ import {
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Icon, type IconType } from "./icon-mapping"
+import { RelatedItemsList } from "./related-items-list"
 
 export type SelectableItem = {
   id: string
   code: string
   name: string
+  description?: string | null
   [key: string]: unknown
 }
 
@@ -110,7 +112,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
           )}
 
           {/* Items list */}
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 min-h-0">
             {isLoading ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
                 {t("action.loading", "Loading...")}
@@ -122,43 +124,15 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                   : t("search.noItems", "No items available")}
               </div>
             ) : (
-              <div className="space-y-2 pr-4">
-                {filteredItems.map((item) => {
-                  const isSelected = selectedItems.has(item.id)
-                  return (
-                    <Card
-                      key={item.id}
-                      className={`p-3 cursor-pointer transition-colors ${
-                        isSelected
-                          ? "bg-primary/10 border-primary"
-                          : "hover:bg-accent"
-                      }`}
-                      onClick={() => onToggleItem(item.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        {iconType && (
-                          <div className="mt-0.5">
-                            <Icon iconType={iconType} className="w-5 h-5" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-mono text-sm text-primary">
-                            {item.code}
-                          </div>
-                          <div className="text-sm font-medium truncate">
-                            {item.name}
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <Badge variant="default" className="shrink-0">
-                            {t("item.selected", "Selected")}
-                          </Badge>
-                        )}
-                      </div>
-                    </Card>
-                  )
-                })}
-              </div>
+              <RelatedItemsList
+                items={filteredItems}
+                iconType={iconType}
+                hideHeader={true}
+                hideActions={true}
+                onToggleItem={onToggleItem}
+                selectedItems={selectedItems}
+                showCheckbox={false}
+              />
             )}
           </div>
         </div>

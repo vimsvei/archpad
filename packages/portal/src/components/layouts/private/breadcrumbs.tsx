@@ -8,6 +8,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import { useTranslate } from "@tolgee/react"
 import { useGetDirectoryItemQuery } from "@/store/apis/directory-api"
+import { useGetApplicationComponentQuery } from "@/store/apis/application-component-api"
 
 type Crumb = {
   href?: string
@@ -33,6 +34,8 @@ export function PrivateBreadcrumbs() {
   const directorySlug = segments[0] === "directories" ? segments[1] : undefined
   const directoryItemId = segments[0] === "directories" ? segments[2] : undefined
 
+  const applicationComponentId = segments[0] === "application" && segments[1] === "components" ? segments[2] : undefined
+
   const { data: directoryItem } = useGetDirectoryItemQuery(
     directorySlug && directoryItemId ? { slug: directorySlug, id: directoryItemId } : skipToken,
     { refetchOnMountOrArgChange: false }
@@ -44,6 +47,18 @@ export function PrivateBreadcrumbs() {
     if (name) return name
     return null
   }, [directoryItem?.code, directoryItem?.name])
+
+  const { data: applicationComponent } = useGetApplicationComponentQuery(
+    applicationComponentId ? { id: applicationComponentId } : skipToken,
+    { refetchOnMountOrArgChange: false }
+  )
+  const applicationComponentLabel = React.useMemo(() => {
+    const code = applicationComponent?.code?.trim()
+    if (code) return code
+    const name = applicationComponent?.name?.trim()
+    if (name) return name
+    return null
+  }, [applicationComponent?.code, applicationComponent?.name])
 
   const crumbs = React.useMemo<Crumb[]>(() => {
     if (segments.length === 0) return [{ label: "Dashboard" }]
@@ -72,6 +87,19 @@ export function PrivateBreadcrumbs() {
       return [...base, { href: dirHref, label: dirLabel }, { label: itemLabel }]
     }
 
+    if (segments[0] === "application" && segments[1] === "components") {
+      const componentId = segments[2]
+      const base: Crumb[] = [
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/application/components", label: t("application.components") },
+      ]
+
+      if (!componentId) return [...base.slice(0, 2).map((c, idx) => (idx === 1 ? { label: c.label } : c))]
+
+      const componentLabel = applicationComponentLabel ?? componentId
+      return [...base, { label: componentLabel }]
+    }
+
     // Fallback: Dashboard -> <path segments>
     const items: Crumb[] = [{ href: "/dashboard", label: "Dashboard" }]
     let acc = ""
@@ -81,7 +109,7 @@ export function PrivateBreadcrumbs() {
       else items.push({ href: acc, label: titleFromSegment(seg) })
     })
     return items
-  }, [segments, directoryItemLabel, t])
+  }, [segments, directoryItemLabel, applicationComponentLabel, t])
 
   return (
     <Breadcrumb>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useTranslate } from "@tolgee/react"
-import { RelatedItemsTable, type RelatedItem } from "@/components/shared/related-items-table"
+import { RelatedItemsList, type RelatedItem } from "@/components/shared/related-items-list"
 
 type ApplicationComponent = RelatedItem
 
@@ -35,7 +35,7 @@ export function ParentTable({ componentId, onAddExisting }: ParentTableProps) {
   }, [])
 
   return (
-    <RelatedItemsTable<ApplicationComponent>
+    <RelatedItemsList<ApplicationComponent>
       title={t("hierarchy.parent", "Родители")}
       items={parents}
       isLoading={isLoading}
@@ -78,7 +78,7 @@ export function ChildrenTable({ componentId, onAddExisting }: ChildrenTableProps
   }, [])
 
   return (
-    <RelatedItemsTable<ApplicationComponent>
+    <RelatedItemsList<ApplicationComponent>
       title={t("hierarchy.children", "Дети")}
       items={children}
       isLoading={isLoading}

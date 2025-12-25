@@ -201,13 +201,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
         </div>
@@ -229,13 +229,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
         </div>
@@ -255,13 +255,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("item.action.back", "Back")}
+                aria-label={tr("action.back", "Back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
           </Tooltip>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold">
@@ -276,14 +276,14 @@ export function EditItem({ id }: EditItemProps) {
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                aria-label={tr("item.action.save", "Save")}
+                aria-label={tr("action.save", "Save")}
                 onClick={() => void handleSave()}
                 disabled={!isDirty || updateState.isLoading || !isDraftValid}
               >
                 <Save />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("item.action.save", "Save")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -309,7 +309,7 @@ export function EditItem({ id }: EditItemProps) {
                   <BaseObjectItem
                     values={draft}
                     onChange={(values) => setDraft((prev) => ({ ...prev, ...values }))}
-                    submitLabel={tr("item.action.save", "Save")}
+                    submitLabel={tr("action.save", "Save")}
                     hideActions
                     hideDescription
                     disabled={updateState.isLoading}
@@ -447,7 +447,7 @@ export function EditItem({ id }: EditItemProps) {
               }}
               disabled={updateState.isLoading || !isDraftValid}
             >
-              {tr("item.action.save", "Save")}
+              {tr("action.save", "Save")}
             </Button>
           </DialogFooter>
         </DialogContent>

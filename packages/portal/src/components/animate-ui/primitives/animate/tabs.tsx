@@ -210,16 +210,28 @@ function TabsContents({
 
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const itemRefs = React.useRef<Array<HTMLDivElement | null>>([]);
-  const [height, setHeight] = React.useState(0);
+  const [height, setHeight] = React.useState<number | 'auto'>(0);
   const roRef = React.useRef<ResizeObserver | null>(null);
 
-  const measure = React.useCallback((index: number) => {
+  const measure = React.useCallback((index: number): number | 'auto' => {
     const pane = itemRefs.current[index];
     const container = containerRef.current;
     if (!pane || !container) return 0;
 
-    const base = pane.getBoundingClientRect().height || 0;
+    // Measure actual content height
+    const paneRect = pane.getBoundingClientRect();
+    const paneHeight = paneRect.height || 0;
 
+    // Check if container should fill available height (has flex-1)
+    const containerStyles = getComputedStyle(container);
+    const parent = container.parentElement;
+    if (parent && (containerStyles.flex === '1 1 0%' || containerStyles.flexGrow === '1')) {
+      // For flex-1 containers, return 'auto' to let flexbox handle the height
+      // This allows the container to fill available space naturally
+      return 'auto';
+    }
+
+    // For non-flex containers, use content height
     const cs = getComputedStyle(container);
     const isBorderBox = cs.boxSizing === 'border-box';
     const paddingY =
@@ -229,7 +241,7 @@ function TabsContents({
       (parseFloat(cs.borderTopWidth || '0') || 0) +
       (parseFloat(cs.borderBottomWidth || '0') || 0);
 
-    let total = base + (isBorderBox ? paddingY + borderY : 0);
+    let total = paneHeight + (isBorderBox ? paddingY + borderY : 0);
 
     const dpr =
       typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
@@ -257,6 +269,12 @@ function TabsContents({
 
     ro.observe(pane);
     ro.observe(container);
+    
+    // Also observe parent if container has flex-1
+    const containerStyles = getComputedStyle(container);
+    if (container.parentElement && (containerStyles.flex === '1 1 0%' || containerStyles.flexGrow === '1')) {
+      ro.observe(container.parentElement);
+    }
 
     roRef.current = ro;
     return () => {
@@ -268,7 +286,8 @@ function TabsContents({
   React.useLayoutEffect(() => {
     if (height === 0 && activeIndex >= 0) {
       const next = measure(activeIndex);
-      if (next !== 0) setHeight(next);
+      if (next !== 0 && next !== 'auto') setHeight(next);
+      else if (next === 'auto') setHeight('auto');
     }
   }, [activeIndex, height, measure]);
 
@@ -277,7 +296,7 @@ function TabsContents({
       ref={containerRef}
       data-slot="tabs-contents"
       style={{ overflow: 'hidden' }}
-      animate={{ height }}
+      animate={{ height: height === 'auto' ? 'auto' : height }}
       transition={transition}
       {...props}
     >
@@ -285,6 +304,7 @@ function TabsContents({
         className="flex -mx-2"
         animate={{ x: activeIndex * -100 + '%' }}
         transition={transition}
+        style={{ height: '100%' }}
       >
         {childrenArray.map((child, index) => (
           <div
@@ -292,7 +312,7 @@ function TabsContents({
             ref={(el) => {
               itemRefs.current[index] = el;
             }}
-            className="w-full shrink-0 px-2 h-full"
+            className="w-full shrink-0 px-2"
           >
             {child}
           </div>

@@ -156,7 +156,7 @@ export function ListPage() {
                   <DropdownMenuLabel>{t("table.item.actions")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/technologies/system-software/${item.id}`}>{t("item.action.edit")}</Link>
+                    <Link href={`/technologies/system-software/${item.id}`}>{t("action.edit")}</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

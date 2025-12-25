@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useTranslate } from "@tolgee/react"
-import { RelatedItemsTable, type RelatedItem } from "@/components/shared/related-items-table"
+import { RelatedItemsList, type RelatedItem } from "@/components/shared/related-items-list"
 
 type DataObject = RelatedItem
 
@@ -35,7 +35,7 @@ export function DataObjectsTable({ componentId, onAddExisting }: DataObjectsTabl
   }, [])
 
   return (
-    <RelatedItemsTable<DataObject>
+    <RelatedItemsList<DataObject>
       title={t("application.data-objects", "Объекты данных")}
       items={items}
       isLoading={isLoading}
