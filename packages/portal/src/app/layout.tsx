@@ -1,5 +1,6 @@
 import './globals.css'
 import '@ory/elements-react/theme/styles.css'
+import '@xyflow/react/dist/style.css';
 
 import { getServerSession } from '@ory/nextjs/app'
 import { SessionProvider } from '@ory/elements-react/client'

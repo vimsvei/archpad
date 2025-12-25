@@ -71,7 +71,7 @@ export const menu: TMenu = [
         isActive: true,
         items: [
           {
-            title: 'application.component',
+            title: 'application.components',
             url: '/application/components',
           },
           {
