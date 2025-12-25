@@ -24,11 +24,12 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
         name
       }
     }
-    interfaces {
-      id
-      code
-      name
-      layer
+    mapInterfaces {
+      interface {
+        id
+        code
+        name
+      }
     }
     criticalLevel {
       id
