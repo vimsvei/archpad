@@ -1,0 +1,14 @@
+query GetComponentInterfaces($componentId: uuid!) {
+  map_application_component_interface(where: { componentId: { _eq: $componentId } }) {
+    componentId
+    interfaceId
+    interface {
+      id
+      code
+      name
+      description
+    }
+  }
+}
+
+

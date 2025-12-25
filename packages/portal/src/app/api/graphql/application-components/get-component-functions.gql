@@ -1,0 +1,14 @@
+query GetComponentFunctions($componentId: uuid!) {
+  map_application_component_function(where: { componentId: { _eq: $componentId } }) {
+    componentId
+    functionId
+    function {
+      id
+      code
+      name
+      description
+    }
+  }
+}
+
+

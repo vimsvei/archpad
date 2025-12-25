@@ -1,0 +1,14 @@
+query GetComponentEvents($componentId: uuid!) {
+  map_application_component_event(where: { componentId: { _eq: $componentId } }) {
+    componentId
+    eventId
+    event {
+      id
+      code
+      name
+      description
+    }
+  }
+}
+
+
