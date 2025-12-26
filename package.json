@@ -3,10 +3,15 @@
   "private": true,
   "scripts": {
     "install:all": "pnpm install",
+    "bootstrap": "pnpm -w install",
     "dev:infra": "pnpm -C infra dev:infra",
     "dev:app": "pnpm -C infra dev:app",
     "dev:backend": "pnpm -C infra dev:backend",
     "dev:all": "pnpm -C infra dev:all",
+
+    "build:all": "pnpm --filter @archpad/contract build && pnpm --filter @archpad/backend build:arch-repo && pnpm --filter @archpad/portal build",
+    "build:all:ci": "pnpm -w install --frozen-lockfile --prod=false --force && pnpm run build:all",
+
     "down": "pnpm -C infra dev:down",
     "logs": "pnpm -C infra logs",
     "keycloak:sync": "pnpm -C infra keycloak:sync",

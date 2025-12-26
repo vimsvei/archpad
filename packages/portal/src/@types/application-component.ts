@@ -10,13 +10,7 @@ export type ApplicationComponent = {
   updatedBy?: string | null
 }
 
-export type Paginated<T> = {
-  items: T[]
-  total: number
-  page: number
-  pageSize: number
-  pageCount: number
-}
+export type { Paginated } from "@archpad/contract"
 
 export type ApplicationComponentDirectoryFields = {
   stateId: string | null

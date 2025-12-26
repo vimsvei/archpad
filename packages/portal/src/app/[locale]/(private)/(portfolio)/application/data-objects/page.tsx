@@ -1,14 +1,7 @@
-import { getTranslate } from "@/tolgee/server"
-import { UnderConstructionBlock } from "@/components/empty/under-construction"
+import { ListPage } from "@/components/archimate/data-object/list-page"
 
-export default async function ApplicationDataObjectsPage() {
-  const t = await getTranslate()
-  return (
-    <UnderConstructionBlock
-      title={t("under-construction.title")}
-      description={t("under-construction.description")}
-    />
-  )
+export default function ApplicationDataObjectsPage() {
+  return <ListPage />
 }
 
 

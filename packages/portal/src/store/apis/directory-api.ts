@@ -5,6 +5,7 @@ import type { DirectoryLinkType } from "@/@types/directory-link-type"
 import type { CreateDirectoryItemInput } from "@/services/directories.rest"
 import * as DirectoryAPI from "@/services/directories.rest"
 import * as DirectoryHasura from "@/services/directories.graphql"
+import type { BulkDirectoryLinkInput } from "@archpad/contract"
 
 export const directoryApi = createApi({
   reducerPath: "directoryApi",
@@ -137,7 +138,7 @@ export const directoryApi = createApi({
 
     bulkCreateDirectoryLinks: builder.mutation<
       void,
-      { slug: DirectorySlug; inputs: Array<{ sourceId: string; targetId: string; type: DirectoryLinkType }> }
+      { slug: DirectorySlug; inputs: BulkDirectoryLinkInput[] }
     >({
       async queryFn({ slug, inputs }) {
         try {
