@@ -1,19 +1,12 @@
-import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { Type } from '@nestjs/common';
+import { baseNamedObjectSchema } from '@archpad/contract';
 
-export const baseNamedObjectSchema = z.object({
-  code: z.string(),
-  name: z.string(),
-  description: z.string().optional(),
-});
+// Backward-compatible re-export for existing DTOs that import it from this module.
+export { baseNamedObjectSchema } from '@archpad/contract';
 
 export function createNamedObjectZodDto(dtoName: string): Type<any> {
-  const schema = z.object({
-    code: z.string(),
-    name: z.string(),
-    description: z.string().optional(),
-  });
+  const schema = baseNamedObjectSchema;
 
   class BaseDto extends createZodDto(schema) {}
   Object.defineProperty(BaseDto, 'name', { value: dtoName });

@@ -5,6 +5,7 @@
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { DirectoryLinkType } from "@/@types/directory-link-type"
 import { restRequest } from "@/services/http/rest-service"
+import type { BulkDirectoryLinkInput } from "@archpad/contract"
 
 export type CreateDirectoryItemInput = {
   code?: string
@@ -130,7 +131,7 @@ export async function createDirectoryLinkRest(
 
 export async function bulkCreateDirectoryLinksRest(
   slug: DirectorySlug,
-  inputs: Array<{ sourceId: string; targetId: string; type: DirectoryLinkType }>
+  inputs: BulkDirectoryLinkInput[]
 ): Promise<void> {
   await restRequest([slug, "links", "bulk"], {
     method: "POST",

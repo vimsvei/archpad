@@ -1,17 +1,8 @@
 import type { SystemSoftware, Paginated } from "@/@types/system-software"
+import type { CreateSystemSoftwareInput, UpdateSystemSoftwareInput } from "@archpad/contract"
 import { restRequest } from "@/services/http/rest-service"
 
-export type CreateSystemSoftwareInput = {
-  code?: string
-  name: string
-  description?: string
-  version?: string
-  kind?: string
-  typeId?: string
-  licenseTypeId?: string
-}
-
-export type UpdateSystemSoftwareInput = Partial<CreateSystemSoftwareInput>
+export type { CreateSystemSoftwareInput, UpdateSystemSoftwareInput } from "@archpad/contract"
 
 export type GetSystemSoftwareParams = {
   search?: string

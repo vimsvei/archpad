@@ -75,6 +75,10 @@ export const menu: TMenu = [
             url: '/application/components',
           },
           {
+            title: 'application.functions',
+            url: '/application/functions',
+          },
+          {
             title: 'application.data-objects',
             url: '/application/data-objects',
           }

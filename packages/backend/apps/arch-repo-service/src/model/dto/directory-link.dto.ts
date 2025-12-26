@@ -1,12 +1,8 @@
-import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { DirectoryLinkType } from '@/model/enums/directory-link-type.enum';
+import { directoryLinkDtoSchema } from '@archpad/contract';
 
-export const DirectoryLinkDtoSchema = z.object({
-  targetId: z.string().uuid(),
-  type: z.nativeEnum(DirectoryLinkType),
-});
+export const DirectoryLinkDtoSchema = directoryLinkDtoSchema;
 
 @ApiExtraModels()
 export class DirectoryLinkDto extends createZodDto(DirectoryLinkDtoSchema) {}

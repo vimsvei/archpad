@@ -1,0 +1,13 @@
+query GetDataObjectByPk($id: uuid!) {
+  data_objects_by_pk(id: $id) {
+    id
+    code
+    name
+    description
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+}
+
