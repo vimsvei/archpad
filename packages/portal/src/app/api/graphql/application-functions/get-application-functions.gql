@@ -1,0 +1,18 @@
+query GetApplicationFunctions($where: functions_bool_exp!, $limit: Int!, $offset: Int!) {
+  functions(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+    id
+    code
+    name
+    description
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+  functions_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
