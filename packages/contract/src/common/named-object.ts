@@ -14,3 +14,4 @@ export const baseNamedObjectSchema = z.object({
 export type BaseNamedObject = z.infer<typeof baseNamedObjectSchema>;
 
 
+
