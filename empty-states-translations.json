@@ -21,6 +21,11 @@
   "table.component.interfaces.no-results.description": "Создайте новый интерфейс или добавьте существующий из списка для компонента {component}",
   
   "table.component.events.no-results": "У компонента {component} нет событий",
-  "table.component.events.no-results.description": "Создайте новое событие или добавьте существующее из списка для компонента {component}"
+  "table.component.events.no-results.description": "Создайте новое событие или добавьте существующее из списка для компонента {component}",
+  
+  "dialog.unsaved-changes.title": "Несохраненные изменения",
+  "dialog.unsaved-changes.description": "У компонента \"{component}\" есть несохраненные изменения. Сохранить изменения перед выходом?",
+  "action.cancel": "Отмена",
+  "action.save": "Сохранить"
 }
 

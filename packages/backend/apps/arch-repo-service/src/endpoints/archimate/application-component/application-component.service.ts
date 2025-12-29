@@ -6,14 +6,27 @@ import { ApplicationComponentDataObjectMap } from '@/model/maps/application-comp
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
+import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
+import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
+import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
 import { DataObject } from '@/model/archimate/application/data-object.entity';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
 import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
 import { ApplicationEvent } from '@/model/archimate/application/application-event.entity';
+import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
+import { TechnologyNode } from '@/model/archimate/technology/technology-node.entity';
+import { TechnologyLogicalNetwork } from '@/model/archimate/technology/technology-network.entity';
 import {
   ArchitectureStyleDirectory,
+  ComponentStateDirectory,
   CriticalLevelDirectory,
+  FailoverTypeDirectory,
   LicenseTypeDirectory,
+  MonitoringLevelDirectory,
+  RecoveryTimeDirectory,
+  RedundancyTypeDirectory,
+  ScalingTypeDirectory,
 } from '@/model/directories/directories';
 import type {
   CreateDtoApplicationComponent,
@@ -21,6 +34,7 @@ import type {
 } from '@/model/dto/application-component.dto';
 import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { ActionStamp } from '@archpad/models';
+import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
 export type ApplicationComponentListQuery = {
   search?: string;
@@ -49,6 +63,14 @@ export class ApplicationComponentService {
     private readonly interfaceMapRepo: EntityRepository<ApplicationComponentInterfaceMap>,
     @InjectRepository(ApplicationComponentEventMap)
     private readonly eventMapRepo: EntityRepository<ApplicationComponentEventMap>,
+    @InjectRepository(ApplicationComponentSystemSoftwareMap)
+    private readonly systemSoftwareMapRepo: EntityRepository<ApplicationComponentSystemSoftwareMap>,
+    @InjectRepository(ApplicationComponentTechnologyNodeMap)
+    private readonly technologyNodeMapRepo: EntityRepository<ApplicationComponentTechnologyNodeMap>,
+    @InjectRepository(ApplicationComponentTechnologyLogicalNetworkMap)
+    private readonly technologyNetworkMapRepo: EntityRepository<ApplicationComponentTechnologyLogicalNetworkMap>,
+    @InjectRepository(ApplicationComponentHierarchyMap)
+    private readonly hierarchyMapRepo: EntityRepository<ApplicationComponentHierarchyMap>,
   ) {}
 
   async findAll(
@@ -101,14 +123,8 @@ export class ApplicationComponentService {
       code: dto.code,
       name: dto.name,
       description: dto.description,
-      license: dto.licenseTypeId
-        ? em.getReference(LicenseTypeDirectory, dto.licenseTypeId)
-        : undefined,
-      architectureStyle: dto.styleId
-        ? em.getReference(ArchitectureStyleDirectory, dto.styleId)
-        : undefined,
-      criticalLevel: dto.criticalLevelId
-        ? em.getReference(CriticalLevelDirectory, dto.criticalLevelId)
+      state: dto.stateId
+        ? em.getReference(ComponentStateDirectory, dto.stateId)
         : undefined,
       created: {
         at: new Date(),
@@ -120,51 +136,6 @@ export class ApplicationComponentService {
     return entity;
   }
 
-  async update(
-    id: string,
-    dto: UpdateDtoApplicationComponent,
-    context: ArchpadRequestContext,
-  ): Promise<ApplicationComponent> {
-    const em = this.repo.getEntityManager();
-    const entity = await this.findOne(id);
-
-    const patch: Partial<ApplicationComponent> = {
-      ...(dto.code !== undefined ? { code: dto.code } : {}),
-      ...(dto.name !== undefined ? { name: dto.name } : {}),
-      ...(dto.description !== undefined
-        ? { description: dto.description }
-        : {}),
-      ...(dto.licenseTypeId !== undefined
-        ? {
-            license: dto.licenseTypeId
-              ? em.getReference(LicenseTypeDirectory, dto.licenseTypeId)
-              : undefined,
-          }
-        : {}),
-      ...(dto.styleId !== undefined
-        ? {
-            architectureStyle: dto.styleId
-              ? em.getReference(ArchitectureStyleDirectory, dto.styleId)
-              : undefined,
-          }
-        : {}),
-      ...(dto.criticalLevelId !== undefined
-        ? {
-            criticalLevel: dto.criticalLevelId
-              ? em.getReference(CriticalLevelDirectory, dto.criticalLevelId)
-              : undefined,
-          }
-        : {}),
-      updated: {
-        at: new Date(),
-        by: context.userId,
-      },
-    };
-
-    this.repo.assign(entity, patch as any);
-    await em.flush();
-    return entity;
-  }
 
   async addDataObject(componentId: string, dataObjectId: string) {
     const em = this.repo.getEntityManager();
@@ -323,5 +294,245 @@ export class ApplicationComponentService {
       event: eventId as any,
     } as any);
     await em.removeAndFlush(map);
+  }
+
+  async update(
+    id: string,
+    dto: UpdateDtoApplicationComponent,
+    context: ArchpadRequestContext,
+  ): Promise<ApplicationComponent> {
+    const em = this.repo.getEntityManager();
+
+    // Start transaction
+    await em.transactional(async (trxEm) => {
+      const entity = await trxEm.findOneOrFail(ApplicationComponent, { id } as FilterQuery<ApplicationComponent>);
+
+      // Update basic fields
+      const patch: Partial<ApplicationComponent> = {
+        ...(dto.code !== undefined ? { code: dto.code } : {}),
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.description !== undefined
+          ? { description: dto.description }
+          : {}),
+        ...(dto.stateId !== undefined
+          ? {
+              state: dto.stateId
+                ? trxEm.getReference(ComponentStateDirectory, dto.stateId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.licenseTypeId !== undefined
+          ? {
+              license: dto.licenseTypeId
+                ? trxEm.getReference(LicenseTypeDirectory, dto.licenseTypeId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.architectureStyleId !== undefined
+          ? {
+              architectureStyle: dto.architectureStyleId
+                ? trxEm.getReference(ArchitectureStyleDirectory, dto.architectureStyleId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.criticalLevelId !== undefined
+          ? {
+              criticalLevel: dto.criticalLevelId
+                ? trxEm.getReference(CriticalLevelDirectory, dto.criticalLevelId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.failoverTypeId !== undefined
+          ? {
+              failoverType: dto.failoverTypeId
+                ? trxEm.getReference(FailoverTypeDirectory, dto.failoverTypeId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.recoveryTimeId !== undefined
+          ? {
+              recoveryTime: dto.recoveryTimeId
+                ? trxEm.getReference(RecoveryTimeDirectory, dto.recoveryTimeId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.redundancyTypeId !== undefined
+          ? {
+              redundancyType: dto.redundancyTypeId
+                ? trxEm.getReference(RedundancyTypeDirectory, dto.redundancyTypeId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.monitoringLevelId !== undefined
+          ? {
+              monitoringLevel: dto.monitoringLevelId
+                ? trxEm.getReference(MonitoringLevelDirectory, dto.monitoringLevelId)
+                : undefined,
+            }
+          : {}),
+        ...(dto.scalingTypeId !== undefined
+          ? {
+              scalingType: dto.scalingTypeId
+                ? trxEm.getReference(ScalingTypeDirectory, dto.scalingTypeId)
+                : undefined,
+            }
+          : {}),
+        updated: {
+          at: new Date(),
+          by: context.userId,
+        },
+      };
+
+      trxEm.assign(entity, patch as any);
+
+      // Update functions - always replace all existing with provided ones
+      const existingFunctionMaps = await trxEm.find(ApplicationComponentFunctionMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingFunctionMaps);
+
+      if (dto.functionIds && dto.functionIds.length > 0) {
+        for (const functionId of dto.functionIds) {
+          const map = trxEm.create(ApplicationComponentFunctionMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            function: trxEm.getReference(ApplicationFunction, functionId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update data objects - always replace all existing with provided ones
+      const existingDataObjectMaps = await trxEm.find(ApplicationComponentDataObjectMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingDataObjectMaps);
+
+      if (dto.dataObjectIds && dto.dataObjectIds.length > 0) {
+        for (const dataObjectId of dto.dataObjectIds) {
+          const map = trxEm.create(ApplicationComponentDataObjectMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            dataObject: trxEm.getReference(DataObject, dataObjectId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update interfaces - always replace all existing with provided ones
+      const existingInterfaceMaps = await trxEm.find(ApplicationComponentInterfaceMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingInterfaceMaps);
+
+      if (dto.interfaceIds && dto.interfaceIds.length > 0) {
+        for (const interfaceId of dto.interfaceIds) {
+          const map = trxEm.create(ApplicationComponentInterfaceMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            interface: trxEm.getReference(ApplicationInterface, interfaceId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update events - always replace all existing with provided ones
+      const existingEventMaps = await trxEm.find(ApplicationComponentEventMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingEventMaps);
+
+      if (dto.eventIds && dto.eventIds.length > 0) {
+        for (const eventId of dto.eventIds) {
+          const map = trxEm.create(ApplicationComponentEventMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            event: trxEm.getReference(ApplicationEvent, eventId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update system software - always replace all existing with provided ones
+      const existingSystemSoftwareMaps = await trxEm.find(ApplicationComponentSystemSoftwareMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingSystemSoftwareMaps);
+
+      if (dto.systemSoftwareIds && dto.systemSoftwareIds.length > 0) {
+        for (const item of dto.systemSoftwareIds) {
+          const map = trxEm.create(ApplicationComponentSystemSoftwareMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            systemSoftware: trxEm.getReference(SystemSoftware, item.id),
+            kind: (item.kind as SystemSoftwareKind) || SystemSoftwareKind.LIBRARY,
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update technology nodes - always replace all existing with provided ones
+      const existingTechnologyNodeMaps = await trxEm.find(ApplicationComponentTechnologyNodeMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingTechnologyNodeMaps);
+
+      if (dto.technologyNodeIds && dto.technologyNodeIds.length > 0) {
+        for (const nodeId of dto.technologyNodeIds) {
+          const map = trxEm.create(ApplicationComponentTechnologyNodeMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            node: trxEm.getReference(TechnologyNode, nodeId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update technology networks - always replace all existing with provided ones
+      const existingTechnologyNetworkMaps = await trxEm.find(ApplicationComponentTechnologyLogicalNetworkMap, {
+        component: id as any,
+      } as any);
+      await trxEm.remove(existingTechnologyNetworkMaps);
+
+      if (dto.technologyNetworkIds && dto.technologyNetworkIds.length > 0) {
+        for (const networkId of dto.technologyNetworkIds) {
+          const map = trxEm.create(ApplicationComponentTechnologyLogicalNetworkMap, {
+            component: trxEm.getReference(ApplicationComponent, id),
+            logicalNetwork: trxEm.getReference(TechnologyLogicalNetwork, networkId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update parents (hierarchy) - always replace all existing with provided ones
+      const existingParentMaps = await trxEm.find(ApplicationComponentHierarchyMap, {
+        child: id as any,
+      } as any);
+      await trxEm.remove(existingParentMaps);
+
+      if (dto.parentIds && dto.parentIds.length > 0) {
+        for (const parentId of dto.parentIds) {
+          const map = trxEm.create(ApplicationComponentHierarchyMap, {
+            parent: trxEm.getReference(ApplicationComponent, parentId),
+            child: trxEm.getReference(ApplicationComponent, id),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      // Update children (hierarchy) - always replace all existing with provided ones
+      const existingChildMaps = await trxEm.find(ApplicationComponentHierarchyMap, {
+        parent: id as any,
+      } as any);
+      await trxEm.remove(existingChildMaps);
+
+      if (dto.childIds && dto.childIds.length > 0) {
+        for (const childId of dto.childIds) {
+          const map = trxEm.create(ApplicationComponentHierarchyMap, {
+            parent: trxEm.getReference(ApplicationComponent, id),
+            child: trxEm.getReference(ApplicationComponent, childId),
+          } as any);
+          await trxEm.persist(map);
+        }
+      }
+
+      await trxEm.flush();
+    });
+
+    return this.findOne(id);
   }
 }

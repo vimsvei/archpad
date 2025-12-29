@@ -46,6 +46,15 @@ export type ApplicationComponentEditState = {
     description: string
     stateId: string | null
     directoryFields: ApplicationComponentDirectoryFields
+    functions: RelatedItem[]
+    dataObjects: RelatedItem[]
+    interfaces: RelatedItem[]
+    events: RelatedItem[]
+    systemSoftware: SystemSoftwareItem[]
+    technologyNodes: TechnologyNodeItem[]
+    technologyNetworks: TechnologyNetworkItem[]
+    parents: RelatedItem[]
+    children: RelatedItem[]
   } | null
 
   // Loading state
@@ -158,6 +167,15 @@ export const applicationComponentEditSlice = createSlice({
         description: action.payload.description ?? "",
         stateId: action.payload.stateId,
         directoryFields: { ...action.payload.directoryFields },
+        functions: [...action.payload.functions],
+        dataObjects: [...action.payload.dataObjects],
+        interfaces: [...action.payload.interfaces],
+        events: [...action.payload.events],
+        systemSoftware: [...action.payload.systemSoftware],
+        technologyNodes: [...action.payload.technologyNodes],
+        technologyNetworks: [...action.payload.technologyNetworks],
+        parents: [...action.payload.parents],
+        children: [...action.payload.children],
       }
     },
 
@@ -277,6 +295,15 @@ export const applicationComponentEditSlice = createSlice({
           description: state.description,
           stateId: state.stateId,
           directoryFields: { ...state.directoryFields },
+          functions: [...state.functions],
+          dataObjects: [...state.dataObjects],
+          interfaces: [...state.interfaces],
+          events: [...state.events],
+          systemSoftware: [...state.systemSoftware],
+          technologyNodes: [...state.technologyNodes],
+          technologyNetworks: [...state.technologyNetworks],
+          parents: [...state.parents],
+          children: [...state.children],
         }
       }
     },
@@ -320,6 +347,18 @@ export const applicationComponentEditReducer = applicationComponentEditSlice.red
 const selectEditState = (state: { applicationComponentEdit: ApplicationComponentEditState }) =>
   state.applicationComponentEdit
 
+// Helper function to compare arrays of items by id
+function arraysEqual<T extends { id: string }>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  const aIds = new Set(a.map(item => item.id))
+  const bIds = new Set(b.map(item => item.id))
+  if (aIds.size !== bIds.size) return false
+  for (const id of aIds) {
+    if (!bIds.has(id)) return false
+  }
+  return true
+}
+
 export const selectIsDirty = createSelector([selectEditState], (editState) => {
   if (!editState.baseline) return false
 
@@ -337,7 +376,18 @@ export const selectIsDirty = createSelector([selectEditState], (editState) => {
       baseline.directoryFields[key as keyof typeof baseline.directoryFields]
   )
 
-  return basicChanged || directoryChanged
+  const relatedItemsChanged =
+    !arraysEqual(editState.functions, baseline.functions) ||
+    !arraysEqual(editState.dataObjects, baseline.dataObjects) ||
+    !arraysEqual(editState.interfaces, baseline.interfaces) ||
+    !arraysEqual(editState.events, baseline.events) ||
+    !arraysEqual(editState.systemSoftware, baseline.systemSoftware) ||
+    !arraysEqual(editState.technologyNodes, baseline.technologyNodes) ||
+    !arraysEqual(editState.technologyNetworks, baseline.technologyNetworks) ||
+    !arraysEqual(editState.parents, baseline.parents) ||
+    !arraysEqual(editState.children, baseline.children)
+
+  return basicChanged || directoryChanged || relatedItemsChanged
 })
 
 export const selectIsDraftValid = createSelector([selectEditState], (editState) => {

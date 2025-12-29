@@ -1,11 +1,8 @@
 import type { ApplicationComponent, Paginated } from "@/@types/application-component"
+import type { CreateApplicationComponentDto } from "@archpad/contract"
 import { restRequest } from "@/services/http/rest-service"
 
-export type CreateApplicationComponentInput = {
-  code?: string
-  name: string
-  description?: string
-}
+export type CreateApplicationComponentInput = CreateApplicationComponentDto
 
 export type UpdateApplicationComponentInput = Partial<CreateApplicationComponentInput>
 
@@ -167,6 +164,23 @@ export async function addApplicationComponentTechnologyNetworkRest(componentId: 
 export async function removeApplicationComponentTechnologyNetworkRest(componentId: string, networkId: string) {
   return restRequest<void>(["application-components", componentId, "technology-networks", networkId], {
     method: "DELETE",
+  })
+}
+
+import type { UpdateApplicationComponentDto } from "@archpad/contract"
+
+export type UpdateApplicationComponentFullInput = UpdateApplicationComponentDto
+
+/**
+ * Save full application component with all related data in a single PUT request
+ */
+export async function updateApplicationComponentFullRest(
+  id: string,
+  input: UpdateApplicationComponentFullInput
+): Promise<ApplicationComponent> {
+  return restRequest<ApplicationComponent>(["application-components", id], {
+    method: "PUT",
+    body: input,
   })
 }
 

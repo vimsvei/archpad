@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { UnsavedChangesDialog } from "./unsaved-changes-dialog"
 import {
   Tabs,
   TabsList,
@@ -155,31 +156,15 @@ export function EditItem({ id }: EditItemProps) {
 
   const directoryFields = editState.directoryFields
 
-  // Check if dirty
-  const isDirty = React.useMemo(() => {
-    if (!editState.baseline) return false
-
-    const basicChanged =
-      editState.code !== editState.baseline.code ||
-      editState.name !== editState.baseline.name ||
-      editState.description !== editState.baseline.description ||
-      editState.stateId !== editState.baseline.stateId
-
-    const directoryChanged = Object.keys(editState.directoryFields).some(
-      (key) =>
-        editState.directoryFields[key as keyof typeof editState.directoryFields] !==
-        editState.baseline.directoryFields[key as keyof typeof editState.directoryFields]
-    )
-
-    return basicChanged || directoryChanged
-  }, [editState])
+  // Check if dirty using selector
+  const isDirty = useSelector(selectIsDirty)
 
   const isDraftValid = React.useMemo(() => {
     return Boolean(editState.code.trim()) && Boolean(editState.name.trim())
   }, [editState.code, editState.name])
 
-  // Global save handler with error handling
-  const handleSave = React.useCallback(async () => {
+  // Full save handler - saves all data including related items
+  const handleSaveFull = React.useCallback(async () => {
     if (!isDraftValid) {
       const errorMsg = tr("form.invalid", "Please fill required fields")
       toast.error(errorMsg)
@@ -191,16 +176,30 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(setSaving(true))
       dispatch(setSaveError(null))
       
-      await updateItem({
-        id,
-        input: {
-          code: editState.code.trim(),
-          name: editState.name.trim(),
-          description: editState.description.trim() || undefined,
-          stateId: editState.stateId ?? undefined,
-          // TODO: Add other directory fields when API supports them
-        },
-      }).unwrap()
+      // Save full component with all related data via PUT
+      await ApplicationComponentRest.updateApplicationComponentFullRest(id, {
+        code: editState.code.trim(),
+        name: editState.name.trim(),
+        description: editState.description.trim() || undefined,
+        stateId: editState.stateId ?? undefined,
+        licenseTypeId: editState.directoryFields.licenseTypeId ?? undefined,
+        architectureStyleId: editState.directoryFields.architectureStyleId ?? undefined,
+        criticalLevelId: editState.directoryFields.criticalLevelId ?? undefined,
+        failoverTypeId: editState.directoryFields.failoverTypeId ?? undefined,
+        recoveryTimeId: editState.directoryFields.recoveryTimeId ?? undefined,
+        redundancyTypeId: editState.directoryFields.redundancyTypeId ?? undefined,
+        monitoringLevelId: editState.directoryFields.monitoringLevelId ?? undefined,
+        scalingTypeId: editState.directoryFields.scalingTypeId ?? undefined,
+        functionIds: editState.functions.map(f => f.id),
+        dataObjectIds: editState.dataObjects.map(d => d.id),
+        interfaceIds: editState.interfaces.map(i => i.id),
+        eventIds: editState.events.map(e => e.id),
+        systemSoftwareIds: editState.systemSoftware.map(s => ({ id: s.id, kind: s.kind })),
+        technologyNodeIds: editState.technologyNodes.map(n => n.id),
+        technologyNetworkIds: editState.technologyNetworks.map(n => n.id),
+        parentIds: editState.parents.map(p => p.id),
+        childIds: editState.children.map(c => c.id),
+      })
 
       toast.success(tr("action.saved", "Saved"))
       dispatch(updateBaseline())
@@ -212,10 +211,14 @@ export function EditItem({ id }: EditItemProps) {
       
       // Log error for debugging
       console.error("Failed to save component:", e)
+      throw e // Re-throw to allow caller to handle
     } finally {
       dispatch(setSaving(false))
     }
-  }, [id, editState, isDraftValid, updateItem, dispatch, tr])
+  }, [id, editState, isDraftValid, dispatch, tr])
+
+  // Global save handler (alias for compatibility)
+  const handleSave = handleSaveFull
 
   // Add existing items sheet state
   const [sheetOpen, setSheetOpen] = React.useState(false)
@@ -236,13 +239,105 @@ export function EditItem({ id }: EditItemProps) {
   const [createSheetIsSubmitting, setCreateSheetIsSubmitting] = React.useState(false)
 
 
+  // Dialog state for unsaved changes
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
+  const [pendingNavigation, setPendingNavigation] = React.useState<(() => void) | null>(null)
+
   const goBack = React.useCallback(() => {
     router.push("/application/components")
   }, [router])
 
   const handleBack = React.useCallback(() => {
-    goBack()
-  }, [goBack])
+    if (isDirty) {
+      setPendingNavigation(() => goBack)
+      setConfirmDialogOpen(true)
+    } else {
+      goBack()
+    }
+  }, [goBack, isDirty])
+
+  // Handle dialog cancel
+  const handleDialogCancel = React.useCallback(() => {
+    setConfirmDialogOpen(false)
+    setPendingNavigation(null)
+  }, [])
+
+  // Handle dialog save
+  const handleDialogSave = React.useCallback(async () => {
+    try {
+      await handleSaveFull()
+      // After successful save, proceed with navigation
+      if (pendingNavigation) {
+        setConfirmDialogOpen(false)
+        pendingNavigation()
+        setPendingNavigation(null)
+      }
+    } catch {
+      // Error already handled in handleSaveFull
+      // Don't close dialog on error
+    }
+  }, [handleSaveFull, pendingNavigation])
+
+  // Intercept navigation when dirty
+  React.useEffect(() => {
+    // Handle browser back/forward
+    const handlePopState = () => {
+      if (isDirty && !confirmDialogOpen) {
+        window.history.pushState(null, "", window.location.href)
+        setPendingNavigation(() => () => window.history.back())
+        setConfirmDialogOpen(true)
+      }
+    }
+
+    // Handle beforeunload (browser close/refresh)
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = ""
+        return ""
+      }
+    }
+
+    // Intercept link clicks
+    const handleLinkClick = (e: MouseEvent) => {
+      if (!isDirty || confirmDialogOpen) return
+
+      const target = e.target as HTMLElement
+      const link = target.closest('a[href]') as HTMLAnchorElement | null
+      if (!link) return
+
+      const href = link.getAttribute('href')
+      if (!href) return
+
+      // Don't intercept external links or anchors
+      if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+        return
+      }
+
+      // Don't intercept if it's the current page
+      const currentPath = window.location.pathname
+      if (href === currentPath || href === `${currentPath}/`) {
+        return
+      }
+
+      // Intercept navigation
+      e.preventDefault()
+      e.stopPropagation()
+      
+      setPendingNavigation(() => () => router.push(href))
+      setConfirmDialogOpen(true)
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    window.addEventListener("popstate", handlePopState)
+    document.addEventListener("click", handleLinkClick, true) // Use capture phase
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      window.removeEventListener("popstate", handlePopState)
+      document.removeEventListener("click", handleLinkClick, true)
+    }
+  }, [isDirty, confirmDialogOpen, router])
 
   const handleDirectoryFieldChange = React.useCallback(
     (fieldName: keyof typeof editState.directoryFields, value: string | null) => {
@@ -286,7 +381,7 @@ export function EditItem({ id }: EditItemProps) {
   }, [createSheetType, t, tr])
 
   const handleCreateNamedObject = React.useCallback(() => {
-    if (!item || !createSheetType) return
+    if (!createSheetType) return
 
     void (async () => {
       const code = createSheetDraft.code.trim()
@@ -699,6 +794,29 @@ export function EditItem({ id }: EditItemProps) {
           onDraftChange={setCreateSheetDraft}
           onSubmit={handleCreateNamedObject}
         />
+      )}
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <UnsavedChangesDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        componentName={editState.name}
+        isSaving={editState.isSaving}
+        isValid={isDraftValid}
+        onCancel={handleDialogCancel}
+        onSave={handleDialogSave}
+      />
+
+      {/* Full Page Loader during save */}
+      {editState.isSaving && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <Card className="p-6">
+            <div className="flex items-center gap-3">
+              <Spinner className="h-6 w-6" />
+              <span className="text-lg">{tr("action.saving", "Сохранение...")}</span>
+            </div>
+          </Card>
+        </div>
       )}
     </div>
   )

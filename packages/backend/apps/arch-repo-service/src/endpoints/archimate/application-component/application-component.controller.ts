@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
@@ -110,8 +110,12 @@ export class ApplicationComponentController {
     return this.service.create(dto, context);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: `Изменение компонента приложения` })
+  @Put(':id')
+  @ApiOperation({
+    summary: `Полное обновление компонента приложения со всеми связанными данными`,
+    description:
+      'Полностью перезаписывает компонент приложения и все его связи (функции, объекты данных, интерфейсы, события, системное ПО, технологические узлы, сети, иерархия) в одной транзакции. Все существующие связи, которые не переданы в запросе, будут удалены.',
+  })
   @ApiParam({ name: 'id', description: 'UUID объекта' })
   @ApiOkResponse({ type: ApplicationComponent })
   update(
