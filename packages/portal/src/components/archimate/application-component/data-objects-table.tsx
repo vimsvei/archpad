@@ -1,82 +1,87 @@
 "use client"
 
 import * as React from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
-import { RelatedItemsList, type RelatedItem } from "@/components/shared/related-items-list"
 import { toast } from "sonner"
+import ApplicationDataObject from "@/components/icons/ApplicationDataObject"
 import * as ApplicationComponentRest from "@/services/application-component.rest"
-import * as ApplicationComponentGraphql from "@/services/application-component.graphql"
+import { ArchimateItemTable } from "./archimate-item-table"
+import type { RelatedItem } from "@/components/shared/related-items-list"
+import type { RootState, AppDispatch } from "@/store/store"
+import { removeDataObject } from "@/store/slices/application-component-edit-slice"
 
 type DataObject = RelatedItem
 
 type DataObjectsTableProps = {
   componentId: string
+  componentName?: string
   onAddExisting?: () => void
   onCreate?: () => void
-  refreshToken?: number
 }
 
-export function DataObjectsTable({ componentId, onAddExisting, onCreate, refreshToken }: DataObjectsTableProps) {
+export function DataObjectsTable({ componentId, componentName, onAddExisting, onCreate }: DataObjectsTableProps) {
   const { t } = useTranslate()
+  const dispatch = useDispatch<AppDispatch>()
+  const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [items, setItems] = React.useState<DataObject[]>([])
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
+
+  const items = editState.dataObjects
 
   const handleRefresh = React.useCallback(() => {
-    void (async () => {
-      try {
-        setIsLoading(true)
-        const data = await ApplicationComponentGraphql.getApplicationComponentDataObjectsGraphql(componentId)
-        setItems(
-          data.map((x) => ({
-            id: x.id,
-            code: x.code,
-            name: x.name,
-            description: x.description ?? undefined,
-          }))
-        )
-      } catch (e: any) {
-        toast.error(e?.message ?? t("action.loadFailed", "Failed to load"))
-      } finally {
-        setIsLoading(false)
+    toast.success(t("action.updated", "Updated"))
+  }, [t])
+
+  const handleDelete = React.useCallback(
+    (item: DataObject) => {
+      void (async () => {
+        try {
+          setIsLoading(true)
+          await ApplicationComponentRest.removeApplicationComponentDataObjectRest(componentId, item.id)
+          dispatch(removeDataObject(item.id))
+          setSelectedItems((prev) => {
+            const next = new Set(prev)
+            next.delete(item.id)
+            return next
+          })
+          toast.success(t("action.deleted", "Deleted"))
+        } catch (e: any) {
+          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+        } finally {
+          setIsLoading(false)
+        }
+      })()
+    },
+    [componentId, dispatch, t]
+  )
+
+  const handleToggleItem = React.useCallback((itemId: string) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
       }
-    })()
-  }, [componentId])
-
-  const handleAdd = React.useCallback(() => {
-    onCreate?.()
-  }, [onCreate])
-
-  const handleDelete = React.useCallback((item: DataObject) => {
-    void (async () => {
-      try {
-        setIsLoading(true)
-        await ApplicationComponentRest.removeApplicationComponentDataObjectRest(componentId, item.id)
-        setItems((prev) => prev.filter((x) => x.id !== item.id))
-        toast.success(t("action.deleted", "Deleted"))
-      } catch (e: any) {
-        toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
-      } finally {
-        setIsLoading(false)
-      }
-    })()
-  }, [componentId, t])
-
-  React.useEffect(() => {
-    handleRefresh()
-  }, [handleRefresh, refreshToken])
+      return next
+    })
+  }, [])
 
   return (
-    <RelatedItemsList<DataObject>
-      title={t("application.data-objects", "Объекты данных")}
+    <ArchimateItemTable<DataObject>
       items={items}
       isLoading={isLoading}
-      iconType="application-data-object"
+      icon={ApplicationDataObject}
       editPath={(item) => `/application/data-objects/${item.id}`}
       onRefresh={handleRefresh}
-      onAdd={handleAdd}
+      onCreate={onCreate}
       onAddExisting={onAddExisting}
       onDelete={handleDelete}
+      selectedItems={selectedItems}
+      onToggleItem={handleToggleItem}
+      componentName={componentName}
+      itemTypeKey="data-objects"
     />
   )
 }
-

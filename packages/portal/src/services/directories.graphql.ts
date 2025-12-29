@@ -1,12 +1,14 @@
 "use client"
 
 import type { DirectoryKind } from "@/@types/directory-kind"
+import { SLUG_BY_KIND } from "@/components/directories/directory-meta"
 import type { DirectoryItem, DirectoryRelation, DirectorySlug } from "@/@types/directories"
 import type { DirectoryLinkType } from "@/@types/directory-link-type"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import type {
+  GetAllDirectoriesQuery,
   GetDirectoryCountQuery,
   GetDirectoryCountQueryVariables,
   GetDirectoryItemByPkQuery,
@@ -36,6 +38,13 @@ type DirectoryRowLike = {
   updatedBy?: unknown
 }
 
+type MinimalDirectoryRowLike = {
+  id: unknown
+  kind: string
+  code?: string | null
+  name: string
+}
+
 function toDirectoryItem(row: DirectoryRowLike): DirectoryItem {
   return {
     id: String(row.id),
@@ -52,6 +61,19 @@ function toDirectoryItem(row: DirectoryRowLike): DirectoryItem {
       row.updatedAt || row.updatedBy
         ? { at: row.updatedAt ?? "", by: row.updatedBy ?? null }
         : undefined,
+  }
+}
+
+function toDirectoryItemMinimal(row: MinimalDirectoryRowLike): DirectoryItem {
+  return {
+    id: String(row.id),
+    code: row.code ?? "",
+    name: row.name,
+    description: "",
+    color: undefined,
+    byDefault: false,
+    created: undefined,
+    updated: undefined,
   }
 }
 
@@ -111,6 +133,35 @@ export async function getDirectoryRelationsGraphql(
     createdAt: String(r.createdAt),
     target: toDirectoryItem(r.target),
   }))
+}
+
+/**
+ * Get all directories in a single query, grouped by kind
+ * Only loads minimal fields (id, kind, code, name) for initial app load
+ */
+export async function getAllDirectoriesGraphql(): Promise<Record<DirectorySlug, DirectoryItem[]>> {
+  const query = await loadGql("directories/get-all-directories.gql")
+  const data = await graphqlRequest<GetAllDirectoriesQuery>(query)
+  
+  const directoriesBySlug: Record<string, DirectoryItem[]> = {}
+  
+  // Group directories by kind and convert to slug
+  ;(data.directories ?? []).forEach((row) => {
+    const slug = SLUG_BY_KIND[row.kind as DirectoryKind]
+    if (!slug) {
+      console.warn(`Unknown directory kind: ${row.kind}`)
+      return
+    }
+    
+    if (!directoriesBySlug[slug]) {
+      directoriesBySlug[slug] = []
+    }
+    
+    // Use minimal conversion for initial load
+    directoriesBySlug[slug].push(toDirectoryItemMinimal(row))
+  })
+  
+  return directoriesBySlug as Record<DirectorySlug, DirectoryItem[]>
 }
 
 

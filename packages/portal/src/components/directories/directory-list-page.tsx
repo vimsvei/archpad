@@ -17,13 +17,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useTranslate } from "@tolgee/react"
 import {
   useDeleteDirectoryItemMutation,
-  useGetDirectoryItemsQuery,
   useCreateDirectoryItemMutation,
   useBulkCreateDirectoryItemsMutation,
   useBulkUpsertDirectoryItemsMutation,
   useCreateDirectoryLinkMutation,
   useBulkCreateDirectoryLinksMutation,
 } from "@/store/apis/directory-api"
+import { useDirectoryItems } from "@/hooks/use-directory-items"
 import { SheetTrigger } from "@/components/ui/sheet"
 import { EntityListPageShell, type PageSizeOption } from "@/components/common/entity-list-page-shell"
 import { EntityDataTable } from "@/components/common/entity-data-table"
@@ -93,13 +93,25 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     }
   }, [])
 
-  const {
-    data: remoteItems,
-    error: remoteError,
-    refetch,
-    isLoading,
-    isFetching,
-  } = useGetDirectoryItemsQuery(directorySlug)
+  // Get items from Redux store (preloaded on app start)
+  // Auto-refresh when page is visited
+  const { items: remoteItems, isLoading, refetch } = useDirectoryItems(directorySlug, {
+    refreshOnMount: true, // Refresh when directory page is visited
+    autoRefresh: true,
+  })
+
+  const [remoteError, setRemoteError] = React.useState<Error | null>(null)
+  const isFetching = isLoading
+
+  // Wrap refetch to handle errors
+  const handleRefetch = React.useCallback(async () => {
+    try {
+      setRemoteError(null)
+      await refetch()
+    } catch (error) {
+      setRemoteError(error as Error)
+    }
+  }, [refetch])
 
   const [createItem, createState] = useCreateDirectoryItemMutation()
   const [deleteItem] = useDeleteDirectoryItemMutation()
@@ -187,7 +199,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
           }
         )
-        void refetch()
+        void handleRefetch()
       } catch (error: any) {
         toast.error("Ошибка при загрузке файла", {
           description: error?.message ?? "Не удалось загрузить данные из файла",
@@ -385,7 +397,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                 size="icon"
                 variant="outline"
                 aria-label={tr("action.refresh", "Refresh")}
-                onClick={() => void refetch()}
+                onClick={() => void handleRefetch()}
                 disabled={isFetching}
               >
                 <RefreshCcw />
@@ -468,7 +480,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                   }
                 )
               } finally {
-                void refetch()
+                void handleRefetch()
               }
             }}
             onCancel={() => setOpen(false)}

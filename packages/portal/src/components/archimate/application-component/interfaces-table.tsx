@@ -1,82 +1,87 @@
 "use client"
 
 import * as React from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
-import { RelatedItemsList, type RelatedItem } from "@/components/shared/related-items-list"
 import { toast } from "sonner"
+import ApplicationInterface from "@/components/icons/ApplicationInterface"
 import * as ApplicationComponentRest from "@/services/application-component.rest"
-import * as ApplicationComponentGraphql from "@/services/application-component.graphql"
+import { ArchimateItemTable } from "./archimate-item-table"
+import type { RelatedItem } from "@/components/shared/related-items-list"
+import type { RootState, AppDispatch } from "@/store/store"
+import { removeInterface } from "@/store/slices/application-component-edit-slice"
 
 type Interface = RelatedItem
 
 type InterfacesTableProps = {
   componentId: string
+  componentName?: string
   onAddExisting?: () => void
   onCreate?: () => void
-  refreshToken?: number
 }
 
-export function InterfacesTable({ componentId, onAddExisting, onCreate, refreshToken }: InterfacesTableProps) {
+export function InterfacesTable({ componentId, componentName, onAddExisting, onCreate }: InterfacesTableProps) {
   const { t } = useTranslate()
+  const dispatch = useDispatch<AppDispatch>()
+  const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [items, setItems] = React.useState<Interface[]>([])
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
+
+  const items = editState.interfaces
 
   const handleRefresh = React.useCallback(() => {
-    void (async () => {
-      try {
-        setIsLoading(true)
-        const data = await ApplicationComponentGraphql.getApplicationComponentInterfacesGraphql(componentId)
-        setItems(
-          data.map((x) => ({
-            id: x.id,
-            code: x.code,
-            name: x.name,
-            description: x.description ?? undefined,
-          }))
-        )
-      } catch (e: any) {
-        toast.error(e?.message ?? t("action.loadFailed", "Failed to load"))
-      } finally {
-        setIsLoading(false)
+    toast.success(t("action.updated", "Updated"))
+  }, [t])
+
+  const handleDelete = React.useCallback(
+    (item: Interface) => {
+      void (async () => {
+        try {
+          setIsLoading(true)
+          await ApplicationComponentRest.removeApplicationComponentInterfaceRest(componentId, item.id)
+          dispatch(removeInterface(item.id))
+          setSelectedItems((prev) => {
+            const next = new Set(prev)
+            next.delete(item.id)
+            return next
+          })
+          toast.success(t("action.deleted", "Deleted"))
+        } catch (e: any) {
+          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+        } finally {
+          setIsLoading(false)
+        }
+      })()
+    },
+    [componentId, dispatch, t]
+  )
+
+  const handleToggleItem = React.useCallback((itemId: string) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
       }
-    })()
-  }, [componentId])
-
-  const handleAdd = React.useCallback(() => {
-    onCreate?.()
-  }, [onCreate])
-
-  const handleDelete = React.useCallback((item: Interface) => {
-    void (async () => {
-      try {
-        setIsLoading(true)
-        await ApplicationComponentRest.removeApplicationComponentInterfaceRest(componentId, item.id)
-        setItems((prev) => prev.filter((x) => x.id !== item.id))
-        toast.success(t("action.deleted", "Deleted"))
-      } catch (e: any) {
-        toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
-      } finally {
-        setIsLoading(false)
-      }
-    })()
-  }, [componentId, t])
-
-  React.useEffect(() => {
-    handleRefresh()
-  }, [handleRefresh, refreshToken])
+      return next
+    })
+  }, [])
 
   return (
-    <RelatedItemsList<Interface>
-      title={t("application.interfaces", "Интерфейсы")}
+    <ArchimateItemTable<Interface>
       items={items}
       isLoading={isLoading}
-      iconType="application-interface"
+      icon={ApplicationInterface}
       editPath={(item) => `/application/interfaces/${item.id}`}
       onRefresh={handleRefresh}
-      onAdd={handleAdd}
+      onCreate={onCreate}
       onAddExisting={onAddExisting}
       onDelete={handleDelete}
+      selectedItems={selectedItems}
+      onToggleItem={handleToggleItem}
+      componentName={componentName}
+      itemTypeKey="interfaces"
     />
   )
 }
-

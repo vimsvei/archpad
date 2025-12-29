@@ -1,14 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { ParentTable, ChildrenTable } from "./hierarchy-tables"
-import { DataObjectsTable } from "./data-objects-table"
+import { useTranslate } from "@tolgee/react"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/components/animate-ui/components/animate/tabs"
 import { FunctionsTable } from "./functions-table"
+import { DataObjectsTable } from "./data-objects-table"
 import { InterfacesTable } from "./interfaces-table"
 import { EventsTable } from "./events-table"
+import { HierarchyTable } from "./hierarchy-table"
 
 type ApplicationTabProps = {
   componentId: string
+  componentName?: string
   onAddExistingParent: () => void
   onAddExistingChild: () => void
   onAddExistingDataObjects: () => void
@@ -19,14 +28,11 @@ type ApplicationTabProps = {
   onCreateFunctions?: () => void
   onCreateInterfaces?: () => void
   onCreateEvents?: () => void
-  refreshDataObjectsToken?: number
-  refreshFunctionsToken?: number
-  refreshInterfacesToken?: number
-  refreshEventsToken?: number
 }
 
 export function ApplicationTab({
   componentId,
+  componentName,
   onAddExistingParent,
   onAddExistingChild,
   onAddExistingDataObjects,
@@ -37,71 +43,77 @@ export function ApplicationTab({
   onCreateFunctions,
   onCreateInterfaces,
   onCreateEvents,
-  refreshDataObjectsToken,
-  refreshFunctionsToken,
-  refreshInterfacesToken,
-  refreshEventsToken,
 }: ApplicationTabProps) {
+  const { t } = useTranslate()
+  const [tab, setTab] = React.useState<string>("functions")
+
   return (
     <div className="flex min-h-0 flex-1 flex-col h-full">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0 h-full">
-        {/* Column 1: Functions */}
-        <div className="flex-1 min-h-0 h-full">
-          <FunctionsTable
-            componentId={componentId}
-            onAddExisting={onAddExistingFunctions}
-            onCreate={onCreateFunctions}
-            refreshToken={refreshFunctionsToken}
-          />
-        </div>
-        
-        {/* Column 2: Data Objects */}
-        <div className="flex-1 min-h-0 h-full">
-          <DataObjectsTable
-            componentId={componentId}
-            onAddExisting={onAddExistingDataObjects}
-            onCreate={onCreateDataObjects}
-            refreshToken={refreshDataObjectsToken}
-          />
-        </div>
-        
-        {/* Column 3: Interfaces and Events (50/50 by height) */}
-        <div className="flex flex-col gap-6 flex-1 min-h-0 h-full">
-          <div className="flex-1 min-h-0 h-full">
+      <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
+        <TabsList className="relative w-fit">
+          <TabsTrigger value="functions">
+            {t("tab.functions", "Функции")}
+          </TabsTrigger>
+          <TabsTrigger value="data-objects">
+            {t("tab.data-objects", "Объекты данных")}
+          </TabsTrigger>
+          <TabsTrigger value="interfaces">
+            {t("tab.interfaces", "Интерфейсы")}
+          </TabsTrigger>
+          <TabsTrigger value="events">
+            {t("tab.events", "События")}
+          </TabsTrigger>
+          <TabsTrigger value="hierarchy">
+            {t("tab.hierarchy", "Иерархия")}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContents className="flex min-h-0 flex-1 flex-col">
+          <TabsContent value="functions" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <FunctionsTable
+              componentId={componentId}
+              componentName={componentName}
+              onAddExisting={onAddExistingFunctions}
+              onCreate={onCreateFunctions}
+            />
+          </TabsContent>
+
+          <TabsContent value="data-objects" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <DataObjectsTable
+              componentId={componentId}
+              componentName={componentName}
+              onAddExisting={onAddExistingDataObjects}
+              onCreate={onCreateDataObjects}
+            />
+          </TabsContent>
+
+          <TabsContent value="interfaces" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <InterfacesTable
               componentId={componentId}
+              componentName={componentName}
               onAddExisting={onAddExistingInterfaces}
               onCreate={onCreateInterfaces}
-              refreshToken={refreshInterfacesToken}
             />
-          </div>
-          <div className="flex-1 min-h-0 h-full">
+          </TabsContent>
+
+          <TabsContent value="events" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <EventsTable
               componentId={componentId}
+              componentName={componentName}
               onAddExisting={onAddExistingEvents}
               onCreate={onCreateEvents}
-              refreshToken={refreshEventsToken}
             />
-          </div>
-        </div>
+          </TabsContent>
 
-        {/* Column 4: Parent and Children (50/50 by height) */}
-        <div className="flex flex-col gap-6 flex-1 min-h-0 h-full">
-          <div className="flex-1 min-h-0 h-full">
-            <ParentTable
+          <TabsContent value="hierarchy" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <HierarchyTable
               componentId={componentId}
-              onAddExisting={onAddExistingParent}
+              onAddExistingParent={onAddExistingParent}
+              onAddExistingChild={onAddExistingChild}
             />
-          </div>
-          <div className="flex-1 min-h-0 h-full">
-            <ChildrenTable
-              componentId={componentId}
-              onAddExisting={onAddExistingChild}
-            />
-          </div>
-        </div>
-      </div>
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
     </div>
   )
 }
-

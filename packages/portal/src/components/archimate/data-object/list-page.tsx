@@ -147,7 +147,7 @@ export function ListPage() {
 
   return (
     <BaseObjectList<DataObject>
-      titleKey="application.data.object"
+      titleKey="application.data-objects"
       tableId="data-object"
       columns={columns}
       useListQuery={useGetDataObjectsQuery as any}
@@ -170,8 +170,8 @@ export function ListPage() {
         requireCode: false,
       }}
       empty={{
-        titleKey: "table.data.objects.no-results",
-        descriptionKey: "table.data.objects.no-results.description",
+        titleKey: "table.data-objects.no-results",
+        descriptionKey: "table.data-objects.no-results.description",
       }}
     />
   )

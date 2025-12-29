@@ -161,7 +161,7 @@ export function ListPage() {
 
   return (
     <BaseObjectList<ApplicationComponent>
-      titleKey="application.component"
+      titleKey="application.components"
       tableId="application-component"
       columns={columns}
       useListQuery={useGetApplicationComponentsQuery as any}

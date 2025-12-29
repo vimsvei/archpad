@@ -131,4 +131,43 @@ export async function removeApplicationComponentEventRest(componentId: string, e
   })
 }
 
+export async function addApplicationComponentSystemSoftwareRest(componentId: string, systemSoftwareId: string, kind?: string) {
+  return restRequest<void>(["application-components", componentId, "system-software"], {
+    method: "POST",
+    body: { systemSoftwareId, kind },
+  })
+}
+
+export async function removeApplicationComponentSystemSoftwareRest(componentId: string, systemSoftwareId: string) {
+  return restRequest<void>(["application-components", componentId, "system-software", systemSoftwareId], {
+    method: "DELETE",
+  })
+}
+
+export async function addApplicationComponentTechnologyNodeRest(componentId: string, nodeId: string) {
+  return restRequest<void>(["application-components", componentId, "technology-nodes"], {
+    method: "POST",
+    body: { nodeId },
+  })
+}
+
+export async function removeApplicationComponentTechnologyNodeRest(componentId: string, nodeId: string) {
+  return restRequest<void>(["application-components", componentId, "technology-nodes", nodeId], {
+    method: "DELETE",
+  })
+}
+
+export async function addApplicationComponentTechnologyNetworkRest(componentId: string, networkId: string) {
+  return restRequest<void>(["application-components", componentId, "technology-networks"], {
+    method: "POST",
+    body: { networkId },
+  })
+}
+
+export async function removeApplicationComponentTechnologyNetworkRest(componentId: string, networkId: string) {
+  return restRequest<void>(["application-components", componentId, "technology-networks", networkId], {
+    method: "DELETE",
+  })
+}
+
 

@@ -4,6 +4,9 @@ import { applicationComponentApi } from "@/store/apis/application-component-api"
 import { systemSoftwareApi } from "@/store/apis/system-software-api"
 import { dataObjectApi } from "@/store/apis/data-object-api"
 import { applicationFunctionApi } from "@/store/apis/application-function-api"
+import { applicationComponentEditReducer } from "@/store/slices/application-component-edit-slice"
+import { directoriesReducer } from "@/store/slices/directories-slice"
+import { directoriesMiddleware } from "@/store/middleware/directories-middleware"
 import logger from 'redux-logger';
 
 export function makeStore() {
@@ -14,6 +17,8 @@ export function makeStore() {
       [systemSoftwareApi.reducerPath]: systemSoftwareApi.reducer,
       [dataObjectApi.reducerPath]: dataObjectApi.reducer,
       [applicationFunctionApi.reducerPath]: applicationFunctionApi.reducer,
+      applicationComponentEdit: applicationComponentEditReducer,
+      directories: directoriesReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -25,8 +30,9 @@ export function makeStore() {
         .concat(systemSoftwareApi.middleware)
         .concat(dataObjectApi.middleware)
         .concat(applicationFunctionApi.middleware)
-        .concat(logger),
-    devTools: process.env.NODE_ENV !== "production",
+        .prepend(directoriesMiddleware.middleware),
+        // .concat(logger),
+    // devTools: process.env.NODE_ENV !== "production",
   })
 }
 

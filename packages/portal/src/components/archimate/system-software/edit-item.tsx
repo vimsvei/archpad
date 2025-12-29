@@ -40,7 +40,7 @@ import {
   useGetSystemSoftwareByIdQuery,
   useUpdateSystemSoftwareMutation,
 } from "@/store/apis/system-software-api"
-import { useGetDirectoryItemsQuery } from "@/store/apis/directory-api"
+import { useDirectoryItems } from "@/hooks/use-directory-items"
 import type { SystemSoftwareDirectoryFields } from "@/@types/system-software"
 import { MarkdownEditor } from "../application-component/markdown-editor"
 
@@ -90,9 +90,9 @@ export function EditItem({ id }: EditItemProps) {
   const [confirmOpen, setConfirmOpen] = React.useState(false)
   const [tab, setTab] = React.useState<string>("general")
 
-  // Load directory items for all directories from Redux (database)
-  const { data: softwareTypes = [] } = useGetDirectoryItemsQuery("software-types")
-  const { data: licenseTypes = [] } = useGetDirectoryItemsQuery("license-types")
+  // Load directory items from Redux store (preloaded on app start)
+  const { items: softwareTypes = [] } = useDirectoryItems("software-types")
+  const { items: licenseTypes = [] } = useDirectoryItems("license-types")
 
   React.useEffect(() => {
     if (!item) return

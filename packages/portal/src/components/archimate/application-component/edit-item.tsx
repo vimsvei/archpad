@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
+import { useDispatch, useSelector } from "react-redux"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,21 +18,47 @@ import {
   TabsContents,
   TabsContent,
 } from "@/components/animate-ui/components/animate/tabs"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
 import {
-  useGetApplicationComponentQuery,
+  useGetApplicationComponentFullQuery,
   useUpdateApplicationComponentMutation,
 } from "@/store/apis/application-component-api"
-import type { ApplicationComponentDirectoryFields } from "@/@types/application-component"
+import type { RootState, AppDispatch } from "@/store/store"
+import {
+  reset,
+  setLoading,
+  setSaving,
+  setError,
+  setSaveError,
+  loadComponent,
+  updateBasicFields,
+  updateStateId,
+  updateDirectoryField,
+  addFunction,
+  removeFunction,
+  addDataObject,
+  removeDataObject,
+  addInterface,
+  removeInterface,
+  addEvent,
+  removeEvent,
+  addSystemSoftware,
+  removeSystemSoftware,
+  addTechnologyNode,
+  removeTechnologyNode,
+  addTechnologyNetwork,
+  removeTechnologyNetwork,
+  addParent,
+  removeParent,
+  addChild,
+  removeChild,
+  updateBaseline,
+  selectIsDirty,
+  selectIsDraftValid,
+  selectBasicFields,
+} from "@/store/slices/application-component-edit-slice"
 import { GeneralTab } from "./general-tab"
+import { ClassificationTab } from "./classification-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
@@ -50,6 +77,7 @@ type EditItemProps = {
 export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
   const router = useRouter()
+  const dispatch = useDispatch<AppDispatch>()
 
   const tr = React.useCallback(
     (key: string, fallback: string) => {
@@ -59,45 +87,139 @@ export function EditItem({ id }: EditItemProps) {
     [t]
   )
 
-  const { data: item, error, isLoading, isFetching } = useGetApplicationComponentQuery(
+  // Redux state
+  const editState = useSelector((state: RootState) => state.applicationComponentEdit)
+  const [updateItem, updateState] = useUpdateApplicationComponentMutation()
+
+  // Load full component data
+  const { data: fullData, error: queryError, isLoading, isFetching } = useGetApplicationComponentFullQuery(
     { id },
     { refetchOnMountOrArgChange: true }
   )
-  const [updateItem, updateState] = useUpdateApplicationComponentMutation()
 
-  const normalize = React.useCallback((v: BaseObjectValues) => {
-    return {
-      code: v.code.trim(),
-      name: v.name.trim(),
-      description: v.description.trim(),
+  // Load component data into Redux store
+  React.useEffect(() => {
+    if (!fullData) return
+
+    // Get stateId from state if available
+    const stateId = fullData.state?.id ?? null
+
+    // Map directory fields (TODO: add other fields when API supports them)
+    const directoryFields = {
+      stateId,
+      licenseTypeId: null,
+      architectureStyleId: null,
+      criticalLevelId: null,
+      failoverTypeId: null,
+      recoveryTimeId: null,
+      redundancyTypeId: null,
+      monitoringLevelId: null,
+      scalingTypeId: null,
     }
-  }, [])
 
-  const baselineRef = React.useRef<ReturnType<typeof normalize> | null>(null)
-  const directoryFieldsBaselineRef = React.useRef<ApplicationComponentDirectoryFields | null>(null)
-  const [draft, setDraft] = React.useState<BaseObjectValues>({
-    code: "",
-    name: "",
-    description: "",
-  })
+    dispatch(
+      loadComponent({
+        code: fullData.code,
+        name: fullData.name,
+        description: fullData.description ?? "",
+        stateId,
+        directoryFields,
+        functions: fullData.functions,
+        dataObjects: fullData.dataObjects,
+        interfaces: fullData.interfaces,
+        events: fullData.events,
+        systemSoftware: fullData.systemSoftware,
+        technologyNodes: fullData.technologyNodes,
+        technologyNetworks: fullData.technologyNetworks,
+        parents: fullData.parents,
+        children: fullData.children,
+      })
+    )
+  }, [fullData, dispatch])
 
-  const [directoryFields, setDirectoryFields] = React.useState<ApplicationComponentDirectoryFields>({
-    stateId: null,
-    licenseTypeId: null,
-    architectureStyleId: null,
-    criticalLevelId: null,
-    failoverTypeId: null,
-    recoveryTimeId: null,
-    redundancyTypeId: null,
-    monitoringLevelId: null,
-    scalingTypeId: null,
-  })
-  const [confirmOpen, setConfirmOpen] = React.useState(false)
+  // Reset on unmount
+  React.useEffect(() => {
+    return () => {
+      dispatch(reset())
+    }
+  }, [dispatch])
+
   const [tab, setTab] = React.useState<string>("general")
+
+  // Computed values from Redux state
+  const draft: BaseObjectValues = {
+    code: editState.code,
+    name: editState.name,
+    description: editState.description,
+  }
+
+  const directoryFields = editState.directoryFields
+
+  // Check if dirty
+  const isDirty = React.useMemo(() => {
+    if (!editState.baseline) return false
+
+    const basicChanged =
+      editState.code !== editState.baseline.code ||
+      editState.name !== editState.baseline.name ||
+      editState.description !== editState.baseline.description ||
+      editState.stateId !== editState.baseline.stateId
+
+    const directoryChanged = Object.keys(editState.directoryFields).some(
+      (key) =>
+        editState.directoryFields[key as keyof typeof editState.directoryFields] !==
+        editState.baseline.directoryFields[key as keyof typeof editState.directoryFields]
+    )
+
+    return basicChanged || directoryChanged
+  }, [editState])
+
+  const isDraftValid = React.useMemo(() => {
+    return Boolean(editState.code.trim()) && Boolean(editState.name.trim())
+  }, [editState.code, editState.name])
+
+  // Global save handler with error handling
+  const handleSave = React.useCallback(async () => {
+    if (!isDraftValid) {
+      const errorMsg = tr("form.invalid", "Please fill required fields")
+      toast.error(errorMsg)
+      dispatch(setSaveError(errorMsg))
+      return
+    }
+
+    try {
+      dispatch(setSaving(true))
+      dispatch(setSaveError(null))
+      
+      await updateItem({
+        id,
+        input: {
+          code: editState.code.trim(),
+          name: editState.name.trim(),
+          description: editState.description.trim() || undefined,
+          stateId: editState.stateId ?? undefined,
+          // TODO: Add other directory fields when API supports them
+        },
+      }).unwrap()
+
+      toast.success(tr("action.saved", "Saved"))
+      dispatch(updateBaseline())
+      dispatch(setSaveError(null))
+    } catch (e: any) {
+      const errorMessage = e?.message ?? tr("action.saveFailed", "Failed to save")
+      dispatch(setSaveError(errorMessage))
+      toast.error(errorMessage)
+      
+      // Log error for debugging
+      console.error("Failed to save component:", e)
+    } finally {
+      dispatch(setSaving(false))
+    }
+  }, [id, editState, isDraftValid, updateItem, dispatch, tr])
 
   // Add existing items sheet state
   const [sheetOpen, setSheetOpen] = React.useState(false)
-  const [sheetType, setSheetType] = React.useState<"system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events" | null>(null)
+  const [sheetType, setSheetType] = React.useState<"system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events" | "node" | "network" | null>(null)
   const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
   const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
   const [sheetAvailableItems, setSheetAvailableItems] = React.useState<SelectableItem[]>([])
@@ -112,106 +234,28 @@ export function EditItem({ id }: EditItemProps) {
     description: "",
   })
   const [createSheetIsSubmitting, setCreateSheetIsSubmitting] = React.useState(false)
-  const [refreshTokens, setRefreshTokens] = React.useState<{ dataObjects: number; functions: number; interfaces: number; events: number }>({
-    dataObjects: 0,
-    functions: 0,
-    interfaces: 0,
-    events: 0,
-  })
 
-  React.useEffect(() => {
-    if (!item) return
-    const initial: BaseObjectValues = {
-      code: item.code ?? "",
-      name: item.name ?? "",
-      description: item.description ?? "",
-    }
-    baselineRef.current = normalize(initial)
-    setDraft(initial)
-  }, [item, normalize])
-
-  // Initialize directory fields from item data
-  React.useEffect(() => {
-    if (!item) return
-
-    const initialFields: ApplicationComponentDirectoryFields = {
-      stateId: null, // Will be set by GeneralTab when componentStates are loaded
-      licenseTypeId: null, // TODO: add to item type when API supports it
-      architectureStyleId: null,
-      criticalLevelId: null,
-      failoverTypeId: null,
-      recoveryTimeId: null,
-      redundancyTypeId: null,
-      monitoringLevelId: null,
-      scalingTypeId: null,
-    }
-    
-    directoryFieldsBaselineRef.current = initialFields
-    setDirectoryFields(initialFields)
-  }, [item])
-
-  const isDirty = React.useMemo(() => {
-    if (!baselineRef.current) return false
-    
-    // Check basic fields
-    const basicFieldsChanged = JSON.stringify(normalize(draft)) !== JSON.stringify(baselineRef.current)
-    
-    // Check directory fields
-    const directoryFieldsChanged = directoryFieldsBaselineRef.current
-      ? JSON.stringify(directoryFields) !== JSON.stringify(directoryFieldsBaselineRef.current)
-      : false
-    
-    return basicFieldsChanged || directoryFieldsChanged
-  }, [draft, normalize, directoryFields])
-
-  const isDraftValid = React.useMemo(() => {
-    return Boolean(draft.code.trim()) && Boolean(draft.name.trim())
-  }, [draft.code, draft.name])
 
   const goBack = React.useCallback(() => {
     router.push("/application/components")
   }, [router])
 
   const handleBack = React.useCallback(() => {
-    if (isDirty) {
-      setConfirmOpen(true)
-      return
-    }
     goBack()
-  }, [isDirty, goBack])
-
-  const handleSave = React.useCallback(async () => {
-    if (!item) return
-    if (!isDraftValid) {
-      toast.error(tr("form.invalid", "Please fill required fields"))
-      return
-    }
-
-    const normalized = normalize(draft)
-    await updateItem({
-      id: item.id,
-      input: {
-        code: normalized.code,
-        name: normalized.name,
-        description: normalized.description ? normalized.description : undefined,
-      },
-    }).unwrap()
-
-    toast.success(tr("action.saved", "Saved"))
-    baselineRef.current = normalize(draft)
-    directoryFieldsBaselineRef.current = { ...directoryFields }
-  }, [draft, directoryFields, isDraftValid, item, normalize, tr, updateItem])
+  }, [goBack])
 
   const handleDirectoryFieldChange = React.useCallback(
-    (fieldName: keyof ApplicationComponentDirectoryFields, value: string | null) => {
-      setDirectoryFields((prev) => ({ ...prev, [fieldName]: value }))
+    (fieldName: keyof typeof editState.directoryFields, value: string | null) => {
+      if (fieldName === "stateId") {
+        dispatch(updateStateId(value))
+      } else {
+        dispatch(updateDirectoryField({ field: fieldName, value }))
+      }
     },
-    []
+    [dispatch]
   )
 
-  const bumpRefresh = React.useCallback((key: "dataObjects" | "functions" | "interfaces" | "events") => {
-    setRefreshTokens((prev) => ({ ...prev, [key]: prev[key] + 1 }))
-  }, [])
+  // Refresh is now handled by Redux store updates, no need for tokens
 
   const handleOpenCreateSheet = React.useCallback((type: "data-objects" | "functions" | "interfaces" | "events") => {
     setCreateSheetType(type)
@@ -262,32 +306,60 @@ export function EditItem({ id }: EditItemProps) {
             name,
             description: description ? description : undefined,
           })
-          await ApplicationComponentRest.addApplicationComponentDataObjectRest(item.id, created.id)
-          bumpRefresh("dataObjects")
+          await ApplicationComponentRest.addApplicationComponentDataObjectRest(id, created.id)
+          dispatch(
+            addDataObject({
+              id: created.id,
+              code: created.code,
+              name: created.name,
+              description: created.description ?? undefined,
+            })
+          )
         } else if (createSheetType === "functions") {
           const created = await ApplicationFunctionRest.createApplicationFunctionRest({
             code: code ? code : undefined,
             name,
             description: description ? description : undefined,
           })
-          await ApplicationComponentRest.addApplicationComponentFunctionRest(item.id, created.id)
-          bumpRefresh("functions")
+          await ApplicationComponentRest.addApplicationComponentFunctionRest(id, created.id)
+          dispatch(
+            addFunction({
+              id: created.id,
+              code: created.code,
+              name: created.name,
+              description: created.description ?? undefined,
+            })
+          )
         } else if (createSheetType === "interfaces") {
-          await ApplicationInterfaceRest.createApplicationInterfaceRest({
+          const created = await ApplicationInterfaceRest.createApplicationInterfaceRest({
             code: code ? code : undefined,
             name,
             description: description ? description : undefined,
-            componentId: item.id,
+            componentId: id,
           })
-          bumpRefresh("interfaces")
+          dispatch(
+            addInterface({
+              id: created.id,
+              code: created.code,
+              name: created.name,
+              description: created.description ?? undefined,
+            })
+          )
         } else if (createSheetType === "events") {
           const created = await ApplicationEventRest.createApplicationEventRest({
             code: code ? code : undefined,
             name,
             description: description ? description : undefined,
           })
-          await ApplicationComponentRest.addApplicationComponentEventRest(item.id, created.id)
-          bumpRefresh("events")
+          await ApplicationComponentRest.addApplicationComponentEventRest(id, created.id)
+          dispatch(
+            addEvent({
+              id: created.id,
+              code: created.code,
+              name: created.name,
+              description: created.description ?? undefined,
+            })
+          )
         }
 
         toast.success(tr("action.created", "Created"))
@@ -298,10 +370,10 @@ export function EditItem({ id }: EditItemProps) {
         setCreateSheetIsSubmitting(false)
       }
     })()
-  }, [bumpRefresh, createSheetDraft, createSheetType, item, tr])
+  }, [createSheetDraft, createSheetType, id, dispatch, tr])
 
   // Handler for opening add existing items sheet
-  const handleOpenAddExistingSheet = React.useCallback((type: "system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events") => {
+  const handleOpenAddExistingSheet = React.useCallback((type: "system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events" | "node" | "network") => {
     setSheetType(type)
     setSheetSearchQuery("")
     setSheetSelectedItems(new Set())
@@ -344,6 +416,8 @@ export function EditItem({ id }: EditItemProps) {
       "functions": "application.functions",
       "interfaces": "application.interfaces",
       "events": "application.events",
+      "node": "technologies.nodes",
+      "network": "technologies.networks",
     }
     
     const tableKey = sheetType ? tableKeyMap[sheetType] : ""
@@ -395,7 +469,8 @@ export function EditItem({ id }: EditItemProps) {
 
   const sheetConfig = getSheetConfig()
 
-  if (isLoading || isFetching) {
+  // Show loading state
+  if (isLoading || isFetching || editState.isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
@@ -415,15 +490,19 @@ export function EditItem({ id }: EditItemProps) {
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-10">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
             <Spinner className="h-6 w-6" />
+            <span className="text-muted-foreground">{tr("loading", "Loading...")}</span>
           </div>
         </Card>
       </div>
     )
   }
 
-  if (!item) {
+  // Show error state
+  if (queryError || editState.error || (!isLoading && !isFetching && !fullData && !editState.baseline)) {
+    const errorMessage = editState.error || (queryError as any)?.message || tr("error.notFound", "Component not found")
+    
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
@@ -443,7 +522,19 @@ export function EditItem({ id }: EditItemProps) {
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-6">
-          <div className="text-muted-foreground">{(error as any)?.message ?? "Item not found."}</div>
+          <div className="text-destructive font-medium mb-2">{tr("error.title", "Error")}</div>
+          <div className="text-muted-foreground">{errorMessage}</div>
+          <Button 
+            variant="outline" 
+            className="mt-4"
+            onClick={() => {
+              dispatch(setError(null))
+              // Retry loading
+              window.location.reload()
+            }}
+          >
+            {tr("action.retry", "Retry")}
+          </Button>
         </Card>
       </div>
     )
@@ -472,34 +563,35 @@ export function EditItem({ id }: EditItemProps) {
             </div>
             <div className="flex flex-col">
               <h1 className="text-2xl font-semibold">
-                {t("application.component")}: {item.name}
+                {t("application.component")}: {editState.name || fullData?.name}
               </h1>
-              <p className="text-muted-foreground text-sm">ID: {item.id}</p>
+              <p className="text-muted-foreground text-sm">ID: {id}</p>
             </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                aria-label={tr("action.save", "Save")}
-                onClick={() => void handleSave()}
-                disabled={!isDirty || updateState.isLoading || !isDraftValid}
-              >
-                <Save />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
-          </Tooltip>
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              aria-label={tr("action.save", "Save")}
+              onClick={() => void handleSave()}
+              disabled={!isDirty || updateState.isLoading || !isDraftValid || editState.isSaving}
+              variant={editState.saveError ? "destructive" : "default"}
+            >
+              <Save />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
+        </Tooltip>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="general">
             {tr("tab.general", "General")}
+          </TabsTrigger>
+          <TabsTrigger value="classification">
+            {tr("tab.classification", "Classification")}
           </TabsTrigger>
           <TabsTrigger value="application">
             {tr("tab.application", "Application")}
@@ -520,50 +612,43 @@ export function EditItem({ id }: EditItemProps) {
 
         <TabsContents className="flex min-h-0 flex-1 flex-col">
           <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            {item && (
-              <GeneralTab
-                item={item}
-                draft={draft}
-                setDraft={setDraft}
-                directoryFields={directoryFields}
-                onDirectoryFieldChange={handleDirectoryFieldChange}
-                normalize={normalize}
-                baselineRef={baselineRef}
-                tr={tr}
-                isSaving={updateState.isLoading}
-              />
-            )}
+            <GeneralTab
+              tr={tr}
+              isSaving={editState.isSaving}
+            />
+          </TabsContent>
+
+          <TabsContent value="classification" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <ClassificationTab
+              tr={tr}
+              isSaving={editState.isSaving}
+            />
           </TabsContent>
 
           <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            {item && (
-              <ApplicationTab
-                componentId={item.id}
-                onAddExistingParent={() => handleOpenAddExistingSheet("parent")}
-                onAddExistingChild={() => handleOpenAddExistingSheet("child")}
-                onAddExistingDataObjects={() => handleOpenAddExistingSheet("data-objects")}
-                onAddExistingFunctions={() => handleOpenAddExistingSheet("functions")}
-                onAddExistingInterfaces={() => handleOpenAddExistingSheet("interfaces")}
-                onAddExistingEvents={() => handleOpenAddExistingSheet("events")}
-                onCreateDataObjects={() => handleOpenCreateSheet("data-objects")}
-                onCreateFunctions={() => handleOpenCreateSheet("functions")}
-                onCreateInterfaces={() => handleOpenCreateSheet("interfaces")}
-                onCreateEvents={() => handleOpenCreateSheet("events")}
-                refreshDataObjectsToken={refreshTokens.dataObjects}
-                refreshFunctionsToken={refreshTokens.functions}
-                refreshInterfacesToken={refreshTokens.interfaces}
-                refreshEventsToken={refreshTokens.events}
-              />
-            )}
+            <ApplicationTab
+              componentId={id}
+              componentName={editState.name}
+              onAddExistingParent={() => handleOpenAddExistingSheet("parent")}
+              onAddExistingChild={() => handleOpenAddExistingSheet("child")}
+              onAddExistingDataObjects={() => handleOpenAddExistingSheet("data-objects")}
+              onAddExistingFunctions={() => handleOpenAddExistingSheet("functions")}
+              onAddExistingInterfaces={() => handleOpenAddExistingSheet("interfaces")}
+              onAddExistingEvents={() => handleOpenAddExistingSheet("events")}
+              onCreateDataObjects={() => handleOpenCreateSheet("data-objects")}
+              onCreateFunctions={() => handleOpenCreateSheet("functions")}
+              onCreateInterfaces={() => handleOpenCreateSheet("interfaces")}
+              onCreateEvents={() => handleOpenCreateSheet("events")}
+            />
           </TabsContent>
 
           <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            {item && (
-              <TechnologyTab
-                componentId={item.id}
-                onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
-              />
-            )}
+            <TechnologyTab
+              componentId={id}
+              onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
+              onAddExistingNode={() => handleOpenAddExistingSheet("node")}
+              onAddExistingNetwork={() => handleOpenAddExistingSheet("network")}
+            />
           </TabsContent>
 
           <TabsContent value="flows" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
@@ -585,47 +670,6 @@ export function EditItem({ id }: EditItemProps) {
           </TabsContent>
         </TabsContents>
       </Tabs>
-
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{tr("dialog.unsaved.title", "Unsaved changes")}</DialogTitle>
-            <DialogDescription>
-              {tr("dialog.unsaved.description", "Save your changes before leaving?")}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              {tr("action.cancel", "Cancel")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setConfirmOpen(false)
-                goBack()
-              }}
-            >
-              {tr("action.discard", "Don’t save")}
-            </Button>
-            <Button
-              onClick={() => {
-                void (async () => {
-                  try {
-                    await handleSave()
-                    setConfirmOpen(false)
-                    goBack()
-                  } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
-                  }
-                })()
-              }}
-              disabled={updateState.isLoading || !isDraftValid}
-            >
-              {tr("action.save", "Save")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Add Existing Items Sheet */}
       {sheetType && (

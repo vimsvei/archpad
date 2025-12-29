@@ -6,7 +6,7 @@ import type {
   UpdateApplicationComponentInput,
 } from "@/services/application-component.rest"
 import * as ApplicationComponentAPI from "@/services/application-component.rest"
-import type { GetApplicationComponentsParams } from "@/services/application-component.graphql"
+import type { GetApplicationComponentsParams, ApplicationComponentFull } from "@/services/application-component.graphql"
 import * as ApplicationComponentHasura from "@/services/application-component.graphql"
 
 export const applicationComponentApi = createApi({
@@ -33,7 +33,34 @@ export const applicationComponentApi = createApi({
     getApplicationComponent: builder.query<ApplicationComponent, { id: string }>({
       async queryFn({ id }) {
         try {
-          const data = await ApplicationComponentHasura.getApplicationComponentGraphql(id)
+          // Use full query and extract basic fields for compatibility
+          const fullData = await ApplicationComponentHasura.getApplicationComponentFullGraphql(id)
+          const data: ApplicationComponent = {
+            id: fullData.id,
+            code: fullData.code,
+            name: fullData.name,
+            description: fullData.description,
+            state: fullData.state ? { name: fullData.state.name, color: fullData.state.color } : null,
+            createdAt: fullData.createdAt,
+            createdBy: fullData.createdBy,
+            updatedAt: fullData.updatedAt,
+            updatedBy: fullData.updatedBy,
+          }
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "ApplicationComponents" },
+        { type: "ApplicationComponent", id },
+      ],
+    }),
+
+    getApplicationComponentFull: builder.query<ApplicationComponentFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await ApplicationComponentHasura.getApplicationComponentFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -72,7 +99,22 @@ export const applicationComponentApi = createApi({
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
+          // Update both queries cache
           dispatch(applicationComponentApi.util.updateQueryData("getApplicationComponent", { id }, () => data))
+          // Also update full query cache if it exists
+          dispatch(
+            applicationComponentApi.util.updateQueryData("getApplicationComponentFull", { id }, (draft) => {
+              if (draft) {
+                draft.code = data.code
+                draft.name = data.name
+                draft.description = data.description
+                if (data.state && draft.state) {
+                  draft.state.name = data.state.name
+                  draft.state.color = data.state.color
+                }
+              }
+            })
+          )
         } catch {
           // ignore
         }
@@ -88,6 +130,7 @@ export const applicationComponentApi = createApi({
 export const {
   useGetApplicationComponentsQuery,
   useGetApplicationComponentQuery,
+  useGetApplicationComponentFullQuery,
   useCreateApplicationComponentMutation,
   useUpdateApplicationComponentMutation,
 } = applicationComponentApi

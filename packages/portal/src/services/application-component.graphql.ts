@@ -79,6 +79,63 @@ export async function getApplicationComponentGraphql(id: string): Promise<Applic
   return mapRow(row)
 }
 
+// Full component with all related data
+export type ApplicationComponentFull = {
+  id: string
+  code: string
+  name: string
+  description: string | null
+  state: { id: string; name: string; color?: string | null } | null
+  createdAt?: string | null
+  createdBy?: string | null
+  updatedAt?: string | null
+  updatedBy?: string | null
+  functions: Array<{ id: string; code: string; name: string; description?: string | null }>
+  dataObjects: Array<{ id: string; code: string; name: string; description?: string | null }>
+  interfaces: Array<{ id: string; code: string; name: string; description?: string | null }>
+  events: Array<{ id: string; code: string; name: string; description?: string | null }>
+  systemSoftware: Array<{ id: string; code: string; name: string; kind: string }>
+  technologyNodes: Array<{ id: string; code: string; name: string }>
+  technologyNetworks: Array<{ id: string; code: string; name: string }>
+  parents: Array<{ id: string; code: string; name: string; description?: string | null }>
+  children: Array<{ id: string; code: string; name: string; description?: string | null }>
+}
+
+export async function getApplicationComponentFullGraphql(id: string): Promise<ApplicationComponentFull> {
+  const query = await loadGql("application-components/get-component-full.gql")
+  // TODO: Generate types for GetComponentFullQuery when codegen is run
+  // For now using any, will be replaced with proper types
+  const data = await graphqlRequest<any, { id: string }>(query, { id })
+  const component = data.component
+  if (!component) throw new Error("Item not found")
+
+  return {
+    id: component.id,
+    code: component.code,
+    name: component.name,
+    description: component.description ?? null,
+    state: component.state ? { id: component.state.id, name: component.state.name, color: component.state.color } : null,
+    createdAt: component.createdAt ?? null,
+    createdBy: component.createdBy ?? null,
+    updatedAt: component.updatedAt ?? null,
+    updatedBy: component.updatedBy ?? null,
+    functions: (data.functions || []).map((x: any) => x.function).filter(Boolean),
+    dataObjects: (data.dataObjects || []).map((x: any) => x.dataObject).filter(Boolean),
+    interfaces: (data.interfaces || []).map((x: any) => x.interface).filter(Boolean),
+    events: (data.events || []).map((x: any) => x.event).filter(Boolean),
+    systemSoftware: (data.systemSoftware || []).map((x: any) => ({
+      id: x.systemSoftware?.id,
+      code: x.systemSoftware?.code,
+      name: x.systemSoftware?.name,
+      kind: x.kind,
+    })).filter((x: any) => x.id),
+    technologyNodes: (data.technologyNodes || []).map((x: any) => x.node).filter(Boolean),
+    technologyNetworks: (data.technologyNetworks || []).map((x: any) => x.logicalNetwork).filter(Boolean),
+    parents: (data.parentComponents || []).map((x: any) => x.componentParent).filter(Boolean),
+    children: (data.childComponents || []).map((x: any) => x.componentChild).filter(Boolean),
+  }
+}
+
 export async function getApplicationComponentDataObjectsGraphql(
   componentId: string
 ): Promise<Array<{ id: string; code: string; name: string; description?: string | null }>> {
