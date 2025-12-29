@@ -1,53 +1,89 @@
 "use client"
 
 import * as React from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
-import { RelatedItemsTable, type RelatedItem } from "@/components/shared/related-items-table"
+import { toast } from "sonner"
+import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import type { RelatedItem } from "@/components/shared/related-items-list"
+import type { RootState, AppDispatch } from "@/store/store"
+import { removeSystemSoftware } from "@/store/slices/application-component-edit-slice"
+import * as ApplicationComponentRest from "@/services/application-component.rest"
+import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 
-type SystemSoftware = RelatedItem & {
+type SystemSoftwareItem = RelatedItem & {
   kind?: string
 }
 
 type SystemSoftwareTableProps = {
   componentId: string
+  componentName?: string
   onAddExisting?: () => void
 }
 
-export function SystemSoftwareTable({ componentId, onAddExisting }: SystemSoftwareTableProps) {
+export function SystemSoftwareTable({ componentId, componentName, onAddExisting }: SystemSoftwareTableProps) {
   const { t } = useTranslate()
+  const dispatch = useDispatch<AppDispatch>()
+  const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [items, setItems] = React.useState<SystemSoftware[]>([])
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
+
+  const items: RelatedItem[] = editState.systemSoftware
 
   const handleRefresh = React.useCallback(() => {
-    setIsLoading(true)
-    // TODO: Implement API call to fetch system software for component
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 500)
-  }, [componentId])
+    toast.success(t("action.updated", "Updated"))
+  }, [t])
 
-  const handleAdd = React.useCallback(() => {
-    // TODO: Implement add system software dialog
-    console.log("Add system software")
+  const handleDelete = React.useCallback(
+    (item: RelatedItem) => {
+      void (async () => {
+        try {
+          setIsLoading(true)
+          await ApplicationComponentRest.removeApplicationComponentSystemSoftwareRest(componentId, item.id)
+          dispatch(removeSystemSoftware(item.id))
+          setSelectedItems((prev) => {
+            const next = new Set(prev)
+            next.delete(item.id)
+            return next
+          })
+          toast.success(t("action.deleted", "Deleted"))
+        } catch (e: any) {
+          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+        } finally {
+          setIsLoading(false)
+        }
+      })()
+    },
+    [componentId, dispatch, t]
+  )
+
+  const handleToggleItem = React.useCallback((itemId: string) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
+      }
+      return next
+    })
   }, [])
 
-  const handleDelete = React.useCallback((item: SystemSoftware) => {
-    // TODO: Implement delete system software
-    console.log("Delete system software", item)
-  }, [])
+  const renderIcon = () => <ArchimateObjectIcon type="system-software" className="w-6 h-6" />
 
   return (
-    <RelatedItemsTable<SystemSoftware>
-      title={t("technologies.system-software", "Системное ПО")}
+    <ArchimateItemTable<RelatedItem>
       items={items}
       isLoading={isLoading}
-      iconType="system-software"
+      icon={renderIcon as any}
       editPath={(item) => `/system/software/${item.id}`}
       onRefresh={handleRefresh}
-      onAdd={handleAdd}
       onAddExisting={onAddExisting}
       onDelete={handleDelete}
+      selectedItems={selectedItems}
+      onToggleItem={handleToggleItem}
+      componentName={componentName}
+      itemTypeKey="system-software"
     />
   )
 }
-

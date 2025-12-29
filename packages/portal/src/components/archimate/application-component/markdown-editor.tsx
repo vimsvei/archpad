@@ -153,10 +153,11 @@ export function MarkdownEditor({
         <RichTextPlugin
           contentEditable={
                 <div className="flex-1 flex flex-col min-h-0">
-                  <div className="flex-1 flex flex-col min-h-0">
+                  {/* Non-flex wrapper to avoid Chrome contentEditable + flex warning */}
+                  <div className="flex-1 min-h-0 relative">
             <ContentEditable
               placeholder={placeholder}
-                      className="ContentEditable__root relative flex-1 block min-h-full overflow-auto px-8 py-4 focus:outline-none"
+                      className="ContentEditable__root relative block w-full h-full overflow-auto px-8 py-4 focus:outline-none"
             />
                   </div>
                 </div>

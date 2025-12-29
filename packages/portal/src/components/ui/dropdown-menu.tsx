@@ -23,9 +23,12 @@ function DropdownMenuPortal({
 function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+  // Suppress hydration warning for Radix UI generated IDs
+  // The ID mismatch is expected and doesn't affect functionality
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
+      suppressHydrationWarning
       {...props}
     />
   )

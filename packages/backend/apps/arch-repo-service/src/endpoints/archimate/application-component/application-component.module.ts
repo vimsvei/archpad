@@ -7,6 +7,10 @@ import { ApplicationComponentDataObjectMap } from '@/model/maps/application-comp
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
+import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
+import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
+import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
 
 @Module({
   imports: [
@@ -16,6 +20,10 @@ import { ApplicationComponentEventMap } from '@/model/maps/application-component
       ApplicationComponentFunctionMap,
       ApplicationComponentInterfaceMap,
       ApplicationComponentEventMap,
+      ApplicationComponentSystemSoftwareMap,
+      ApplicationComponentTechnologyNodeMap,
+      ApplicationComponentTechnologyLogicalNetworkMap,
+      ApplicationComponentHierarchyMap,
     ]),
   ],
   controllers: [ApplicationComponentController],

@@ -8,7 +8,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import { useTranslate } from "@tolgee/react"
 import { useGetDirectoryItemQuery } from "@/store/apis/directory-api"
-import { useGetApplicationComponentQuery } from "@/store/apis/application-component-api"
+import { useGetApplicationComponentFullQuery } from "@/store/apis/application-component-api"
 
 type Crumb = {
   href?: string
@@ -48,17 +48,17 @@ export function PrivateBreadcrumbs() {
     return null
   }, [directoryItem?.code, directoryItem?.name])
 
-  const { data: applicationComponent } = useGetApplicationComponentQuery(
+  const { data: applicationComponentFull } = useGetApplicationComponentFullQuery(
     applicationComponentId ? { id: applicationComponentId } : skipToken,
     { refetchOnMountOrArgChange: false }
   )
   const applicationComponentLabel = React.useMemo(() => {
-    const code = applicationComponent?.code?.trim()
+    const code = applicationComponentFull?.code?.trim()
     if (code) return code
-    const name = applicationComponent?.name?.trim()
+    const name = applicationComponentFull?.name?.trim()
     if (name) return name
     return null
-  }, [applicationComponent?.code, applicationComponent?.name])
+  }, [applicationComponentFull?.code, applicationComponentFull?.name])
 
   const crumbs = React.useMemo<Crumb[]>(() => {
     if (segments.length === 0) return [{ label: "Dashboard" }]

@@ -9,12 +9,17 @@ function slugFromDirectoryKindKey(key: string): DirectorySlug {
   return `${key.toLowerCase().replace(/_/g, "-")}s`
 }
 
-const KIND_BY_SLUG: Record<DirectorySlug, DirectoryKind> = Object.fromEntries(
+export const KIND_BY_SLUG: Record<DirectorySlug, DirectoryKind> = Object.fromEntries(
   (Object.keys(DirectoryKind) as DirectoryKindKey[]).map((key) => [
     slugFromDirectoryKindKey(key),
     DirectoryKind[key],
   ])
 ) as Record<DirectorySlug, DirectoryKind>
+
+// Reverse mapping: kind -> slug
+export const SLUG_BY_KIND: Record<DirectoryKind, DirectorySlug> = Object.fromEntries(
+  Object.entries(KIND_BY_SLUG).map(([slug, kind]) => [kind, slug])
+) as Record<DirectoryKind, DirectorySlug>
 
 export function getDirectoryMeta(slug: DirectorySlug): DirectoryMeta {
   const kind = KIND_BY_SLUG[slug] ?? null

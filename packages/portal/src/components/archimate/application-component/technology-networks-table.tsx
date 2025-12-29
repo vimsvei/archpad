@@ -4,42 +4,39 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import ApplicationDataObject from "@/components/icons/ApplicationDataObject"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
 import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
-import { removeDataObject } from "@/store/slices/application-component-edit-slice"
+import { removeTechnologyNetwork } from "@/store/slices/application-component-edit-slice"
+import * as ApplicationComponentRest from "@/services/application-component.rest"
+import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 
-type DataObject = RelatedItem
-
-type DataObjectsTableProps = {
+type TechnologyNetworksTableProps = {
   componentId: string
   componentName?: string
   onAddExisting?: () => void
-  onCreate?: () => void
 }
 
-export function DataObjectsTable({ componentId, componentName, onAddExisting, onCreate }: DataObjectsTableProps) {
+export function TechnologyNetworksTable({ componentId, componentName, onAddExisting }: TechnologyNetworksTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const [isLoading, setIsLoading] = React.useState(false)
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
-  const items = editState.dataObjects
+  const items = editState.technologyNetworks
 
   const handleRefresh = React.useCallback(() => {
     toast.success(t("action.updated", "Updated"))
   }, [t])
 
   const handleDelete = React.useCallback(
-    (item: DataObject) => {
+    (item: RelatedItem) => {
       void (async () => {
         try {
           setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentDataObjectRest(componentId, item.id)
-          dispatch(removeDataObject(item.id))
+          await ApplicationComponentRest.removeApplicationComponentTechnologyNetworkRest(componentId, item.id)
+          dispatch(removeTechnologyNetwork(item.id))
           setSelectedItems((prev) => {
             const next = new Set(prev)
             next.delete(item.id)
@@ -68,20 +65,22 @@ export function DataObjectsTable({ componentId, componentName, onAddExisting, on
     })
   }, [])
 
+  const renderIcon = () => <ArchimateObjectIcon type="technology-network" className="w-6 h-6" />
+
   return (
-    <ArchimateItemTable<DataObject>
+    <ArchimateItemTable<RelatedItem>
       items={items}
       isLoading={isLoading}
-      icon={ApplicationDataObject}
-      editPath={(item) => `/application/data-objects/${item.id}`}
+      icon={renderIcon as any}
+      editPath={(item) => `/technology/networks/${item.id}`}
       onRefresh={handleRefresh}
-      onCreate={onCreate}
       onAddExisting={onAddExisting}
       onDelete={handleDelete}
       selectedItems={selectedItems}
       onToggleItem={handleToggleItem}
       componentName={componentName}
-      itemTypeKey="data-objects"
+      itemTypeKey="networks"
     />
   )
 }
+

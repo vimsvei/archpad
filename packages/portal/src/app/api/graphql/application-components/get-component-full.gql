@@ -1,0 +1,93 @@
+query GetComponentFull($id: uuid!) {
+  component: components_by_pk(id: $id) {
+    id
+    code
+    name
+    description
+    state {
+      id
+      name
+      color
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+  functions: map_application_component_function(where: { componentId: { _eq: $id } }) {
+    function {
+      id
+      code
+      name
+      description
+    }
+  }
+  dataObjects: map_application_component_data_object(where: { componentId: { _eq: $id } }) {
+    dataObject {
+      id
+      code
+      name
+      description
+    }
+  }
+  interfaces: map_application_component_interface(where: { componentId: { _eq: $id } }) {
+    interface {
+      id
+      code
+      name
+      description
+    }
+  }
+  events: map_application_component_event(where: { componentId: { _eq: $id } }) {
+    event {
+      id
+      code
+      name
+      description
+    }
+  }
+  systemSoftware: map_application_component_system_software(where: { componentId: { _eq: $id } }) {
+    kind
+    systemSoftware {
+      id
+      code
+      name
+    }
+  }
+  technologyNodes: map_application_component_technology_node(where: { componentId: { _eq: $id } }) {
+    node {
+      id
+      code
+      name
+    }
+  }
+  technologyNetworks: map_application_component_technology_logical_network(where: { componentId: { _eq: $id } }) {
+    logicalNetwork {
+      id
+      code
+      name
+    }
+  }
+  parentComponents: map_application_component_hierarchy(
+    where: { componentChildId: { _eq: $id } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    componentParent {
+      id
+      code
+      name
+      description
+    }
+  }
+  childComponents: map_application_component_hierarchy(
+    where: { componentParentId: { _eq: $id } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    componentChild {
+      id
+      code
+      name
+      description
+    }
+  }
+}

@@ -1,0 +1,9 @@
+query GetAllDirectories {
+  directories(order_by: { kind: asc, name: asc }) {
+    id
+    kind
+    code
+    name
+  }
+}
+
