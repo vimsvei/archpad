@@ -2,23 +2,11 @@ import type { ApplicationComponent, Paginated } from "@/@types/application-compo
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
 import type {
-  GetComponentByPkQuery,
-  GetComponentByPkQueryVariables,
-  GetComponentDataObjectsQuery,
-  GetComponentDataObjectsQueryVariables,
-  GetComponentEventsQuery,
-  GetComponentEventsQueryVariables,
-  GetComponentFunctionsQuery,
-  GetComponentFunctionsQueryVariables,
-  GetComponentInterfacesQuery,
-  GetComponentInterfacesQueryVariables,
   GetComponentsQuery,
   GetComponentsQueryVariables,
 } from "@/generated/operations"
 
-type HasuraComponentRow =
-  | GetComponentsQuery["components"][number]
-  | NonNullable<GetComponentByPkQuery["components_by_pk"]>
+type HasuraComponentRow = GetComponentsQuery["components"][number]
 
 export type GetApplicationComponentsParams = {
   search?: string
@@ -71,15 +59,16 @@ export async function getApplicationComponentsGraphql(
   }
 }
 
-export async function getApplicationComponentGraphql(id: string): Promise<ApplicationComponent> {
-  const query = await loadGql("application-components/get-component-by-pk.gql")
-  const data = await graphqlRequest<GetComponentByPkQuery, GetComponentByPkQueryVariables>(query, { id })
-  const row = data.components_by_pk
-  if (!row) throw new Error("Item not found")
-  return mapRow(row)
-}
 
-// Full component with all related data
+/**
+ * Full component with all related data (read model from GraphQL).
+ * This is a response type, not a DTO.
+ * DTOs in @archpad/contract contain IDs (e.g., functionIds: string[]),
+ * while this type contains full objects (e.g., functions: Array<{id, code, name, description}>).
+ * 
+ * If needed, this could be moved to @archpad/contract as a response type,
+ * but it's kept here as it's specific to the GraphQL query structure.
+ */
 export type ApplicationComponentFull = {
   id: string
   code: string
@@ -136,42 +125,5 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
   }
 }
 
-export async function getApplicationComponentDataObjectsGraphql(
-  componentId: string
-): Promise<Array<{ id: string; code: string; name: string; description?: string | null }>> {
-  const query = await loadGql("application-components/get-component-data-objects.gql")
-  const data = await graphqlRequest<GetComponentDataObjectsQuery, GetComponentDataObjectsQueryVariables>(query, {
-    componentId,
-  })
-  return data.map_application_component_data_object.map((x) => x.dataObject)
-}
-
-export async function getApplicationComponentFunctionsGraphql(
-  componentId: string
-): Promise<Array<{ id: string; code: string; name: string; description?: string | null }>> {
-  const query = await loadGql("application-components/get-component-functions.gql")
-  const data = await graphqlRequest<GetComponentFunctionsQuery, GetComponentFunctionsQueryVariables>(query, {
-    componentId,
-  })
-  return data.map_application_component_function.map((x) => x.function)
-}
-
-export async function getApplicationComponentEventsGraphql(
-  componentId: string
-): Promise<Array<{ id: string; code: string; name: string; description?: string | null }>> {
-  const query = await loadGql("application-components/get-component-events.gql")
-  const data = await graphqlRequest<GetComponentEventsQuery, GetComponentEventsQueryVariables>(query, { componentId })
-  return data.map_application_component_event.map((x) => x.event)
-}
-
-export async function getApplicationComponentInterfacesGraphql(
-  componentId: string
-): Promise<Array<{ id: string; code: string; name: string; description?: string | null }>> {
-  const query = await loadGql("application-components/get-component-interfaces.gql")
-  const data = await graphqlRequest<GetComponentInterfacesQuery, GetComponentInterfacesQueryVariables>(query, {
-    componentId,
-  })
-  return data.map_application_component_interface.map((x) => x.interface)
-}
 
 

@@ -9,7 +9,7 @@ import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeTechnologyNode } from "@/store/slices/application-component-edit-slice"
 import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateObjectIcon } from "@/components/shared/base-object/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 
 type TechnologyNodesTableProps = {
   componentId: string

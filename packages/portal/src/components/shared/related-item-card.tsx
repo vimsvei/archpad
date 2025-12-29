@@ -16,6 +16,7 @@ import type { RelatedItem } from "@/components/shared/related-items-list"
 export type RelatedItemCardProps<T extends RelatedItem> = {
   item: T
   iconType?: IconType
+  icon?: React.ComponentType<{ width?: number; height?: number; className?: string }>
   editPath?: (item: T) => string
   onDelete?: (item: T) => void
   hideActions?: boolean
@@ -27,6 +28,7 @@ export type RelatedItemCardProps<T extends RelatedItem> = {
 export function RelatedItemCard<T extends RelatedItem>({
   item,
   iconType,
+  icon: IconComponent,
   editPath,
   onDelete,
   hideActions = false,
@@ -57,11 +59,15 @@ export function RelatedItemCard<T extends RelatedItem>({
         )}
 
         {/* Icon */}
-        {iconType && (
+        {IconComponent ? (
+          <div className="flex-shrink-0">
+            <IconComponent width={24} height={24} className="w-6 h-6" />
+          </div>
+        ) : iconType ? (
           <div className="flex-shrink-0">
             <Icon iconType={iconType} className="w-6 h-6" />
           </div>
-        )}
+        ) : null}
 
         {/* Name and Description */}
         <div className="flex-1 min-w-0 flex flex-col justify-center">

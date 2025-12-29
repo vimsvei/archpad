@@ -4,6 +4,7 @@ import type { ApplicationComponent, Paginated } from "@/@types/application-compo
 import type {
   CreateApplicationComponentInput,
   UpdateApplicationComponentInput,
+  UpdateApplicationComponentFullInput,
 } from "@/services/application-component.rest"
 import * as ApplicationComponentAPI from "@/services/application-component.rest"
 import type { GetApplicationComponentsParams, ApplicationComponentFull } from "@/services/application-component.graphql"
@@ -124,6 +125,24 @@ export const applicationComponentApi = createApi({
         { type: "ApplicationComponent", id },
       ],
     }),
+
+    updateApplicationComponentFull: builder.mutation<
+      ApplicationComponent,
+      { id: string; input: UpdateApplicationComponentFullInput }
+    >({
+      async queryFn({ id, input }) {
+        try {
+          const data = await ApplicationComponentAPI.updateApplicationComponentFullRest(id, input)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "ApplicationComponents" },
+        { type: "ApplicationComponent", id },
+      ],
+    }),
   }),
 })
 
@@ -133,6 +152,7 @@ export const {
   useGetApplicationComponentFullQuery,
   useCreateApplicationComponentMutation,
   useUpdateApplicationComponentMutation,
+  useUpdateApplicationComponentFullMutation,
 } = applicationComponentApi
 
 

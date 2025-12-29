@@ -35,26 +35,59 @@ export function useDirectoryItems(
   const refreshOnMount = options?.refreshOnMount ?? false
   const autoRefresh = options?.autoRefresh ?? false
 
+  // Track if we've already triggered a load for this mount/refresh combination
+  const loadTriggeredRef = React.useRef<Set<string>>(new Set())
+  const lastSlugRef = React.useRef<DirectorySlug | null>(null)
+
   // Load directory items if not loaded or if refresh requested
   React.useEffect(() => {
+    // Reset trigger set when slug changes
+    if (lastSlugRef.current !== slug) {
+      loadTriggeredRef.current.clear()
+      lastSlugRef.current = slug
+    }
+
+    const loadKey = `${slug}-${refreshOnMount}-${autoRefresh}`
+    
+    // If already loaded and not refreshing, use cached data
+    if (isLoaded && !refreshOnMount && !autoRefresh) {
+      loadTriggeredRef.current.add(loadKey)
+      return
+    }
+
+    // If we already triggered load for this combination, skip
+    if (loadTriggeredRef.current.has(loadKey)) {
+      return
+    }
+
+    // If already loading, skip
+    if (isLoading) {
+      return
+    }
+
+    // Mark as triggered before async operation
+    loadTriggeredRef.current.add(loadKey)
+
     const loadDirectory = async () => {
-      if (isLoading) return // Already loading
-
-      // If already loaded and not refreshing, use cached data
-      if (isLoaded && !refreshOnMount && !autoRefresh) return
-
       try {
         dispatch(setLoading({ slug, loading: true }))
         const data = await DirectoryHasura.getDirectoryItemsGraphql(slug)
-        dispatch(setDirectoryItems({ slug, items: data }))
+        // Ensure data is an array
+        const itemsArray = Array.isArray(data) ? data : []
+        dispatch(setDirectoryItems({ slug, items: itemsArray }))
       } catch (error) {
         console.error(`Failed to load directory ${slug}:`, error)
         dispatch(setLoading({ slug, loading: false }))
+        // Remove from triggered set to allow retry on error
+        loadTriggeredRef.current.delete(loadKey)
       }
     }
 
     void loadDirectory()
-  }, [slug, dispatch, isLoading, isLoaded, refreshOnMount, autoRefresh])
+    // Check isLoading and isLoaded but don't include them in deps to prevent loops
+    // They are checked inside the effect, so we get current values
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, dispatch, refreshOnMount, autoRefresh]) // Only depend on slug, options, and dispatch
 
   // Return refetch function for manual refresh
   const refetch = React.useCallback(async () => {
@@ -72,7 +105,7 @@ export function useDirectoryItems(
   }, [slug, dispatch, isLoading])
 
   return {
-    items,
+    items: items ?? [], // Ensure items is always an array
     isLoading,
     isLoaded,
     refetch,

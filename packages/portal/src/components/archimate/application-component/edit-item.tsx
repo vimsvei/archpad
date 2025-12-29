@@ -19,53 +19,33 @@ import {
   TabsContents,
   TabsContent,
 } from "@/components/animate-ui/components/animate/tabs"
-import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
 import {
   useGetApplicationComponentFullQuery,
-  useUpdateApplicationComponentMutation,
+  useUpdateApplicationComponentFullMutation,
 } from "@/store/apis/application-component-api"
 import type { RootState, AppDispatch } from "@/store/store"
 import {
   reset,
-  setLoading,
   setSaving,
   setError,
   setSaveError,
   loadComponent,
-  updateBasicFields,
-  updateStateId,
-  updateDirectoryField,
   addFunction,
-  removeFunction,
   addDataObject,
-  removeDataObject,
   addInterface,
-  removeInterface,
   addEvent,
-  removeEvent,
-  addSystemSoftware,
-  removeSystemSoftware,
-  addTechnologyNode,
-  removeTechnologyNode,
-  addTechnologyNetwork,
-  removeTechnologyNetwork,
-  addParent,
-  removeParent,
-  addChild,
-  removeChild,
   updateBaseline,
   selectIsDirty,
   selectIsDraftValid,
-  selectBasicFields,
 } from "@/store/slices/application-component-edit-slice"
 import { GeneralTab } from "./general-tab"
 import { ClassificationTab } from "./classification-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
-import { ArchimateObjectIcon } from "@/components/shared/base-object/archimate-object-icon"
+import { getSheetConfig, type SheetType } from "@/components/archimate/sheet-configs"
+import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
 import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
 import * as ApplicationFunctionRest from "@/services/application-function.rest"
 import * as DataObjectRest from "@/services/data-object.rest"
@@ -90,7 +70,7 @@ export function EditItem({ id }: EditItemProps) {
 
   // Redux state
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [updateItem, updateState] = useUpdateApplicationComponentMutation()
+  const [updateComponentFull] = useUpdateApplicationComponentFullMutation()
 
   // Load full component data
   const { data: fullData, error: queryError, isLoading, isFetching } = useGetApplicationComponentFullQuery(
@@ -147,15 +127,6 @@ export function EditItem({ id }: EditItemProps) {
 
   const [tab, setTab] = React.useState<string>("general")
 
-  // Computed values from Redux state
-  const draft: BaseObjectValues = {
-    code: editState.code,
-    name: editState.name,
-    description: editState.description,
-  }
-
-  const directoryFields = editState.directoryFields
-
   // Check if dirty using selector
   const isDirty = useSelector(selectIsDirty)
 
@@ -175,31 +146,96 @@ export function EditItem({ id }: EditItemProps) {
     try {
       dispatch(setSaving(true))
       dispatch(setSaveError(null))
+
+      // Create new items that were added to Redux but don't exist in DB yet
+      // Temporary IDs start with "temp-", real UUIDs don't
+      const isTempId = (id: string) => id.startsWith("temp-")
       
-      // Save full component with all related data via PUT
-      await ApplicationComponentRest.updateApplicationComponentFullRest(id, {
-        code: editState.code.trim(),
-        name: editState.name.trim(),
-        description: editState.description.trim() || undefined,
-        stateId: editState.stateId ?? undefined,
-        licenseTypeId: editState.directoryFields.licenseTypeId ?? undefined,
-        architectureStyleId: editState.directoryFields.architectureStyleId ?? undefined,
-        criticalLevelId: editState.directoryFields.criticalLevelId ?? undefined,
-        failoverTypeId: editState.directoryFields.failoverTypeId ?? undefined,
-        recoveryTimeId: editState.directoryFields.recoveryTimeId ?? undefined,
-        redundancyTypeId: editState.directoryFields.redundancyTypeId ?? undefined,
-        monitoringLevelId: editState.directoryFields.monitoringLevelId ?? undefined,
-        scalingTypeId: editState.directoryFields.scalingTypeId ?? undefined,
-        functionIds: editState.functions.map(f => f.id),
-        dataObjectIds: editState.dataObjects.map(d => d.id),
-        interfaceIds: editState.interfaces.map(i => i.id),
-        eventIds: editState.events.map(e => e.id),
-        systemSoftwareIds: editState.systemSoftware.map(s => ({ id: s.id, kind: s.kind })),
-        technologyNodeIds: editState.technologyNodes.map(n => n.id),
-        technologyNetworkIds: editState.technologyNetworks.map(n => n.id),
-        parentIds: editState.parents.map(p => p.id),
-        childIds: editState.children.map(c => c.id),
+      const newDataObjects = editState.dataObjects.filter((d: any) => isTempId(d.id))
+      const newFunctions = editState.functions.filter((f: any) => isTempId(f.id))
+      const newInterfaces = editState.interfaces.filter((i: any) => isTempId(i.id))
+      const newEvents = editState.events.filter((e: any) => isTempId(e.id))
+
+      // Create all new items in parallel
+      // Note: We need to know the type of each item to call the correct REST function
+      // Since we can't store type in Redux, we create items based on which array they came from
+      const [createdDataObjects, createdFunctions, createdInterfaces, createdEvents] = await Promise.all([
+        Promise.all(newDataObjects.map((item) =>
+          DataObjectRest.createDataObjectRest({
+            code: item.code || undefined,
+            name: item.name,
+            description: item.description || undefined,
+          })
+        )),
+        Promise.all(newFunctions.map((item) =>
+          ApplicationFunctionRest.createApplicationFunctionRest({
+            code: item.code || undefined,
+            name: item.name,
+            description: item.description || undefined,
+          })
+        )),
+        Promise.all(newInterfaces.map((item) =>
+          ApplicationInterfaceRest.createApplicationInterfaceRest({
+            code: item.code || undefined,
+            name: item.name,
+            description: item.description || undefined,
+            componentId: id, // Backend creates link automatically, but PUT will overwrite it
+          })
+        )),
+        Promise.all(newEvents.map((item) =>
+          ApplicationEventRest.createApplicationEventRest({
+            code: item.code || undefined,
+            name: item.name,
+            description: item.description || undefined,
+          })
+        )),
+      ])
+
+      // Map temp IDs to real IDs
+      const tempIdMap = new Map<string, string>()
+      newDataObjects.forEach((item, idx) => {
+        tempIdMap.set(item.id, createdDataObjects[idx].id)
       })
+      newFunctions.forEach((item, idx) => {
+        tempIdMap.set(item.id, createdFunctions[idx].id)
+      })
+      newInterfaces.forEach((item, idx) => {
+        tempIdMap.set(item.id, createdInterfaces[idx].id)
+      })
+      newEvents.forEach((item, idx) => {
+        tempIdMap.set(item.id, createdEvents[idx].id)
+      })
+
+      // Helper to resolve ID (real ID or temp ID mapping)
+      const resolveId = (itemId: string) => tempIdMap.get(itemId) || itemId
+      
+      // Save full component with all related data via PUT using RTK Query mutation
+      await updateComponentFull({
+        id,
+        input: {
+          code: editState.code.trim(),
+          name: editState.name.trim(),
+          description: editState.description.trim() || undefined,
+          stateId: editState.stateId ?? undefined,
+          licenseTypeId: editState.directoryFields.licenseTypeId ?? undefined,
+          architectureStyleId: editState.directoryFields.architectureStyleId ?? undefined,
+          criticalLevelId: editState.directoryFields.criticalLevelId ?? undefined,
+          failoverTypeId: editState.directoryFields.failoverTypeId ?? undefined,
+          recoveryTimeId: editState.directoryFields.recoveryTimeId ?? undefined,
+          redundancyTypeId: editState.directoryFields.redundancyTypeId ?? undefined,
+          monitoringLevelId: editState.directoryFields.monitoringLevelId ?? undefined,
+          scalingTypeId: editState.directoryFields.scalingTypeId ?? undefined,
+          functionIds: editState.functions.map((f) => resolveId(f.id)),
+          dataObjectIds: editState.dataObjects.map((d) => resolveId(d.id)),
+          interfaceIds: editState.interfaces.map((i) => resolveId(i.id)),
+          eventIds: editState.events.map((e) => resolveId(e.id)),
+          systemSoftwareIds: editState.systemSoftware.map((s) => ({ id: resolveId(s.id), kind: s.kind })),
+          technologyNodeIds: editState.technologyNodes.map((n) => resolveId(n.id)),
+          technologyNetworkIds: editState.technologyNetworks.map((n) => resolveId(n.id)),
+          parentIds: editState.parents.map((p) => resolveId(p.id)),
+          childIds: editState.children.map((c) => resolveId(c.id)),
+        },
+      }).unwrap()
 
       toast.success(tr("action.saved", "Saved"))
       dispatch(updateBaseline())
@@ -215,14 +251,14 @@ export function EditItem({ id }: EditItemProps) {
     } finally {
       dispatch(setSaving(false))
     }
-  }, [id, editState, isDraftValid, dispatch, tr])
+  }, [id, editState, isDraftValid, dispatch, tr, updateComponentFull])
 
   // Global save handler (alias for compatibility)
   const handleSave = handleSaveFull
 
   // Add existing items sheet state
   const [sheetOpen, setSheetOpen] = React.useState(false)
-  const [sheetType, setSheetType] = React.useState<"system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events" | "node" | "network" | null>(null)
+  const [sheetType, setSheetType] = React.useState<SheetType | null>(null)
   const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
   const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
   const [sheetAvailableItems, setSheetAvailableItems] = React.useState<SelectableItem[]>([])
@@ -230,13 +266,12 @@ export function EditItem({ id }: EditItemProps) {
 
   // Create named-object sheet state (right sidebar)
   const [createSheetOpen, setCreateSheetOpen] = React.useState(false)
-  const [createSheetType, setCreateSheetType] = React.useState<"data-objects" | "functions" | "interfaces" | "events" | null>(null)
+  const [createSheetType, setCreateSheetType] = React.useState<SheetType | null>(null)
   const [createSheetDraft, setCreateSheetDraft] = React.useState<NamedObjectDraft>({
     code: "",
     name: "",
     description: "",
   })
-  const [createSheetIsSubmitting, setCreateSheetIsSubmitting] = React.useState(false)
 
 
   // Dialog state for unsaved changes
@@ -339,136 +374,72 @@ export function EditItem({ id }: EditItemProps) {
     }
   }, [isDirty, confirmDialogOpen, router])
 
-  const handleDirectoryFieldChange = React.useCallback(
-    (fieldName: keyof typeof editState.directoryFields, value: string | null) => {
-      if (fieldName === "stateId") {
-        dispatch(updateStateId(value))
-      } else {
-        dispatch(updateDirectoryField({ field: fieldName, value }))
-      }
-    },
-    [dispatch]
-  )
 
-  // Refresh is now handled by Redux store updates, no need for tokens
-
-  const handleOpenCreateSheet = React.useCallback((type: "data-objects" | "functions" | "interfaces" | "events") => {
+  const handleOpenCreateSheet = React.useCallback((type: SheetType) => {
+    const config = getSheetConfig(type)
+    if (!config?.canCreate) {
+      console.warn(`Cannot create items of type "${type}" - canCreate is not enabled`)
+      return
+    }
     setCreateSheetType(type)
     setCreateSheetDraft({ code: "", name: "", description: "" })
     setCreateSheetOpen(true)
   }, [])
 
   const createSheetConfig = React.useMemo(() => {
-    const tableKeyMap: Record<NonNullable<typeof createSheetType>, string> = {
-      "data-objects": "application.data-objects",
-      "functions": "application.functions",
-      "interfaces": "application.interfaces",
-      "events": "application.events",
-    }
-    const tableKey = createSheetType ? tableKeyMap[createSheetType] : ""
-    const titleKey = tableKey ? `${t("action.create")} ${t(tableKey)}` : ""
-    const title =
-      createSheetType === "data-objects"
-        ? tr(titleKey, "Создать объект данных")
-        : createSheetType === "functions"
-          ? tr(titleKey, "Создать функцию")
-          : createSheetType === "interfaces"
-            ? tr(titleKey, "Создать интерфейс")
-            : createSheetType === "events"
-              ? tr(titleKey, "Создать событие")
-            : ""
+    if (!createSheetType) return { title: "" }
+    
+    const config = getSheetConfig(createSheetType)
+    if (!config) return { title: "" }
+    
+    const titleKey = `${t("action.create")} ${t(config.tableKey)}`
+    const title = tr(titleKey, titleKey) // No fallback - show translation key if translation missing
     return { title }
   }, [createSheetType, t, tr])
 
   const handleCreateNamedObject = React.useCallback(() => {
     if (!createSheetType) return
 
-    void (async () => {
-      const code = createSheetDraft.code.trim()
-      const name = createSheetDraft.name.trim()
-      const description = createSheetDraft.description.trim()
-      if (!name) {
-        toast.error(tr("action.validationFailed", "Fill required fields"))
-        return
-      }
+    const config = getSheetConfig(createSheetType)
+    if (!config?.canCreate) {
+      toast.error(tr("action.notAllowed", "This action is not allowed"))
+      return
+    }
 
-      try {
-        setCreateSheetIsSubmitting(true)
+    const code = createSheetDraft.code.trim()
+    const name = createSheetDraft.name.trim()
+    const description = createSheetDraft.description.trim()
+    if (!name) {
+      toast.error(tr("action.validationFailed", "Fill required fields"))
+      return
+    }
 
-        if (createSheetType === "data-objects") {
-          const created = await DataObjectRest.createDataObjectRest({
-            code: code ? code : undefined,
-            name,
-            description: description ? description : undefined,
-          })
-          await ApplicationComponentRest.addApplicationComponentDataObjectRest(id, created.id)
-          dispatch(
-            addDataObject({
-              id: created.id,
-              code: created.code,
-              name: created.name,
-              description: created.description ?? undefined,
-            })
-          )
-        } else if (createSheetType === "functions") {
-          const created = await ApplicationFunctionRest.createApplicationFunctionRest({
-            code: code ? code : undefined,
-            name,
-            description: description ? description : undefined,
-          })
-          await ApplicationComponentRest.addApplicationComponentFunctionRest(id, created.id)
-          dispatch(
-            addFunction({
-              id: created.id,
-              code: created.code,
-              name: created.name,
-              description: created.description ?? undefined,
-            })
-          )
-        } else if (createSheetType === "interfaces") {
-          const created = await ApplicationInterfaceRest.createApplicationInterfaceRest({
-            code: code ? code : undefined,
-            name,
-            description: description ? description : undefined,
-            componentId: id,
-          })
-          dispatch(
-            addInterface({
-              id: created.id,
-              code: created.code,
-              name: created.name,
-              description: created.description ?? undefined,
-            })
-          )
-        } else if (createSheetType === "events") {
-          const created = await ApplicationEventRest.createApplicationEventRest({
-            code: code ? code : undefined,
-            name,
-            description: description ? description : undefined,
-          })
-          await ApplicationComponentRest.addApplicationComponentEventRest(id, created.id)
-          dispatch(
-            addEvent({
-              id: created.id,
-              code: created.code,
-              name: created.name,
-              description: created.description ?? undefined,
-            })
-          )
-        }
+    // Generate temporary ID for new item (will be created on save)
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const tempItem = {
+      id: tempId,
+      code: code || "",
+      name,
+      description: description || undefined,
+    }
 
-        toast.success(tr("action.created", "Created"))
-        setCreateSheetOpen(false)
-      } catch (e: any) {
-        toast.error(e?.message ?? tr("action.createFailed", "Failed to create"))
-      } finally {
-        setCreateSheetIsSubmitting(false)
-      }
-    })()
-  }, [createSheetDraft, createSheetType, id, dispatch, tr])
+    // Add to Redux state only - item will be created on backend when component is saved via PUT
+    if (createSheetType === "data-objects") {
+      dispatch(addDataObject(tempItem))
+    } else if (createSheetType === "functions") {
+      dispatch(addFunction(tempItem))
+    } else if (createSheetType === "interfaces") {
+      dispatch(addInterface(tempItem))
+    } else if (createSheetType === "events") {
+      dispatch(addEvent(tempItem))
+    }
+
+    toast.success(tr("action.created", "Created"))
+    setCreateSheetOpen(false)
+  }, [createSheetDraft, createSheetType, dispatch, tr])
 
   // Handler for opening add existing items sheet
-  const handleOpenAddExistingSheet = React.useCallback((type: "system-software" | "data-objects" | "parent" | "child" | "functions" | "interfaces" | "events" | "node" | "network") => {
+  const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
     setSheetType(type)
     setSheetSearchQuery("")
     setSheetSelectedItems(new Set())
@@ -502,67 +473,20 @@ export function EditItem({ id }: EditItemProps) {
   }, [sheetType, sheetAvailableItems, sheetSelectedItems])
 
   // Get sheet title and icon based on type
-  const getSheetConfig = React.useCallback(() => {
-    const tableKeyMap: Record<NonNullable<typeof sheetType>, string> = {
-      "system-software": "technologies.system-software",
-      "data-objects": "application.data-objects",
-      "parent": "hierarchy.parent",
-      "child": "hierarchy.children",
-      "functions": "application.functions",
-      "interfaces": "application.interfaces",
-      "events": "application.events",
-      "node": "technologies.nodes",
-      "network": "technologies.networks",
-    }
+  const sheetConfig = React.useMemo(() => {
+    if (!sheetType) return { title: "", icon: undefined }
     
-    const tableKey = sheetType ? tableKeyMap[sheetType] : ""
-    const titleKey = tableKey ? `${t('action.add')} ${t(tableKey)}` : ""
+    const config = getSheetConfig(sheetType)
+    if (!config) return { title: "", icon: undefined }
     
-    switch (sheetType) {
-      case "system-software":
-        return {
-          title: tr(titleKey, "Добавить системное ПО"),
-          iconType: "system-software" as const,
-        }
-      case "data-objects":
-        return {
-          title: tr(titleKey, "Добавить объекты данных"),
-          iconType: "application-data-object" as const,
-        }
-      case "parent":
-        return {
-          title: tr(titleKey, "Добавить родителей"),
-          iconType: "application-component" as const,
-        }
-      case "child":
-        return {
-          title: tr(titleKey, "Добавить детей"),
-          iconType: "application-component" as const,
-        }
-      case "functions":
-        return {
-          title: tr(titleKey, "Добавить функции"),
-          iconType: "application-component" as const,
-        }
-      case "interfaces":
-        return {
-          title: tr(titleKey, "Добавить интерфейсы"),
-          iconType: "application-component" as const,
-        }
-      case "events":
-        return {
-          title: tr(titleKey, "Добавить события"),
-          iconType: "application-component" as const,
-        }
-      default:
-        return {
-          title: "",
-          iconType: "application-component" as const,
-        }
+    const titleKey = `${t('action.add')} ${t(config.tableKey)}`
+    const title = tr(titleKey, titleKey) // No fallback - show translation key if translation missing
+    
+    return {
+      title,
+      icon: config.icon,
     }
-  }, [sheetType, tr])
-
-  const sheetConfig = getSheetConfig()
+  }, [sheetType, t, tr])
 
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {
@@ -670,7 +594,7 @@ export function EditItem({ id }: EditItemProps) {
               size="icon"
               aria-label={tr("action.save", "Save")}
               onClick={() => void handleSave()}
-              disabled={!isDirty || updateState.isLoading || !isDraftValid || editState.isSaving}
+              disabled={!isDirty || !isDraftValid || editState.isSaving}
               variant={editState.saveError ? "destructive" : "default"}
             >
               <Save />
@@ -772,7 +696,7 @@ export function EditItem({ id }: EditItemProps) {
           open={sheetOpen}
           onOpenChange={setSheetOpen}
           title={sheetConfig.title}
-          iconType={sheetConfig.iconType}
+          icon={sheetConfig.icon}
           items={sheetAvailableItems}
           isLoading={sheetIsLoading}
           searchQuery={sheetSearchQuery}
@@ -789,7 +713,7 @@ export function EditItem({ id }: EditItemProps) {
           open={createSheetOpen}
           onOpenChange={setCreateSheetOpen}
           title={createSheetConfig.title}
-          isSubmitting={createSheetIsSubmitting}
+          isSubmitting={false}
           draft={createSheetDraft}
           onDraftChange={setCreateSheetDraft}
           onSubmit={handleCreateNamedObject}

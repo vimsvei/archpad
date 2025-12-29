@@ -14,7 +14,7 @@ import {
   useGetApplicationComponentsQuery,
 } from "@/store/apis/application-component-api"
 import { Badge } from "@/components/ui/badge"
-import { ArchimateObjectIcon } from "@/components/shared/base-object/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -23,6 +23,7 @@ type RelatedItemsListProps<T extends RelatedItem> = {
   items: T[]
   isLoading?: boolean
   iconType?: IconType
+  icon?: React.ComponentType<{ width?: number; height?: number; className?: string }>
   editPath?: (item: T) => string
   onRefresh?: () => void
   onAdd?: () => void
@@ -40,6 +41,7 @@ export function RelatedItemsList<T extends RelatedItem>({
   items,
   isLoading = false,
   iconType,
+  icon: IconComponent,
   editPath,
   onRefresh,
   onAdd,
@@ -121,6 +123,7 @@ export function RelatedItemsList<T extends RelatedItem>({
                 key={item.id}
                 item={item}
                 iconType={iconType}
+                icon={IconComponent}
                 editPath={editPath}
                 onDelete={onDelete}
                 hideActions={hideActions}

@@ -31,6 +31,7 @@ type AddExistingItemsSheetProps<T extends SelectableItem> = {
   onOpenChange: (open: boolean) => void
   title: string
   iconType?: IconType
+  icon?: React.ComponentType<{ width?: number; height?: number; className?: string }>
   items: T[]
   isLoading?: boolean
   searchQuery: string
@@ -45,6 +46,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
   onOpenChange,
   title,
   iconType,
+  icon: IconComponent,
   items,
   isLoading,
   searchQuery,
@@ -127,6 +129,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
               <RelatedItemsList
                 items={filteredItems}
                 iconType={iconType}
+                icon={IconComponent}
                 hideHeader={true}
                 hideActions={true}
                 onToggleItem={onToggleItem}
