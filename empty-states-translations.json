@@ -1,0 +1,26 @@
+{
+  "table.components.no-results": "Компоненты приложения не найдены",
+  "table.components.no-results.description": "Создайте новый компонент приложения или добавьте существующий из списка",
+  
+  "table.data-objects.no-results": "Объекты данных не найдены",
+  "table.data-objects.no-results.description": "Создайте новый объект данных или добавьте существующий из списка",
+  
+  "table.functions.no-results": "Функции приложения не найдены",
+  "table.functions.no-results.description": "Создайте новую функцию приложения или добавьте существующую из списка",
+  
+  "table.software.no-results": "Системное ПО не найдено",
+  "table.software.no-results.description": "Добавьте системное ПО из списка доступных элементов",
+  
+  "table.component.functions.no-results": "У компонента {component} нет функций",
+  "table.component.functions.no-results.description": "Создайте новую функцию или добавьте существующую из списка для компонента {component}",
+  
+  "table.component.data-objects.no-results": "У компонента {component} нет объектов данных",
+  "table.component.data-objects.no-results.description": "Создайте новый объект данных или добавьте существующий из списка для компонента {component}",
+  
+  "table.component.interfaces.no-results": "У компонента {component} нет интерфейсов",
+  "table.component.interfaces.no-results.description": "Создайте новый интерфейс или добавьте существующий из списка для компонента {component}",
+  
+  "table.component.events.no-results": "У компонента {component} нет событий",
+  "table.component.events.no-results.description": "Создайте новое событие или добавьте существующее из списка для компонента {component}"
+}
+
