@@ -46,7 +46,131 @@ export type ArchimateItemTableProps<T extends RelatedItem> = {
   renderCustomCells?: (item: T) => React.ReactNode
 }
 
-export function ArchimateItemTable<T extends RelatedItem>({
+// Memoized table row component to prevent unnecessary re-renders
+const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
+  item,
+  isSelected,
+  Icon,
+  editPath,
+  onDelete,
+  onToggleItem,
+  customCells,
+  t,
+}: {
+  item: T
+  isSelected: boolean
+  Icon?: React.ComponentType<{ className?: string }>
+  editPath?: (item: T) => string
+  onDelete?: (item: T) => void
+  onToggleItem?: (itemId: string) => void
+  customCells?: React.ReactNode
+  t: (key: string, defaultValue?: string) => string
+}) {
+  // Memoize handlers to prevent creating new functions on each render
+  const handleToggle = React.useMemo(
+    () => (onToggleItem ? () => onToggleItem(item.id) : undefined),
+    [onToggleItem, item.id]
+  )
+  
+  const handleDelete = React.useMemo(
+    () => (onDelete ? () => onDelete(item) : undefined),
+    [onDelete, item]
+  )
+
+  // Memoize edit URL to prevent Link re-renders
+  const editUrl = React.useMemo(() => editPath?.(item), [editPath, item])
+
+  return (
+    <TableRow>
+      {/* Checkbox */}
+      {onToggleItem && (
+        <TableCell>
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={handleToggle}
+          />
+        </TableCell>
+      )}
+      {/* Icon */}
+      {Icon && (
+        <TableCell>
+          <Icon className="w-6 h-6" />
+        </TableCell>
+      )}
+      {/* Code */}
+      <TableCell className="font-mono text-xs">{item.code}</TableCell>
+      {/* Name */}
+      <TableCell className="font-medium">{item.name}</TableCell>
+      {/* Custom cells */}
+      {customCells}
+      {/* Description */}
+      <TableCell className="text-muted-foreground">
+        {item.description ? (
+          <div className="max-w-md truncate">{item.description}</div>
+        ) : (
+          <span className="text-muted-foreground/50">—</span>
+        )}
+      </TableCell>
+      {/* Actions */}
+      <TableCell>
+        <div className="flex items-center gap-1">
+          {editUrl && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+                  <Link href={editUrl}>
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{t("action.edit", "Редактировать")}</TooltipContent>
+            </Tooltip>
+          )}
+          {onDelete && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDelete}
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{t("action.delete", "Удалить")}</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  )
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  // Only re-render if item data or selection state changes
+  return (
+    prevProps.item.id === nextProps.item.id &&
+    prevProps.item.code === nextProps.item.code &&
+    prevProps.item.name === nextProps.item.name &&
+    prevProps.item.description === nextProps.item.description &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.editPath === nextProps.editPath &&
+    prevProps.onDelete === nextProps.onDelete &&
+    prevProps.onToggleItem === nextProps.onToggleItem &&
+    prevProps.Icon === nextProps.Icon
+  )
+}) as <T extends RelatedItem>(props: {
+  item: T
+  isSelected: boolean
+  Icon?: React.ComponentType<{ className?: string }>
+  editPath?: (item: T) => string
+  onDelete?: (item: T) => void
+  onToggleItem?: (itemId: string) => void
+  customCells?: React.ReactNode
+  t: (key: string, defaultValue?: string) => string
+}) => React.ReactElement
+
+function ArchimateItemTableInner<T extends RelatedItem>({
   items,
   isLoading = false,
   icon: Icon,
@@ -65,7 +189,13 @@ export function ArchimateItemTable<T extends RelatedItem>({
 }: ArchimateItemTableProps<T>) {
   const { t } = useTranslate()
 
-  const isSelected = (itemId: string) => selectedItems?.has(itemId) ?? false
+  const isSelected = React.useCallback(
+    (itemId: string) => selectedItems?.has(itemId) ?? false,
+    [selectedItems]
+  )
+
+  // Memoize items to prevent unnecessary recalculations
+  const memoizedItems = React.useMemo(() => items, [items])
 
   const renderEmpty = () => {
     if (!componentName || !itemTypeKey) {
@@ -188,71 +318,26 @@ export function ArchimateItemTable<T extends RelatedItem>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item) => (
-                <TableRow key={item.id}>
-                  {/* Checkbox */}
-                  {onToggleItem && (
-                    <TableCell>
-                      <Checkbox
-                        checked={isSelected(item.id)}
-                        onCheckedChange={() => onToggleItem(item.id)}
-                      />
-                    </TableCell>
-                  )}
-                  {/* Icon */}
-                  {Icon && (
-                    <TableCell>
-                      <Icon className="w-6 h-6" />
-                    </TableCell>
-                  )}
-                  {/* Code */}
-                  <TableCell className="font-mono text-xs">{item.code}</TableCell>
-                  {/* Name */}
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  {/* Custom cells */}
-                  {renderCustomCells && renderCustomCells(item)}
-                  {/* Description */}
-                  <TableCell className="text-muted-foreground">
-                    {item.description ? (
-                      <div className="max-w-md truncate">{item.description}</div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </TableCell>
-                  {/* Actions */}
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      {editPath && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-                              <Link href={editPath(item)}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.edit", "Редактировать")}</TooltipContent>
-                        </Tooltip>
-                      )}
-                      {onDelete && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => onDelete(item)}
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.delete", "Удалить")}</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {memoizedItems.map((item) => {
+                // Pre-compute selection state to avoid repeated lookups
+                const itemIsSelected = isSelected(item.id)
+                // Pre-render custom cells if needed
+                const customCells = renderCustomCells ? renderCustomCells(item) : undefined
+                
+                return (
+                  <TableRowMemo
+                    key={item.id}
+                    item={item}
+                    isSelected={itemIsSelected}
+                    Icon={Icon}
+                    editPath={editPath}
+                    onDelete={onDelete}
+                    onToggleItem={onToggleItem}
+                    customCells={customCells}
+                    t={t}
+                  />
+                )
+              })}
             </TableBody>
           </Table>
         )}
@@ -270,4 +355,7 @@ export function ArchimateItemTable<T extends RelatedItem>({
     </div>
   )
 }
+
+// Export memoized version to prevent unnecessary re-renders
+export const ArchimateItemTable = React.memo(ArchimateItemTableInner) as typeof ArchimateItemTableInner
 

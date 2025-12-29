@@ -8,7 +8,7 @@ import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeFlow, type FlowItem } from "@/store/slices/application-component-edit-slice"
 import { TableHead, TableCell } from "@/components/ui/table"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
+import { TrendingUp } from "lucide-react"
 
 type FlowsTableProps = {
   componentId: string
@@ -120,7 +120,7 @@ export function FlowsTable({ componentId, componentName, onCreate }: FlowsTableP
     </>
   )
 
-  const renderIcon = () => <ArchimateObjectIcon type="application-function" className="w-6 h-6" />
+  const renderIcon = () => <TrendingUp className="w-6 h-6" />
 
   return (
     <ArchimateItemTable<FlowItem>

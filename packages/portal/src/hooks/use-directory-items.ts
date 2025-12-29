@@ -28,9 +28,15 @@ export function useDirectoryItems(
   options?: { refreshOnMount?: boolean; autoRefresh?: boolean }
 ) {
   const dispatch = useDispatch<AppDispatch>()
-  const items = useSelector((state: RootState) => selectDirectoryItems(slug)(state))
-  const isLoading = useSelector((state: RootState) => selectIsDirectoryLoading(slug)(state))
-  const isLoaded = useSelector((state: RootState) => selectIsDirectoryLoaded(slug)(state))
+  
+  // Memoize selectors to prevent creating new functions on each render
+  const itemsSelector = React.useMemo(() => selectDirectoryItems(slug), [slug])
+  const isLoadingSelector = React.useMemo(() => selectIsDirectoryLoading(slug), [slug])
+  const isLoadedSelector = React.useMemo(() => selectIsDirectoryLoaded(slug), [slug])
+  
+  const items = useSelector(itemsSelector)
+  const isLoading = useSelector(isLoadingSelector)
+  const isLoaded = useSelector(isLoadedSelector)
 
   const refreshOnMount = options?.refreshOnMount ?? false
   const autoRefresh = options?.autoRefresh ?? false
@@ -105,7 +111,7 @@ export function useDirectoryItems(
   }, [slug, dispatch, isLoading])
 
   return {
-    items: items ?? [], // Ensure items is always an array
+    items: items, // items is always an array (guaranteed by selector)
     isLoading,
     isLoaded,
     refetch,

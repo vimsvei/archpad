@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, type PayloadAction, createSelector } from "@reduxjs/toolkit"
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import { listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 
@@ -93,18 +93,62 @@ export const {
 
 export const directoriesReducer = directoriesSlice.reducer
 
-// Selectors
-export const selectDirectoryItems = (slug: DirectorySlug) => (state: { directories: DirectoriesState }) =>
-  state.directories.directories[slug] ?? []
+// Base selectors
+const selectDirectoriesState = (state: { directories: DirectoriesState }) => state.directories
+const selectDirectories = (state: { directories: DirectoriesState }) => state.directories.directories
+const selectLoading = (state: { directories: DirectoriesState }) => state.directories.loading
+const selectLoaded = (state: { directories: DirectoriesState }) => state.directories.loaded
 
-export const selectIsDirectoryLoading = (slug: DirectorySlug) => (state: { directories: DirectoriesState }) =>
-  state.directories.loading.includes(slug)
+// Static empty array to reuse for missing directories
+const EMPTY_DIRECTORY_ARRAY: DirectoryItem[] = []
 
-export const selectIsDirectoryLoaded = (slug: DirectorySlug) => (state: { directories: DirectoriesState }) =>
-  state.directories.loaded.includes(slug)
+// Memoized selectors with parameters using factory pattern
+export const selectDirectoryItems = (() => {
+  const cache = new Map<DirectorySlug, ReturnType<typeof createSelector>>()
+  
+  return (slug: DirectorySlug) => {
+    if (!cache.has(slug)) {
+      cache.set(
+        slug,
+        createSelector([selectDirectories], (directories) => directories[slug] ?? EMPTY_DIRECTORY_ARRAY)
+      )
+    }
+    return cache.get(slug)!
+  }
+})()
 
-export const selectInitialLoadComplete = (state: { directories: DirectoriesState }) =>
-  state.directories.initialLoadComplete
+export const selectIsDirectoryLoading = (() => {
+  const cache = new Map<DirectorySlug, ReturnType<typeof createSelector>>()
+  
+  return (slug: DirectorySlug) => {
+    if (!cache.has(slug)) {
+      cache.set(
+        slug,
+        createSelector([selectLoading], (loading) => loading.includes(slug))
+      )
+    }
+    return cache.get(slug)!
+  }
+})()
 
-export const selectAllDirectories = (state: { directories: DirectoriesState }) => state.directories.directories
+export const selectIsDirectoryLoaded = (() => {
+  const cache = new Map<DirectorySlug, ReturnType<typeof createSelector>>()
+  
+  return (slug: DirectorySlug) => {
+    if (!cache.has(slug)) {
+      cache.set(
+        slug,
+        createSelector([selectLoaded], (loaded) => loaded.includes(slug))
+      )
+    }
+    return cache.get(slug)!
+  }
+})()
+
+export const selectInitialLoadComplete = createSelector(
+  [selectDirectoriesState],
+  (state) => state.initialLoadComplete
+)
+
+export const selectAllDirectories = selectDirectories
 

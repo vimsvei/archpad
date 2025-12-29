@@ -316,6 +316,39 @@ export function EditItem({ id }: EditItemProps) {
     }
   }, [handleSaveFull, pendingNavigation])
 
+  // Intercept link clicks - optimized with early returns and memoized
+  const handleLinkClick = React.useCallback((e: MouseEvent) => {
+    if (!isDirty || confirmDialogOpen) return
+
+    // Early return if not a link click - check nodeName first for better performance
+    const target = e.target as HTMLElement
+    if (target.nodeName !== 'A' && !target.closest) return
+    
+    const link = target.closest?.('a[href]') as HTMLAnchorElement | null
+    if (!link) return
+
+    const href = link.getAttribute('href')
+    if (!href) return
+
+    // Don't intercept external links or anchors
+    if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+      return
+    }
+
+    // Don't intercept if it's the current page
+    const currentPath = window.location.pathname
+    if (href === currentPath || href === `${currentPath}/`) {
+      return
+    }
+
+    // Intercept navigation
+    e.preventDefault()
+    e.stopPropagation()
+    
+    setPendingNavigation(() => () => router.push(href))
+    setConfirmDialogOpen(true)
+  }, [isDirty, confirmDialogOpen, router])
+
   // Intercept navigation when dirty
   React.useEffect(() => {
     // Handle browser back/forward
@@ -336,36 +369,6 @@ export function EditItem({ id }: EditItemProps) {
       }
     }
 
-    // Intercept link clicks
-    const handleLinkClick = (e: MouseEvent) => {
-      if (!isDirty || confirmDialogOpen) return
-
-      const target = e.target as HTMLElement
-      const link = target.closest('a[href]') as HTMLAnchorElement | null
-      if (!link) return
-
-      const href = link.getAttribute('href')
-      if (!href) return
-
-      // Don't intercept external links or anchors
-      if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
-        return
-      }
-
-      // Don't intercept if it's the current page
-      const currentPath = window.location.pathname
-      if (href === currentPath || href === `${currentPath}/`) {
-        return
-      }
-
-      // Intercept navigation
-      e.preventDefault()
-      e.stopPropagation()
-      
-      setPendingNavigation(() => () => router.push(href))
-      setConfirmDialogOpen(true)
-    }
-
     window.addEventListener("beforeunload", handleBeforeUnload)
     window.addEventListener("popstate", handlePopState)
     document.addEventListener("click", handleLinkClick, true) // Use capture phase
@@ -375,7 +378,7 @@ export function EditItem({ id }: EditItemProps) {
       window.removeEventListener("popstate", handlePopState)
       document.removeEventListener("click", handleLinkClick, true)
     }
-  }, [isDirty, confirmDialogOpen, router])
+  }, [isDirty, confirmDialogOpen, handleLinkClick])
 
 
   const handleOpenCreateSheet = React.useCallback((type: SheetType) => {
