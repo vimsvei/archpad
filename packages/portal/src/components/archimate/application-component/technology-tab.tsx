@@ -15,6 +15,7 @@ import { TechnologyNetworksTable } from "./technology-networks-table"
 
 type TechnologyTabProps = {
   componentId: string
+  componentName?: string
   onAddExistingSystemSoftware: () => void
   onAddExistingNode?: () => void
   onAddExistingNetwork?: () => void
@@ -22,6 +23,7 @@ type TechnologyTabProps = {
 
 export function TechnologyTab({
   componentId,
+  componentName,
   onAddExistingSystemSoftware,
   onAddExistingNode,
   onAddExistingNetwork,
@@ -48,6 +50,7 @@ export function TechnologyTab({
           <TabsContent value="system-software" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <SystemSoftwareTable
               componentId={componentId}
+              componentName={componentName}
               onAddExisting={onAddExistingSystemSoftware}
             />
           </TabsContent>
@@ -55,6 +58,7 @@ export function TechnologyTab({
           <TabsContent value="nodes" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <TechnologyNodesTable
               componentId={componentId}
+              componentName={componentName}
               onAddExisting={onAddExistingNode}
             />
           </TabsContent>
@@ -62,6 +66,7 @@ export function TechnologyTab({
           <TabsContent value="networks" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <TechnologyNetworksTable
               componentId={componentId}
+              componentName={componentName}
               onAddExisting={onAddExistingNetwork}
             />
           </TabsContent>

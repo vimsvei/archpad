@@ -27,6 +27,7 @@ export type SheetType =
   | "events" // Plural form (uses application-event icon)
   | "node" // Short form for technology-node
   | "network" // Short form for technology-network
+  | "flows" // Application flows
 
 /**
  * Map ArchimateObjectType to SheetType for sheet configurations.

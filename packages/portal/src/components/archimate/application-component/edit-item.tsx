@@ -42,6 +42,7 @@ import { GeneralTab } from "./general-tab"
 import { ClassificationTab } from "./classification-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
+import { FlowsTable } from "./flows-table"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 import { getSheetConfig, type SheetType } from "@/components/archimate/sheet-configs"
 import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
@@ -114,6 +115,8 @@ export function EditItem({ id }: EditItemProps) {
         technologyNetworks: fullData.technologyNetworks,
         parents: fullData.parents,
         children: fullData.children,
+        incomingFlows: [], // TODO: Load from GraphQL query
+        outgoingFlows: [], // TODO: Load from GraphQL query
       })
     )
   }, [fullData, dispatch])
@@ -664,6 +667,7 @@ export function EditItem({ id }: EditItemProps) {
           <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <TechnologyTab
               componentId={id}
+              componentName={editState.name}
               onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
               onAddExistingNode={() => handleOpenAddExistingSheet("node")}
               onAddExistingNetwork={() => handleOpenAddExistingSheet("network")}
@@ -671,9 +675,14 @@ export function EditItem({ id }: EditItemProps) {
           </TabsContent>
 
           <TabsContent value="flows" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <Card className="flex min-h-0 flex-1 flex-col p-6">
-              <div className="text-muted-foreground">Flows tab content</div>
-            </Card>
+            <FlowsTable
+              componentId={id}
+              componentName={editState.name}
+              onCreate={() => {
+                // TODO: Implement flow creation
+                toast.info(t("action.notImplemented", "Feature not implemented yet"))
+              }}
+            />
           </TabsContent>
           
           <TabsContent value="solutions" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">

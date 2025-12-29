@@ -23,6 +23,18 @@
   "table.component.events.no-results": "У компонента {component} нет событий",
   "table.component.events.no-results.description": "Создайте новое событие или добавьте существующее из списка для компонента {component}",
   
+  "table.component.system-software.no-results": "У компонента {component} нет системного ПО",
+  "table.component.system-software.no-results.description": "Добавьте системное ПО из списка доступных элементов для компонента {component}",
+  
+  "table.component.nodes.no-results": "У компонента {component} нет узлов",
+  "table.component.nodes.no-results.description": "Добавьте узел из списка доступных элементов для компонента {component}",
+  
+  "table.component.networks.no-results": "У компонента {component} нет сетей",
+  "table.component.networks.no-results.description": "Добавьте сеть из списка доступных элементов для компонента {component}",
+  
+  "table.component.flows.no-results": "У компонента {component} нет потоков",
+  "table.component.flows.no-results.description": "Создайте новый поток для компонента {component}",
+  
   "dialog.unsaved-changes.title": "Несохраненные изменения",
   "dialog.unsaved-changes.description": "У компонента \"{component}\" есть несохраненные изменения. Сохранить изменения перед выходом?",
   "action.cancel": "Отмена",

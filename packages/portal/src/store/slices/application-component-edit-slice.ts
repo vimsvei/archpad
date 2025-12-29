@@ -18,6 +18,15 @@ export type TechnologyNodeItem = RelatedItem
 
 export type TechnologyNetworkItem = RelatedItem
 
+export type FlowItem = RelatedItem & {
+  sourceComponent?: string | null
+  sourceFunction?: string | null
+  sourceInterface?: string | null
+  targetComponent?: string | null
+  targetFunction?: string | null
+  targetInterface?: string | null
+}
+
 export type ApplicationComponentEditState = {
   // Basic fields
   code: string
@@ -38,6 +47,8 @@ export type ApplicationComponentEditState = {
   technologyNetworks: TechnologyNetworkItem[]
   parents: RelatedItem[]
   children: RelatedItem[]
+  incomingFlows: FlowItem[]
+  outgoingFlows: FlowItem[]
 
   // Baseline for dirty checking
   baseline: {
@@ -52,10 +63,12 @@ export type ApplicationComponentEditState = {
     events: RelatedItem[]
     systemSoftware: SystemSoftwareItem[]
     technologyNodes: TechnologyNodeItem[]
-    technologyNetworks: TechnologyNetworkItem[]
-    parents: RelatedItem[]
-    children: RelatedItem[]
-  } | null
+      technologyNetworks: TechnologyNetworkItem[]
+      parents: RelatedItem[]
+      children: RelatedItem[]
+      incomingFlows: FlowItem[]
+      outgoingFlows: FlowItem[]
+    } | null
 
   // Loading state
   isLoading: boolean
@@ -89,6 +102,8 @@ const initialState: ApplicationComponentEditState = {
   technologyNetworks: [],
   parents: [],
   children: [],
+  incomingFlows: [],
+  outgoingFlows: [],
   baseline: null,
   isLoading: false,
   isSaving: false,
@@ -143,6 +158,8 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: TechnologyNetworkItem[]
         parents: RelatedItem[]
         children: RelatedItem[]
+        incomingFlows: FlowItem[]
+        outgoingFlows: FlowItem[]
       }>
     ) => {
       state.code = action.payload.code
@@ -159,6 +176,8 @@ export const applicationComponentEditSlice = createSlice({
       state.technologyNetworks = action.payload.technologyNetworks
       state.parents = action.payload.parents
       state.children = action.payload.children
+      state.incomingFlows = action.payload.incomingFlows
+      state.outgoingFlows = action.payload.outgoingFlows
 
       // Set baseline
       state.baseline = {
@@ -176,6 +195,8 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: [...action.payload.technologyNetworks],
         parents: [...action.payload.parents],
         children: [...action.payload.children],
+        incomingFlows: [...action.payload.incomingFlows],
+        outgoingFlows: [...action.payload.outgoingFlows],
       }
     },
 
@@ -287,6 +308,27 @@ export const applicationComponentEditSlice = createSlice({
       state.children = state.children.filter((c) => c.id !== action.payload)
     },
 
+    addFlow: (state, action: PayloadAction<FlowItem & { isIncoming: boolean }>) => {
+      const { isIncoming, ...flow } = action.payload
+      if (isIncoming) {
+        if (!state.incomingFlows.find((f) => f.id === flow.id)) {
+          state.incomingFlows.push(flow)
+        }
+      } else {
+        if (!state.outgoingFlows.find((f) => f.id === flow.id)) {
+          state.outgoingFlows.push(flow)
+        }
+      }
+    },
+
+    removeFlow: (state, action: PayloadAction<{ id: string; isIncoming: boolean }>) => {
+      if (action.payload.isIncoming) {
+        state.incomingFlows = state.incomingFlows.filter((f) => f.id !== action.payload.id)
+      } else {
+        state.outgoingFlows = state.outgoingFlows.filter((f) => f.id !== action.payload.id)
+      }
+    },
+
     updateBaseline: (state) => {
       if (state.baseline) {
         state.baseline = {
@@ -304,6 +346,8 @@ export const applicationComponentEditSlice = createSlice({
           technologyNetworks: [...state.technologyNetworks],
           parents: [...state.parents],
           children: [...state.children],
+          incomingFlows: [...state.incomingFlows],
+          outgoingFlows: [...state.outgoingFlows],
         }
       }
     },
@@ -338,6 +382,8 @@ export const {
   removeParent,
   addChild,
   removeChild,
+  addFlow,
+  removeFlow,
   updateBaseline,
 } = applicationComponentEditSlice.actions
 
@@ -385,7 +431,9 @@ export const selectIsDirty = createSelector([selectEditState], (editState) => {
     !arraysEqual(editState.technologyNodes, baseline.technologyNodes) ||
     !arraysEqual(editState.technologyNetworks, baseline.technologyNetworks) ||
     !arraysEqual(editState.parents, baseline.parents) ||
-    !arraysEqual(editState.children, baseline.children)
+    !arraysEqual(editState.children, baseline.children) ||
+    !arraysEqual(editState.incomingFlows, baseline.incomingFlows) ||
+    !arraysEqual(editState.outgoingFlows, baseline.outgoingFlows)
 
   return basicChanged || directoryChanged || relatedItemsChanged
 })
@@ -410,5 +458,7 @@ export const selectRelatedItemsCounts = createSelector([selectEditState], (editS
   technologyNetworks: editState.technologyNetworks.length,
   parents: editState.parents.length,
   children: editState.children.length,
+  incomingFlows: editState.incomingFlows.length,
+  outgoingFlows: editState.outgoingFlows.length,
 }))
 

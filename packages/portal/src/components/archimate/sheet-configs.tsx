@@ -9,6 +9,7 @@ import ApplicationEvent from "@/components/icons/ApplicationEvent"
 import { SystemSoftwareIcon } from "@/components/icons/system-software-icon"
 import TechnicalNode from "@/components/icons/TechnicalNode"
 import Network from "@/components/icons/Network"
+import { TrendingUp } from "lucide-react"
 import type { SheetType } from "./archimate-object-type"
 
 // Re-export SheetType for backward compatibility
@@ -89,6 +90,12 @@ export const SHEET_CONFIGS: Record<SheetType, SheetConfig> = {
     tableKey: "technologies.networks",
     icon: (props) => <Network width={24} height={24} {...props} />,
     canAdd: true,
+    canDelete: true,
+  },
+  flows: {
+    tableKey: "relation.flows",
+    icon: (props) => <TrendingUp width={24} height={24} {...props} />,
+    canCreate: true,
     canDelete: true,
   },
 }
