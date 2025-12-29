@@ -42,6 +42,8 @@ export type ArchimateItemTableProps<T extends RelatedItem> = {
   hideHeader?: boolean
   componentName?: string
   itemTypeKey?: string
+  customColumns?: React.ReactNode
+  renderCustomCells?: (item: T) => React.ReactNode
 }
 
 export function ArchimateItemTable<T extends RelatedItem>({
@@ -58,6 +60,8 @@ export function ArchimateItemTable<T extends RelatedItem>({
   hideHeader = false,
   componentName,
   itemTypeKey,
+  customColumns,
+  renderCustomCells,
 }: ArchimateItemTableProps<T>) {
   const { t } = useTranslate()
 
@@ -81,6 +85,7 @@ export function ArchimateItemTable<T extends RelatedItem>({
       "system-software": "system-software",
       "nodes": "nodes",
       "networks": "networks",
+      "flows": "flows",
     }
     const key = translationKeyMap[itemTypeKey] || itemTypeKey
     const titleKey = `table.component.${key}.no-results`
@@ -174,9 +179,10 @@ export function ArchimateItemTable<T extends RelatedItem>({
             <TableHeader>
               <TableRow>
                 {onToggleItem && <TableHead className="w-12"></TableHead>}
-                <TableHead className="w-12"></TableHead>
+                {Icon && <TableHead className="w-12"></TableHead>}
                 <TableHead className="w-32">{t("item.code", "Код")}</TableHead>
                 <TableHead>{t("item.name", "Наименование")}</TableHead>
+                {customColumns}
                 <TableHead>{t("item.description", "Описание")}</TableHead>
                 <TableHead className="w-24"></TableHead>
               </TableRow>
@@ -194,13 +200,17 @@ export function ArchimateItemTable<T extends RelatedItem>({
                     </TableCell>
                   )}
                   {/* Icon */}
-                  <TableCell>
-                    {Icon && <Icon className="w-6 h-6" />}
-                  </TableCell>
+                  {Icon && (
+                    <TableCell>
+                      <Icon className="w-6 h-6" />
+                    </TableCell>
+                  )}
                   {/* Code */}
                   <TableCell className="font-mono text-xs">{item.code}</TableCell>
                   {/* Name */}
                   <TableCell className="font-medium">{item.name}</TableCell>
+                  {/* Custom cells */}
+                  {renderCustomCells && renderCustomCells(item)}
                   {/* Description */}
                   <TableCell className="text-muted-foreground">
                     {item.description ? (
