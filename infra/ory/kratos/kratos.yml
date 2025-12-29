@@ -93,4 +93,4 @@ courier:
   smtp:
     # Mailpit SMTP (no auth). Query params are understood by Kratos' SMTP URI parser.
     connection_uri: smtp://mailpit:1025/?disable_starttls=true
-  from_address: no-reply@archpad.local
+    from_address: no-reply@archpad.local

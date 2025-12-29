@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 function getOryBaseUrl(): URL | null {
-  const raw = process.env.NEXT_PUBLIC_ORY_SDK_URL
+  const raw = process.env.ORY_KRATOS_PUBLIC_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
   if (!raw) return null
   try {
     return new URL(raw)
@@ -88,7 +88,7 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
   const base = getOryBaseUrl()
   if (!base) {
     return NextResponse.json(
-      { error: 'NEXT_PUBLIC_ORY_SDK_URL is not configured' },
+      { error: 'ORY_KRATOS_PUBLIC_URL (or NEXT_PUBLIC_ORY_SDK_URL) is not configured' },
       { status: 500 }
     )
   }
@@ -131,6 +131,13 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
 
   const nextRes = new NextResponse(res.body, { status: res.status })
   copyResponseHeaders(res, nextRes)
+
+  if (process.env.NODE_ENV !== 'production' && res.status === 404) {
+    nextRes.headers.set(
+      'x-archpad-ory-proxy-hint',
+      'Upstream returned 404. Check NEXT_PUBLIC_ORY_SDK_URL: it must point to Kratos PUBLIC endpoint (e.g. https://kratos.<ip>.sslip.io or whatever KRATOS_HOST is).'
+    )
+  }
   return nextRes
 }
 

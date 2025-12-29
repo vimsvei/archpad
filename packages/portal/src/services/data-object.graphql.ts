@@ -23,7 +23,7 @@ function mapRow(row: HasuraDataObjectRow): DataObject {
     id: row.id,
     code: row.code,
     name: row.name,
-    description: row.description,
+    description: row.description ?? null,
     createdAt: row.createdAt ?? null,
     createdBy: row.createdBy ?? null,
     updatedAt: row.updatedAt ?? null,

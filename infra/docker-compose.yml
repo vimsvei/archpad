@@ -387,10 +387,6 @@ services:
       retries: 60
     networks:
       - archpad_network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.arch-repo.rule=Host(`${ARCH_REPO_HOST}`)
-      - traefik.http.services.arch-repo.loadbalancer.server.port=3000
     profiles: [ "backend" ]
 
   hasura-repo-sync:

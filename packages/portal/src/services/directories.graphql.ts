@@ -23,9 +23,22 @@ type HasuraDirectoryRow =
 
 type HasuraDirectoryRelationRow = GetDirectoryRelationsQuery["map_directory_items"][number]
 
-function toDirectoryItem(row: HasuraDirectoryRow): DirectoryItem {
+type DirectoryRowLike = {
+  id: unknown
+  code?: string | null
+  name: string
+  description?: string | null
+  color?: string | null
+  byDefault?: boolean | null
+  createdAt?: unknown
+  createdBy?: unknown
+  updatedAt?: unknown
+  updatedBy?: unknown
+}
+
+function toDirectoryItem(row: DirectoryRowLike): DirectoryItem {
   return {
-    id: row.id,
+    id: String(row.id),
     code: row.code ?? "",
     name: row.name,
     description: row.description ?? "",
