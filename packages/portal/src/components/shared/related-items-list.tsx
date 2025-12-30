@@ -69,12 +69,12 @@ export function RelatedItemsList<T extends RelatedItem>({
                     size="icon"
                     onClick={onRefresh}
                     disabled={isLoading}
-                    aria-label={t("action.update", "Обновить")}
+                    aria-label={t("action.update")}
                   >
                     <RefreshCw className={isLoading ? "animate-spin" : ""} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("action.update", "Обновить")}</TooltipContent>
+                <TooltipContent side="bottom">{t("action.update")}</TooltipContent>
               </Tooltip>
             )}
             {onAddExisting && (
@@ -84,12 +84,12 @@ export function RelatedItemsList<T extends RelatedItem>({
                     variant="outline"
                     size="icon"
                     onClick={onAddExisting}
-                    aria-label={t("action.add", "Добавить")}
+                    aria-label={t("action.add")}
                   >
                     <Grid2x2Plus />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("action.add", "Добавить")}</TooltipContent>
+                <TooltipContent side="bottom">{t("action.add")}</TooltipContent>
               </Tooltip>
             )}
             {onAdd && (
@@ -99,12 +99,12 @@ export function RelatedItemsList<T extends RelatedItem>({
                     variant="outline"
                     size="icon"
                     onClick={onAdd}
-                    aria-label={t("action.create", "Создать")}
+                    aria-label={t("action.create")}
                   >
                     <Plus />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("action.create", "Создать")}</TooltipContent>
+                <TooltipContent side="bottom">{t("action.create")}</TooltipContent>
               </Tooltip>
             )}
           </div>
@@ -114,7 +114,7 @@ export function RelatedItemsList<T extends RelatedItem>({
       <div className={`flex-1 overflow-auto min-h-0 ${hideHeader ? 'px-0 py-0' : 'px-6 py-4'}`}>
         {items.length === 0 ? (
           <div className="h-24 text-center text-muted-foreground flex items-center justify-center">
-            {t("table.noResults", "No results")}
+            {t("table.no-results")}
           </div>
         ) : (
           <div className="flex flex-col gap-3">

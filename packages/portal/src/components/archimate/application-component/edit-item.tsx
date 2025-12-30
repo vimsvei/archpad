@@ -61,13 +61,7 @@ export function EditItem({ id }: EditItemProps) {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
 
   // Redux state
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
@@ -140,7 +134,7 @@ export function EditItem({ id }: EditItemProps) {
   // Full save handler - saves all data including related items
   const handleSaveFull = React.useCallback(async () => {
     if (!isDraftValid) {
-      const errorMsg = tr("form.invalid", "Please fill required fields")
+      const errorMsg = tr("form.invalid")
       toast.error(errorMsg)
       dispatch(setSaveError(errorMsg))
       return
@@ -240,11 +234,11 @@ export function EditItem({ id }: EditItemProps) {
         },
       }).unwrap()
 
-      toast.success(tr("action.saved", "Saved"))
+      toast.success(tr("action.saved"))
       dispatch(updateBaseline())
       dispatch(setSaveError(null))
     } catch (e: any) {
-      const errorMessage = e?.message ?? tr("action.saveFailed", "Failed to save")
+      const errorMessage = e?.message ?? tr("action.saveFailed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       
@@ -408,7 +402,7 @@ export function EditItem({ id }: EditItemProps) {
 
     const config = getSheetConfig(createSheetType)
     if (!config?.canCreate) {
-      toast.error(tr("action.notAllowed", "This action is not allowed"))
+      toast.error(tr("action.notAllowed"))
       return
     }
 
@@ -416,7 +410,7 @@ export function EditItem({ id }: EditItemProps) {
     const name = createSheetDraft.name.trim()
     const description = createSheetDraft.description.trim()
     if (!name) {
-      toast.error(tr("action.validationFailed", "Fill required fields"))
+      toast.error(tr("action.validationFailed"))
       return
     }
 
@@ -440,7 +434,7 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(addEvent(tempItem))
     }
 
-    toast.success(tr("action.created", "Created"))
+    toast.success(tr("action.created"))
     setCreateSheetOpen(false)
   }, [createSheetDraft, createSheetType, dispatch, tr])
 
@@ -504,20 +498,20 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-10">
           <div className="flex items-center justify-center gap-2">
             <Spinner className="h-6 w-6" />
-            <span className="text-muted-foreground">{tr("loading", "Loading...")}</span>
+            <span className="text-muted-foreground">{tr("loading")}</span>
           </div>
         </Card>
       </div>
@@ -526,7 +520,7 @@ export function EditItem({ id }: EditItemProps) {
 
   // Show error state
   if (queryError || editState.error || (!isLoading && !isFetching && !fullData && !editState.baseline)) {
-    const errorMessage = editState.error || (queryError as any)?.message || tr("error.notFound", "Component not found")
+    const errorMessage = editState.error || (queryError as any)?.message || tr("error.notFound")
     
     return (
       <div className="flex flex-col gap-4">
@@ -536,18 +530,18 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-6">
-          <div className="text-destructive font-medium mb-2">{tr("error.title", "Error")}</div>
+          <div className="text-destructive font-medium mb-2">{tr("error.title")}</div>
           <div className="text-muted-foreground">{errorMessage}</div>
           <Button 
             variant="outline" 
@@ -558,7 +552,7 @@ export function EditItem({ id }: EditItemProps) {
               window.location.reload()
             }}
           >
-            {tr("action.retry", "Retry")}
+            {tr("action.retry")}
           </Button>
         </Card>
       </div>
@@ -574,13 +568,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <div className="flex items-start gap-3">
             <div className="flex items-center justify-center rounded-full bg-muted p-2 shrink-0">
@@ -598,7 +592,7 @@ export function EditItem({ id }: EditItemProps) {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              aria-label={tr("action.save", "Save")}
+              aria-label={tr("action.save")}
               onClick={() => void handleSave()}
               disabled={!isDirty || !isDraftValid || editState.isSaving}
               variant={editState.saveError ? "destructive" : "default"}
@@ -606,32 +600,32 @@ export function EditItem({ id }: EditItemProps) {
               <Save />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
+          <TooltipContent side="bottom">{tr("action.save")}</TooltipContent>
         </Tooltip>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="general">
-            {tr("tab.general", "General")}
+            {tr("tab.general")}
           </TabsTrigger>
           <TabsTrigger value="classification">
-            {tr("tab.classification", "Classification")}
+            {tr("tab.classification")}
           </TabsTrigger>
           <TabsTrigger value="application">
-            {tr("tab.application", "Application")}
+            {tr("tab.application")}
           </TabsTrigger>
           <TabsTrigger value="technology">
-            {tr("tab.technology", "Technology")}
+            {tr("tab.technology")}
           </TabsTrigger>
           <TabsTrigger value="flows">
-            {tr("tab.flows", "Flows")}
+            {tr("tab.flows")}
           </TabsTrigger>
           <TabsTrigger value="solutions">
-            {tr("tab.solutions", "Solutions")}
+            {tr("tab.solutions")}
           </TabsTrigger>
           <TabsTrigger value="schemas">
-            {tr("tab.schemas", "Schemas")}
+            {tr("tab.schemas")}
           </TabsTrigger>
         </TabsList>
 
@@ -683,7 +677,7 @@ export function EditItem({ id }: EditItemProps) {
               componentName={editState.name}
               onCreate={() => {
                 // TODO: Implement flow creation
-                toast.info(t("action.notImplemented", "Feature not implemented yet"))
+                toast.info(t("action.notImplemented"))
               }}
             />
           </TabsContent>
@@ -749,7 +743,7 @@ export function EditItem({ id }: EditItemProps) {
           <Card className="p-6">
             <div className="flex items-center gap-3">
               <Spinner className="h-6 w-6" />
-              <span className="text-lg">{tr("action.saving", "Сохранение...")}</span>
+              <span className="text-lg">{tr("action.saving")}</span>
             </div>
           </Card>
         </div>

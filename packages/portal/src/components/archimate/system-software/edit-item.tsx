@@ -52,13 +52,7 @@ export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
   const router = useRouter()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
 
   const { data: item, error, isLoading, isFetching } = useGetSystemSoftwareByIdQuery(
     { id },
@@ -163,7 +157,7 @@ export function EditItem({ id }: EditItemProps) {
   const handleSave = React.useCallback(async () => {
     if (!item) return
     if (!isDraftValid) {
-      toast.error(tr("form.invalid", "Please fill required fields"))
+      toast.error(tr("form.invalid"))
       return
     }
 
@@ -180,7 +174,7 @@ export function EditItem({ id }: EditItemProps) {
       },
     }).unwrap()
 
-    toast.success(tr("action.saved", "Saved"))
+    toast.success(tr("action.saved"))
     baselineRef.current = normalize(draft)
     directoryFieldsBaselineRef.current = { ...directoryFields }
   }, [draft, directoryFields, isDraftValid, item, normalize, tr, updateItem])
@@ -201,13 +195,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
         </div>
@@ -229,13 +223,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
         </div>
@@ -255,13 +249,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold">
@@ -276,14 +270,14 @@ export function EditItem({ id }: EditItemProps) {
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                aria-label={tr("action.save", "Save")}
+                aria-label={tr("action.save")}
                 onClick={() => void handleSave()}
                 disabled={!isDirty || updateState.isLoading || !isDraftValid}
               >
                 <Save />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.save")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -291,10 +285,10 @@ export function EditItem({ id }: EditItemProps) {
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="general">
-            {tr("tabs.general", "Общие")}
+            {tr("tabs.general")}
           </TabsTrigger>
           <TabsTrigger value="description">
-            {tr("tabs.description", "Description")}
+            {tr("tabs.description")}
           </TabsTrigger>
         </TabsList>
 
@@ -309,7 +303,7 @@ export function EditItem({ id }: EditItemProps) {
                   <BaseObjectItem
                     values={draft}
                     onChange={(values) => setDraft((prev) => ({ ...prev, ...values }))}
-                    submitLabel={tr("action.save", "Save")}
+                    submitLabel={tr("action.save")}
                     hideActions
                     hideDescription
                     disabled={updateState.isLoading}
@@ -325,23 +319,23 @@ export function EditItem({ id }: EditItemProps) {
                             version: draft.version.trim() ? draft.version.trim() : undefined,
                           },
                         }).unwrap()
-                        toast.success(tr("action.saved", "Saved"))
+                        toast.success(tr("action.saved"))
                         baselineRef.current = normalize(values)
                       } catch (e: any) {
-                        toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                        toast.error(e?.message ?? tr("action.saveFailed"))
                       }
                     }}
                   />
                   
                   {/* Version field */}
                   <div className="grid gap-2">
-                    <Label htmlFor="system-software-version">{tr("table.version", "Версия")}</Label>
+                    <Label htmlFor="system-software-version">{tr("table.version")}</Label>
                     <Input
                       id="system-software-version"
                       value={draft.version}
                       onChange={(e) => setDraft((prev) => ({ ...prev, version: e.target.value }))}
                       disabled={updateState.isLoading || !item}
-                      placeholder={tr("table.version.placeholder", "Введите версию")}
+                      placeholder={tr("table.version.placeholder")}
                     />
                   </div>
                 </Card>
@@ -352,14 +346,14 @@ export function EditItem({ id }: EditItemProps) {
                   
                 {/* Software Type */}
                 <div className="grid gap-2">
-                  <Label htmlFor="software-type">{tr("directory.software.type", "Тип ПО")}</Label>
+                  <Label htmlFor="software-type">{tr("directory.software.type")}</Label>
                     <Select
                       value={directoryFields.typeId ?? ""}
                       onValueChange={(value) => handleDirectoryFieldChange("typeId", value || null)}
                       disabled={updateState.isLoading || !item}
                     >
                     <SelectTrigger id="software-type" className="w-full">
-                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                      <SelectValue placeholder={tr("select.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {softwareTypes.map((item) => (
@@ -373,14 +367,14 @@ export function EditItem({ id }: EditItemProps) {
 
                 {/* License Type */}
                 <div className="grid gap-2">
-                  <Label htmlFor="license-type">{tr("directory.license.type", "Тип лицензии")}</Label>
+                  <Label htmlFor="license-type">{tr("directory.license.type")}</Label>
                     <Select
                       value={directoryFields.licenseTypeId ?? ""}
                       onValueChange={(value) => handleDirectoryFieldChange("licenseTypeId", value || null)}
                       disabled={updateState.isLoading || !item}
                     >
                     <SelectTrigger id="license-type" className="w-full">
-                      <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                      <SelectValue placeholder={tr("select.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {licenseTypes.map((item) => (
@@ -405,7 +399,7 @@ export function EditItem({ id }: EditItemProps) {
                   setDraft((prev) => ({ ...prev, description: markdown }))
                 }}
                 disabled={updateState.isLoading || !item}
-                placeholder={tr("description.placeholder", "Enter description...")}
+                placeholder={tr("description.placeholder")}
               />
             </Card>
           </TabsContent>
@@ -415,14 +409,14 @@ export function EditItem({ id }: EditItemProps) {
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("dialog.unsaved.title", "Unsaved changes")}</DialogTitle>
+            <DialogTitle>{tr("dialog.unsaved.title")}</DialogTitle>
             <DialogDescription>
-              {tr("dialog.unsaved.description", "Save your changes before leaving?")}
+              {tr("dialog.unsaved.description")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              {tr("action.cancel", "Cancel")}
+              {tr("action.cancel")}
             </Button>
             <Button
               variant="outline"
@@ -431,7 +425,7 @@ export function EditItem({ id }: EditItemProps) {
                 goBack()
               }}
             >
-              {tr("action.discard", "Don't save")}
+              {tr("action.discard")}
             </Button>
             <Button
               onClick={() => {
@@ -441,13 +435,13 @@ export function EditItem({ id }: EditItemProps) {
                     setConfirmOpen(false)
                     goBack()
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                    toast.error(e?.message ?? tr("action.saveFailed"))
                   }
                 })()
               }}
               disabled={updateState.isLoading || !isDraftValid}
             >
-              {tr("action.save", "Save")}
+              {tr("action.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

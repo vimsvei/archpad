@@ -4,7 +4,7 @@ import { ALL_LANGUAGES, DEFAULT_LANGUAGE } from '@/tolgee/shared'
 const LOCALE_COOKIE = 'archpad_locale'
 const ACCESS_TOKEN_COOKIE = 'archpad_access_token'
 
-const PRIVATE_PREFIXES = ['/dashboard', '/directories', '/application', '/motivation']
+const PRIVATE_PREFIXES = ['/dashboard', '/directories', '/application', '/motivation', '/settings']
 
 function stripTrailingSlash(pathname: string) {
   return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname

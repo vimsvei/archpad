@@ -31,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useSession } from '@ory/elements-react/client'
+import { useKratosSession } from "@/hooks/use-kratos-session"
 
 function NavUserContent(
   // { user }: {
@@ -42,18 +42,32 @@ function NavUserContent(
   // } }
 ) {
   const { isMobile } = useSidebar()
-  const { session } = useSession()
+  const { session } = useKratosSession()
   const router = useRouter()
 
-  const traits: any = (session as any)?.identity?.traits ?? {}
-  const nameTrait = traits?.name
+  const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
+  const identity = sessionObj && typeof sessionObj.identity === "object" && sessionObj.identity !== null
+    ? (sessionObj.identity as Record<string, unknown>)
+    : null
+  const traits =
+    identity && typeof identity.traits === "object" && identity.traits !== null
+      ? (identity.traits as Record<string, unknown>)
+      : {}
+  const nameTrait = traits.name
   const displayName =
-    (typeof nameTrait === 'string' && nameTrait) ||
-    (nameTrait && typeof nameTrait === 'object'
-      ? [nameTrait.first, nameTrait.last].filter(Boolean).join(' ')
-      : '') ||
-    [traits?.given_name, traits?.family_name].filter(Boolean).join(' ') ||
-    (typeof traits?.email === 'string' ? traits.email.split('@')[0] : '')
+    (typeof nameTrait === "string" && nameTrait) ||
+    (nameTrait && typeof nameTrait === "object" && nameTrait !== null
+      ? [
+          (nameTrait as Record<string, unknown>).first,
+          (nameTrait as Record<string, unknown>).last,
+        ]
+          .filter((v): v is string => typeof v === "string" && v.length > 0)
+          .join(" ")
+      : "") ||
+    [traits.given_name, traits.family_name]
+      .filter((v): v is string => typeof v === "string" && v.length > 0)
+      .join(" ") ||
+    (typeof traits.email === "string" ? traits.email.split("@")[0] : "")
 
   const handleLogout = async () => {
     try {
@@ -92,7 +106,7 @@ function NavUserContent(
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayName}</span>
-                <span className="truncate text-xs">{session?.identity?.traits?.email}</span>
+                <span className="truncate text-xs">{typeof traits.email === "string" ? traits.email : ""}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -111,7 +125,7 @@ function NavUserContent(
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayName}</span>
-                  <span className="truncate text-xs">{session?.identity?.traits?.email}</span>
+                  <span className="truncate text-xs">{typeof traits.email === "string" ? traits.email : ""}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryVerificationFlow } from '@/components/ory'
+import { VerifyForm } from '@/components/auth/forms/verify-form'
 import {getVerificationFlow, OryPageParams} from "@ory/nextjs/app";
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
@@ -15,11 +15,13 @@ export default async function VerifyPage(props: OryPageParams) {
   if (!flow) { return null }
   
   return (
-    <AuthFormWrapper>
-      <OryVerificationFlow
-        flow={flow}
-        config={config}
-      />
+    <AuthFormWrapper
+      titleKey="auth.verification.title"
+      title="Verification"
+      subtitleKey="auth.verification.subtitle"
+      subtitle="Confirm your email to activate your account"
+    >
+      <VerifyForm flow={flow} />
     </AuthFormWrapper>
   )
 }

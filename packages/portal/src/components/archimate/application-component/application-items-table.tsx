@@ -67,7 +67,7 @@ export function ApplicationItemsTable<T extends RelatedItem>({
     if (!componentName || !itemTypeKey) {
       return (
         <div className="h-24 text-center text-muted-foreground flex items-center justify-center">
-          {t("table.noResults", "No results")}
+          {t("table.no-results")}
         </div>
       )
     }
@@ -96,10 +96,10 @@ export function ApplicationItemsTable<T extends RelatedItem>({
               </EmptyMedia>
             )}
             <EmptyTitle>
-              {t(titleKey, { defaultValue: `У компонента "${componentName}" нет ${itemTypeKey}`, component: componentName })}
+              {t(titleKey, { component: componentName })}
             </EmptyTitle>
             <EmptyDescription>
-              {t(descriptionKey, { defaultValue: `Создайте или добавьте ${itemTypeKey} для компонента "${componentName}"`, component: componentName })}
+              {t(descriptionKey, { component: componentName })}
             </EmptyDescription>
           </EmptyHeader>
         </EmptyContent>
@@ -121,12 +121,12 @@ export function ApplicationItemsTable<T extends RelatedItem>({
                   size="icon"
                   onClick={onRefresh}
                   disabled={isLoading}
-                  aria-label={t("action.update", "Обновить")}
+                  aria-label={t("action.update")}
                 >
                   <RefreshCw className={cn(isLoading && "animate-spin")} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">{t("action.update", "Обновить")}</TooltipContent>
+              <TooltipContent side="bottom">{t("action.update")}</TooltipContent>
             </Tooltip>
           )}
           {onAddExisting && (
@@ -136,12 +136,12 @@ export function ApplicationItemsTable<T extends RelatedItem>({
                   variant="outline"
                   size="icon"
                   onClick={onAddExisting}
-                  aria-label={t("action.add", "Добавить")}
+                  aria-label={t("action.add")}
                 >
                   <Grid2x2Plus />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">{t("action.add", "Добавить")}</TooltipContent>
+              <TooltipContent side="bottom">{t("action.add")}</TooltipContent>
             </Tooltip>
           )}
           {onCreate && (
@@ -151,12 +151,12 @@ export function ApplicationItemsTable<T extends RelatedItem>({
                   variant="outline"
                   size="icon"
                   onClick={onCreate}
-                  aria-label={t("action.create", "Создать")}
+                  aria-label={t("action.create")}
                 >
                   <Plus />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">{t("action.create", "Создать")}</TooltipContent>
+              <TooltipContent side="bottom">{t("action.create")}</TooltipContent>
             </Tooltip>
           )}
           </div>
@@ -173,9 +173,9 @@ export function ApplicationItemsTable<T extends RelatedItem>({
               <TableRow>
                 {onToggleItem && <TableHead className="w-12"></TableHead>}
                 <TableHead className="w-12"></TableHead>
-                <TableHead className="w-32">{t("item.code", "Код")}</TableHead>
-                <TableHead>{t("item.name", "Наименование")}</TableHead>
-                <TableHead>{t("item.description", "Описание")}</TableHead>
+                <TableHead className="w-32">{t("item.code")}</TableHead>
+                <TableHead>{t("item.name")}</TableHead>
+                <TableHead>{t("item.description")}</TableHead>
                 <TableHead className="w-24"></TableHead>
               </TableRow>
             </TableHeader>
@@ -219,7 +219,7 @@ export function ApplicationItemsTable<T extends RelatedItem>({
                               </Link>
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.edit", "Редактировать")}</TooltipContent>
+                          <TooltipContent side="bottom">{t("action.edit")}</TooltipContent>
                         </Tooltip>
                       )}
                       {onDelete && (
@@ -234,7 +234,7 @@ export function ApplicationItemsTable<T extends RelatedItem>({
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent side="bottom">{t("action.delete", "Удалить")}</TooltipContent>
+                          <TooltipContent side="bottom">{t("action.delete")}</TooltipContent>
                         </Tooltip>
                       )}
                     </div>

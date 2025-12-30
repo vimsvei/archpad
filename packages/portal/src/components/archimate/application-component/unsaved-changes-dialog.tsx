@@ -34,14 +34,6 @@ export function UnsavedChangesDialog({
 }: UnsavedChangesDialogProps) {
   const { t } = useTranslate()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
-
   const handleSave = React.useCallback(async () => {
     await onSave()
   }, [onSave])
@@ -50,10 +42,9 @@ export function UnsavedChangesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>{tr("dialog.unsaved-changes.title", "Несохраненные изменения")}</DialogTitle>
+          <DialogTitle>{t("dialog.unsaved-changes.title")}</DialogTitle>
           <DialogDescription>
             {t("dialog.unsaved-changes.description", {
-              defaultValue: `У компонента "${componentName}" есть несохраненные изменения. Сохранить изменения перед выходом?`,
               component: componentName,
             })}
           </DialogDescription>
@@ -64,7 +55,7 @@ export function UnsavedChangesDialog({
             onClick={onCancel}
             disabled={isSaving}
           >
-            {tr("action.cancel", "Отмена")}
+            {t("action.cancel")}
           </Button>
           <Button
             onClick={handleSave}
@@ -73,10 +64,10 @@ export function UnsavedChangesDialog({
             {isSaving ? (
               <>
                 <Spinner className="h-4 w-4 mr-2" />
-                {tr("action.saving", "Сохранение...")}
+                {t("action.saving")}
               </>
             ) : (
-              tr("action.save", "Сохранить")
+              t("action.save")
             )}
           </Button>
         </DialogFooter>

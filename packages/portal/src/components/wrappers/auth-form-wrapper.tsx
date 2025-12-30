@@ -15,8 +15,8 @@ type AuthFormWrapperProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'childre
 export function AuthFormWrapper({className, title, titleKey, subtitle, subtitleKey, children, ...props}: AuthFormWrapperProps) {
   const { t } = useTranslate();
 
-  const resolvedTitle = titleKey ? t(titleKey, title || titleKey) : title
-  const resolvedSubtitle = subtitleKey ? t(subtitleKey, subtitle || subtitleKey) : subtitle
+  const resolvedTitle = titleKey ? t(titleKey) : title
+  const resolvedSubtitle = subtitleKey ? t(subtitleKey) : subtitle
   const showHeader = Boolean(resolvedTitle || resolvedSubtitle)
   
   return (

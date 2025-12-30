@@ -48,13 +48,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   const [updateItem, updateState] = useUpdateDirectoryItemMutation()
   const [deleteItem, deleteState] = useDeleteDirectoryItemMutation()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
 
   const backHref = `/directories/${directorySlug}`
 
@@ -120,7 +114,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   const handleSave = React.useCallback(async () => {
     if (!item) return
     if (!isDraftValid) {
-      toast.error(tr("form.invalid", "Please fill required fields"))
+      toast.error(tr("form.invalid"))
       return
     }
     const normalized = normalize(draft)
@@ -129,7 +123,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
       id: item.id,
       input: { ...normalized, code: normalized.code ? normalized.code : undefined },
     }).unwrap()
-    toast.success(tr("action.saved", "Saved"))
+    toast.success(tr("action.saved"))
     // Update baseline so Back won't ask again.
     baselineRef.current = normalize(draft)
   }, [draft, directorySlug, isDraftValid, item, normalize, tr, updateItem])
@@ -143,13 +137,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{title}</h1>
         </div>
@@ -171,13 +165,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{title}</h1>
         </div>
@@ -199,13 +193,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back", "Back")}
+                aria-label={tr("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back", "Back")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold">
@@ -222,17 +216,17 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 variant="outline"
                 className="text-destructive border-destructive/40 hover:bg-destructive/10"
                 size="icon"
-                aria-label={tr("action.delete", "Delete")}
+                aria-label={tr("action.delete")}
                 onClick={() => {
                   const ok = window.confirm("Delete this item?")
                   if (!ok) return
                   void (async () => {
                     try {
                       await deleteItem({ slug: directorySlug, id: item.id }).unwrap()
-                      toast.success(tr("action.deleted", "Deleted"))
+                      toast.success(tr("action.deleted"))
                       goBack()
                     } catch (e: any) {
-                      toast.error(e?.message ?? tr("action.deleteFailed", "Failed to delete"))
+                      toast.error(e?.message ?? tr("action.deleteFailed"))
                     }
                   })()
                 }}
@@ -241,21 +235,21 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 <Trash2 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.delete", "Delete")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.delete")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                aria-label={tr("action.save", "Save")}
+                aria-label={tr("action.save")}
                 onClick={() => void handleSave()}
                 disabled={!isDirty || updateState.isLoading || !isDraftValid}
               >
                 <Save />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.save", "Save")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.save")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -266,14 +260,14 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
           variant={tab === "general" ? "default" : "ghost"}
           onClick={() => setTab("general")}
         >
-          {tr("tabs.general", "Общие")}
+          {tr("tabs.general")}
         </Button>
         <Button
           type="button"
           variant={tab === "relations" ? "default" : "ghost"}
           onClick={() => setTab("relations")}
         >
-          {tr("tabs.relations", "Связи")}
+          {tr("tabs.relations")}
         </Button>
       </div>
 
@@ -286,7 +280,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 values={draft}
                 onChange={setDraft}
                 i18nPrefix="item"
-                submitLabel={tr("action.save", "Save")}
+                submitLabel={tr("action.save")}
                 hideActions
                 disabled={updateState.isLoading}
                 onSubmit={async (values) => {
@@ -297,10 +291,10 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                       id: item.id,
                       input: { ...normalized, code: normalized.code ? normalized.code : undefined },
                     }).unwrap()
-                    toast.success(tr("action.saved", "Saved"))
+                    toast.success(tr("action.saved"))
                     baselineRef.current = normalize(values)
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                    toast.error(e?.message ?? tr("action.saveFailed"))
                   }
                 }}
               />
@@ -316,14 +310,14 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("dialog.unsaved.title", "Unsaved changes")}</DialogTitle>
+            <DialogTitle>{tr("dialog.unsaved.title")}</DialogTitle>
             <DialogDescription>
-              {tr("dialog.unsaved.description", "Save your changes before leaving?")}
+              {tr("dialog.unsaved.description")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              {tr("action.cancel", "Cancel")}
+              {tr("action.cancel")}
             </Button>
             <Button
               variant="outline"
@@ -332,7 +326,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 goBack()
               }}
             >
-              {tr("action.discard", "Don’t save")}
+              {tr("action.discard")}
             </Button>
             <Button
               onClick={() => {
@@ -342,13 +336,13 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                     setConfirmOpen(false)
                     goBack()
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed", "Failed to save"))
+                    toast.error(e?.message ?? tr("action.saveFailed"))
                   }
                 })()
               }}
               disabled={updateState.isLoading || !isDraftValid}
             >
-              {tr("action.save", "Save")}
+              {tr("action.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

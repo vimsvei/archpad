@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryLoginFlow } from '@/components/ory'
+import { SignInForm } from '@/components/auth/forms/sign-in-form'
 import { getLoginFlow, getServerSession, OryPageParams } from '@ory/nextjs/app'
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
@@ -28,11 +28,13 @@ export default async function SignInPage(props: OryPageParams) {
   }
 
   return (
-    <AuthFormWrapper>
-      <OryLoginFlow
-        flow={flow}
-        config={config}
-      />
+    <AuthFormWrapper
+      titleKey="auth.sign-in.title"
+      title="Sign in"
+      subtitleKey="auth.sign-in.subtitle"
+      subtitle="Sign in with your email and password"
+    >
+      <SignInForm flow={flow} />
     </AuthFormWrapper>
   )
 }

@@ -53,13 +53,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState<PageSizeOption>(25)
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
 
   const formatNowWithTz = React.useCallback(() => {
     try {
@@ -378,7 +372,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       title={title}
       search={{
         value: search,
-        placeholder: tr("table.filter", "Filter..."),
+        placeholder: tr("table.filter"),
         onChange: setSearch,
       }}
       actions={
@@ -396,14 +390,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.refresh", "Refresh")}
+                aria-label={tr("action.refresh")}
                 onClick={() => void handleRefetch()}
                 disabled={isFetching}
               >
                 <RefreshCcw />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.refresh", "Refresh")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.refresh")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -411,14 +405,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.upload", "Upload from file")}
+                aria-label={tr("action.upload")}
                 onClick={handleUploadClick}
                 disabled={isImporting || bulkCreateState.isLoading || bulkUpsertState.isLoading}
               >
                 <Upload />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.upload", "Upload from file")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.upload")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -427,21 +421,21 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                 columns={columns}
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={setColumnVisibility}
-                ariaLabel={tr("table.columns", "Columns")}
+                ariaLabel={tr("table.columns")}
               />
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("table.columns", "Columns")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("table.columns")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button size="icon" aria-label={tr("action.create", "Create")}>
+                <Button size="icon" aria-label={tr("action.create")}>
                   <Plus />
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.create", "Create")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.create")}</TooltipContent>
           </Tooltip>
         </>
       }
@@ -465,7 +459,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                     code: values.code ? values.code : undefined,
                   },
                 }).unwrap()
-                toast.success(`${tr("directory.item.created", "Created")} ${title}`, {
+                toast.success(`${tr("directory.item.created")} ${title}`, {
                   description: formatNowWithTz(),
                   className:
                     "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
@@ -473,7 +467,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               } catch (e: any) {
                 setOpen(false)
                 toast.error(
-                  `${tr("directory.item.error", tr("ditectory.item.error", "Error"))} ${title}`,
+                  `${tr("directory.item.error", tr("ditectory.item.error"))} ${title}`,
                   {
                     className:
                       "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",
@@ -518,7 +512,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         onPageChange: setPage,
         pageSize,
         onPageSizeChange: setPageSize,
-        pageSizeLabel: tr("table.page.size", "Rows per page"),
+        pageSizeLabel: tr("table.page.size"),
       }}
     />
   )

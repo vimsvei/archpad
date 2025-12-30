@@ -51,13 +51,7 @@ export function DirectoryItemForm({
 }: DirectoryItemFormProps) {
   const { t } = useTranslate()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
   const isControlled = values !== undefined
 
   const [code, setCode] = React.useState(initialValues?.code ?? "")
@@ -219,7 +213,7 @@ export function DirectoryItemForm({
         <div className="flex items-center justify-end gap-2">
           {onCancel ? (
             <Button type="button" variant="outline" onClick={onCancel} disabled={disabled}>
-              {tr("action.cancel", "Cancel")}
+              {tr("action.cancel")}
             </Button>
           ) : null}
           <Button type="submit" disabled={!isValid || disabled}>

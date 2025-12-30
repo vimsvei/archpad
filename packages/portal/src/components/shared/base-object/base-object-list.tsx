@@ -85,20 +85,14 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
   const items = (data as any)?.items ?? []
   const pageCount = (data as any)?.pageCount ?? 1
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = React.useCallback((key: string) => t(key), [t])
 
   return (
     <EntityListPageShell
       title={t(titleKey)}
       search={{
         value: search,
-        placeholder: tr("table.filter", "Filter..."),
+        placeholder: tr("table.filter"),
         onChange: setSearch,
       }}
       actions={
@@ -108,14 +102,14 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.refresh", "Refresh")}
+                aria-label={tr("action.refresh")}
                 onClick={() => void refetch()}
                 disabled={isFetching}
               >
                 <RefreshCcw />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.refresh", "Refresh")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.refresh")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -124,41 +118,41 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
                 columns={columns}
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={setColumnVisibility}
-                ariaLabel={tr("table.columns", "Columns")}
+                ariaLabel={tr("table.columns")}
               />
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("table.columns", "Columns")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("table.columns")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button size="icon" aria-label={tr("action.create", "Create")}>
+                <Button size="icon" aria-label={tr("action.create")}>
                   <Plus />
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.create", "Create")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.create")}</TooltipContent>
           </Tooltip>
         </>
       }
       create={{
         open,
         onOpenChange: setOpen,
-        title: tr("action.create", "Create"),
+        title: tr("action.create"),
         description: t(titleKey),
         content: (
           <BaseObjectNewItem
-            submitLabel={tr("action.create", "Create")}
+            submitLabel={tr("action.create")}
             requireCode={create.requireCode}
             disabled={create.isLoading}
             onSubmit={async (values) => {
               try {
                 setOpen(false)
                 await create.onCreate(values)
-                toast.success(tr("action.created", "Created"))
+                toast.success(tr("action.created"))
               } catch (e: any) {
-                toast.error(e?.message ?? tr("action.createFailed", "Failed to create"))
+                toast.error(e?.message ?? tr("action.createFailed"))
               } finally {
                 void refetch()
               }
@@ -183,7 +177,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
           />
           {error ? (
             <div className="text-destructive mt-2 text-sm">
-              {(error as any)?.message ?? tr("action.loadFailed", "Failed to load")}
+              {(error as any)?.message ?? tr("action.loadFailed")}
             </div>
           ) : null}
         </>
@@ -194,7 +188,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
         onPageChange: setPage,
         pageSize,
         onPageSizeChange: setPageSize,
-        pageSizeLabel: tr("table.page.size", "Rows per page"),
+        pageSizeLabel: tr("table.page.size"),
       }}
     />
   )

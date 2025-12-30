@@ -1,6 +1,10 @@
-import type {OryClientConfiguration} from "@ory/elements-react";
+// Minimal config object used by `@ory/nextjs/app` helpers (getLoginFlow, getRegistrationFlow, ...).
+// We intentionally avoid importing types from `@ory/elements-react` since we no longer use Ory Elements UI.
+type OryClientConfigurationLike = {
+  project: Record<string, unknown>
+}
 
-const config: OryClientConfiguration = {
+const config: OryClientConfigurationLike = {
   project: {
       default_locale: 'ru-RU',
       default_redirect_url: `/dashboard`,
@@ -14,7 +18,7 @@ const config: OryClientConfiguration = {
       verification_ui_url: `/verify`,
       recovery_ui_url: `/recovery`,
       login_ui_url: `/sign-in`,
-      settings_ui_url: ""
+      settings_ui_url: `/settings`
   }
 }
 

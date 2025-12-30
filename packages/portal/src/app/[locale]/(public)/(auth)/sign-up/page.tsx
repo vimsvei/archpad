@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryRegistrationFlow } from '@/components/ory'
+import { SignUpForm } from '@/components/auth/forms/sign-up-form'
 import { getRegistrationFlow, getServerSession, OryPageParams } from '@ory/nextjs/app'
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
@@ -24,11 +24,13 @@ export default async function SignUpPage(props: OryPageParams) {
   if (!flow) { return null }
   
   return (
-    <AuthFormWrapper>
-      <OryRegistrationFlow
-        flow={flow}
-        config={config}
-      />
+    <AuthFormWrapper
+      titleKey="auth.sign-up.title"
+      title="Sign up"
+      subtitleKey="auth.sign-up.subtitle"
+      subtitle="Create a new account to get started"
+    >
+      <SignUpForm flow={flow} />
     </AuthFormWrapper>
   )
 }

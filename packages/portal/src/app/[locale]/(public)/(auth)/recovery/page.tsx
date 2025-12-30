@@ -1,5 +1,5 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
-import { OryRecoveryFlow } from '@/components/ory'
+import { RecoveryForm } from '@/components/auth/forms/recovery-form'
 import {getRecoveryFlow, OryPageParams} from "@ory/nextjs/app";
 import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
@@ -14,11 +14,13 @@ export default async function RecoveryPage(props: OryPageParams) {
   
   if (!flow) { return null }
   return (
-    <AuthFormWrapper>
-      <OryRecoveryFlow
-        flow={flow}
-        config={config}
-      />
+    <AuthFormWrapper
+      titleKey="auth.recovery.title"
+      title="Recovery"
+      subtitleKey="auth.recovery.subtitle"
+      subtitle="Enter your email to recover your account"
+    >
+      <RecoveryForm flow={flow} />
     </AuthFormWrapper>
   )
 }

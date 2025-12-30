@@ -67,6 +67,7 @@ function rewriteSelfServiceLocation(rawLocation: string): string {
     ['/self-service/registration', '/sign-up'],
     ['/self-service/recovery', '/recovery'],
     ['/self-service/verification', '/verify'],
+    ['/self-service/settings', '/settings'],
   ]
 
   for (const [prefix, ui] of map) {
