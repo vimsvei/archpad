@@ -79,7 +79,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>
-            {t("action.add.description", "Search and select items to add")}
+            {t("action.add.description")}
           </SheetDescription>
         </SheetHeader>
 
@@ -88,7 +88,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t("search.placeholder", "Search by code or name...")}
+              placeholder={t("search.placeholder")}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-9"
@@ -108,7 +108,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                   selectedItems.forEach((id) => onToggleItem(id))
                 }}
               >
-                {t("action.clearAll", "Clear all")}
+                {t("action.clearAll")}
               </Button>
             </div>
           )}
@@ -117,13 +117,13 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
           <div className="flex-1 min-h-0">
             {isLoading ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
-                {t("action.loading", "Loading...")}
+                {t("action.loading")}
               </div>
             ) : filteredItems.length === 0 ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
                 {searchQuery.trim()
-                  ? t("search.noResults", "No results found")
-                  : t("search.noItems", "No items available")}
+                  ? t("search.noResults")
+                  : t("search.noItems")}
               </div>
             ) : (
               <RelatedItemsList
@@ -142,10 +142,10 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
 
         <SheetFooter className="flex-row justify-end gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t("action.cancel", "Cancel")}
+            {t("action.cancel")}
           </Button>
           <Button onClick={handleAdd} disabled={selectedItems.size === 0}>
-            {t("action.add", "Add")} {selectedItems.size > 0 && `(${selectedItems.size})`}
+            {t("action.add")} {selectedItems.size > 0 && `(${selectedItems.size})`}
           </Button>
         </SheetFooter>
       </SheetContent>

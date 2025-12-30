@@ -129,7 +129,7 @@ export function RelatedItemsTable<T extends RelatedItem>({
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => onDelete(item)}>
-                        {t("action.delete", "Delete")}
+                        {t("action.delete")}
                       </DropdownMenuItem>
                     </>
                   )}
@@ -155,12 +155,12 @@ export function RelatedItemsTable<T extends RelatedItem>({
             size="icon"
             onClick={onRefresh}
             disabled={isLoading}
-                aria-label={t("action.update", "Update")}
+                aria-label={t("action.update")}
           >
             <RefreshCw className={isLoading ? "animate-spin" : ""} />
           </Button>
             </TooltipTrigger>
-            <TooltipContent>{t("action.update", "Update")}</TooltipContent>
+            <TooltipContent>{t("action.update")}</TooltipContent>
           </Tooltip>
           {onAddExisting && (
             <Tooltip>
@@ -169,12 +169,12 @@ export function RelatedItemsTable<T extends RelatedItem>({
                   variant="outline"
                   size="icon"
                   onClick={onAddExisting}
-                  aria-label={t("action.add", "Add")}
+                  aria-label={t("action.add")}
                 >
                   <Grid2x2Plus />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t("action.add", "Add")}</TooltipContent>
+              <TooltipContent>{t("action.add")}</TooltipContent>
             </Tooltip>
           )}
           <Tooltip>
@@ -183,12 +183,12 @@ export function RelatedItemsTable<T extends RelatedItem>({
             variant="outline"
             size="icon"
             onClick={onAdd}
-                aria-label={t("action.create", "Create")}
+                aria-label={t("action.create")}
           >
             <Plus />
           </Button>
             </TooltipTrigger>
-            <TooltipContent>{t("action.create", "Create")}</TooltipContent>
+            <TooltipContent>{t("action.create")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -212,7 +212,7 @@ export function RelatedItemsTable<T extends RelatedItem>({
             {items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  {t("table.no-results", "No results")}
+                  {t("table.no-results")}
                 </TableCell>
               </TableRow>
             ) : (

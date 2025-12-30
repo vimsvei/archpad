@@ -53,47 +53,47 @@ export function CreateNamedObjectSheet({
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>
-            {description ?? t("action.create.description", "Fill fields and create")}
+            {description ?? t("action.create.description")}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-4 flex-1 min-h-0 pt-4 px-4">
           <div className="grid gap-2">
-            <label className="text-sm font-medium">{t("item.code", "Code")}</label>
+            <label className="text-sm font-medium">{t("item.code")}</label>
             <Input
               value={draft.code}
               onChange={(e) => onDraftChange({ ...draft, code: e.target.value })}
-              placeholder={t("item.code.placeholder", "Code (optional)")}
+              placeholder={t("item.code.placeholder")}
             />
           </div>
 
           <div className="grid gap-2">
-            <label className="text-sm font-medium">{t("item.name", "Name")}</label>
+            <label className="text-sm font-medium">{t("item.name")}</label>
             <Input
               value={draft.name}
               onChange={(e) => onDraftChange({ ...draft, name: e.target.value })}
-              placeholder={t("item.name", "Name")}
+              placeholder={t("item.name")}
             />
           </div>
 
           <div className="grid gap-2">
-            <label className="text-sm font-medium">{t("item.description", "Description")}</label>
+            <label className="text-sm font-medium">{t("item.description")}</label>
             <Textarea
               rows={3}
               className="resize-none"
               value={draft.description}
               onChange={(e) => onDraftChange({ ...draft, description: e.target.value })}
-              placeholder={t("item.description", "Description")}
+              placeholder={t("item.description")}
             />
           </div>
         </div>
 
         <SheetFooter className="flex-row justify-end gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-            {t("action.cancel", "Cancel")}
+            {t("action.cancel")}
           </Button>
           <Button onClick={onSubmit} disabled={!canSubmit || isSubmitting}>
-            {t("action.create", "Create")}
+            {t("action.create")}
           </Button>
         </SheetFooter>
       </SheetContent>

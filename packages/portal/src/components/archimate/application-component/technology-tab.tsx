@@ -36,13 +36,13 @@ export function TechnologyTab({
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="system-software">
-            {t("tab.technology.system-software", "Системное ПО")}
+            {t("tab.technology.system-software")}
           </TabsTrigger>
           <TabsTrigger value="nodes">
-            {t("tab.technology.nodes", "Узлы")}
+            {t("tab.technology.nodes")}
           </TabsTrigger>
           <TabsTrigger value="networks">
-            {t("tab.technology.networks", "Сети")}
+            {t("tab.technology.networks")}
           </TabsTrigger>
         </TabsList>
 

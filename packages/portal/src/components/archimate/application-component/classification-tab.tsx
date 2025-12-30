@@ -43,7 +43,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
           <div className="flex flex-col gap-4">
             {/* Architecture Style */}
             <div className="grid gap-2">
-              <Label htmlFor="architecture-style">{tr("directory.architecture.style", "Архитектурный стиль")}</Label>
+              <Label htmlFor="architecture-style">{tr("directory.architecture.style")}</Label>
               <Select
                 value={editState.directoryFields.architectureStyleId ?? ""}
                 onValueChange={(value) =>
@@ -52,7 +52,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="architecture-style" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {architectureStyles.map((it) => (
@@ -66,7 +66,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* License Type */}
             <div className="grid gap-2">
-              <Label htmlFor="license-type">{tr("directory.license.type", "Тип лицензии")}</Label>
+              <Label htmlFor="license-type">{tr("directory.license.type")}</Label>
               <Select
                 value={editState.directoryFields.licenseTypeId ?? ""}
                 onValueChange={(value) =>
@@ -75,7 +75,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="license-type" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {licenseTypes.map((it) => (
@@ -92,7 +92,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
           <div className="flex flex-col gap-4">
             {/* Critical Level */}
             <div className="grid gap-2">
-              <Label htmlFor="critical-level">{tr("directory.critical.level", "Уровень критичности")}</Label>
+              <Label htmlFor="critical-level">{tr("directory.critical.level")}</Label>
               <Select
                 value={editState.directoryFields.criticalLevelId ?? ""}
                 onValueChange={(value) =>
@@ -101,7 +101,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="critical-level" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {criticalLevels.map((it) => (
@@ -115,7 +115,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* Failover Type */}
             <div className="grid gap-2">
-              <Label htmlFor="failover-type">{tr("directory.failover.type", "Тип отказоустойчивости")}</Label>
+              <Label htmlFor="failover-type">{tr("directory.failover.type")}</Label>
               <Select
                 value={editState.directoryFields.failoverTypeId ?? ""}
                 onValueChange={(value) =>
@@ -124,7 +124,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="failover-type" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {failoverTypes.map((it) => (
@@ -138,7 +138,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* Recovery Time */}
             <div className="grid gap-2">
-              <Label htmlFor="recovery-time">{tr("directory.recovery.time", "Время восстановления")}</Label>
+              <Label htmlFor="recovery-time">{tr("directory.recovery.time")}</Label>
               <Select
                 value={editState.directoryFields.recoveryTimeId ?? ""}
                 onValueChange={(value) =>
@@ -147,7 +147,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="recovery-time" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {recoveryTimes.map((it) => (
@@ -161,7 +161,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* Redundancy Type */}
             <div className="grid gap-2">
-              <Label htmlFor="redundancy-type">{tr("directory.redundancy.type", "Тип избыточности")}</Label>
+              <Label htmlFor="redundancy-type">{tr("directory.redundancy.type")}</Label>
               <Select
                 value={editState.directoryFields.redundancyTypeId ?? ""}
                 onValueChange={(value) =>
@@ -170,7 +170,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="redundancy-type" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {redundancyTypes.map((it) => (
@@ -184,7 +184,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* Monitoring Level */}
             <div className="grid gap-2">
-              <Label htmlFor="monitoring-level">{tr("directory.monitoring.level", "Уровень мониторинга")}</Label>
+              <Label htmlFor="monitoring-level">{tr("directory.monitoring.level")}</Label>
               <Select
                 value={editState.directoryFields.monitoringLevelId ?? ""}
                 onValueChange={(value) =>
@@ -193,7 +193,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="monitoring-level" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {monitoringLevels.map((it) => (
@@ -207,7 +207,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
 
             {/* Scaling Type */}
             <div className="grid gap-2">
-              <Label htmlFor="scaling-type">{tr("directory.scaling.type", "Тип масштабирования")}</Label>
+              <Label htmlFor="scaling-type">{tr("directory.scaling.type")}</Label>
               <Select
                 value={editState.directoryFields.scalingTypeId ?? ""}
                 onValueChange={(value) =>
@@ -216,7 +216,7 @@ export function ClassificationTab({ tr, isSaving }: ClassificationTabProps) {
                 disabled={disabled}
               >
                 <SelectTrigger id="scaling-type" className="w-full">
-                  <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+                  <SelectValue placeholder={tr("select.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {scalingTypes.map((it) => (

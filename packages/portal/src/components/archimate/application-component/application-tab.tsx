@@ -52,19 +52,19 @@ export function ApplicationTab({
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="functions">
-            {t("tab.functions", "Функции")}
+            {t("tab.functions")}
           </TabsTrigger>
           <TabsTrigger value="data-objects">
-            {t("tab.data-objects", "Объекты данных")}
+            {t("tab.data-objects")}
           </TabsTrigger>
           <TabsTrigger value="interfaces">
-            {t("tab.interfaces", "Интерфейсы")}
+            {t("tab.interfaces")}
           </TabsTrigger>
           <TabsTrigger value="events">
-            {t("tab.events", "События")}
+            {t("tab.events")}
           </TabsTrigger>
           <TabsTrigger value="hierarchy">
-            {t("tab.hierarchy", "Иерархия")}
+            {t("tab.hierarchy")}
           </TabsTrigger>
         </TabsList>
 

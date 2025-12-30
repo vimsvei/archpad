@@ -58,7 +58,7 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
         <BaseObjectItem
           values={draft}
           onChange={handleDraftChange}
-          submitLabel={tr("action.save", "Save")}
+          submitLabel={tr("action.save")}
           hideActions
           hideDescription
           disabled={isSaving}
@@ -69,14 +69,14 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
 
         {/* State field */}
         <div className="grid gap-2 flex-shrink-0">
-          <Label htmlFor="component-state">{tr("item.state", "Состояние")}</Label>
+          <Label htmlFor="component-state">{tr("item.state")}</Label>
           <Select
             value={stateId ?? ""}
             onValueChange={handleStateChange}
             disabled={isSaving || isLoadingStates}
           >
             <SelectTrigger id="component-state" className="w-full">
-              <SelectValue placeholder={tr("select.placeholder", "Выберите...")} />
+              <SelectValue placeholder={tr("select.placeholder")} />
             </SelectTrigger>
             <SelectContent>
               {componentStates.map((state) => (
@@ -90,14 +90,14 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
 
         {/* Description field - занимает все свободное пространство */}
         <div className="flex-1 flex flex-col min-h-0">
-          <Label htmlFor="description">{tr("item.description", "Описание")}</Label>
+          <Label htmlFor="description">{tr("item.description")}</Label>
           <div className="flex-1 min-h-0 mt-2">
             <MarkdownEditor
               key={basicFields.code}
               value={draft.description}
               onChange={handleDescriptionChange}
               disabled={isSaving}
-              placeholder={tr("description.placeholder", "Enter description...")}
+              placeholder={tr("description.placeholder")}
             />
           </div>
         </div>

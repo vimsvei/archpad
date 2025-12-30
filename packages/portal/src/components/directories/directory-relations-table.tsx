@@ -112,10 +112,10 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
           </div>
 
           <div className="grid min-w-0 gap-2">
-            <Label>{tr("directory.item.relations.type", "Link type")}</Label>
+            <Label>{tr("directory.item.relations.type")}</Label>
             <Select value={linkType} onValueChange={(v) => setLinkType(v as DirectoryLinkType)}>
               <SelectTrigger className="w-full min-w-0">
-                <SelectValue placeholder={tr("directory.item.relations.type.placeholder", "Select type")} />
+                <SelectValue placeholder={tr("directory.item.relations.type.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={DirectoryLinkType.ASSOCIATION}>
@@ -132,7 +132,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
             <Button
               type="button"
               size="icon"
-              aria-label={tr("action.add", "Add")}
+              aria-label={tr("action.add")}
               disabled={!targetItemId || isCreateLinkLoading}
               onClick={async () => {
                 if (!targetItemId) return
@@ -178,7 +178,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               <TableRow>
                 <TableHead>{t('directory.item.relations.target.directory')}</TableHead>
                 <TableHead>{t('directory.item.relations.target.item')}</TableHead>
-                <TableHead>{tr("directory.item.relations.type", "Link type")}</TableHead>
+                <TableHead>{tr("directory.item.relations.type")}</TableHead>
                 <TableHead className="w-[56px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -212,7 +212,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                         <Button
                           variant="outline"
                           size="icon"
-                          aria-label={tr("action.remove", "Remove")}
+                          aria-label={tr("action.remove")}
                           disabled={isDeleteLinkLoading}
                           onClick={async () => {
                             await deleteLink({

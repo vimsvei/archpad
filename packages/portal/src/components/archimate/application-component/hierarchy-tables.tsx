@@ -36,7 +36,7 @@ export function ParentTable({ componentId, onAddExisting }: ParentTableProps) {
 
   return (
     <RelatedItemsList<ApplicationComponent>
-      title={t("hierarchy.parent", "Родители")}
+      title={t("hierarchy.parent")}
       items={parents}
       isLoading={isLoading}
       iconType="application-component"
@@ -79,7 +79,7 @@ export function ChildrenTable({ componentId, onAddExisting }: ChildrenTableProps
 
   return (
     <RelatedItemsList<ApplicationComponent>
-      title={t("hierarchy.children", "Дети")}
+      title={t("hierarchy.children")}
       items={children}
       isLoading={isLoading}
       iconType="application-component"

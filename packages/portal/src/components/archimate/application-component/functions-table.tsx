@@ -31,7 +31,7 @@ export function FunctionsTable({ componentId, componentName, onAddExisting, onCr
 
   const handleRefresh = React.useCallback(() => {
     // Data is already in Redux store, no need to refresh
-    toast.success(t("action.updated", "Updated"))
+    toast.success(t("action.updated"))
   }, [t])
 
   const handleDelete = React.useCallback(
@@ -46,9 +46,9 @@ export function FunctionsTable({ componentId, componentName, onAddExisting, onCr
             next.delete(item.id)
             return next
           })
-          toast.success(t("action.deleted", "Deleted"))
+          toast.success(t("action.deleted"))
         } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+          toast.error(e?.message ?? t("action.deleteFailed"))
         } finally {
           setIsLoading(false)
         }

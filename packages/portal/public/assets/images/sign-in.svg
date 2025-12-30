@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
+    <defs>
+        <style>
+            :root{
+            --ill-bg: var(--background, #ffffff);
+            --ill-fg: var(--foreground, #111827);
+            --ill-muted: var(--muted, #e5e7eb);
+            --ill-card: var(--card, #ffffff);
+            --ill-border: var(--border, #cbd5e1);
+            --ill-primary: var(--primary, #6366f1);
+            --ill-primary-fg: var(--primary-foreground);
+            --ill-ring: var(--ring);
+            }
+            .s-line{ stroke: var(--ill-fg); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+            .s-thin{ stroke: var(--ill-fg); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity:.9; }
+            .fill-card{ fill: var(--ill-card); }
+            .fill-muted{ fill: var(--ill-muted); }
+            .fill-primary{ fill: var(--ill-primary); }
+            .fill-bg{ fill: var(--ill-bg); }
+            .fill-fg{ fill: var(--ill-fg); }
+            .fill-soft{ fill: color-mix(in oklch, var(--ill-primary) 18%, var(--ill-card)); }
+            .stroke-border{ stroke: var(--ill-border); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+            .shadow{ opacity:.12; }
+        </style>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="b"/>
+            <feOffset in="b" dx="0" dy="10" result="o"/>
+            <feColorMatrix in="o" type="matrix" values="0 0 0 0 0
+                                                   0 0 0 0 0
+                                                   0 0 0 0 0
+                                                   0 0 0 .28 0" result="c"/>
+            <feMerge>
+                <feMergeNode in="c"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+
+    <!-- bg -->
+    <g id="bg">
+        <rect class="fill-bg" x="0" y="0" width="1200" height="1600"/>
+        <path class="fill-soft" d="M140,310 C250,170 430,120 600,145 C815,175 980,330 1040,520 C1090,680 1040,860 910,980 C790,1090 720,1210 740,1370 C760,1510 640,1570 520,1540 C340,1490 190,1360 140,1180 C90,990 70,450 140,310 Z" opacity=".55"/>
+        <ellipse class="fill-muted shadow" cx="600" cy="1300" rx="360" ry="70"/>
+    </g>
+
+    <!-- scene -->
+    <g id="scene">
+        <!-- floating cards (no text) -->
+        <g id="ui-cards" filter="url(#softShadow)">
+            <rect class="fill-card stroke-border" x="120" y="260" rx="36" ry="36" width="320" height="220"/>
+            <rect class="fill-muted" x="160" y="310" rx="18" ry="18" width="240" height="28"/>
+            <rect class="fill-muted" x="160" y="356" rx="18" ry="18" width="200" height="28"/>
+            <rect class="fill-primary" x="160" y="408" rx="22" ry="22" width="140" height="44"/>
+
+            <rect class="fill-card stroke-border" x="790" y="310" rx="36" ry="36" width="290" height="190"/>
+            <circle class="fill-primary" cx="840" cy="368" r="18"/>
+            <rect class="fill-muted" x="875" y="350" rx="16" ry="16" width="175" height="32"/>
+            <rect class="fill-muted" x="820" y="410" rx="18" ry="18" width="230" height="26"/>
+            <rect class="fill-muted" x="820" y="448" rx="18" ry="18" width="190" height="26"/>
+        </g>
+
+        <!-- desk -->
+        <path class="fill-card stroke-border" d="M210,1060 C260,980 350,940 450,940 L750,940 C850,940 940,980 990,1060 L1040,1160 C1070,1220 1030,1280 960,1280 L240,1280 C170,1280 130,1220 160,1160 Z" filter="url(#softShadow)"/>
+        <path class="fill-muted" d="M260,1150 C310,1080 380,1050 460,1050 L740,1050 C820,1050 890,1080 940,1150 C820,1210 710,1240 600,1240 C490,1240 380,1210 260,1150 Z" opacity=".75"/>
+    </g>
+
+    <!-- character -->
+    <g id="character">
+        <!-- chair -->
+        <path class="fill-muted stroke-border" d="M430,1040 C430,930 500,860 600,860 C700,860 770,930 770,1040 L770,1110 C770,1145 742,1173 707,1173 L493,1173 C458,1173 430,1145 430,1110 Z" opacity=".95"/>
+
+        <!-- body -->
+        <path class="fill-card stroke-border" d="M470,980 C490,910 540,870 600,870 C660,870 710,910 730,980 L760,1120 C770,1170 730,1210 680,1210 L520,1210 C470,1210 430,1170 440,1120 Z" filter="url(#softShadow)"/>
+
+        <!-- head -->
+        <g id="head">
+            <circle class="fill-card stroke-border" cx="600" cy="790" r="110" filter="url(#softShadow)"/>
+            <!-- hair -->
+            <path class="fill-primary" d="M500,790 C500,710 545,660 615,660 C690,660 740,720 740,800 C705,760 665,740 615,735 C560,730 525,750 500,790 Z" opacity=".95"/>
+            <!-- face lines -->
+            <path class="s-thin" d="M560,800 C565,820 555,835 535,840" />
+            <path class="s-thin" d="M640,800 C635,820 645,835 665,840" />
+            <path class="s-thin" d="M570,870 C600,900 630,900 660,870" opacity=".85"/>
+        </g>
+
+        <!-- arms -->
+        <path class="fill-muted stroke-border" d="M470,1030 C430,1040 395,1070 385,1120 C375,1170 405,1210 455,1210 L520,1210 C470,1185 455,1155 470,1030 Z"/>
+        <path class="fill-muted stroke-border" d="M730,1030 C770,1040 805,1070 815,1120 C825,1170 795,1210 745,1210 L680,1210 C730,1185 745,1155 730,1030 Z"/>
+    </g>
+
+    <!-- props -->
+    <g id="props">
+        <!-- laptop -->
+        <g id="laptop" filter="url(#softShadow)">
+            <path class="fill-card stroke-border" d="M430,980 L770,980 L800,1140 C805,1170 783,1195 753,1195 L447,1195 C417,1195 395,1170 400,1140 Z"/>
+            <rect class="fill-muted" x="455" y="1010" rx="22" ry="22" width="290" height="140" opacity=".9"/>
+            <!-- input dots -->
+            <g id="input-dots" opacity=".8">
+                <circle class="fill-primary" cx="520" cy="1080" r="10"/>
+                <circle class="fill-primary" cx="555" cy="1080" r="10"/>
+                <circle class="fill-primary" cx="590" cy="1080" r="10"/>
+                <circle class="fill-primary" cx="625" cy="1080" r="10"/>
+            </g>
+        </g>
+
+        <!-- small lock icon -->
+        <g id="lock" transform="translate(870 920)" filter="url(#softShadow)">
+            <rect class="fill-card stroke-border" x="-70" y="50" rx="28" ry="28" width="140" height="150"/>
+            <path class="fill-primary" d="M-35,50 v-25 c0-40 30-70 65-70 c35,0 65,30 65,70 v25 h-30 v-22 c0-24-16-42-35-42 c-19,0-35,18-35,42 v22 z" opacity=".95"/>
+            <circle class="fill-muted" cx="0" cy="130" r="18"/>
+            <path class="s-thin" d="M0,148 v26" />
+        </g>
+    </g>
+
+    <!-- fx -->
+    <g id="fx" opacity=".55">
+        <path class="s-thin" d="M250,640 C300,610 340,610 390,640" />
+        <path class="s-thin" d="M920,620 C960,600 1010,610 1040,640" />
+        <circle class="fill-primary" cx="980" cy="720" r="8"/>
+        <circle class="fill-primary" cx="220" cy="740" r="8"/>
+    </g>
+</svg>

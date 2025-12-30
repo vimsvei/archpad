@@ -91,7 +91,7 @@ export function RelatedItemCard<T extends RelatedItem>({
                     </Link>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("action.edit", "Редактировать")}</TooltipContent>
+                <TooltipContent side="bottom">{t("action.edit")}</TooltipContent>
               </Tooltip>
             )}
             {onDelete && (
@@ -109,7 +109,7 @@ export function RelatedItemCard<T extends RelatedItem>({
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("action.delete", "Удалить")}</TooltipContent>
+                <TooltipContent side="bottom">{t("action.delete")}</TooltipContent>
               </Tooltip>
             )}
           </div>

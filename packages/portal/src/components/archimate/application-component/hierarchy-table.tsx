@@ -33,11 +33,11 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
   const children = editState.children
 
   const handleRefreshParents = React.useCallback(() => {
-    toast.success(t("action.updated", "Updated"))
+    toast.success(t("action.updated"))
   }, [t])
 
   const handleRefreshChildren = React.useCallback(() => {
-    toast.success(t("action.updated", "Updated"))
+    toast.success(t("action.updated"))
   }, [t])
 
   const handleDeleteParent = React.useCallback(
@@ -53,9 +53,9 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
             next.delete(item.id)
             return next
           })
-          toast.success(t("action.deleted", "Deleted"))
+          toast.success(t("action.deleted"))
         } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+          toast.error(e?.message ?? t("action.deleteFailed"))
         } finally {
           setIsLoadingParents(false)
         }
@@ -77,9 +77,9 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
             next.delete(item.id)
             return next
           })
-          toast.success(t("action.deleted", "Deleted"))
+          toast.success(t("action.deleted"))
         } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+          toast.error(e?.message ?? t("action.deleteFailed"))
         } finally {
           setIsLoadingChildren(false)
         }
@@ -120,7 +120,7 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
         {/* Parents Table */}
         <div className="flex-1 min-h-0 flex flex-col">
           <div className="px-6 py-2 border-b mb-4">
-            <h3 className="font-semibold">{t("hierarchy.parent", "Родители")}</h3>
+            <h3 className="font-semibold">{t("hierarchy.parent")}</h3>
           </div>
           <div className="flex-1 min-h-0 -mx-6">
             <ArchimateItemTable<ApplicationComponent>
@@ -141,7 +141,7 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
         {/* Children Table */}
         <div className="flex-1 min-h-0 flex flex-col">
           <div className="px-6 py-2 border-b mb-4">
-            <h3 className="font-semibold">{t("hierarchy.children", "Дети")}</h3>
+            <h3 className="font-semibold">{t("hierarchy.children")}</h3>
           </div>
           <div className="flex-1 min-h-0 -mx-6">
             <ArchimateItemTable<ApplicationComponent>

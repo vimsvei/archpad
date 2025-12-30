@@ -29,7 +29,7 @@ export default function DirectoriesIndexPage() {
                   <div className="min-w-0">
                     <div className="font-medium">{t(getDirectoryMeta(slug).titleKey)}</div>
                     <div className="text-muted-foreground text-sm">
-                      {isLoading ? "…" : `${t("directory.rows", "rows")}: ${count ?? 0}`}
+                      {isLoading ? "…" : `${t("directory.rows")}: ${count ?? 0}`}
                     </div>
                   </div>
                 </div>

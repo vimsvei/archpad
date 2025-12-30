@@ -30,7 +30,7 @@ export function EventsTable({ componentId, componentName, onAddExisting, onCreat
   const items = editState.events
 
   const handleRefresh = React.useCallback(() => {
-    toast.success(t("action.updated", "Updated"))
+    toast.success(t("action.updated"))
   }, [t])
 
   const handleDelete = React.useCallback(
@@ -45,9 +45,9 @@ export function EventsTable({ componentId, componentName, onAddExisting, onCreat
             next.delete(item.id)
             return next
           })
-          toast.success(t("action.deleted", "Deleted"))
+          toast.success(t("action.deleted"))
         } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed", "Failed to delete"))
+          toast.error(e?.message ?? t("action.deleteFailed"))
         } finally {
           setIsLoading(false)
         }
