@@ -42,4 +42,5 @@ COPY --from=build /app/packages/backend/dist ./dist
 
 USER node
 
-CMD ["node", "dist/apps/hasura-sync-service/main.js"]
+# Nest monorepo build output keeps sourceRoot folders under dist/
+CMD ["node", "dist/apps/hasura-sync-service/apps/hasura-sync-service/src/main.js"]

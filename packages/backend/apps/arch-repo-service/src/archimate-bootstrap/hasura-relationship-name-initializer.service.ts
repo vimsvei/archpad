@@ -125,9 +125,12 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
         continue;
       }
 
-      if (prop.reference !== ReferenceKind.ONE_TO_MANY) {
+      const propKind: string | undefined = prop.kind ?? prop.reference;
+      if (propKind !== ReferenceKind.ONE_TO_MANY) {
         this.logger.warn(
-          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: expected OneToMany`,
+          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: expected OneToMany, got ${String(
+            propKind,
+          )}`,
           this.loggerContext,
         );
         continue;
@@ -154,12 +157,15 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
         continue;
       }
 
+      const owningKind: string | undefined = owningProp.kind ?? owningProp.reference;
       if (
-        owningProp.reference !== ReferenceKind.MANY_TO_ONE &&
-        owningProp.reference !== ReferenceKind.ONE_TO_ONE
+        owningKind !== ReferenceKind.MANY_TO_ONE &&
+        owningKind !== ReferenceKind.ONE_TO_ONE
       ) {
         this.logger.warn(
-          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: owning side is not ManyToOne/OneToOne`,
+          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: owning side is not ManyToOne/OneToOne (got ${String(
+            owningKind,
+          )})`,
           this.loggerContext,
         );
         continue;
@@ -231,7 +237,7 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
         continue;
       }
 
-      const ref: string | undefined = prop.reference;
+      const ref: string | undefined = prop.kind ?? prop.reference;
       if (
         ref !== ReferenceKind.MANY_TO_ONE &&
         ref !== ReferenceKind.ONE_TO_ONE

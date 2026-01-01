@@ -9,7 +9,6 @@ import { DataObject } from '@/model/archimate/application/data-object.entity';
 @HasuraTable()
 @Entity({ tableName: 'map_application_function_data_object' })
 export class ApplicationFunctionDataObjectMap extends MappedObject {
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,
@@ -19,8 +18,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
     deleteRule: 'no action',
   })
   componentFunction!: ApplicationComponentFunctionMap;
-
-  @HasuraRefName()
+  
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     primary: true,
@@ -31,7 +29,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   componentDataObject!: ApplicationComponentDataObjectMap;
 
-  @HasuraRefName()
+  @HasuraRefName('dataObjectsInFunctions')
   @ManyToOne({
     entity: () => ApplicationComponent,
     fieldName: 'component_id',
@@ -42,7 +40,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('useInFunctions')
   @ManyToOne({
     entity: () => DataObject,
     fieldName: 'data_object_id',
