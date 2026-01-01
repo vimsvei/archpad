@@ -3,9 +3,7 @@ import { HasuraClientService } from './hasura-client/hasura-client.service';
 import { ConfigService } from '@nestjs/config';
 import { readBool } from './config/read-bool';
 import { getSchemaForeignKeys } from './db/get-schema-foreign-keys';
-import { getHasuraSource } from './metadata/get-source';
-import { getTrackedTablesFromSource } from './metadata/get-tracked-tables';
-import { normalizeHasuraMetadata } from './metadata/normalize-metadata';
+import { DbTableRef } from './db/types';
 import { applyCamelCaseCustomization } from './sync/apply-camelcase-customization';
 import { applyDefaultSelectPermissions } from './sync/apply-default-permissions';
 import { fetchDbTables } from './sync/fetch-db-tables';
@@ -55,8 +53,12 @@ export class HasuraSyncService {
       options?.renameColumnsToCamelCase ?? this.renameToCamelCase;
 
     const exportResult = await this.hasura.exportMetadata();
-    const metadata = normalizeHasuraMetadata(exportResult);
-    const source = getHasuraSource(metadata, this.hasura.source);
+    const metadata = exportResult?.metadata ?? exportResult;
+    const sources: any[] = metadata?.sources ?? [];
+    const source =
+      sources.find((s) => s?.name === this.hasura.source) ??
+      sources[0] ??
+      null;
     if (!source) {
       this.logger.warn(
         `Source "${this.hasura.source}" not found in metadata.`,
@@ -65,9 +67,13 @@ export class HasuraSyncService {
       return;
     }
 
-    const trackedTables = getTrackedTablesFromSource(source, {
-      schema: this.hasura.schema,
-    });
+    const tables: any[] = source?.tables ?? [];
+    const trackedTables: DbTableRef[] = tables
+      .map((t) => t?.table ?? t)
+      .filter(Boolean)
+      .map((t) => ({ schema: t.schema, name: t.name }))
+      .filter((t) => !!t.schema && !!t.name)
+      .filter((t) => !this.hasura.schema || t.schema === this.hasura.schema);
 
     // 1) Full reset: untrack everything first (cascade removes relationships too)
     await untrackTables({
@@ -88,16 +94,10 @@ export class HasuraSyncService {
     });
 
     const foreignKeys = await getSchemaForeignKeys(this.hasura);
-    // After full reset we can just create relationships from scratch.
-    const existingRelationships: never[] = [];
-    const allTableNames = new Set(dbTables.map((t) => t.name));
-
     await syncForeignKeyRelationships({
       hasura: this.hasura,
       logger: this.logger,
       foreignKeys,
-      existingRelationships,
-      allTableNames,
     });
 
     if (this.applyDefaultPermissions) {
@@ -118,7 +118,7 @@ export class HasuraSyncService {
       hasura: this.hasura,
       logger: this.logger,
       tables: dbTables,
-      // If false: still apply decorator-driven naming (DB comments), but do not auto-camelcase everything.
+      // If false: still apply decorator-driven naming (from hasura_sync registry), but do not auto-camelcase everything.
       fallbackCamelCase: renameToCamelCase,
     });
 
