@@ -1,5 +1,5 @@
 query GetDirectoryRelations($sourceId: uuid!) {
-  map_directory_items(where: { sourceId: { _eq: $sourceId } }, order_by: { createdAt: desc }) {
+  DirectoryItemsMap(where: { sourceId: { _eq: $sourceId } }, order_by: { createdAt: desc }) {
     createdAt
     type
     sourceId

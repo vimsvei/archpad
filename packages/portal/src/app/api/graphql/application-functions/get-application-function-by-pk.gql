@@ -1,5 +1,5 @@
 query GetApplicationFunctionByPk($id: uuid!) {
-  functions_by_pk(id: $id) {
+  FunctionGenericByPk(id: $id) {
     id
     code
     name

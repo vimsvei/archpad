@@ -19,10 +19,10 @@ import type {
 } from "@/generated/operations"
 
 type HasuraDirectoryRow =
-  | GetDirectoryItemsQuery["directories"][number]
-  | NonNullable<GetDirectoryItemByPkQuery["directories_by_pk"]>
+  | GetDirectoryItemsQuery["DirectoryObject"][number]
+  | NonNullable<GetDirectoryItemByPkQuery["DirectoryObjectByPk"]>
 
-type HasuraDirectoryRelationRow = GetDirectoryRelationsQuery["map_directory_items"][number]
+type HasuraDirectoryRelationRow = GetDirectoryRelationsQuery["DirectoryItemsMap"][number]
 
 type DirectoryRowLike = {
   id: unknown
@@ -99,7 +99,7 @@ export async function getDirectoryItemsGraphql(slug: DirectorySlug): Promise<Dir
   const data = await graphqlRequest<GetDirectoryItemsQuery, GetDirectoryItemsQueryVariables>(query, {
     kind,
   })
-  return (data.directories ?? []).map(toDirectoryItem)
+  return (data.DirectoryObject ?? []).map(toDirectoryItem)
 }
 
 export async function getDirectoryItemGraphql(
@@ -109,7 +109,7 @@ export async function getDirectoryItemGraphql(
   void requireDirectoryKind(slug)
   const query = await loadGql("directories/get-directory-item-by-pk.gql")
   const data = await graphqlRequest<GetDirectoryItemByPkQuery, GetDirectoryItemByPkQueryVariables>(query, { id })
-  const row = data.directories_by_pk
+  const row = data.DirectoryObjectByPk
   if (!row) throw new Error("Item not found")
   return toDirectoryItem(row)
 }
@@ -120,7 +120,7 @@ export async function getDirectoryCountGraphql(slug: DirectorySlug): Promise<num
   const data = await graphqlRequest<GetDirectoryCountQuery, GetDirectoryCountQueryVariables>(query, {
     kind,
   })
-  return data.directories_aggregate?.aggregate?.count ?? 0
+  return data.DirectoryObjectAggregate?.aggregate?.count ?? 0
 }
 
 export async function getDirectoryRelationsGraphql(
@@ -131,7 +131,7 @@ export async function getDirectoryRelationsGraphql(
   const query = await loadGql("directories/get-directory-relations.gql")
   const data = await graphqlRequest<GetDirectoryRelationsQuery, GetDirectoryRelationsQueryVariables>(query, { sourceId })
 
-  return (data.map_directory_items ?? []).map((r: HasuraDirectoryRelationRow) => ({
+  return (data.DirectoryItemsMap ?? []).map((r: HasuraDirectoryRelationRow) => ({
     id: `${r.sourceId}:${r.targetId}:${r.type}`,
     sourceDirectorySlug: slug,
     sourceItemId: r.sourceId,
@@ -155,7 +155,7 @@ export async function getAllDirectoriesGraphql(): Promise<Record<DirectorySlug, 
   const directoriesBySlug: Record<string, DirectoryItem[]> = {}
   
   // Group directories by kind and convert to slug
-  ;(data.directories ?? []).forEach((row: any) => {
+  ;(data.DirectoryObject ?? []).forEach((row: any) => {
     const kind = row?.kind as DirectoryKind
     const slug = SLUG_BY_KIND[kind]
     if (!slug) {

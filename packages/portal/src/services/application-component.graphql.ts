@@ -6,7 +6,7 @@ import type {
   GetComponentsQueryVariables,
 } from "@/generated/operations"
 
-type HasuraComponentRow = GetComponentsQuery["components"][number]
+type HasuraComponentRow = GetComponentsQuery["ApplicationComponent"][number]
 
 export type GetApplicationComponentsParams = {
   search?: string
@@ -45,8 +45,8 @@ export async function getApplicationComponentsGraphql(
     offset,
   })
 
-  const rows = data.components
-  const total = data.components_aggregate?.aggregate?.count ?? 0
+  const rows = data.ApplicationComponent
+  const total = data.ApplicationComponentAggregate?.aggregate?.count ?? 0
   const safeRows = Array.isArray(rows) ? rows : []
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 

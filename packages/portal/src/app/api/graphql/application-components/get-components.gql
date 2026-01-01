@@ -1,5 +1,5 @@
-query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
-  components(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+query GetComponents($where: ApplicationComponent_bool_exp!, $limit: Int!, $offset: Int!) {
+  ApplicationComponent(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
     id
     code
     name
@@ -10,21 +10,21 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
       name
       color
     }
-    mapFunctions {
+    functions {
       function {
         id
         code
         name
       }
     }
-    mapProducts {
+    products {
       product {
         id
         code
         name
       }
     }
-    mapInterfaces {
+    interfaces {
       interface {
         id
         code
@@ -73,7 +73,7 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
       code
       name
     }
-    mapSystemSoftwares {
+    systemSoftware {
       kind
       systemSoftware {
         id
@@ -92,7 +92,7 @@ query GetComponents($where: components_bool_exp!, $limit: Int!, $offset: Int!) {
     updatedAt
     updatedBy
   }
-  components_aggregate(where: $where) {
+  ApplicationComponentAggregate(where: $where) {
     aggregate {
       count
     }

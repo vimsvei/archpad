@@ -10,8 +10,8 @@ import type {
 } from "@/generated/operations"
 
 type HasuraSystemSoftwareRow =
-  | GetSystemSoftwareQuery["system_software"][number]
-  | NonNullable<GetSystemSoftwareByPkQuery["system_software_by_pk"]>
+  | GetSystemSoftwareQuery["SystemSoftware"][number]
+  | NonNullable<GetSystemSoftwareByPkQuery["SystemSoftwareByPk"]>
 
 function parseSystemSoftwareKind(input: string | null): SystemSoftwareKind | null {
   if (!input) return null
@@ -59,8 +59,8 @@ export async function getSystemSoftwareGraphql(
     offset,
   })
 
-  const rows = data.system_software
-  const total = data.system_software_aggregate?.aggregate?.count ?? 0
+  const rows = data.SystemSoftware
+  const total = data.SystemSoftwareAggregate?.aggregate?.count ?? 0
   const safeRows = Array.isArray(rows) ? rows : []
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
@@ -76,7 +76,7 @@ export async function getSystemSoftwareGraphql(
 export async function getSystemSoftwareByPkGraphql(id: string): Promise<SystemSoftware> {
   const query = await loadGql("system-software/get-software-by-pk.gql")
   const data = await graphqlRequest<GetSystemSoftwareByPkQuery, GetSystemSoftwareByPkQueryVariables>(query, { id })
-  const row = data.system_software_by_pk
+  const row = data.SystemSoftwareByPk
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }

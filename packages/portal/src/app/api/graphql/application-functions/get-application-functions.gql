@@ -1,5 +1,5 @@
-query GetApplicationFunctions($where: functions_bool_exp!, $limit: Int!, $offset: Int!) {
-  functions(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+query GetApplicationFunctions($where: FunctionGeneric_bool_exp!, $limit: Int!, $offset: Int!) {
+  FunctionGeneric(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
     id
     code
     name
@@ -9,7 +9,7 @@ query GetApplicationFunctions($where: functions_bool_exp!, $limit: Int!, $offset
     updatedAt
     updatedBy
   }
-  functions_aggregate(where: $where) {
+  FunctionGenericAggregate(where: $where) {
     aggregate {
       count
     }

@@ -1,5 +1,5 @@
 query GetDirectoryItems($kind: directory_kind_enum!) {
-  directories(where: { kind: { _eq: $kind } }, order_by: { name: asc }) {
+  DirectoryObject(where: { kind: { _eq: $kind } }, order_by: { name: asc }) {
     id
     code
     name

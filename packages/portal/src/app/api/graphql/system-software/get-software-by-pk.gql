@@ -1,5 +1,5 @@
 query GetSystemSoftwareByPk($id: uuid!) {
-  system_software_by_pk(id: $id) {
+  SystemSoftwareByPk(id: $id) {
     id
     code
     name

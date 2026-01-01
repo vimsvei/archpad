@@ -1,5 +1,5 @@
 query GetDataObjectFull($id: uuid!) {
-  dataObject: data_objects_by_pk(id: $id) {
+  dataObject: DataObjectByPk(id: $id) {
     id
     code
     name
@@ -10,7 +10,7 @@ query GetDataObjectFull($id: uuid!) {
     updatedBy
   }
 
-  componentMaps: map_application_component_data_object(where: { dataObjectId: { _eq: $id } }) {
+  componentMaps: ApplicationComponentDataObjectMap(where: { dataObjectId: { _eq: $id } }) {
     component {
       id
       code
@@ -19,7 +19,7 @@ query GetDataObjectFull($id: uuid!) {
     }
   }
 
-  functionMaps: map_application_function_data_object(where: { dataObjectId: { _eq: $id } }) {
+  functionMaps: ApplicationFunctionDataObjectMap(where: { dataObjectId: { _eq: $id } }) {
     functionId
     accessKind
     componentId

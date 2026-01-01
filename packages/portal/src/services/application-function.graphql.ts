@@ -9,8 +9,8 @@ import type {
 } from "@/generated/operations"
 
 type HasuraApplicationFunctionRow =
-  | GetApplicationFunctionsQuery["functions"][number]
-  | NonNullable<GetApplicationFunctionByPkQuery["functions_by_pk"]>
+  | GetApplicationFunctionsQuery["FunctionGeneric"][number]
+  | NonNullable<GetApplicationFunctionByPkQuery["FunctionGenericByPk"]>
 
 export type GetApplicationFunctionsParams = {
   search?: string
@@ -48,8 +48,8 @@ export async function getApplicationFunctionsGraphql(
     offset,
   })
 
-  const rows = data.functions
-  const total = data.functions_aggregate?.aggregate?.count ?? 0
+  const rows = data.FunctionGeneric
+  const total = data.FunctionGenericAggregate?.aggregate?.count ?? 0
   const safeRows = Array.isArray(rows) ? rows : []
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
@@ -67,7 +67,7 @@ export async function getApplicationFunctionGraphql(id: string): Promise<Applica
   const data = await graphqlRequest<GetApplicationFunctionByPkQuery, GetApplicationFunctionByPkQueryVariables>(query, {
     id,
   })
-  const row = data.functions_by_pk
+  const row = data.FunctionGenericByPk
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }

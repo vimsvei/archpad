@@ -1,5 +1,5 @@
-query GetDataObjects($where: data_objects_bool_exp!, $limit: Int!, $offset: Int!) {
-  data_objects(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+query GetDataObjects($where: DataObject_bool_exp!, $limit: Int!, $offset: Int!) {
+  DataObject(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
     id
     code
     name
@@ -9,7 +9,7 @@ query GetDataObjects($where: data_objects_bool_exp!, $limit: Int!, $offset: Int!
     updatedAt
     updatedBy
   }
-  data_objects_aggregate(where: $where) {
+  DataObjectAggregate(where: $where) {
     aggregate {
       count
     }

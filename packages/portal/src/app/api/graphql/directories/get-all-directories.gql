@@ -1,5 +1,5 @@
 query GetAllDirectories {
-  directories(order_by: { kind: asc, name: asc }) {
+  DirectoryObject(order_by: { kind: asc, name: asc }) {
     id
     kind
     code

@@ -1,5 +1,5 @@
 query GetDataObjectByPk($id: uuid!) {
-  data_objects_by_pk(id: $id) {
+  DataObjectByPk(id: $id) {
     id
     code
     name

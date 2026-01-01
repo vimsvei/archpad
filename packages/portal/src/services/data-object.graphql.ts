@@ -9,8 +9,8 @@ import type {
 } from "@/generated/operations"
 
 type HasuraDataObjectRow =
-  | GetDataObjectsQuery["data_objects"][number]
-  | NonNullable<GetDataObjectByPkQuery["data_objects_by_pk"]>
+  | GetDataObjectsQuery["DataObject"][number]
+  | NonNullable<GetDataObjectByPkQuery["DataObjectByPk"]>
 
 export type GetDataObjectsParams = {
   search?: string
@@ -48,8 +48,8 @@ export async function getDataObjectsGraphql(
     offset,
   })
 
-  const rows = data.data_objects
-  const total = data.data_objects_aggregate?.aggregate?.count ?? 0
+  const rows = data.DataObject
+  const total = data.DataObjectAggregate?.aggregate?.count ?? 0
   const safeRows = Array.isArray(rows) ? rows : []
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
@@ -65,7 +65,7 @@ export async function getDataObjectsGraphql(
 export async function getDataObjectGraphql(id: string): Promise<DataObject> {
   const query = await loadGql("data-objects/get-data-object-by-pk.gql")
   const data = await graphqlRequest<GetDataObjectByPkQuery, GetDataObjectByPkQueryVariables>(query, { id })
-  const row = data.data_objects_by_pk
+  const row = data.DataObjectByPk
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }
@@ -112,7 +112,7 @@ export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFu
   if (functionIds.length > 0) {
     const functionsQuery = await loadGql("application-functions/get-functions-by-ids.gql")
     const functionsData = await graphqlRequest<any, { ids: string[] }>(functionsQuery, { ids: functionIds })
-    const functions = Array.isArray(functionsData.functions) ? functionsData.functions : []
+    const functions = Array.isArray(functionsData.FunctionGeneric) ? functionsData.FunctionGeneric : []
     functionsById = new Map(
       functions.map((f: any) => [
         f.id,

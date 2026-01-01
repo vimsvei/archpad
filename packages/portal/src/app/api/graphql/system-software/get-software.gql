@@ -1,5 +1,5 @@
-query GetSystemSoftware($where: system_software_bool_exp!, $limit: Int!, $offset: Int!) {
-  system_software(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+query GetSystemSoftware($where: SystemSoftware_bool_exp!, $limit: Int!, $offset: Int!) {
+  SystemSoftware(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
     id
     code
     name
@@ -19,7 +19,7 @@ query GetSystemSoftware($where: system_software_bool_exp!, $limit: Int!, $offset
     updatedAt
     updatedBy
   }
-  system_software_aggregate(where: $where) {
+  SystemSoftwareAggregate(where: $where) {
     aggregate {
       count
     }

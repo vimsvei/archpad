@@ -1,5 +1,5 @@
 query GetDirectoryCount($kind: directory_kind_enum!) {
-  directories_aggregate(where: { kind: { _eq: $kind } }) {
+  DirectoryObjectAggregate(where: { kind: { _eq: $kind } }) {
     aggregate {
       count
     }

@@ -1,5 +1,5 @@
 query GetDirectoryItemByPk($id: uuid!) {
-  directories_by_pk(id: $id) {
+  DirectoryObjectByPk(id: $id) {
     id
     code
     name
