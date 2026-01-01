@@ -1,0 +1,10 @@
+query GetFunctionsByIds($ids: [uuid!]!) {
+  functions(where: { id: { _in: $ids } }, order_by: { name: asc }) {
+    id
+    code
+    name
+    description
+  }
+}
+
+

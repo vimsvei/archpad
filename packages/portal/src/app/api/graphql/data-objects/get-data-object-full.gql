@@ -1,0 +1,34 @@
+query GetDataObjectFull($id: uuid!) {
+  dataObject: data_objects_by_pk(id: $id) {
+    id
+    code
+    name
+    description
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: map_application_component_data_object(where: { dataObjectId: { _eq: $id } }) {
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  functionMaps: map_application_function_data_object(where: { dataObjectId: { _eq: $id } }) {
+    functionId
+    accessKind
+    componentId
+    component {
+      id
+      code
+      name
+    }
+  }
+}
+
+
