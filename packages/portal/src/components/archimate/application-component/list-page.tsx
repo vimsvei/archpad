@@ -9,6 +9,7 @@ import { MoreHorizontal } from "lucide-react"
 import type { ApplicationComponent } from "@/@types/application-component"
 import { BaseObjectList } from "@/components/shared/base-object/base-object-list"
 import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
+import { formatDateTime } from "@/lib/datetime/format-date-time"
 import {
   useCreateApplicationComponentMutation,
   useGetApplicationComponentsQuery,
@@ -28,22 +29,6 @@ import { Button } from "@/components/ui/button"
 export function ListPage() {
   const { t } = useTranslate()
   const [createItem, createState] = useCreateApplicationComponentMutation()
-
-  const formatDateTime = React.useCallback((iso?: string | null) => {
-    if (!iso) return null
-    try {
-      return new Intl.DateTimeFormat(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(new Date(iso))
-    } catch {
-      return iso
-    }
-  }, [])
 
   const columns = React.useMemo<ColumnDef<ApplicationComponent>[]>(
     () => [

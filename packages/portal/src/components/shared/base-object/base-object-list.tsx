@@ -5,6 +5,7 @@ import { Plus, RefreshCcw } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef } from "@tanstack/react-table"
 import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -85,7 +86,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
   const items = (data as any)?.items ?? []
   const pageCount = (data as any)?.pageCount ?? 1
 
-  const tr = React.useCallback((key: string) => t(key), [t])
+  const tr = useTr()
 
   return (
     <EntityListPageShell

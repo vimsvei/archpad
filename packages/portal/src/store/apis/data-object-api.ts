@@ -8,6 +8,7 @@ import type {
 import * as DataObjectAPI from "@/services/data-object.rest"
 import type { GetDataObjectsParams } from "@/services/data-object.graphql"
 import * as DataObjectGraphql from "@/services/data-object.graphql"
+import type { DataObjectFull } from "@/services/data-object.graphql"
 
 export const dataObjectApi = createApi({
   reducerPath: "dataObjectApi",
@@ -34,6 +35,21 @@ export const dataObjectApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await DataObjectGraphql.getDataObjectGraphql(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "DataObjects" },
+        { type: "DataObject", id },
+      ],
+    }),
+
+    getDataObjectFull: builder.query<DataObjectFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await DataObjectGraphql.getDataObjectFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -100,6 +116,7 @@ export const dataObjectApi = createApi({
 export const {
   useGetDataObjectsQuery,
   useGetDataObjectQuery,
+  useGetDataObjectFullQuery,
   useCreateDataObjectMutation,
   useUpdateDataObjectMutation,
   useDeleteDataObjectMutation,

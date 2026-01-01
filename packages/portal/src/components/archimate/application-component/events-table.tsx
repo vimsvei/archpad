@@ -4,9 +4,7 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import ApplicationEvent from "@/components/icons/ApplicationEvent"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeEvent } from "@/store/slices/application-component-edit-slice"
@@ -20,11 +18,16 @@ type EventsTableProps = {
   onCreate?: () => void
 }
 
-export function EventsTable({ componentId, componentName, onAddExisting, onCreate }: EventsTableProps) {
+export function EventsTable({
+  componentId: _componentId,
+  componentName,
+  onAddExisting,
+  onCreate,
+}: EventsTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = editState.isSaving
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.events
@@ -35,25 +38,15 @@ export function EventsTable({ componentId, componentName, onAddExisting, onCreat
 
   const handleDelete = React.useCallback(
     (item: Event) => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentEventRest(componentId, item.id)
-          dispatch(removeEvent(item.id))
-          setSelectedItems((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+      dispatch(removeEvent(item.id))
+      setSelectedItems((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -69,19 +62,15 @@ export function EventsTable({ componentId, componentName, onAddExisting, onCreat
   }, [])
 
   return (
-    <ArchimateItemTable<Event>
+    <RelatedItemsMapTab<Event>
       items={items}
       isLoading={isLoading}
-      icon={ApplicationEvent}
+      iconType="application-event"
       editPath={(item) => `/application/events/${item.id}`}
       onRefresh={handleRefresh}
-      onCreate={onCreate}
-      onAddExisting={onAddExisting}
-      onDelete={handleDelete}
-      selectedItems={selectedItems}
-      onToggleItem={handleToggleItem}
-      componentName={componentName}
-      itemTypeKey="events"
+      actions={{ onCreate, onAddExisting, onDelete: handleDelete }}
+      selection={{ selectedItems, onToggleItem: handleToggleItem }}
+      emptyState={{ componentName, itemTypeKey: "events" }}
     />
   )
 }

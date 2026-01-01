@@ -17,7 +17,8 @@ export default async function SettingsPage(props: OryPageParams) {
     redirect("/sign-in")
   }
 
-  const searchParams = await (props as unknown as { searchParams: unknown }).searchParams
+  type QueryParamsLike = Record<string, string | string[] | undefined>
+  const searchParams = (props as unknown as { searchParams: QueryParamsLike }).searchParams
   const flow = await getSettingsFlow(config, searchParams)
   if (!flow) return null
 

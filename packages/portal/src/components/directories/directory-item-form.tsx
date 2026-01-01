@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,9 +49,7 @@ export function DirectoryItemForm({
   onSubmit,
   onCancel,
 }: DirectoryItemFormProps) {
-  const { t } = useTranslate()
-
-  const tr = React.useCallback((key: string) => t(key), [t])
+  const tr = useTr()
   const isControlled = values !== undefined
 
   const [code, setCode] = React.useState(initialValues?.code ?? "")

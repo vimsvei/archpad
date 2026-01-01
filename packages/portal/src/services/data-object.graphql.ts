@@ -70,3 +70,86 @@ export async function getDataObjectGraphql(id: string): Promise<DataObject> {
   return mapRow(row)
 }
 
+/**
+ * Full Data Object with related usage data (read model from GraphQL).
+ * Kept untyped (any) until codegen is updated, similar to ApplicationComponentFull.
+ */
+export type DataObjectFull = DataObject & {
+  components: Array<{ id: string; code: string; name: string; description?: string | null }>
+  functionUsages: Array<{
+    id: string
+    functionId: string
+    function: { id: string; code: string; name: string; description?: string | null } | null
+    component: { id: string; code: string; name: string; description?: string | null } | null
+    accessKind: string
+  }>
+}
+
+export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFull> {
+  const query = await loadGql("data-objects/get-data-object-full.gql")
+  const data = await graphqlRequest<any, { id: string }>(query, { id })
+  const row = data.dataObject
+  if (!row) throw new Error("Item not found")
+
+  const base = mapRow(row)
+
+  const components = (data.componentMaps || [])
+    .map((x: any) => x.component)
+    .filter(Boolean)
+    .map((c: any) => ({
+      id: c.id,
+      code: c.code,
+      name: c.name,
+      description: c.description ?? null,
+    }))
+
+  const functionMaps = (data.functionMaps || []).filter(Boolean)
+  const functionIds: string[] = Array.from(
+    new Set(functionMaps.map((m: any) => m.functionId).filter(Boolean))
+  )
+
+  let functionsById = new Map<string, { id: string; code: string; name: string; description?: string | null }>()
+  if (functionIds.length > 0) {
+    const functionsQuery = await loadGql("application-functions/get-functions-by-ids.gql")
+    const functionsData = await graphqlRequest<any, { ids: string[] }>(functionsQuery, { ids: functionIds })
+    const functions = Array.isArray(functionsData.functions) ? functionsData.functions : []
+    functionsById = new Map(
+      functions.map((f: any) => [
+        f.id,
+        { id: f.id, code: f.code, name: f.name, description: f.description ?? null },
+      ])
+    )
+  }
+
+  const functionUsages = functionMaps
+    .map((m: any) => {
+      const functionId = m.functionId as string | undefined
+      if (!functionId) return null
+      const component = m.component
+        ? {
+            id: m.component.id,
+            code: m.component.code,
+            name: m.component.name,
+            description: m.component.description ?? null,
+          }
+        : null
+
+      const fn = functionsById.get(functionId) ?? null
+
+      return {
+        id: `${m.componentId ?? ""}:${functionId}:${m.accessKind ?? ""}`,
+        functionId,
+        function: fn,
+        component,
+        accessKind: String(m.accessKind ?? ""),
+      }
+    })
+    .filter(Boolean) as DataObjectFull["functionUsages"]
+
+  return {
+    ...base,
+    components,
+    functionUsages,
+  }
+}
+

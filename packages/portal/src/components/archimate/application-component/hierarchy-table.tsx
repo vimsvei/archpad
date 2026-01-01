@@ -6,7 +6,6 @@ import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
 import { ApplicationComponentIcon } from "@/components/icons/application-component-icon"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
 import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
@@ -20,12 +19,16 @@ type HierarchyTableProps = {
   onAddExistingChild?: () => void
 }
 
-export function HierarchyTable({ componentId, onAddExistingParent, onAddExistingChild }: HierarchyTableProps) {
+export function HierarchyTable({
+  componentId: _componentId,
+  onAddExistingParent,
+  onAddExistingChild,
+}: HierarchyTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoadingParents, setIsLoadingParents] = React.useState(false)
-  const [isLoadingChildren, setIsLoadingChildren] = React.useState(false)
+  const isLoadingParents = editState.isSaving
+  const isLoadingChildren = editState.isSaving
   const [selectedParents, setSelectedParents] = React.useState<Set<string>>(new Set())
   const [selectedChildren, setSelectedChildren] = React.useState<Set<string>>(new Set())
 
@@ -42,50 +45,28 @@ export function HierarchyTable({ componentId, onAddExistingParent, onAddExisting
 
   const handleDeleteParent = React.useCallback(
     (item: ApplicationComponent) => {
-      void (async () => {
-        try {
-          setIsLoadingParents(true)
-          // TODO: Implement API call to remove parent
-          // await ApplicationComponentRest.removeApplicationComponentParentRest(componentId, item.id)
-          dispatch(removeParent(item.id))
-          setSelectedParents((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoadingParents(false)
-        }
-      })()
+      dispatch(removeParent(item.id))
+      setSelectedParents((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleDeleteChild = React.useCallback(
     (item: ApplicationComponent) => {
-      void (async () => {
-        try {
-          setIsLoadingChildren(true)
-          // TODO: Implement API call to remove child
-          // await ApplicationComponentRest.removeApplicationComponentChildRest(componentId, item.id)
-          dispatch(removeChild(item.id))
-          setSelectedChildren((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoadingChildren(false)
-        }
-      })()
+      dispatch(removeChild(item.id))
+      setSelectedChildren((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleParent = React.useCallback((itemId: string) => {

@@ -4,9 +4,7 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import ApplicationDataObject from "@/components/icons/ApplicationDataObject"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeDataObject } from "@/store/slices/application-component-edit-slice"
@@ -20,11 +18,16 @@ type DataObjectsTableProps = {
   onCreate?: () => void
 }
 
-export function DataObjectsTable({ componentId, componentName, onAddExisting, onCreate }: DataObjectsTableProps) {
+export function DataObjectsTable({
+  componentId: _componentId,
+  componentName,
+  onAddExisting,
+  onCreate,
+}: DataObjectsTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = editState.isSaving
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.dataObjects
@@ -35,25 +38,15 @@ export function DataObjectsTable({ componentId, componentName, onAddExisting, on
 
   const handleDelete = React.useCallback(
     (item: DataObject) => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentDataObjectRest(componentId, item.id)
-          dispatch(removeDataObject(item.id))
-          setSelectedItems((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+      dispatch(removeDataObject(item.id))
+      setSelectedItems((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -69,19 +62,15 @@ export function DataObjectsTable({ componentId, componentName, onAddExisting, on
   }, [])
 
   return (
-    <ArchimateItemTable<DataObject>
+    <RelatedItemsMapTab<DataObject>
       items={items}
       isLoading={isLoading}
-      icon={ApplicationDataObject}
+      iconType="application-data-object"
       editPath={(item) => `/application/data-objects/${item.id}`}
       onRefresh={handleRefresh}
-      onCreate={onCreate}
-      onAddExisting={onAddExisting}
-      onDelete={handleDelete}
-      selectedItems={selectedItems}
-      onToggleItem={handleToggleItem}
-      componentName={componentName}
-      itemTypeKey="data-objects"
+      actions={{ onCreate, onAddExisting, onDelete: handleDelete }}
+      selection={{ selectedItems, onToggleItem: handleToggleItem }}
+      emptyState={{ componentName, itemTypeKey: "data-objects" }}
     />
   )
 }

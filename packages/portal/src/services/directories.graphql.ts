@@ -8,7 +8,6 @@ import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
 import { getDirectoryMeta } from "@/components/directories/directory-meta"
 import type {
-  GetAllDirectoriesQuery,
   GetDirectoryCountQuery,
   GetDirectoryCountQueryVariables,
   GetDirectoryItemByPkQuery,
@@ -46,6 +45,15 @@ type MinimalDirectoryRowLike = {
 }
 
 function toDirectoryItem(row: DirectoryRowLike): DirectoryItem {
+  const createdAt = row.createdAt
+  const updatedAt = row.updatedAt
+  const createdAtStr = createdAt == null ? "" : typeof createdAt === "string" ? createdAt : String(createdAt)
+  const updatedAtStr = updatedAt == null ? "" : typeof updatedAt === "string" ? updatedAt : String(updatedAt)
+  const createdBy = row.createdBy
+  const updatedBy = row.updatedBy
+  const createdByStr = createdBy == null ? null : typeof createdBy === "string" ? createdBy : String(createdBy)
+  const updatedByStr = updatedBy == null ? null : typeof updatedBy === "string" ? updatedBy : String(updatedBy)
+
   return {
     id: String(row.id),
     code: row.code ?? "",
@@ -55,11 +63,11 @@ function toDirectoryItem(row: DirectoryRowLike): DirectoryItem {
     byDefault: Boolean(row.byDefault),
     created:
       row.createdAt || row.createdBy
-        ? { at: row.createdAt ?? "", by: row.createdBy ?? null }
+        ? { at: createdAtStr, by: createdByStr }
         : undefined,
     updated:
       row.updatedAt || row.updatedBy
-        ? { at: row.updatedAt ?? "", by: row.updatedBy ?? null }
+        ? { at: updatedAtStr, by: updatedByStr }
         : undefined,
   }
 }
@@ -141,15 +149,17 @@ export async function getDirectoryRelationsGraphql(
  */
 export async function getAllDirectoriesGraphql(): Promise<Record<DirectorySlug, DirectoryItem[]>> {
   const query = await loadGql("directories/get-all-directories.gql")
-  const data = await graphqlRequest<GetAllDirectoriesQuery>(query)
+  // NOTE: Keep this untyped until codegen includes get-all-directories.gql
+  const data = await graphqlRequest<any>(query)
   
   const directoriesBySlug: Record<string, DirectoryItem[]> = {}
   
   // Group directories by kind and convert to slug
-  ;(data.directories ?? []).forEach((row) => {
-    const slug = SLUG_BY_KIND[row.kind as DirectoryKind]
+  ;(data.directories ?? []).forEach((row: any) => {
+    const kind = row?.kind as DirectoryKind
+    const slug = SLUG_BY_KIND[kind]
     if (!slug) {
-      console.warn(`Unknown directory kind: ${row.kind}`)
+      console.warn(`Unknown directory kind: ${String(kind)}`)
       return
     }
     
@@ -158,7 +168,7 @@ export async function getAllDirectoriesGraphql(): Promise<Record<DirectorySlug, 
     }
     
     // Use minimal conversion for initial load
-    directoriesBySlug[slug].push(toDirectoryItemMinimal(row))
+    directoriesBySlug[slug].push(toDirectoryItemMinimal(row as MinimalDirectoryRowLike))
   })
   
   return directoriesBySlug as Record<DirectorySlug, DirectoryItem[]>

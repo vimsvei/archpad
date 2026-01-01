@@ -4,9 +4,7 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import ApplicationInterface from "@/components/icons/ApplicationInterface"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeInterface } from "@/store/slices/application-component-edit-slice"
@@ -20,11 +18,16 @@ type InterfacesTableProps = {
   onCreate?: () => void
 }
 
-export function InterfacesTable({ componentId, componentName, onAddExisting, onCreate }: InterfacesTableProps) {
+export function InterfacesTable({
+  componentId: _componentId,
+  componentName,
+  onAddExisting,
+  onCreate,
+}: InterfacesTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = editState.isSaving
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.interfaces
@@ -35,25 +38,15 @@ export function InterfacesTable({ componentId, componentName, onAddExisting, onC
 
   const handleDelete = React.useCallback(
     (item: Interface) => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentInterfaceRest(componentId, item.id)
-          dispatch(removeInterface(item.id))
-          setSelectedItems((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+      dispatch(removeInterface(item.id))
+      setSelectedItems((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -69,19 +62,15 @@ export function InterfacesTable({ componentId, componentName, onAddExisting, onC
   }, [])
 
   return (
-    <ArchimateItemTable<Interface>
+    <RelatedItemsMapTab<Interface>
       items={items}
       isLoading={isLoading}
-      icon={ApplicationInterface}
+      iconType="application-interface"
       editPath={(item) => `/application/interfaces/${item.id}`}
       onRefresh={handleRefresh}
-      onCreate={onCreate}
-      onAddExisting={onAddExisting}
-      onDelete={handleDelete}
-      selectedItems={selectedItems}
-      onToggleItem={handleToggleItem}
-      componentName={componentName}
-      itemTypeKey="interfaces"
+      actions={{ onCreate, onAddExisting, onDelete: handleDelete }}
+      selection={{ selectedItems, onToggleItem: handleToggleItem }}
+      emptyState={{ componentName, itemTypeKey: "interfaces" }}
     />
   )
 }

@@ -22,6 +22,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 import {
   useDeleteDirectoryItemMutation,
   useGetDirectoryItemQuery,
@@ -48,7 +49,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   const [updateItem, updateState] = useUpdateDirectoryItemMutation()
   const [deleteItem, deleteState] = useDeleteDirectoryItemMutation()
 
-  const tr = React.useCallback((key: string) => t(key), [t])
+  const tr = useTr()
 
   const backHref = `/directories/${directorySlug}`
 

@@ -4,9 +4,7 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import ApplicationFunction2 from "@/components/icons/ApplicationFunction2"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeFunction } from "@/store/slices/application-component-edit-slice"
@@ -20,11 +18,16 @@ type FunctionsTableProps = {
   onCreate?: () => void
 }
 
-export function FunctionsTable({ componentId, componentName, onAddExisting, onCreate }: FunctionsTableProps) {
+export function FunctionsTable({
+  componentId: _componentId,
+  componentName,
+  onAddExisting,
+  onCreate,
+}: FunctionsTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = editState.isSaving
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.functions
@@ -36,25 +39,15 @@ export function FunctionsTable({ componentId, componentName, onAddExisting, onCr
 
   const handleDelete = React.useCallback(
     (item: Function) => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentFunctionRest(componentId, item.id)
-          dispatch(removeFunction(item.id))
-          setSelectedItems((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+      dispatch(removeFunction(item.id))
+      setSelectedItems((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -70,19 +63,15 @@ export function FunctionsTable({ componentId, componentName, onAddExisting, onCr
   }, [])
 
   return (
-    <ArchimateItemTable<Function>
+    <RelatedItemsMapTab<Function>
       items={items}
       isLoading={isLoading}
-      icon={ApplicationFunction2}
+      iconType="application-function"
       editPath={(item) => `/application/functions/${item.id}`}
       onRefresh={handleRefresh}
-      onCreate={onCreate}
-      onAddExisting={onAddExisting}
-      onDelete={handleDelete}
-      selectedItems={selectedItems}
-      onToggleItem={handleToggleItem}
-      componentName={componentName}
-      itemTypeKey="functions"
+      actions={{ onCreate, onAddExisting, onDelete: handleDelete }}
+      selection={{ selectedItems, onToggleItem: handleToggleItem }}
+      emptyState={{ componentName, itemTypeKey: "functions" }}
     />
   )
 }

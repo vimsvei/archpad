@@ -4,12 +4,10 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeTechnologyNetwork } from "@/store/slices/application-component-edit-slice"
-import * as ApplicationComponentRest from "@/services/application-component.rest"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 
 type TechnologyNetworksTableProps = {
   componentId: string
@@ -17,11 +15,15 @@ type TechnologyNetworksTableProps = {
   onAddExisting?: () => void
 }
 
-export function TechnologyNetworksTable({ componentId, componentName, onAddExisting }: TechnologyNetworksTableProps) {
+export function TechnologyNetworksTable({
+  componentId: _componentId,
+  componentName,
+  onAddExisting,
+}: TechnologyNetworksTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = editState.isSaving
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.technologyNetworks
@@ -32,25 +34,15 @@ export function TechnologyNetworksTable({ componentId, componentName, onAddExist
 
   const handleDelete = React.useCallback(
     (item: RelatedItem) => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-          await ApplicationComponentRest.removeApplicationComponentTechnologyNetworkRest(componentId, item.id)
-          dispatch(removeTechnologyNetwork(item.id))
-          setSelectedItems((prev) => {
-            const next = new Set(prev)
-            next.delete(item.id)
-            return next
-          })
-          toast.success(t("action.deleted"))
-        } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+      dispatch(removeTechnologyNetwork(item.id))
+      setSelectedItems((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      toast.success(t("action.deleted"))
     },
-    [componentId, dispatch, t]
+    [dispatch, t]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -65,21 +57,16 @@ export function TechnologyNetworksTable({ componentId, componentName, onAddExist
     })
   }, [])
 
-  const renderIcon = () => <ArchimateObjectIcon type="technology-network" className="w-6 h-6" />
-
   return (
-    <ArchimateItemTable<RelatedItem>
+    <RelatedItemsMapTab<RelatedItem>
       items={items}
       isLoading={isLoading}
-      icon={renderIcon as any}
+      iconType="technology-network"
       editPath={(item) => `/technology/networks/${item.id}`}
       onRefresh={handleRefresh}
-      onAddExisting={onAddExisting}
-      onDelete={handleDelete}
-      selectedItems={selectedItems}
-      onToggleItem={handleToggleItem}
-      componentName={componentName}
-      itemTypeKey="networks"
+      actions={{ onAddExisting, onDelete: handleDelete }}
+      selection={{ selectedItems, onToggleItem: handleToggleItem }}
+      emptyState={{ componentName, itemTypeKey: "networks" }}
     />
   )
 }

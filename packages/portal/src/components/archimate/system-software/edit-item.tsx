@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -50,9 +51,8 @@ type EditItemProps = {
 
 export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
+  const tr = useTr()
   const router = useRouter()
-
-  const tr = React.useCallback((key: string) => t(key), [t])
 
   const { data: item, error, isLoading, isFetching } = useGetSystemSoftwareByIdQuery(
     { id },

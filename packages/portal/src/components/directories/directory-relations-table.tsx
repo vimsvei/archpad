@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 import {
   useCreateDirectoryLinkMutation,
   useDeleteDirectoryLinkMutation,
@@ -39,13 +40,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
   const [createLink, { isLoading: isCreateLinkLoading }] = useCreateDirectoryLinkMutation()
   const [deleteLink, { isLoading: isDeleteLinkLoading }] = useDeleteDirectoryLinkMutation()
 
-  const tr = React.useCallback(
-    (key: string, fallback: string) => {
-      const v = t(key)
-      return v === key ? fallback : v
-    },
-    [t]
-  )
+  const tr = useTr()
 
   // NOTE: server-side directory links currently support linking items within the same directory kind.
   // Keep UI constrained to the current directory to avoid confusing cross-directory options.

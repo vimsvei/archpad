@@ -24,7 +24,7 @@ directoriesMiddleware.startListening({
     const dispatch = listenerApi.dispatch as AppDispatch
 
     // Extract slug from action meta arg
-    const slug = (action.meta?.arg?.originalArgs as { slug?: DirectorySlug })?.slug
+    const slug = ((action as any)?.meta?.arg?.originalArgs?.slug as DirectorySlug | undefined) ?? undefined
     if (!slug) {
       console.warn('Could not extract slug from action:', action)
       return

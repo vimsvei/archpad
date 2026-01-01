@@ -16,7 +16,7 @@ import type { RootState, AppDispatch } from "@/store/store"
 import { updateDirectoryField } from "@/store/slices/application-component-edit-slice"
 
 type ClassificationTabProps = {
-  tr: (key: string, fallback: string) => string
+  tr: (key: string, fallback?: string) => string
   isSaving: boolean
 }
 

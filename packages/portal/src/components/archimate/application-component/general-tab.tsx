@@ -19,7 +19,7 @@ import { updateBasicFields, updateStateId, selectBasicFields } from "@/store/sli
 import { MarkdownEditor } from "./markdown-editor"
 
 type GeneralTabProps = {
-  tr: (key: string, fallback: string) => string
+  tr: (key: string, fallback?: string) => string
   isSaving: boolean
 }
 

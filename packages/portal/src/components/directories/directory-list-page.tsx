@@ -15,6 +15,7 @@ import { parseDirectoryJSON } from "@/components/directories/parse-directory-jso
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTranslate } from "@tolgee/react"
+import { useTr } from "@/lib/i18n/use-tr"
 import {
   useDeleteDirectoryItemMutation,
   useCreateDirectoryItemMutation,
@@ -53,7 +54,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState<PageSizeOption>(25)
 
-  const tr = React.useCallback((key: string) => t(key), [t])
+  const tr = useTr()
 
   const formatNowWithTz = React.useCallback(() => {
     try {
@@ -467,7 +468,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               } catch (e: any) {
                 setOpen(false)
                 toast.error(
-                  `${tr("directory.item.error", tr("ditectory.item.error"))} ${title}`,
+                  `${tr("directory.item.error", "Error")} ${title}`,
                   {
                     className:
                       "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",

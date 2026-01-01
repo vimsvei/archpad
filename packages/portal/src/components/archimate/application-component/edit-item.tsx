@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 import { useDispatch, useSelector } from "react-redux"
+import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -23,6 +24,8 @@ import {
   useGetApplicationComponentFullQuery,
   useUpdateApplicationComponentFullMutation,
 } from "@/store/apis/application-component-api"
+import { useCreateApplicationFunctionMutation } from "@/store/apis/application-function-api"
+import { useCreateDataObjectMutation } from "@/store/apis/data-object-api"
 import type { RootState, AppDispatch } from "@/store/store"
 import {
   reset,
@@ -48,8 +51,6 @@ import { getSheetConfig, type SheetType } from "@/components/archimate/sheet-con
 import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
 import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
-import * as ApplicationFunctionRest from "@/services/application-function.rest"
-import * as DataObjectRest from "@/services/data-object.rest"
 import * as ApplicationEventRest from "@/services/application-event.rest"
 
 type EditItemProps = {
@@ -61,11 +62,13 @@ export function EditItem({ id }: EditItemProps) {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
-  const tr = React.useCallback((key: string) => t(key), [t])
+  const tr = useTr()
 
   // Redux state
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const [updateComponentFull] = useUpdateApplicationComponentFullMutation()
+  const [createDataObject] = useCreateDataObjectMutation()
+  const [createApplicationFunction] = useCreateApplicationFunctionMutation()
 
   // Load full component data
   const { data: fullData, error: queryError, isLoading, isFetching } = useGetApplicationComponentFullQuery(
@@ -157,20 +160,28 @@ export function EditItem({ id }: EditItemProps) {
       // Note: We need to know the type of each item to call the correct REST function
       // Since we can't store type in Redux, we create items based on which array they came from
       const [createdDataObjects, createdFunctions, createdInterfaces, createdEvents] = await Promise.all([
-        Promise.all(newDataObjects.map((item) =>
-          DataObjectRest.createDataObjectRest({
-            code: item.code || undefined,
-            name: item.name,
-            description: item.description || undefined,
-          })
-        )),
-        Promise.all(newFunctions.map((item) =>
-          ApplicationFunctionRest.createApplicationFunctionRest({
-            code: item.code || undefined,
-            name: item.name,
-            description: item.description || undefined,
-          })
-        )),
+        Promise.all(
+          newDataObjects.map((item) =>
+            createDataObject({
+              input: {
+                code: item.code || undefined,
+                name: item.name,
+                description: item.description || undefined,
+              },
+            }).unwrap()
+          )
+        ),
+        Promise.all(
+          newFunctions.map((item) =>
+            createApplicationFunction({
+              input: {
+                code: item.code || undefined,
+                name: item.name,
+                description: item.description || undefined,
+              },
+            }).unwrap()
+          )
+        ),
         Promise.all(newInterfaces.map((item) =>
           ApplicationInterfaceRest.createApplicationInterfaceRest({
             code: item.code || undefined,
@@ -393,7 +404,7 @@ export function EditItem({ id }: EditItemProps) {
     if (!config) return { title: "" }
     
     const titleKey = `${t("action.create")} ${t(config.tableKey)}`
-    const title = tr(titleKey, titleKey) // No fallback - show translation key if translation missing
+    const title = tr(titleKey) // show key if translation missing
     return { title }
   }, [createSheetType, t, tr])
 
@@ -480,7 +491,7 @@ export function EditItem({ id }: EditItemProps) {
     if (!config) return { title: "", icon: undefined }
     
     const titleKey = `${t('action.add')} ${t(config.tableKey)}`
-    const title = tr(titleKey, titleKey) // No fallback - show translation key if translation missing
+    const title = tr(titleKey) // show key if translation missing
     
     return {
       title,

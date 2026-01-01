@@ -5,6 +5,7 @@ import { systemSoftwareApi } from "@/store/apis/system-software-api"
 import { dataObjectApi } from "@/store/apis/data-object-api"
 import { applicationFunctionApi } from "@/store/apis/application-function-api"
 import { applicationComponentEditReducer } from "@/store/slices/application-component-edit-slice"
+import { dataObjectEditReducer } from "@/store/slices/data-object-edit-slice"
 import { directoriesReducer } from "@/store/slices/directories-slice"
 import { authFormsReducer } from "@/store/slices/auth-forms-slice"
 import { directoriesMiddleware } from "@/store/middleware/directories-middleware"
@@ -20,6 +21,7 @@ export function makeStore() {
       [applicationFunctionApi.reducerPath]: applicationFunctionApi.reducer,
       authForms: authFormsReducer,
       applicationComponentEdit: applicationComponentEditReducer,
+      dataObjectEdit: dataObjectEditReducer,
       directories: directoriesReducer,
     },
     middleware: (getDefaultMiddleware) =>
