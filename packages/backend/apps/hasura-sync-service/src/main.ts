@@ -1,14 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { HasuraSyncServiceModule } from './hasura-sync-service.module';
 import { HasuraSyncService } from './hasura-sync-service.service';
+import { LoggerService } from '@archpad/logger';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(
     HasuraSyncServiceModule,
     {
-      logger: ['log', 'error', 'warn'],
+      bufferLogs: true,
     },
   );
+  app.useLogger(app.get(LoggerService));
 
   const svc = app.get(HasuraSyncService);
   await svc.syncAll();

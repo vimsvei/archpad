@@ -3,7 +3,9 @@ import { Entity, Enum } from '@mikro-orm/core';
 import { MotivationStatus } from '@/model/enums/motivation-status.enum';
 import { MotivationPriority } from '@/model/enums/motivation-priority.enum';
 import { MotivationKind } from '@/model/enums/motivation-kind.enum';
+import { HasuraTable } from '@archpad/models';
 
+@HasuraTable()
 @Entity({
   abstract: true,
   tableName: 'motivations',

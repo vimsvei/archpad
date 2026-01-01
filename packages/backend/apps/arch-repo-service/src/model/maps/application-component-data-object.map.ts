@@ -1,10 +1,14 @@
-import { MappedObject } from '@archpad/models';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { DataObject } from '@/model/archimate/application/data-object.entity';
 
+@HasuraTable()
 @Entity({ tableName: 'map_application_component_data_object' })
 export class ApplicationComponentDataObjectMap extends MappedObject {
+  // Hasura array relationship name on `components` table (reverse side of this FK):
+  // component { dataObjects { dataObject { ... } } }
+  @HasuraRefName('dataObjects')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -14,6 +18,9 @@ export class ApplicationComponentDataObjectMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
+  // Hasura array relationship name on `data_objects` table (reverse side of this FK):
+  // dataObject { components { component { ... } } }
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => DataObject,
     primary: true,

@@ -1,4 +1,4 @@
-import { MappedObject } from '@archpad/models';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
@@ -6,8 +6,10 @@ import { DataAccessKind } from '@/model/enums/data-access-kind.enum';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { DataObject } from '@/model/archimate/application/data-object.entity';
 
+@HasuraTable()
 @Entity({ tableName: 'map_application_function_data_object' })
 export class ApplicationFunctionDataObjectMap extends MappedObject {
+  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,
@@ -18,6 +20,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   componentFunction!: ApplicationComponentFunctionMap;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     primary: true,
@@ -28,6 +31,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   componentDataObject!: ApplicationComponentDataObjectMap;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponent,
     fieldName: 'component_id',
@@ -38,6 +42,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => DataObject,
     fieldName: 'data_object_id',

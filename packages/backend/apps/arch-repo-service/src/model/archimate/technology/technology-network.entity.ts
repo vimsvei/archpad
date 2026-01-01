@@ -1,4 +1,4 @@
-import { ArchimateCode } from '@archpad/models';
+import { ArchimateCode, HasuraRefCollection, HasuraTable } from '@archpad/models';
 import {
   Collection,
   Entity,
@@ -11,6 +11,7 @@ import { NetworkAbstractionLevel } from '@/model/enums/network-abstraction-level
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
 
+@HasuraTable()
 @Entity({
   abstract: true,
   tableName: 'technology_networks',
@@ -26,6 +27,7 @@ export class TechnologyNetwork extends ArchimateElementGeneric {
   @ArchimateCode('NET')
   override code: string = undefined as any;
 
+  @HasuraRefCollection()
   @OneToMany({
     entity: () => TechnologyNode,
     mappedBy: 'network',
@@ -35,6 +37,7 @@ export class TechnologyNetwork extends ArchimateElementGeneric {
 
 @Entity({ discriminatorValue: NetworkAbstractionLevel.LOGICAL })
 export class TechnologyLogicalNetwork extends TechnologyNetwork {
+  @HasuraRefCollection()
   @OneToMany({
     entity: () => ApplicationComponentTechnologyLogicalNetworkMap,
     mappedBy: 'logicalNetwork',

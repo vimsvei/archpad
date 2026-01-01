@@ -1,9 +1,9 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 
 export async function reloadMetadata(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
 }): Promise<void> {
   const { hasura, logger } = args;
   logger.log('Reloading Hasura metadata...');

@@ -1,8 +1,9 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { Entity, Enum } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
-import { ArchimateCode } from '@archpad/models';
+import { ArchimateCode, HasuraTable } from '@archpad/models';
 
+@HasuraTable()
 @Entity({
   tableName: 'events',
   abstract: true,

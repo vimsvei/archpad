@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Enum, Property } from '@mikro-orm/core';
-import { NamedObject } from '@archpad/models';
+import { HasuraTable, NamedObject } from '@archpad/models';
 import { DirectoryKind } from '@/model/enums/directory-kind.enum';
 import { ArchimateCode } from '@archpad/models';
 
+@HasuraTable()
 @Entity({
   tableName: 'directories',
   abstract: true,

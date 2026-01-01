@@ -4,6 +4,7 @@ import { Environment } from '@/model/enums/environment.enum';
 import { NetworkScope } from '@/model/enums/network-scope.enum';
 import { NetworkAbstractionLevel } from '@/model/enums/network-abstraction-level.enum.';
 import { TechnologyNetwork } from '@/model/archimate/technology/technology-network.entity';
+import { HasuraRefName } from '@archpad/models';
 
 @Entity({ discriminatorValue: NetworkAbstractionLevel.PHYSICAL })
 export class TechnologyPhysicalNetwork extends TechnologyNetwork {
@@ -21,6 +22,7 @@ export class TechnologyPhysicalNetwork extends TechnologyNetwork {
   })
   environment!: Environment;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => PhysicalLocation,
     nullable: true,

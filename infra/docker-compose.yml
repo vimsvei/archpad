@@ -248,6 +248,15 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLE_ALLOWLIST: "false"
       PG_PROJECT_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_DB}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "(command -v curl >/dev/null 2>&1 && curl -fsS http://localhost:8080/healthz >/dev/null) || (command -v wget >/dev/null 2>&1 && wget -q -O- http://localhost:8080/healthz >/dev/null) || exit 1",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
     networks:
       - archpad_network
     labels:

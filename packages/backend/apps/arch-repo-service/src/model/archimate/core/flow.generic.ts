@@ -1,8 +1,9 @@
-import { NamedObject } from '@archpad/models';
+import { HasuraTable, NamedObject } from '@archpad/models';
 import { Entity, Enum } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ArchimateCode } from '@archpad/models';
 
+@HasuraTable()
 @Entity({
   tableName: 'flows',
   abstract: true,

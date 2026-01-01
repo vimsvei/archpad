@@ -4,3 +4,8 @@ export * from './abstract/named-object.abstract';
 export * from './abstract/mapped-object.abstract';
 export * from './embeddable/action-stamp.embeddable';
 export * from './decorators/archimate-code.decorator';
+export * from './decorators/hasura-name.decorator';
+export * from './decorators/hasura-camelcase.decorator';
+export * from './decorators/hasura-ref-collection.decorator';
+export * from './decorators/hasura-table.decorator';
+export * from './hasura-sync/registry-sql';

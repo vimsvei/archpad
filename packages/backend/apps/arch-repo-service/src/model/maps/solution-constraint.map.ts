@@ -1,12 +1,14 @@
-import { MappedObject } from '@archpad/models';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';
 import { Constraint } from '@/model/archimate/motivation/constraint.entity';
 
+@HasuraTable()
 @Entity({ tableName: 'map_solution_constraint' })
 @Unique({ properties: ['constraint', 'solution'] })
 export class SolutionConstraintMap extends MappedObject {
+  @HasuraRefName()
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -16,6 +18,7 @@ export class SolutionConstraintMap extends MappedObject {
   })
   solution!: Solution;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => Constraint,
     primary: true,

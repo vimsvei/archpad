@@ -1,6 +1,7 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { ForeignKeyInfo } from '../db/types';
+import { getHasuraSyncArrayRelationshipOverrides } from '../db/get-hasura-sync-array-relationship-overrides';
 import { HasuraRelationshipRef } from '../metadata/types';
 import { arrayRelationshipKey } from './array-relationship-key';
 import { extractArrayFkUsing } from './extract-array-fk-using';
@@ -11,7 +12,7 @@ import { buildObjectRelationshipNameForFk } from './build-object-relationship-na
 
 export async function syncForeignKeyRelationships(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
   foreignKeys: ForeignKeyInfo[];
   existingRelationships: HasuraRelationshipRef[];
   allTableNames: Set<string>;
@@ -20,6 +21,23 @@ export async function syncForeignKeyRelationships(args: {
     args;
 
   logger.log(`Syncing FK relationships (count=${foreignKeys.length})...`);
+
+  const overrides = await getHasuraSyncArrayRelationshipOverrides(hasura).catch(
+    () => [],
+  );
+  const overrideByKey = new Map<string, string>();
+  for (const o of overrides) {
+    overrideByKey.set(
+      arrayRelationshipKey({
+        schema: o.pk_table_schema,
+        table: o.pk_table_name,
+        fkSchema: o.fk_table_schema,
+        fkTable: o.fk_table_name,
+        cols: o.fk_columns,
+      }),
+      o.name,
+    );
+  }
 
   const fkId = (fk: ForeignKeyInfo) =>
     `${fk.fk_table_schema}.${fk.fk_table_name}|${fk.constraint_name}`;
@@ -52,6 +70,7 @@ export async function syncForeignKeyRelationships(args: {
     usedByTable: Map<string, Set<string>>,
     tableKey: string,
     desired: string,
+    opts?: { strict?: boolean },
   ): string => {
     const used = usedByTable.get(tableKey) ?? new Set<string>();
     usedByTable.set(tableKey, used);
@@ -59,6 +78,12 @@ export async function syncForeignKeyRelationships(args: {
     if (!used.has(desired)) {
       used.add(desired);
       return desired;
+    }
+
+    if (opts?.strict) {
+      throw new Error(
+        `Hasura relationship name collision within table ${tableKey}: "${desired}"`,
+      );
     }
 
     let n = 2;
@@ -108,10 +133,20 @@ export async function syncForeignKeyRelationships(args: {
     .sort((a, b) => fkId(a).localeCompare(fkId(b)));
   for (const fk of orderedFks) {
     const objectNameRaw = buildObjectRelationshipNameForFk(fk);
-    const arrayNameRaw = buildArrayRelationshipNameForFk({
-      fk,
-      mapOtherPkTableName: mapOtherPkByFkId.get(fkId(fk)),
+    const aKeyLookup = arrayRelationshipKey({
+      schema: fk.pk_table_schema,
+      table: fk.pk_table_name,
+      fkSchema: fk.fk_table_schema,
+      fkTable: fk.fk_table_name,
+      cols: fk.fk_columns,
     });
+    const arrayNameOverride = overrideByKey.get(aKeyLookup);
+    const arrayNameRaw =
+      arrayNameOverride ??
+      buildArrayRelationshipNameForFk({
+        fk,
+        mapOtherPkTableName: mapOtherPkByFkId.get(fkId(fk)),
+      });
 
     // object rel (many -> one)
     if (fk.fk_columns.length === 1) {
@@ -178,6 +213,7 @@ export async function syncForeignKeyRelationships(args: {
       usedArrayNamesByTable,
       `${fk.pk_table_schema}.${fk.pk_table_name}`,
       arrayNameRaw,
+      arrayNameOverride ? { strict: true } : undefined,
     );
     const aKey = arrayRelationshipKey({
       schema: fk.pk_table_schema,

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
 import { getTableColumns } from '../db/get-table-columns';
@@ -27,7 +27,7 @@ function formatHasuraError(e: unknown): string {
 
 export async function applyDefaultSelectPermissions(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
   role: string;
   tables: DbTableRef[];
 }): Promise<void> {

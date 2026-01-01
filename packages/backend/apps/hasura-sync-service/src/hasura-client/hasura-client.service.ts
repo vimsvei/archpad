@@ -1,12 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { LoggerService } from '@archpad/logger';
 
 @Injectable()
 export class HasuraClientService {
-  private readonly logger = new Logger(HasuraClientService.name);
-
   readonly endpoint: string;
   readonly secret: string;
   readonly source: string;
@@ -15,6 +14,7 @@ export class HasuraClientService {
   constructor(
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    private readonly logger: LoggerService,
   ) {
     const nodeEnv =
       this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
@@ -42,6 +42,7 @@ export class HasuraClientService {
 
     this.logger.log(
       `Hasura endpoint=${this.endpoint} source=${this.source} schema=${this.schema} NODE_ENV=${nodeEnv}`,
+      HasuraClientService.name,
     );
   }
 
@@ -56,7 +57,10 @@ export class HasuraClientService {
   }
 
   async postMetadata<T = any>(body: any): Promise<T> {
-    this.logger.debug(`POST /v1/metadata type=${body?.type}`);
+    this.logger.debug(
+      `POST /v1/metadata type=${body?.type}`,
+      HasuraClientService.name,
+    );
     const res = await firstValueFrom(
       this.http.post<T>(`${this.endpoint}/v1/metadata`, body, {
         headers: this.buildHeaders(),
@@ -66,7 +70,10 @@ export class HasuraClientService {
   }
 
   async postQuery<T = any>(body: any): Promise<T> {
-    this.logger.debug(`POST /v2/query type=${body?.type}`);
+    this.logger.debug(
+      `POST /v2/query type=${body?.type}`,
+      HasuraClientService.name,
+    );
     const res = await firstValueFrom(
       this.http.post<T>(`${this.endpoint}/v2/query`, body, {
         headers: this.buildHeaders(),

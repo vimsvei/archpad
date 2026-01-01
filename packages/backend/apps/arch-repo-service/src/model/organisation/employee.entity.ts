@@ -1,6 +1,7 @@
-import { IdentifiedObject } from '@archpad/models';
+import { HasuraTable, IdentifiedObject } from '@archpad/models';
 import { Entity, Property, Unique } from '@mikro-orm/core';
 
+@HasuraTable()
 @Entity({
   tableName: 'employees',
 })

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { TenantServiceModule } from './tenant-service.module';
-import { LoggerService } from '@/logger/logger.service';
+import { LoggerService } from '@archpad/logger';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {

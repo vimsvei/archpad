@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { getSchemaTables } from '../db/get-schema-tables';
 import { DbTableRef } from '../db/types';
@@ -9,7 +9,7 @@ function delay(ms: number) {
 
 export async function fetchDbTables(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
   retries?: number;
   delayMs?: number;
 }): Promise<DbTableRef[]> {

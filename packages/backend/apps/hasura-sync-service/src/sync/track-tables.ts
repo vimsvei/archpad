@@ -1,10 +1,10 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
 
 export async function trackTables(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
   tables: DbTableRef[];
 }): Promise<void> {
   const { hasura, logger, tables } = args;

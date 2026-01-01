@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HasuraClientService } from './hasura-client/hasura-client.service';
 import { ConfigService } from '@nestjs/config';
 import { readBool } from './config/read-bool';
@@ -13,10 +13,10 @@ import { reloadMetadata } from './sync/reload-metadata';
 import { syncForeignKeyRelationships } from './sync/sync-foreign-key-relationships';
 import { trackTables } from './sync/track-tables';
 import { untrackTables } from './sync/untrack-tables';
+import { LoggerService } from '@archpad/logger';
 
 @Injectable()
 export class HasuraSyncService {
-  private readonly logger = new Logger(HasuraSyncService.name);
   private readonly renameToCamelCase: boolean;
   private readonly applyDefaultPermissions: boolean;
   private readonly defaultRole: string;
@@ -24,6 +24,7 @@ export class HasuraSyncService {
   constructor(
     private readonly hasura: HasuraClientService,
     private readonly config: ConfigService,
+    private readonly logger: LoggerService,
   ) {
     this.renameToCamelCase = readBool(
       this.config,
@@ -38,14 +39,18 @@ export class HasuraSyncService {
     );
     this.defaultRole = this.config.get<string>('HASURA_DEFAULT_ROLE') ?? 'user';
 
-    this.logger.log(`Config: renameToCamelCase=${this.renameToCamelCase}`);
+    this.logger.log(
+      `Config: renameToCamelCase=${this.renameToCamelCase}`,
+      HasuraSyncService.name,
+    );
     this.logger.log(
       `Config: applyDefaultPermissions=${this.applyDefaultPermissions} defaultRole=${this.defaultRole}`,
+      HasuraSyncService.name,
     );
   }
 
   async syncAll(options?: { renameColumnsToCamelCase?: boolean }) {
-    this.logger.log('Starting Hasura repo sync...');
+    this.logger.log('Starting Hasura repo sync...', HasuraSyncService.name);
     const renameToCamelCase =
       options?.renameColumnsToCamelCase ?? this.renameToCamelCase;
 
@@ -53,7 +58,10 @@ export class HasuraSyncService {
     const metadata = normalizeHasuraMetadata(exportResult);
     const source = getHasuraSource(metadata, this.hasura.source);
     if (!source) {
-      this.logger.warn(`Source "${this.hasura.source}" not found in metadata.`);
+      this.logger.warn(
+        `Source "${this.hasura.source}" not found in metadata.`,
+        HasuraSyncService.name,
+      );
       return;
     }
 
@@ -102,22 +110,19 @@ export class HasuraSyncService {
     } else {
       this.logger.log(
         'Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)',
+        HasuraSyncService.name,
       );
     }
 
-    if (renameToCamelCase) {
-      await applyCamelCaseCustomization({
-        hasura: this.hasura,
-        logger: this.logger,
-        tables: dbTables,
-      });
-    } else {
-      this.logger.log(
-        'Skipping camelCase customization (HASURA_RENAME_COLUMNS_CAMELCASE=false)',
-      );
-    }
+    await applyCamelCaseCustomization({
+      hasura: this.hasura,
+      logger: this.logger,
+      tables: dbTables,
+      // If false: still apply decorator-driven naming (DB comments), but do not auto-camelcase everything.
+      fallbackCamelCase: renameToCamelCase,
+    });
 
     await reloadMetadata({ hasura: this.hasura, logger: this.logger });
-    this.logger.log('Hasura repo sync finished.');
+    this.logger.log('Hasura repo sync finished.', HasuraSyncService.name);
   }
 }

@@ -1,4 +1,9 @@
-import { NamedObject } from '@archpad/models';
+import {
+  HasuraRefCollection,
+  HasuraRefName,
+  HasuraTable,
+  NamedObject,
+} from '@archpad/models';
 import {
   Collection,
   Entity,
@@ -18,6 +23,7 @@ import { NodeTypeDirectory } from '@/model/directories/directories';
 import { Environment } from '@/model/enums/environment.enum';
 import { OperatingSystem } from './operating-system.entity';
 
+@HasuraTable()
 @Entity({
   tableName: 'technology_nodes',
   abstract: true,
@@ -57,6 +63,7 @@ export abstract class TechnologyNode extends NamedObject {
   storageGb?: number;
 
   @ApiProperty({ format: 'uuid', type: NodeTypeDirectory })
+  @HasuraRefName()
   @ManyToOne({
     entity: () => NodeTypeDirectory,
     name: 'type_id',
@@ -66,6 +73,7 @@ export abstract class TechnologyNode extends NamedObject {
   type!: NodeTypeDirectory;
 
   @ApiProperty({ format: 'uuid', type: TechnologyNetwork })
+  @HasuraRefName()
   @ManyToOne({
     entity: () => TechnologyNetwork,
     fieldName: 'network_id',
@@ -75,6 +83,7 @@ export abstract class TechnologyNode extends NamedObject {
   })
   network!: TechnologyNetwork;
   
+  @HasuraRefName()
   @ManyToOne({
     entity: () => OperatingSystem,
     name: 'operating_system_id',
@@ -83,12 +92,14 @@ export abstract class TechnologyNode extends NamedObject {
   })
   operatingSystem!: OperatingSystem;
 
+  @HasuraRefCollection()
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,
     mappedBy: 'node',
   })
   systemSoftware = new Collection<TechnologyNodeSystemSoftwareMap>(this);
 
+  @HasuraRefCollection()
   @OneToMany({
     entity: () => ApplicationComponentTechnologyNodeMap,
     mappedBy: 'node',

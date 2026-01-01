@@ -1,10 +1,12 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
-import { MappedObject } from '@archpad/models';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { ApplicationEvent } from '@/model/archimate/application/application-event.entity';
 
+@HasuraTable()
 @Entity({ tableName: 'map_application_component_event' })
 export class ApplicationComponentEventMap extends MappedObject {
+  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -14,6 +16,7 @@ export class ApplicationComponentEventMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
+  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationEvent,
     primary: true,

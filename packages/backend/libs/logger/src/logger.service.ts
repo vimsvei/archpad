@@ -54,8 +54,33 @@ export class LoggerService implements NestLoggerService {
     if (context) payload.context = context;
     if (trace) payload.trace = trace;
 
-    console.log(JSON.stringify(payload, null, 2));
+    const json = JSON.stringify(payload, null, 2);
+    console.log(colorize(level, json));
   }
+}
+
+function colorize(level: LogLevel, text: string): string {
+  // Keep logs machine-readable by default (plain JSON).
+  // Add color only in interactive terminals unless explicitly disabled.
+  const enable =
+    process.env.LOGGER_COLOR !== 'false' &&
+    (process.stdout?.isTTY ?? false) &&
+    process.env.NODE_ENV !== 'production';
+  if (!enable) return text;
+
+  const reset = '\x1b[0m';
+  const color =
+    level === 'error'
+      ? '\x1b[31m' // red
+      : level === 'warn'
+        ? '\x1b[33m' // yellow
+        : level === 'debug'
+          ? '\x1b[36m' // cyan
+          : level === 'verbose'
+            ? '\x1b[90m' // gray
+            : '\x1b[32m'; // log -> green
+
+  return `${color}${text}${reset}`;
 }
 
 function toJsonSafe(input: unknown): unknown {

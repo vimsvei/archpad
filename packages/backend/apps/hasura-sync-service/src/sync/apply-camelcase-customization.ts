@@ -1,19 +1,46 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
+import { getHasuraSyncColumnOverrides } from '../db/get-hasura-sync-column-overrides';
+import { getHasuraSyncTableOverrides } from '../db/get-hasura-sync-table-overrides';
 import { getTableColumns } from '../db/get-table-columns';
 import { DbTableRef } from '../db/types';
 import { toCamelCase } from '../utils/naming.util';
 
 export async function applyCamelCaseCustomization(args: {
   hasura: HasuraClientService;
-  logger: Logger;
+  logger: LoggerService;
   tables: DbTableRef[];
+  fallbackCamelCase?: boolean;
 }): Promise<void> {
-  const { hasura, logger, tables } = args;
+  const { hasura, logger, tables, fallbackCamelCase = true } = args;
 
-  logger.log('Applying camelCase custom names for tables and columns...');
+  logger.log(
+    'Applying table/column custom names (decorators via hasura_sync registry + optional camelCase fallback)...',
+  );
+
+  const [tableOverrides, columnOverrides] = await Promise.all([
+    getHasuraSyncTableOverrides(hasura).catch(() => []),
+    getHasuraSyncColumnOverrides(hasura).catch(() => []),
+  ]);
+
+  const tableOverrideByKey = new Map<string, string>();
+  for (const o of tableOverrides) {
+    tableOverrideByKey.set(`${o.table_schema}.${o.table_name}`, o.custom_name);
+  }
+
+  const colOverrideByKey = new Map<string, string>();
+  for (const o of columnOverrides) {
+    colOverrideByKey.set(
+      `${o.table_schema}.${o.table_name}.${o.column_name}`,
+      o.custom_name,
+    );
+  }
 
   for (const table of tables) {
+    const hasuraTableName = tableOverrideByKey.get(
+      `${table.schema}.${table.name}`,
+    );
+
     const columns = await getTableColumns({
       hasura,
       schema: table.schema,
@@ -21,14 +48,28 @@ export async function applyCamelCaseCustomization(args: {
     });
 
     const columnConfig: Record<string, { custom_name: string }> = {};
+
     for (const col of columns) {
-      const camel = toCamelCase(col);
-      if (camel !== col) {
-        columnConfig[col] = { custom_name: camel };
+      const override = colOverrideByKey.get(
+        `${table.schema}.${table.name}.${col}`,
+      );
+      if (override) {
+        if (override !== col) {
+          columnConfig[col] = { custom_name: override };
+        }
+        continue;
+      }
+
+      if (fallbackCamelCase) {
+        const camel = toCamelCase(col);
+        if (camel !== col) {
+          columnConfig[col] = { custom_name: camel };
+        }
       }
     }
 
-    const customTableName = toCamelCase(table.name);
+    const customTableName =
+      hasuraTableName ?? (fallbackCamelCase ? toCamelCase(table.name) : table.name);
 
     const configuration: any = {};
     const metadataArgs: any = {
@@ -48,7 +89,7 @@ export async function applyCamelCaseCustomization(args: {
     metadataArgs.configuration = configuration;
 
     logger.log(
-      `Setting customization for ${table.schema}.${table.name} (custom_name=${
+      `Setting customization for ${table.schema}.${table.name} (table=${
         configuration.identifier ?? '—'
       }, columns=${Object.keys(columnConfig).length})`,
     );
