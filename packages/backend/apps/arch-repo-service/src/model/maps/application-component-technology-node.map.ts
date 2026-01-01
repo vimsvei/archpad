@@ -7,7 +7,7 @@ import { HasuraRefName } from '@archpad/models';
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_technology_node' })
 export class ApplicationComponentTechnologyNodeMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('node')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -17,7 +17,7 @@ export class ApplicationComponentTechnologyNodeMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => TechnologyNode,
     primary: true,

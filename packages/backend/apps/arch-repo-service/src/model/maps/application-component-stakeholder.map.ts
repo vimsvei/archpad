@@ -7,7 +7,7 @@ import { StakeholderRoleDirectory } from '@/model/directories/directories';
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_stakeholder' })
 export class ApplicationComponentStakeholderMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('stakeholders')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -17,7 +17,7 @@ export class ApplicationComponentStakeholderMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => Stakeholder,
     primary: true,

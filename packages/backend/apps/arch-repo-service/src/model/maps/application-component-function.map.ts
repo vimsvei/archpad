@@ -6,7 +6,7 @@ import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_function' })
 export class ApplicationComponentFunctionMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('functions')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -16,7 +16,7 @@ export class ApplicationComponentFunctionMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => ApplicationFunction,
     primary: true,

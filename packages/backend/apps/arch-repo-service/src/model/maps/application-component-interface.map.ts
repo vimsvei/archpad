@@ -6,7 +6,7 @@ import { ApplicationInterface } from '@/model/archimate/application/application-
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_interface' })
 export class ApplicationComponentInterfaceMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('interfaces')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -16,7 +16,7 @@ export class ApplicationComponentInterfaceMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => ApplicationInterface,
     primary: true,

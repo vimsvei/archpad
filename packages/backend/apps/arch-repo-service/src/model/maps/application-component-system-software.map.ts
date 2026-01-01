@@ -7,7 +7,7 @@ import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_system_software' })
 export class ApplicationComponentSystemSoftwareMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('systemSoftware')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -17,7 +17,7 @@ export class ApplicationComponentSystemSoftwareMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => SystemSoftware,
     primary: true,

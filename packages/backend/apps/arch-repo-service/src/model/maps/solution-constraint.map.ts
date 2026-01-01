@@ -8,7 +8,8 @@ import { Constraint } from '@/model/archimate/motivation/constraint.entity';
 @Entity({ tableName: 'map_solution_constraint' })
 @Unique({ properties: ['constraint', 'solution'] })
 export class SolutionConstraintMap extends MappedObject {
-  @HasuraRefName()
+  
+  @HasuraRefName('constraints')
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -18,7 +19,7 @@ export class SolutionConstraintMap extends MappedObject {
   })
   solution!: Solution;
 
-  @HasuraRefName()
+  @HasuraRefName('solutions')
   @ManyToOne({
     entity: () => Constraint,
     primary: true,

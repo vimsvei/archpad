@@ -6,7 +6,7 @@ import { ApplicationEvent } from '@/model/archimate/application/application-even
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_event' })
 export class ApplicationComponentEventMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('events')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -16,7 +16,7 @@ export class ApplicationComponentEventMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('components')
   @ManyToOne({
     entity: () => ApplicationEvent,
     primary: true,
