@@ -59,6 +59,10 @@ export type ApplicationComponent = {
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
+  directories: Array<ApplicationComponentDirectoryMap>;
+  /** An aggregate relationship */
+  directories_aggregate: ApplicationComponentDirectoryMap_Aggregate;
+  /** An array relationship */
   events: Array<ApplicationComponentEventMap>;
   /** An aggregate relationship */
   events_aggregate: ApplicationComponentEventMap_Aggregate;
@@ -194,6 +198,26 @@ export type ApplicationComponentDataObjects_AggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<ApplicationComponentDataObjectMap_Order_By>>;
   where?: InputMaybe<ApplicationComponentDataObjectMap_Bool_Exp>;
+};
+
+
+/** columns and relationships of "components" */
+export type ApplicationComponentDirectoriesArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+/** columns and relationships of "components" */
+export type ApplicationComponentDirectories_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
 };
 
 
@@ -728,6 +752,272 @@ export type ApplicationComponentDataObjectMap_Updates = {
   _set?: InputMaybe<ApplicationComponentDataObjectMap_Set_Input>;
   /** filter the rows which have to be updated */
   where: ApplicationComponentDataObjectMap_Bool_Exp;
+};
+
+/** columns and relationships of "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap = {
+  __typename?: 'ApplicationComponentDirectoryMap';
+  /** An object relationship */
+  component: ApplicationComponent;
+  componentId: Scalars['uuid']['output'];
+  createdAt: Scalars['timestamptz']['output'];
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  directory: DirectoryObject;
+  directoryId: Scalars['uuid']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Aggregate = {
+  __typename?: 'ApplicationComponentDirectoryMap_aggregate';
+  aggregate?: Maybe<ApplicationComponentDirectoryMap_Aggregate_Fields>;
+  nodes: Array<ApplicationComponentDirectoryMap>;
+};
+
+export type ApplicationComponentDirectoryMap_Aggregate_Bool_Exp = {
+  count?: InputMaybe<ApplicationComponentDirectoryMap_Aggregate_Bool_Exp_Count>;
+};
+
+export type ApplicationComponentDirectoryMap_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Aggregate_Fields = {
+  __typename?: 'ApplicationComponentDirectoryMap_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<ApplicationComponentDirectoryMap_Max_Fields>;
+  min?: Maybe<ApplicationComponentDirectoryMap_Min_Fields>;
+};
+
+
+/** aggregate fields of "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Aggregate_Order_By = {
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<ApplicationComponentDirectoryMap_Max_Order_By>;
+  min?: InputMaybe<ApplicationComponentDirectoryMap_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input = {
+  data: Array<ApplicationComponentDirectoryMap_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "map_application_component_directory". All fields are combined with a logical 'AND'. */
+export type ApplicationComponentDirectoryMap_Bool_Exp = {
+  _and?: InputMaybe<Array<ApplicationComponentDirectoryMap_Bool_Exp>>;
+  _not?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+  _or?: InputMaybe<Array<ApplicationComponentDirectoryMap_Bool_Exp>>;
+  component?: InputMaybe<ApplicationComponent_Bool_Exp>;
+  componentId?: InputMaybe<Uuid_Comparison_Exp>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
+  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
+  directory?: InputMaybe<DirectoryObject_Bool_Exp>;
+  directoryId?: InputMaybe<Uuid_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "map_application_component_directory" */
+export enum ApplicationComponentDirectoryMap_Constraint {
+  /** unique or primary key constraint on columns "component_id", "directory_id" */
+  MapApplicationComponentDirectoryPkey = 'map_application_component_directory_pkey'
+}
+
+/** input type for inserting data into table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Insert_Input = {
+  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
+  componentId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  directory?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
+  directoryId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type ApplicationComponentDirectoryMap_Max_Fields = {
+  __typename?: 'ApplicationComponentDirectoryMap_max_fields';
+  componentId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  directoryId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Max_Order_By = {
+  componentId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  directoryId?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type ApplicationComponentDirectoryMap_Min_Fields = {
+  __typename?: 'ApplicationComponentDirectoryMap_min_fields';
+  componentId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  directoryId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Min_Order_By = {
+  componentId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  directoryId?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Mutation_Response = {
+  __typename?: 'ApplicationComponentDirectoryMap_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<ApplicationComponentDirectoryMap>;
+};
+
+/** on_conflict condition type for table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_On_Conflict = {
+  constraint: ApplicationComponentDirectoryMap_Constraint;
+  update_columns?: Array<ApplicationComponentDirectoryMap_Update_Column>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "map_application_component_directory". */
+export type ApplicationComponentDirectoryMap_Order_By = {
+  component?: InputMaybe<ApplicationComponent_Order_By>;
+  componentId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  directory?: InputMaybe<DirectoryObject_Order_By>;
+  directoryId?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: map_application_component_directory */
+export type ApplicationComponentDirectoryMap_Pk_Columns_Input = {
+  componentId: Scalars['uuid']['input'];
+  directoryId: Scalars['uuid']['input'];
+};
+
+/** select columns of table "map_application_component_directory" */
+export enum ApplicationComponentDirectoryMap_Select_Column {
+  /** column name */
+  ComponentId = 'componentId',
+  /** column name */
+  CreatedAt = 'createdAt',
+  /** column name */
+  CreatedBy = 'createdBy',
+  /** column name */
+  DeletedAt = 'deletedAt',
+  /** column name */
+  DeletedBy = 'deletedBy',
+  /** column name */
+  DirectoryId = 'directoryId',
+  /** column name */
+  UpdatedAt = 'updatedAt',
+  /** column name */
+  UpdatedBy = 'updatedBy'
+}
+
+/** input type for updating data in table "map_application_component_directory" */
+export type ApplicationComponentDirectoryMap_Set_Input = {
+  componentId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  directoryId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "ApplicationComponentDirectoryMap" */
+export type ApplicationComponentDirectoryMap_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: ApplicationComponentDirectoryMap_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ApplicationComponentDirectoryMap_Stream_Cursor_Value_Input = {
+  componentId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  directoryId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "map_application_component_directory" */
+export enum ApplicationComponentDirectoryMap_Update_Column {
+  /** column name */
+  ComponentId = 'componentId',
+  /** column name */
+  CreatedAt = 'createdAt',
+  /** column name */
+  CreatedBy = 'createdBy',
+  /** column name */
+  DeletedAt = 'deletedAt',
+  /** column name */
+  DeletedBy = 'deletedBy',
+  /** column name */
+  DirectoryId = 'directoryId',
+  /** column name */
+  UpdatedAt = 'updatedAt',
+  /** column name */
+  UpdatedBy = 'updatedBy'
+}
+
+export type ApplicationComponentDirectoryMap_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: ApplicationComponentDirectoryMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_event" */
@@ -3461,6 +3751,8 @@ export type ApplicationComponent_Bool_Exp = {
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
   description?: InputMaybe<String_Comparison_Exp>;
+  directories?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+  directories_aggregate?: InputMaybe<ApplicationComponentDirectoryMap_Aggregate_Bool_Exp>;
   events?: InputMaybe<ApplicationComponentEventMap_Bool_Exp>;
   events_aggregate?: InputMaybe<ApplicationComponentEventMap_Aggregate_Bool_Exp>;
   failoverType?: InputMaybe<DirectoryObject_Bool_Exp>;
@@ -3528,6 +3820,7 @@ export type ApplicationComponent_Insert_Input = {
   deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deletedBy?: InputMaybe<Scalars['uuid']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  directories?: InputMaybe<ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input>;
   events?: InputMaybe<ApplicationComponentEventMap_Arr_Rel_Insert_Input>;
   failoverType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
   failoverTypeId?: InputMaybe<Scalars['uuid']['input']>;
@@ -3692,6 +3985,7 @@ export type ApplicationComponent_Order_By = {
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
+  directories_aggregate?: InputMaybe<ApplicationComponentDirectoryMap_Aggregate_Order_By>;
   events_aggregate?: InputMaybe<ApplicationComponentEventMap_Aggregate_Order_By>;
   failoverType?: InputMaybe<DirectoryObject_Order_By>;
   failoverTypeId?: InputMaybe<Order_By>;
@@ -6408,6 +6702,10 @@ export type DirectoryObject = {
   byDefault: Scalars['Boolean']['output'];
   code: Scalars['String']['output'];
   color?: Maybe<Scalars['String']['output']>;
+  /** An array relationship */
+  components: Array<ApplicationComponentDirectoryMap>;
+  /** An aggregate relationship */
+  components_aggregate: ApplicationComponentDirectoryMap_Aggregate;
   createdAt: Scalars['timestamptz']['output'];
   createdBy?: Maybe<Scalars['uuid']['output']>;
   /** An array relationship */
@@ -6498,6 +6796,26 @@ export type DirectoryObjectArchitectureStyle_AggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<ApplicationComponent_Order_By>>;
   where?: InputMaybe<ApplicationComponent_Bool_Exp>;
+};
+
+
+/** columns and relationships of "directories" */
+export type DirectoryObjectComponentsArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+/** columns and relationships of "directories" */
+export type DirectoryObjectComponents_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
 };
 
 
@@ -6832,6 +7150,8 @@ export type DirectoryObject_Bool_Exp = {
   byDefault?: InputMaybe<Boolean_Comparison_Exp>;
   code?: InputMaybe<String_Comparison_Exp>;
   color?: InputMaybe<String_Comparison_Exp>;
+  components?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+  components_aggregate?: InputMaybe<ApplicationComponentDirectoryMap_Aggregate_Bool_Exp>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   criticalLevel?: InputMaybe<ApplicationComponent_Bool_Exp>;
@@ -6888,6 +7208,7 @@ export type DirectoryObject_Insert_Input = {
   byDefault?: InputMaybe<Scalars['Boolean']['input']>;
   code?: InputMaybe<Scalars['String']['input']>;
   color?: InputMaybe<Scalars['String']['input']>;
+  components?: InputMaybe<ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
   criticalLevel?: InputMaybe<ApplicationComponent_Arr_Rel_Insert_Input>;
@@ -6978,6 +7299,7 @@ export type DirectoryObject_Order_By = {
   byDefault?: InputMaybe<Order_By>;
   code?: InputMaybe<Order_By>;
   color?: InputMaybe<Order_By>;
+  components_aggregate?: InputMaybe<ApplicationComponentDirectoryMap_Aggregate_Order_By>;
   createdAt?: InputMaybe<Order_By>;
   createdBy?: InputMaybe<Order_By>;
   criticalLevel_aggregate?: InputMaybe<ApplicationComponent_Aggregate_Order_By>;
@@ -8679,7 +9001,7 @@ export type MotivationElementGeneric = {
   solutions: Array<SolutionConstraintMap>;
   /** An aggregate relationship */
   solutions_aggregate: SolutionConstraintMap_Aggregate;
-  state: Scalars['motivation_status_enum']['output'];
+  state?: Maybe<Scalars['motivation_status_enum']['output']>;
   status?: Maybe<Scalars['risk_status_enum']['output']>;
   typeAssessment?: Maybe<Scalars['assessment_type_enum']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -13585,6 +13907,10 @@ export type Mutation_Root = {
   deleteApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
   /** delete single row from the table: "map_application_component_data_object" */
   deleteApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
+  /** delete data from the table: "map_application_component_directory" */
+  deleteApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
+  /** delete single row from the table: "map_application_component_directory" */
+  deleteApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
   /** delete data from the table: "map_application_component_event" */
   deleteApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
   /** delete single row from the table: "map_application_component_event" */
@@ -13735,6 +14061,10 @@ export type Mutation_Root = {
   insertApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
   /** insert a single row into the table: "map_application_component_data_object" */
   insertApplicationComponentDataObjectMapOne?: Maybe<ApplicationComponentDataObjectMap>;
+  /** insert data into the table: "map_application_component_directory" */
+  insertApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
+  /** insert a single row into the table: "map_application_component_directory" */
+  insertApplicationComponentDirectoryMapOne?: Maybe<ApplicationComponentDirectoryMap>;
   /** insert data into the table: "map_application_component_event" */
   insertApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
   /** insert a single row into the table: "map_application_component_event" */
@@ -13889,6 +14219,10 @@ export type Mutation_Root = {
   updateApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
   /** update single row of the table: "map_application_component_data_object" */
   updateApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
+  /** update data of the table: "map_application_component_directory" */
+  updateApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
+  /** update single row of the table: "map_application_component_directory" */
+  updateApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
   /** update data of the table: "map_application_component_event" */
   updateApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
   /** update single row of the table: "map_application_component_event" */
@@ -14035,6 +14369,8 @@ export type Mutation_Root = {
   updateTechnologyNodeSystemSoftwareMapByPk?: Maybe<TechnologyNodeSystemSoftwareMap>;
   /** update multiples rows of table: "map_application_component_data_object" */
   update_ApplicationComponentDataObjectMap_many?: Maybe<Array<Maybe<ApplicationComponentDataObjectMap_Mutation_Response>>>;
+  /** update multiples rows of table: "map_application_component_directory" */
+  update_ApplicationComponentDirectoryMap_many?: Maybe<Array<Maybe<ApplicationComponentDirectoryMap_Mutation_Response>>>;
   /** update multiples rows of table: "map_application_component_event" */
   update_ApplicationComponentEventMap_many?: Maybe<Array<Maybe<ApplicationComponentEventMap_Mutation_Response>>>;
   /** update multiples rows of table: "map_application_component_function" */
@@ -14134,6 +14470,19 @@ export type Mutation_RootDeleteApplicationComponentDataObjectMapArgs = {
 export type Mutation_RootDeleteApplicationComponentDataObjectMapByPkArgs = {
   componentId: Scalars['uuid']['input'];
   dataObjectId: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteApplicationComponentDirectoryMapArgs = {
+  where: ApplicationComponentDirectoryMap_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteApplicationComponentDirectoryMapByPkArgs = {
+  componentId: Scalars['uuid']['input'];
+  directoryId: Scalars['uuid']['input'];
 };
 
 
@@ -14608,6 +14957,20 @@ export type Mutation_RootInsertApplicationComponentDataObjectMapArgs = {
 export type Mutation_RootInsertApplicationComponentDataObjectMapOneArgs = {
   object: ApplicationComponentDataObjectMap_Insert_Input;
   on_conflict?: InputMaybe<ApplicationComponentDataObjectMap_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertApplicationComponentDirectoryMapArgs = {
+  objects: Array<ApplicationComponentDirectoryMap_Insert_Input>;
+  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertApplicationComponentDirectoryMapOneArgs = {
+  object: ApplicationComponentDirectoryMap_Insert_Input;
+  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
 };
 
 
@@ -15151,6 +15514,20 @@ export type Mutation_RootUpdateApplicationComponentDataObjectMapByPkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateApplicationComponentDirectoryMapArgs = {
+  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
+  where: ApplicationComponentDirectoryMap_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateApplicationComponentDirectoryMapByPkArgs = {
+  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
+  pk_columns: ApplicationComponentDirectoryMap_Pk_Columns_Input;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateApplicationComponentEventMapArgs = {
   _set?: InputMaybe<ApplicationComponentEventMap_Set_Input>;
   where: ApplicationComponentEventMap_Bool_Exp;
@@ -15671,6 +16048,12 @@ export type Mutation_RootUpdate_ApplicationComponentDataObjectMap_ManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_ApplicationComponentDirectoryMap_ManyArgs = {
+  updates: Array<ApplicationComponentDirectoryMap_Updates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_ApplicationComponentEventMap_ManyArgs = {
   updates: Array<ApplicationComponentEventMap_Updates>;
 };
@@ -15960,6 +16343,12 @@ export type Query_Root = {
   ApplicationComponentDataObjectMapAggregate: ApplicationComponentDataObjectMap_Aggregate;
   /** fetch data from the table: "map_application_component_data_object" using primary key columns */
   ApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
+  /** fetch data from the table: "map_application_component_directory" */
+  ApplicationComponentDirectoryMap: Array<ApplicationComponentDirectoryMap>;
+  /** fetch aggregated fields from the table: "map_application_component_directory" */
+  ApplicationComponentDirectoryMapAggregate: ApplicationComponentDirectoryMap_Aggregate;
+  /** fetch data from the table: "map_application_component_directory" using primary key columns */
+  ApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
   /** fetch data from the table: "map_application_component_event" */
   ApplicationComponentEventMap: Array<ApplicationComponentEventMap>;
   /** fetch aggregated fields from the table: "map_application_component_event" */
@@ -16223,6 +16612,30 @@ export type Query_RootApplicationComponentDataObjectMapAggregateArgs = {
 export type Query_RootApplicationComponentDataObjectMapByPkArgs = {
   componentId: Scalars['uuid']['input'];
   dataObjectId: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootApplicationComponentDirectoryMapArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+export type Query_RootApplicationComponentDirectoryMapAggregateArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+export type Query_RootApplicationComponentDirectoryMapByPkArgs = {
+  componentId: Scalars['uuid']['input'];
+  directoryId: Scalars['uuid']['input'];
 };
 
 
@@ -17142,6 +17555,14 @@ export type Subscription_Root = {
   ApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
   /** fetch data from the table in a streaming manner: "map_application_component_data_object" */
   ApplicationComponentDataObjectMap_stream: Array<ApplicationComponentDataObjectMap>;
+  /** fetch data from the table: "map_application_component_directory" */
+  ApplicationComponentDirectoryMap: Array<ApplicationComponentDirectoryMap>;
+  /** fetch aggregated fields from the table: "map_application_component_directory" */
+  ApplicationComponentDirectoryMapAggregate: ApplicationComponentDirectoryMap_Aggregate;
+  /** fetch data from the table: "map_application_component_directory" using primary key columns */
+  ApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
+  /** fetch data from the table in a streaming manner: "map_application_component_directory" */
+  ApplicationComponentDirectoryMap_stream: Array<ApplicationComponentDirectoryMap>;
   /** fetch data from the table: "map_application_component_event" */
   ApplicationComponentEventMap: Array<ApplicationComponentEventMap>;
   /** fetch aggregated fields from the table: "map_application_component_event" */
@@ -17486,6 +17907,37 @@ export type Subscription_RootApplicationComponentDataObjectMap_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ApplicationComponentDataObjectMap_Stream_Cursor_Input>>;
   where?: InputMaybe<ApplicationComponentDataObjectMap_Bool_Exp>;
+};
+
+
+export type Subscription_RootApplicationComponentDirectoryMapArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+export type Subscription_RootApplicationComponentDirectoryMapAggregateArgs = {
+  distinct_on?: InputMaybe<Array<ApplicationComponentDirectoryMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<ApplicationComponentDirectoryMap_Order_By>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
+};
+
+
+export type Subscription_RootApplicationComponentDirectoryMapByPkArgs = {
+  componentId: Scalars['uuid']['input'];
+  directoryId: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootApplicationComponentDirectoryMap_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ApplicationComponentDirectoryMap_Stream_Cursor_Input>>;
+  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
 };
 
 
@@ -18653,7 +19105,7 @@ export type GetComponentFullQueryVariables = Exact<{
 }>;
 
 
-export type GetComponentFullQuery = { __typename?: 'query_root', component?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, name: string, color?: string | null } | null } | null, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null } }>, dataObjects: Array<{ __typename?: 'ApplicationComponentDataObjectMap', dataObject: { __typename?: 'DataObject', id: any, code: string, name: string, description?: string | null } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'InterfaceGeneric', id: any, code: string, name: string, description?: string | null } }>, events: Array<{ __typename?: 'ApplicationComponentEventMap', event: { __typename?: 'EventGeneric', id: any, code: string, name: string, description?: string | null } }>, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, name: string } }>, technologyNodes: Array<{ __typename?: 'ApplicationComponentTechnologyNodeMap', node: { __typename?: 'TechnologyNode', id: any, code: string, name: string } }>, technologyNetworks: Array<{ __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap', logicalNetwork: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string } }>, parentComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', componentParent: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, childComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', componentChild: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }> };
+export type GetComponentFullQuery = { __typename?: 'query_root', component?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, name: string, color?: string | null } | null } | null, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null } }>, dataObjects: Array<{ __typename?: 'ApplicationComponentDataObjectMap', dataObject: { __typename?: 'DataObject', id: any, code: string, name: string, description?: string | null } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'InterfaceGeneric', id: any, code: string, name: string, description?: string | null } }>, events: Array<{ __typename?: 'ApplicationComponentEventMap', event: { __typename?: 'EventGeneric', id: any, code: string, name: string, description?: string | null } }>, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, name: string } }>, technologyNodes: Array<{ __typename?: 'ApplicationComponentTechnologyNodeMap', node: { __typename?: 'TechnologyNode', id: any, code: string, name: string } }>, technologyNetworks: Array<{ __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap', logicalNetwork: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string } }>, parentComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', componentParent: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, childComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', componentChild: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, incomingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }>, outgoingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }> };
 
 export type GetComponentsQueryVariables = Exact<{
   where: ApplicationComponent_Bool_Exp;
