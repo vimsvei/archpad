@@ -297,61 +297,74 @@ export class OpenExchangeImportService {
       reporter.setProgress(55);
       reporter.log('upload.open-exchange.stage.create-links');
 
-      // Relationships: Assignment (component -> function)
-      const assignments = parsed.relationships.filter(
-        (r) => r.type === 'Assignment',
-      );
+      // Relationships:
+      // - component ↔ function: Assignment OR Realization
+      // - business actor ↔ role: Assignment
+      const componentFunctionRelTypes = new Set(['Assignment', 'Realization']);
       const maps: ApplicationComponentFunctionMap[] = [];
       const componentsByFunctionXmlId = new Map<string, ApplicationComponent[]>();
-      for (const rel of assignments) {
-        if (!rel.source || !rel.target) continue;
+
+      for (const rel of parsed.relationships) {
+        if (!rel.source || !rel.target || !rel.type) continue;
         const sourceEl = elementById.get(rel.source);
         const targetEl = elementById.get(rel.target);
         if (!sourceEl || !targetEl) continue;
 
-        if (
-          sourceEl.type === 'ApplicationComponent' &&
-          targetEl.type === 'ApplicationFunction'
-        ) {
-          const c = componentEntityByXmlId.get(sourceEl.id);
-          const f = functionEntityByXmlId.get(targetEl.id);
-          if (!c || !f) continue;
-          const existing = await txEm.findOne(
-            ApplicationComponentFunctionMap,
-            { component: c.id as any, function: f.id as any } as any,
-          );
-          const map = existing
-            ? existing
-            : txEm.create(ApplicationComponentFunctionMap, {
-                component: c,
-                function: f,
-              } as any);
-          if (!existing) maps.push(map);
+        // ApplicationComponent ↔ ApplicationFunction (Assignment/Realization in XML)
+        if (componentFunctionRelTypes.has(rel.type)) {
+          const aIsComponent = sourceEl.type === 'ApplicationComponent';
+          const bIsComponent = targetEl.type === 'ApplicationComponent';
+          const aIsFunction = sourceEl.type === 'ApplicationFunction';
+          const bIsFunction = targetEl.type === 'ApplicationFunction';
 
-          const arr = componentsByFunctionXmlId.get(targetEl.id) ?? [];
-          arr.push(c);
-          componentsByFunctionXmlId.set(targetEl.id, arr);
+          if ((aIsComponent && bIsFunction) || (bIsComponent && aIsFunction)) {
+            const componentXmlId = aIsComponent ? sourceEl.id : targetEl.id;
+            const functionXmlId = aIsFunction ? sourceEl.id : targetEl.id;
+
+            const c = componentEntityByXmlId.get(componentXmlId);
+            const f = functionEntityByXmlId.get(functionXmlId);
+            if (!c || !f) continue;
+
+            const existing = await txEm.findOne(
+              ApplicationComponentFunctionMap,
+              { component: c.id as any, function: f.id as any } as any,
+            );
+            const map = existing
+              ? existing
+              : txEm.create(ApplicationComponentFunctionMap, {
+                  component: c,
+                  function: f,
+                } as any);
+            if (!existing) maps.push(map);
+
+            const arr = componentsByFunctionXmlId.get(functionXmlId) ?? [];
+            arr.push(c);
+            componentsByFunctionXmlId.set(functionXmlId, arr);
+          }
         }
 
         // BusinessActor -> BusinessRole (Assignment)
-        if (
-          sourceEl.type === 'BusinessActor' &&
-          targetEl.type === 'BusinessRole'
-        ) {
-          const actor = businessActorEntityByXmlId.get(sourceEl.id);
-          const role = businessRoleEntityByXmlId.get(targetEl.id);
-          if (!actor || !role) continue;
-          const existing = await txEm.findOne(BusinessActorRoleMap, {
-            actor: actor.id as any,
-            role: role.id as any,
-          } as any);
-          if (!existing) {
-            await txEm.persistAndFlush(
-              txEm.create(BusinessActorRoleMap, { actor, role } as any),
-            );
+        if (rel.type === 'Assignment') {
+          if (
+            sourceEl.type === 'BusinessActor' &&
+            targetEl.type === 'BusinessRole'
+          ) {
+            const actor = businessActorEntityByXmlId.get(sourceEl.id);
+            const role = businessRoleEntityByXmlId.get(targetEl.id);
+            if (!actor || !role) continue;
+            const existing = await txEm.findOne(BusinessActorRoleMap, {
+              actor: actor.id as any,
+              role: role.id as any,
+            } as any);
+            if (!existing) {
+              await txEm.persistAndFlush(
+                txEm.create(BusinessActorRoleMap, { actor, role } as any),
+              );
+            }
           }
         }
       }
+
       if (maps.length) {
         await txEm.persistAndFlush(maps);
         result.created.componentFunctionLinks += maps.length;
@@ -680,9 +693,9 @@ export class OpenExchangeImportService {
       'motivations',
       'data_objects',
       'components',
-      'system_software',
       'technology_nodes',
       'technology_networks',
+      'system_software',
       'actors',
       'roles',
       'products',
