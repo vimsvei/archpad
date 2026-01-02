@@ -1,5 +1,5 @@
 import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
-import {BrickWallShield, Folder, House, LayoutDashboard, LifeBuoy, Send, Settings2} from "lucide-react";
+import {BrickWallShield, Folder, House, LayoutDashboard, LifeBuoy, Send, Settings, Settings2, Upload} from "lucide-react";
 import { DirectoryKind } from "@/@types/directory-kind";
 
 function slugFromDirectoryKindKey(key: string) {
@@ -158,7 +158,17 @@ export const menu: TMenu = [
           ...DIRECTORY_MENU_ITEMS,
         ]
       },
-      
+      {
+        title: 'management.settings',
+        icon: Settings,
+        items: [
+          {
+            title: 'management.settings.upload',
+            icon: Upload,
+            url: '/upload',
+          }
+        ]
+      }
     ]
   },
   {
