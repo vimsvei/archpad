@@ -247,4 +247,12 @@ export class ApplicationComponentController {
   ) {
     return this.service.removeEvent(componentId, eventId);
   }
+
+  @Get(':id/flows')
+  @ApiOperation({
+    summary: 'Получить потоки компонента (входящие и исходящие)',
+  })
+  getFlows(@Param('id') componentId: string) {
+    return this.service.getFlows(componentId);
+  }
 }

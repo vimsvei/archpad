@@ -88,6 +88,22 @@ export type ApplicationComponentFull = {
   technologyNetworks: Array<{ id: string; code: string; name: string }>
   parents: Array<{ id: string; code: string; name: string; description?: string | null }>
   children: Array<{ id: string; code: string; name: string; description?: string | null }>
+  incomingFlows: Array<{
+    id: string
+    code: string
+    name: string
+    description?: string | null
+    sourceComponent?: { id: string; code: string; name: string } | null
+    targetComponent?: { id: string; code: string; name: string } | null
+  }>
+  outgoingFlows: Array<{
+    id: string
+    code: string
+    name: string
+    description?: string | null
+    sourceComponent?: { id: string; code: string; name: string } | null
+    targetComponent?: { id: string; code: string; name: string } | null
+  }>
 }
 
 export async function getApplicationComponentFullGraphql(id: string): Promise<ApplicationComponentFull> {
@@ -122,6 +138,38 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
     technologyNetworks: (data.technologyNetworks || []).map((x: any) => x.logicalNetwork).filter(Boolean),
     parents: (data.parentComponents || []).map((x: any) => x.componentParent).filter(Boolean),
     children: (data.childComponents || []).map((x: any) => x.componentChild).filter(Boolean),
+    incomingFlows: (data.incomingFlows || []).map((flow: any) => ({
+      id: flow.id,
+      code: flow.code,
+      name: flow.name,
+      description: flow.description ?? null,
+      sourceComponent: flow.sourceComponent ? {
+        id: flow.sourceComponent.id,
+        code: flow.sourceComponent.code,
+        name: flow.sourceComponent.name,
+      } : null,
+      targetComponent: flow.targetComponent ? {
+        id: flow.targetComponent.id,
+        code: flow.targetComponent.code,
+        name: flow.targetComponent.name,
+      } : null,
+    })),
+    outgoingFlows: (data.outgoingFlows || []).map((flow: any) => ({
+      id: flow.id,
+      code: flow.code,
+      name: flow.name,
+      description: flow.description ?? null,
+      sourceComponent: flow.sourceComponent ? {
+        id: flow.sourceComponent.id,
+        code: flow.sourceComponent.code,
+        name: flow.sourceComponent.name,
+      } : null,
+      targetComponent: flow.targetComponent ? {
+        id: flow.targetComponent.id,
+        code: flow.targetComponent.code,
+        name: flow.targetComponent.name,
+      } : null,
+    })),
   }
 }
 

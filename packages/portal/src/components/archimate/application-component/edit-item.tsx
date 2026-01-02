@@ -112,8 +112,30 @@ export function EditItem({ id }: EditItemProps) {
         technologyNetworks: fullData.technologyNetworks,
         parents: fullData.parents,
         children: fullData.children,
-        incomingFlows: [], // TODO: Load from GraphQL query
-        outgoingFlows: [], // TODO: Load from GraphQL query
+        incomingFlows: (fullData.incomingFlows || []).map((flow) => ({
+          id: flow.id,
+          code: flow.code,
+          name: flow.name,
+          description: flow.description ?? null,
+          sourceComponent: flow.sourceComponent?.name ?? null,
+          sourceFunction: null, // Not available in GraphQL (composite key)
+          sourceInterface: null, // Not available in model
+          targetComponent: flow.targetComponent?.name ?? null,
+          targetFunction: null, // Not available in GraphQL (composite key)
+          targetInterface: null, // Not available in model
+        })),
+        outgoingFlows: (fullData.outgoingFlows || []).map((flow) => ({
+          id: flow.id,
+          code: flow.code,
+          name: flow.name,
+          description: flow.description ?? null,
+          sourceComponent: flow.sourceComponent?.name ?? null,
+          sourceFunction: null, // Not available in GraphQL (composite key)
+          sourceInterface: null, // Not available in model
+          targetComponent: flow.targetComponent?.name ?? null,
+          targetFunction: null, // Not available in GraphQL (composite key)
+          targetInterface: null, // Not available in model
+        })),
       })
     )
   }, [fullData, dispatch])

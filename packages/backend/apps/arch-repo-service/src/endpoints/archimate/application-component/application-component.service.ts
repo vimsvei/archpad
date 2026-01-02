@@ -17,6 +17,7 @@ import { ApplicationEvent } from '@/model/archimate/application/application-even
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import { TechnologyNode } from '@/model/archimate/technology/technology-node.entity';
 import { TechnologyLogicalNetwork } from '@/model/archimate/technology/technology-network.entity';
+import { ApplicationFlow } from '@/model/archimate/relationships/application-flow.entity';
 import {
   ArchitectureStyleDirectory,
   ComponentStateDirectory,
@@ -71,6 +72,8 @@ export class ApplicationComponentService {
     private readonly technologyNetworkMapRepo: EntityRepository<ApplicationComponentTechnologyLogicalNetworkMap>,
     @InjectRepository(ApplicationComponentHierarchyMap)
     private readonly hierarchyMapRepo: EntityRepository<ApplicationComponentHierarchyMap>,
+    @InjectRepository(ApplicationFlow)
+    private readonly flowRepo: EntityRepository<ApplicationFlow>,
   ) {}
 
   async findAll(
@@ -294,6 +297,43 @@ export class ApplicationComponentService {
       event: eventId as any,
     } as any);
     await em.removeAndFlush(map);
+  }
+
+  async getFlows(componentId: string): Promise<{
+    incoming: ApplicationFlow[];
+    outgoing: ApplicationFlow[];
+  }> {
+    await this.findOne(componentId);
+    
+    const [incoming, outgoing] = await Promise.all([
+      this.flowRepo.find(
+        { targetComponent: componentId as any } as any,
+        {
+          populate: [
+            'sourceComponent',
+            'sourceFunction',
+            'targetComponent',
+            'targetFunction',
+          ] as any,
+        } as any,
+      ),
+      this.flowRepo.find(
+        { sourceComponent: componentId as any } as any,
+        {
+          populate: [
+            'sourceComponent',
+            'sourceFunction',
+            'targetComponent',
+            'targetFunction',
+          ] as any,
+        } as any,
+      ),
+    ]);
+
+    return {
+      incoming: incoming as ApplicationFlow[],
+      outgoing: outgoing as ApplicationFlow[],
+    };
   }
 
   async update(

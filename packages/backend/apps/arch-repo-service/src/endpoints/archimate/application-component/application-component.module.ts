@@ -11,6 +11,7 @@ import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
 import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
 import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
+import { ApplicationFlow } from '@/model/archimate/relationships/application-flow.entity';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ApplicationComponentHierarchyMap } from '@/model/maps/application-compo
       ApplicationComponentTechnologyNodeMap,
       ApplicationComponentTechnologyLogicalNetworkMap,
       ApplicationComponentHierarchyMap,
+      ApplicationFlow,
     ]),
   ],
   controllers: [ApplicationComponentController],

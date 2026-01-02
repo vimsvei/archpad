@@ -90,4 +90,36 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
+  incomingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, targetComponentId: { _eq: $id } }) {
+    id
+    code
+    name
+    description
+    sourceComponent {
+      id
+      code
+      name
+    }
+    targetComponent {
+      id
+      code
+      name
+    }
+  }
+  outgoingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, sourceComponentId: { _eq: $id } }) {
+    id
+    code
+    name
+    description
+    sourceComponent {
+      id
+      code
+      name
+    }
+    targetComponent {
+      id
+      code
+      name
+    }
+  }
 }
