@@ -11,6 +11,7 @@ import { SystemSoftwareModule } from './endpoints/archimate/system-software/syst
 import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import { ApplicationInterfaceModule } from './endpoints/archimate/application-interface/application-interface.module';
+import { OpenExchangeImportModule } from '@/endpoints/import/open-exchange/open-exchange-import.module';
 import {
   LoggerModule,
   LoggerService,
@@ -68,6 +69,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     ApplicationInterfaceModule,
     SystemSoftwareModule,
     DirectoriesModule,
+    OpenExchangeImportModule,
     HealthCheckerModule,
   ],
   controllers: [],

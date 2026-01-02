@@ -108,6 +108,37 @@
   "table.component.nodes.no-results": "У компонента {component} нет узлов",
   "table.component.nodes.no-results.description": "Добавьте узел из списка доступных элементов для компонента {component}",
   "table.component.system-software.no-results": "У компонента {component} нет системного ПО",
-  "table.component.system-software.no-results.description": "Добавьте системное ПО из списка доступных элементов для компонента {component}"
+  "table.component.system-software.no-results.description": "Добавьте системное ПО из списка доступных элементов для компонента {component}",
+
+  "upload.title": "Загрузка из файла",
+  "upload.open-exchange.subtitle": "Загрузите ArchiMate Open Exchange XML и импортируйте основные объекты уровня Application.",
+  "upload.open-exchange.dropzone.title": "Перетащите XML сюда или нажмите для выбора",
+  "upload.open-exchange.dropzone.hint": "Поддерживается Open Exchange (ArchiMate) XML",
+  "upload.open-exchange.clear-before.label": "Очистить репозиторий перед загрузкой?",
+  "upload.open-exchange.action.start": "Начать импорт",
+  "upload.open-exchange.job-id": "Job",
+  "upload.open-exchange.progress": "Прогресс",
+  "upload.open-exchange.logs.title": "Логи",
+  "upload.open-exchange.logs.empty": "Логи появятся после старта импорта",
+  "upload.open-exchange.logs.count": "Сообщений: {count}",
+  "upload.open-exchange.summary.title": "Результат",
+  "upload.open-exchange.summary.line": "Создано: компонентов {components}, функций {functions}, связей {links}, flows {flows}",
+
+  "upload.open-exchange.client.selected": "Выбран файл: {fileName}",
+  "upload.open-exchange.client.job-created": "Создан job: {jobId}",
+  "upload.open-exchange.client.poll-failed": "Не удалось получить статус job: {message}",
+
+  "upload.open-exchange.stage.started": "Старт импорта файла: {fileName}",
+  "upload.open-exchange.stage.parse": "Чтение и разбор XML",
+  "upload.open-exchange.stage.clear-repo": "Очистка репозитория перед импортом",
+  "upload.open-exchange.clear-repo.count": "Таблиц для очистки: {count}",
+  "upload.open-exchange.stage.create-entities": "Создание объектов (components: {components}, functions: {functions}, dataObjects: {dataObjects})",
+  "upload.open-exchange.stage.create-links": "Создание связей компонент ↔ функция (Assignment)",
+  "upload.open-exchange.stage.create-technology-links": "Создание технологических связей (Device ↔ Network/Software)",
+  "upload.open-exchange.stage.create-data-access": "Создание связей доступа к данным (Access)",
+  "upload.open-exchange.stage.create-flows": "Создание потоков (Flow)",
+  "upload.open-exchange.stage.completed": "Импорт завершён (components: {components}, functions: {functions}, links: {links}, flows: {flows})",
+  "upload.open-exchange.error": "Ошибка импорта: {message}"
 }
+
 

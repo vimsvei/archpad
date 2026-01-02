@@ -9,6 +9,7 @@ import { dataObjectEditReducer } from "@/store/slices/data-object-edit-slice"
 import { directoriesReducer } from "@/store/slices/directories-slice"
 import { authFormsReducer } from "@/store/slices/auth-forms-slice"
 import { directoriesMiddleware } from "@/store/middleware/directories-middleware"
+import { openExchangeImportReducer } from "@/store/slices/open-exchange-import-slice"
 import logger from 'redux-logger';
 
 export function makeStore() {
@@ -23,6 +24,7 @@ export function makeStore() {
       applicationComponentEdit: applicationComponentEditReducer,
       dataObjectEdit: dataObjectEditReducer,
       directories: directoriesReducer,
+      openExchangeImport: openExchangeImportReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

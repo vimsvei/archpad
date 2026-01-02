@@ -3,7 +3,7 @@ import { Entity, Enum } from '@mikro-orm/core';
 import { MotivationStatus } from '@/model/enums/motivation-status.enum';
 import { MotivationPriority } from '@/model/enums/motivation-priority.enum';
 import { MotivationKind } from '@/model/enums/motivation-kind.enum';
-import { HasuraTable } from '@archpad/models';
+import { ArchimateCode, HasuraTable } from '@archpad/models';
 
 @HasuraTable()
 @Entity({
@@ -12,6 +12,9 @@ import { HasuraTable } from '@archpad/models';
   discriminatorColumn: 'kind',
 })
 export abstract class MotivationElementGeneric extends ArchimateElementGeneric {
+  @ArchimateCode('MOT')
+  override code: string = undefined as any;
+
   @Enum({
     items: () => MotivationKind,
     nativeEnumName: 'motivation_kind_enum',
@@ -21,6 +24,7 @@ export abstract class MotivationElementGeneric extends ArchimateElementGeneric {
   @Enum({
     items: () => MotivationStatus,
     nativeEnumName: 'motivation_status_enum',
+    nullable: true,
   })
   state?: MotivationStatus;
 
