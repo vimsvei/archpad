@@ -46,6 +46,7 @@ import { ClassificationTab } from "./classification-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { FlowsTable } from "./flows-table"
+import { SchemasTab } from "./schemas-tab"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 import { getSheetConfig, type SheetType } from "@/components/archimate/sheet-configs"
 import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
@@ -722,9 +723,10 @@ export function EditItem({ id }: EditItemProps) {
           </TabsContent>
 
           <TabsContent value="schemas" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <Card className="flex min-h-0 flex-1 flex-col p-6">
-              <div className="text-muted-foreground">Schemas tab content</div>
-            </Card>
+            <SchemasTab
+              componentId={id}
+              componentName={editState.name}
+            />
           </TabsContent>
         </TabsContents>
       </Tabs>
