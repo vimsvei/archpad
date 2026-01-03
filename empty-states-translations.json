@@ -34,7 +34,7 @@
   "action.add.description": "Найдите и выберите элементы для добавления",
   "action.back": "Назад",
   "action.cancel": "Отмена",
-  "action.clearAll": "Очистить всё",
+  "action.clear.all": "Очистить всё",
   "action.create": "Создать",
   "action.create.description": "Заполните поля и создайте",
   "action.createFailed": "Не удалось создать",
@@ -58,7 +58,7 @@
   "action.update": "Обновить",
   "action.updated": "Обновлено",
   "action.upload": "Загрузить из файла",
-  "action.validationFailed": "Заполните обязательные поля",
+  "action.validation.failed": "Заполните обязательные поля",
 
   "dialog.unsaved-changes.description": "У компонента \"{component}\" есть несохраненные изменения. Сохранить изменения перед выходом?",
   "dialog.unsaved-changes.title": "Несохраненные изменения",
