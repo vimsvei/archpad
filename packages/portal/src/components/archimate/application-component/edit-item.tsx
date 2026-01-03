@@ -32,7 +32,10 @@ import {
   useCreateDataObjectMutation,
   useGetDataObjectsQuery,
 } from "@/store/apis/data-object-api"
-import { useGetSystemSoftwareQuery } from "@/store/apis/system-software-api"
+import {
+  useGetSystemSoftwareQuery,
+  useCreateSystemSoftwareMutation,
+} from "@/store/apis/system-software-api"
 import type { RootState, AppDispatch } from "@/store/store"
 import {
   reset,
@@ -44,6 +47,11 @@ import {
   addDataObject,
   addInterface,
   addEvent,
+  addSystemSoftware,
+  addTechnologyNode,
+  addTechnologyNetwork,
+  addParent,
+  addChild,
   updateBaseline,
   selectIsDirty,
   selectIsDraftValid,
@@ -86,6 +94,7 @@ export function EditItem({ id }: EditItemProps) {
   const [updateComponentFull] = useUpdateApplicationComponentFullMutation()
   const [createDataObject] = useCreateDataObjectMutation()
   const [createApplicationFunction] = useCreateApplicationFunctionMutation()
+  const [createSystemSoftware] = useCreateSystemSoftwareMutation()
 
   // Load full component data
   const { data: fullData, error: queryError, isLoading, isFetching } = useGetApplicationComponentFullQuery(
@@ -276,7 +285,10 @@ export function EditItem({ id }: EditItemProps) {
           dataObjectIds: editState.dataObjects.map((d) => resolveId(d.id)),
           interfaceIds: editState.interfaces.map((i) => resolveId(i.id)),
           eventIds: editState.events.map((e) => resolveId(e.id)),
-          systemSoftwareIds: editState.systemSoftware.map((s) => ({ id: resolveId(s.id), kind: s.kind })),
+          systemSoftwareIds: editState.systemSoftware.map((s) => ({
+            id: resolveId(s.id),
+            kind: (s as any).kind ?? undefined,
+          })),
           technologyNodeIds: editState.technologyNodes.map((n) => resolveId(n.id)),
           technologyNetworkIds: editState.technologyNetworks.map((n) => resolveId(n.id)),
           parentIds: editState.parents.map((p) => resolveId(p.id)),
@@ -535,6 +547,37 @@ export function EditItem({ id }: EditItemProps) {
       return
     }
 
+    // System software supports immediate creation; we add the created entity to Redux.
+    if (createSheetType === "system-software") {
+      void (async () => {
+        try {
+          const created = await createSystemSoftware({
+            input: {
+              ...(code ? { code } : {}),
+              name,
+              ...(description ? { description } : {}),
+            },
+          }).unwrap()
+
+          dispatch(
+            addSystemSoftware({
+              id: String(created.id),
+              code: String(created.code ?? ""),
+              name: String(created.name ?? ""),
+              description: created.description ?? null,
+              kind: (created as any).kind ?? undefined,
+            } as any)
+          )
+
+          toast.success(tr("action.created"))
+          setCreateSheetOpen(false)
+        } catch (e: any) {
+          toast.error(e?.message ?? tr("action.createFailed"))
+        }
+      })()
+      return
+    }
+
     // Generate temporary ID for new item (will be created on save)
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     const tempItem = {
@@ -557,7 +600,7 @@ export function EditItem({ id }: EditItemProps) {
 
     toast.success(tr("action.created"))
     setCreateSheetOpen(false)
-  }, [createSheetDraft, createSheetType, dispatch, tr])
+  }, [createSheetDraft, createSheetType, createSystemSoftware, dispatch, tr])
 
   // Handler for opening add existing items sheet
   const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
@@ -597,6 +640,18 @@ export function EditItem({ id }: EditItemProps) {
       itemsToAdd.forEach((item) => dispatch(addInterface(item)))
     } else if (sheetType === "events") {
       itemsToAdd.forEach((item) => dispatch(addEvent(item)))
+    } else if (sheetType === "system-software") {
+      itemsToAdd.forEach((item) =>
+        dispatch(addSystemSoftware({ ...(item as any), kind: (item as any).kind ?? undefined } as any))
+      )
+    } else if (sheetType === "node") {
+      itemsToAdd.forEach((item) => dispatch(addTechnologyNode(item as any)))
+    } else if (sheetType === "network") {
+      itemsToAdd.forEach((item) => dispatch(addTechnologyNetwork(item as any)))
+    } else if (sheetType === "parent") {
+      itemsToAdd.forEach((item) => dispatch(addParent(item as any)))
+    } else if (sheetType === "child") {
+      itemsToAdd.forEach((item) => dispatch(addChild(item as any)))
     }
 
     toast.success(tr("action.added"))
@@ -797,6 +852,7 @@ export function EditItem({ id }: EditItemProps) {
               componentId={id}
               componentName={editState.name}
               onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
+              onCreateSystemSoftware={() => handleOpenCreateSheet("system-software")}
               onAddExistingNode={() => handleOpenAddExistingSheet("node")}
               onAddExistingNetwork={() => handleOpenAddExistingSheet("network")}
             />
