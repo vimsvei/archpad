@@ -113,7 +113,7 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
       </TableCell>
       {/* Actions */}
       <TableCell>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-end gap-1 w-full">
           {editUrl && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -305,10 +305,11 @@ function ArchimateItemTableInner<T extends RelatedItem>({
             {renderEmpty()}
           </div>
         ) : (
-          <div className="flex h-full min-h-0 flex-col overflow-x-auto">
-            {/* Header table (no vertical scroll) */}
-            <table className="w-full min-w-max caption-bottom text-sm">
-              <TableHeader className="[&_tr]:border-b [&_th]:bg-card">
+          // Single table + sticky header inside the scroll container keeps columns perfectly aligned
+          // (no scrollbar-width mismatch between header and body).
+          <div className="flex h-full min-h-0 overflow-auto">
+            <Table className="min-w-max" containerClassName="overflow-x-auto">
+              <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-card">
                 <TableRow>
                   {onToggleItem && <TableHead className="w-12"></TableHead>}
                   {Icon && <TableHead className="w-12"></TableHead>}
@@ -316,38 +317,30 @@ function ArchimateItemTableInner<T extends RelatedItem>({
                   <TableHead>{t("item.name")}</TableHead>
                   {customColumns}
                   <TableHead>{t("item.description")}</TableHead>
-                  <TableHead className="w-24"></TableHead>
+                  <TableHead className="w-24 text-right"></TableHead>
                 </TableRow>
               </TableHeader>
-            </table>
+              <TableBody>
+                {memoizedItems.map((item) => {
+                  const itemIsSelected = isSelected(item.id)
+                  const customCells = renderCustomCells ? renderCustomCells(item) : undefined
 
-            {/* Body table (vertical scroll only here) */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <table className="w-full min-w-max caption-bottom text-sm">
-                <TableBody>
-                  {memoizedItems.map((item) => {
-                    const itemIsSelected = isSelected(item.id)
-                    const customCells = renderCustomCells
-                      ? renderCustomCells(item)
-                      : undefined
-
-                    return (
-                      <TableRowMemo
-                        key={item.id}
-                        item={item}
-                        isSelected={itemIsSelected}
-                        Icon={Icon}
-                        editPath={editPath}
-                        onDelete={onDelete}
-                        onToggleItem={onToggleItem}
-                        customCells={customCells}
-                        t={t}
-                      />
-                    )
-                  })}
-                </TableBody>
-              </table>
-            </div>
+                  return (
+                    <TableRowMemo
+                      key={item.id}
+                      item={item}
+                      isSelected={itemIsSelected}
+                      Icon={Icon}
+                      editPath={editPath}
+                      onDelete={onDelete}
+                      onToggleItem={onToggleItem}
+                      customCells={customCells}
+                      t={t}
+                    />
+                  )
+                })}
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>
