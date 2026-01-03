@@ -50,17 +50,36 @@ function getPointOnPerimeter(node: any, angle: number) {
   const halfHeight = height / 2
   const tanAngle = Math.tan(angle)
 
+  // Guard against unmeasured nodes (0x0) which can produce NaN coordinates (e.g. 0/0).
+  // When this happens React Flow edges won't render at all.
+  if (halfWidth === 0 && halfHeight === 0) {
+    return {
+      x: abs.x,
+      y: abs.y,
+    }
+  }
+
   let x: number
   let y: number
 
-  if (Math.abs(tanAngle) <= halfHeight / halfWidth) {
+  // Handle degenerate rectangles to avoid divisions by zero / NaN comparisons.
+  if (halfWidth === 0) {
+    // Vertical line: use top/bottom side intersection.
+    x = 0
+    y = angle > 0 ? halfHeight : -halfHeight
+  } else if (halfHeight === 0) {
+    // Horizontal line: use left/right side intersection.
+    x = angle > -Math.PI / 2 && angle < Math.PI / 2 ? halfWidth : -halfWidth
+    y = 0
+  } else if (Math.abs(tanAngle) <= halfHeight / halfWidth) {
     // Intersects vertical sides
     x = angle > -Math.PI / 2 && angle < Math.PI / 2 ? halfWidth : -halfWidth
     y = halfWidth * tanAngle
   } else {
     // Intersects horizontal sides
     y = angle > 0 ? halfHeight : -halfHeight
-    x = halfHeight / tanAngle
+    // tanAngle can be 0 very close to horizontal angles; avoid +/-Infinity.
+    x = Math.abs(tanAngle) < 1e-6 ? 0 : halfHeight / tanAngle
   }
 
   return {
