@@ -4,7 +4,7 @@ import * as React from "react"
 import { Handle, Position, type NodeProps } from "@xyflow/react"
 import { useTheme } from "next-themes"
 import { BaseNode, BaseNodeHeader, BaseNodeHeaderTitle, BaseNodeContent } from "./base-node"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { cn } from "@/lib/utils"
 import { getLayerBackgroundColor } from "./schema-colors"
 

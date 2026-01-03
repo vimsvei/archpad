@@ -3,11 +3,12 @@
 import * as React from "react"
 import { Plus, RefreshCcw } from "lucide-react"
 import { toast } from "sonner"
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table"
 import { useTranslate } from "@tolgee/react"
 import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { SheetTrigger } from "@/components/ui/sheet"
 
@@ -71,11 +72,32 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState<PageSizeOption>(25)
 
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+
   React.useEffect(() => {
     setPage(1)
   }, [debouncedSearch, pageSize])
 
-  const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(tableId, initialColumnVisibility)
+  // Clear selection when the page or filter changes (data set changes).
+  React.useEffect(() => {
+    setRowSelection({})
+  }, [debouncedSearch, page, pageSize])
+
+  // Hide created/updated by default for list pages (can be enabled via Columns menu).
+  // If the user already has a persisted visibility state, it will take precedence.
+  const effectiveInitialColumnVisibility = React.useMemo(
+    () => ({
+      created: false,
+      updated: false,
+      ...(initialColumnVisibility ?? {}),
+    }),
+    [initialColumnVisibility]
+  )
+
+  const { columnVisibility, setColumnVisibility } = usePersistedColumnVisibility(
+    tableId,
+    effectiveInitialColumnVisibility
+  )
 
   const { data, error, refetch, isLoading, isFetching } = useListQuery({
     search: debouncedSearch.trim() ? debouncedSearch.trim() : undefined,
@@ -87,6 +109,44 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
   const pageCount = (data as any)?.pageCount ?? 1
 
   const tr = useTr()
+
+  const selectionColumn = React.useMemo<ColumnDef<TItem>>(
+    () => ({
+      id: "select",
+      enableHiding: false,
+      enableSorting: false,
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            aria-label={tr("table.select.all", "Select all")}
+            checked={
+              table.getIsAllRowsSelected()
+                ? true
+                : table.getIsSomeRowsSelected()
+                  ? "indeterminate"
+                  : false
+            }
+            onCheckedChange={(value) => table.toggleAllRowsSelected(Boolean(value))}
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            aria-label={tr("table.select.row", "Select row")}
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+          />
+        </div>
+      ),
+    }),
+    [tr]
+  )
+
+  const columnsWithSelection = React.useMemo(
+    () => [selectionColumn, ...columns],
+    [selectionColumn, columns]
+  )
 
   return (
     <EntityListPageShell
@@ -167,10 +227,14 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
           <EntityDataTable
             tableId={tableId}
             data={items}
-            columns={columns}
+            columns={columnsWithSelection}
             loading={isLoading || isFetching}
             columnVisibility={columnVisibility}
             onColumnVisibilityChange={setColumnVisibility}
+            enableRowSelection={true}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            getRowId={(row: any) => row.id}
             emptyTitle={t(empty.titleKey)}
             emptyDescription={t(empty.descriptionKey)}
             className="flex min-h-0 flex-1 flex-col"
