@@ -122,4 +122,16 @@ query GetComponentFull($id: uuid!) {
       name
     }
   }
+  stakeholders: ApplicationComponentStakeholderMap(where: { componentId: { _eq: $id } }) {
+    stakeholder {
+      id
+      code
+      name
+      description
+    }
+    role {
+      id
+      name
+    }
+  }
 }

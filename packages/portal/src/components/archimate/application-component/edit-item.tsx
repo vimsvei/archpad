@@ -22,6 +22,7 @@ import {
 } from "@/components/animate-ui/components/animate/tabs"
 import {
   useGetApplicationComponentFullQuery,
+  useGetApplicationComponentsQuery,
   useUpdateApplicationComponentFullMutation,
 } from "@/store/apis/application-component-api"
 import {
@@ -58,6 +59,7 @@ import {
 } from "@/store/slices/application-component-edit-slice"
 import { GeneralTab } from "./general-tab"
 import { ClassificationTab } from "./classification-tab"
+import { StakeholdersTab } from "./stakeholders-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { FlowsTable } from "./flows-table"
@@ -138,6 +140,13 @@ export function EditItem({ id }: EditItemProps) {
         technologyNetworks: fullData.technologyNetworks,
         parents: fullData.parents,
         children: fullData.children,
+        stakeholders: (fullData.stakeholders || []).map((s) => ({
+          id: `${id}-${s.stakeholderId}-${s.roleId}`,
+          stakeholderId: s.stakeholderId,
+          stakeholderName: s.stakeholderName,
+          roleId: s.roleId,
+          roleName: s.roleName,
+        })),
         incomingFlows: (fullData.incomingFlows || []).map((flow) => ({
           id: flow.id,
           code: flow.code,
@@ -293,6 +302,10 @@ export function EditItem({ id }: EditItemProps) {
           technologyNetworkIds: editState.technologyNetworks.map((n) => resolveId(n.id)),
           parentIds: editState.parents.map((p) => resolveId(p.id)),
           childIds: editState.children.map((c) => resolveId(c.id)),
+          stakeholderIds: editState.stakeholders.map((s) => ({
+            stakeholderId: s.stakeholderId,
+            roleId: s.roleId,
+          })),
         },
       }).unwrap()
 
@@ -338,6 +351,10 @@ export function EditItem({ id }: EditItemProps) {
     { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
     { skip: !sheetOpen || sheetType !== "system-software" }
   )
+  const componentsList = useGetApplicationComponentsQuery(
+    { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
+    { skip: !sheetOpen || (sheetType !== "parent" && sheetType !== "child") }
+  )
 
   const sheetItems: SelectableItem[] = React.useMemo(() => {
     switch (sheetType) {
@@ -363,10 +380,18 @@ export function EditItem({ id }: EditItemProps) {
           description: (s as any).description ?? null,
           kind: (s as any).kind ?? null,
         }))
+      case "parent":
+      case "child":
+        return (componentsList.data?.items ?? []).map((c) => ({
+          id: String(c.id),
+          code: String(c.code ?? ""),
+          name: String(c.name ?? ""),
+          description: (c as any).description ?? null,
+        }))
       default:
         return []
     }
-  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data])
+  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data, componentsList.data])
 
   const sheetPageCount = React.useMemo(() => {
     switch (sheetType) {
@@ -376,10 +401,13 @@ export function EditItem({ id }: EditItemProps) {
         return functionsList.data?.pageCount ?? 1
       case "system-software":
         return systemSoftwareList.data?.pageCount ?? 1
+      case "parent":
+      case "child":
+        return componentsList.data?.pageCount ?? 1
       default:
         return 1
     }
-  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data])
+  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data, componentsList.data])
 
   const sheetIsLoading = React.useMemo(() => {
     switch (sheetType) {
@@ -389,10 +417,13 @@ export function EditItem({ id }: EditItemProps) {
         return Boolean(functionsList.isLoading || functionsList.isFetching)
       case "system-software":
         return Boolean(systemSoftwareList.isLoading || systemSoftwareList.isFetching)
+      case "parent":
+      case "child":
+        return Boolean(componentsList.isLoading || componentsList.isFetching)
       default:
         return false
     }
-  }, [sheetType, dataObjectsList.isLoading, dataObjectsList.isFetching, functionsList.isLoading, functionsList.isFetching, systemSoftwareList.isLoading, systemSoftwareList.isFetching])
+  }, [sheetType, dataObjectsList.isLoading, dataObjectsList.isFetching, functionsList.isLoading, functionsList.isFetching, systemSoftwareList.isLoading, systemSoftwareList.isFetching, componentsList.isLoading, componentsList.isFetching])
 
   // Create named-object sheet state (right sidebar)
   const [createSheetOpen, setCreateSheetOpen] = React.useState(false)
@@ -798,6 +829,9 @@ export function EditItem({ id }: EditItemProps) {
           <TabsTrigger value="classification">
             {tr("tab.classification")}
           </TabsTrigger>
+          <TabsTrigger value="stakeholders">
+            {tr("tab.stakeholders")}
+          </TabsTrigger>
           <TabsTrigger value="application">
             {tr("tab.application")}
           </TabsTrigger>
@@ -827,6 +861,13 @@ export function EditItem({ id }: EditItemProps) {
             <ClassificationTab
               tr={tr}
               isSaving={editState.isSaving}
+            />
+          </TabsContent>
+
+          <TabsContent value="stakeholders" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <StakeholdersTab
+              componentId={id}
+              componentName={editState.name}
             />
           </TabsContent>
 

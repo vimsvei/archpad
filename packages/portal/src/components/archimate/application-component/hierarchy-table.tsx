@@ -96,51 +96,45 @@ export function HierarchyTable({
   // Data is loaded from Redux store, no need for useEffect
 
   return (
-    <Card className="flex flex-col h-full min-h-0 pt-0">
-      <div className="flex flex-col gap-4 h-full min-h-0 p-6">
+    <div className="flex flex-col h-full min-h-0 gap-4">
+      <div className="flex flex-1 min-h-0 gap-4">
         {/* Parents Table */}
         <div className="flex-1 min-h-0 flex flex-col">
-          <div className="px-6 py-2 border-b mb-4">
-            <h3 className="font-semibold">{t("hierarchy.parent")}</h3>
-          </div>
-          <div className="flex-1 min-h-0 -mx-6">
-            <ArchimateItemTable<ApplicationComponent>
-              items={parents}
-              isLoading={isLoadingParents}
-              icon={ApplicationComponentIcon}
-              editPath={(item) => `/application/components/${item.id}`}
-              onRefresh={handleRefreshParents}
-              onAddExisting={onAddExistingParent}
-              onDelete={handleDeleteParent}
-              selectedItems={selectedParents}
-              onToggleItem={handleToggleParent}
-              hideHeader
-            />
-          </div>
+          <ArchimateItemTable<ApplicationComponent>
+            items={parents}
+            isLoading={isLoadingParents}
+            icon={ApplicationComponentIcon}
+            editPath={(item) => `/application/components/${item.id}`}
+            onRefresh={handleRefreshParents}
+            onAddExisting={onAddExistingParent}
+            onDelete={handleDeleteParent}
+            selectedItems={selectedParents}
+            onToggleItem={handleToggleParent}
+            componentName={editState.name}
+            itemTypeKey="parents"
+            hideDescription
+          />
         </div>
 
         {/* Children Table */}
         <div className="flex-1 min-h-0 flex flex-col">
-          <div className="px-6 py-2 border-b mb-4">
-            <h3 className="font-semibold">{t("hierarchy.children")}</h3>
-          </div>
-          <div className="flex-1 min-h-0 -mx-6">
-            <ArchimateItemTable<ApplicationComponent>
-              items={children}
-              isLoading={isLoadingChildren}
-              icon={ApplicationComponentIcon}
-              editPath={(item) => `/application/components/${item.id}`}
-              onRefresh={handleRefreshChildren}
-              onAddExisting={onAddExistingChild}
-              onDelete={handleDeleteChild}
-              selectedItems={selectedChildren}
-              onToggleItem={handleToggleChild}
-              hideHeader
-            />
-          </div>
+          <ArchimateItemTable<ApplicationComponent>
+            items={children}
+            isLoading={isLoadingChildren}
+            icon={ApplicationComponentIcon}
+            editPath={(item) => `/application/components/${item.id}`}
+            onRefresh={handleRefreshChildren}
+            onAddExisting={onAddExistingChild}
+            onDelete={handleDeleteChild}
+            selectedItems={selectedChildren}
+            onToggleItem={handleToggleChild}
+            componentName={editState.name}
+            itemTypeKey="children"
+            hideDescription
+          />
         </div>
       </div>
-    </Card>
+    </div>
   )
 }
 

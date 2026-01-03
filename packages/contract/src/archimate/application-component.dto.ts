@@ -43,6 +43,14 @@ export const updateApplicationComponentSchema = baseNamedObjectSchema.extend({
   technologyNetworkIds: z.array(z.string().uuid()).optional(),
   parentIds: z.array(z.string().uuid()).optional(),
   childIds: z.array(z.string().uuid()).optional(),
+  stakeholderIds: z
+    .array(
+      z.object({
+        stakeholderId: z.string().uuid(),
+        roleId: z.string().uuid(),
+      }),
+    )
+    .optional(),
 });
 
 export type UpdateApplicationComponentDto = z.infer<typeof updateApplicationComponentSchema>;
