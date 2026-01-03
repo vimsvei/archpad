@@ -7,6 +7,7 @@ import {
   useReactTable,
   type ColumnDef,
   type OnChangeFn,
+  type RowSelectionState,
   type VisibilityState,
 } from "@tanstack/react-table"
 
@@ -39,6 +40,10 @@ type EntityDataTableProps<TData> = {
   className?: string
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: OnChangeFn<VisibilityState>
+  enableRowSelection?: boolean
+  rowSelection?: RowSelectionState
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>
+  getRowId?: (originalRow: TData, index: number) => string
 }
 
 export function EntityDataTable<TData>({
@@ -52,33 +57,48 @@ export function EntityDataTable<TData>({
   className,
   columnVisibility: controlledVisibility,
   onColumnVisibilityChange,
+  enableRowSelection,
+  rowSelection: controlledRowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: EntityDataTableProps<TData>) {
   const [uncontrolledVisibility, setUncontrolledVisibility] =
     React.useState<VisibilityState>({})
   const columnVisibility = controlledVisibility ?? uncontrolledVisibility
   const setColumnVisibility = onColumnVisibilityChange ?? setUncontrolledVisibility
 
+  const [uncontrolledRowSelection, setUncontrolledRowSelection] =
+    React.useState<RowSelectionState>({})
+  const rowSelection = controlledRowSelection ?? uncontrolledRowSelection
+  const setRowSelection = onRowSelectionChange ?? setUncontrolledRowSelection
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    state: { columnVisibility },
+    enableRowSelection: Boolean(enableRowSelection),
+    onRowSelectionChange: setRowSelection,
+    getRowId,
+    state: { columnVisibility, rowSelection },
   })
 
   const fixedWidthClass = React.useCallback((columnId: string) => {
     if (columnId === "created" || columnId === "updated") {
       return "w-[300px] min-w-[300px] max-w-[300px]"
     }
+    if (columnId === "select") {
+      return "w-[44px] min-w-[44px] max-w-[44px]"
+    }
     return ""
   }, [])
 
   return (
-    <div className={cn("w-full min-w-0 max-w-full", className)}>
+    <div className={cn("w-full min-w-0 max-w-full flex flex-col", className)}>
       {/* Vertical scroll lives here; horizontal scroll lives inside Table (table-container) */}
-      <div className={cn("overflow-auto rounded-md border max-w-full", maxHeightClassName)}>
-        <Table className="min-w-max" containerClassName="overflow-x-visible overflow-y-visible">
-          <TableHeader>
+      <div className={cn("overflow-auto rounded-md border max-w-full flex-1 min-h-0 relative", maxHeightClassName)}>
+        <Table className="min-w-max" containerClassName="overflow-x-auto">
+          <TableHeader className="sticky top-0 z-10">
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {hg.headers.map((header) => (
@@ -109,7 +129,7 @@ export function EntityDataTable<TData>({
               </TableRow>
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

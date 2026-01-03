@@ -17,6 +17,7 @@ type TechnologyTabProps = {
   componentId: string
   componentName?: string
   onAddExistingSystemSoftware: () => void
+  onCreateSystemSoftware?: () => void
   onAddExistingNode?: () => void
   onAddExistingNetwork?: () => void
 }
@@ -25,6 +26,7 @@ export function TechnologyTab({
   componentId,
   componentName,
   onAddExistingSystemSoftware,
+  onCreateSystemSoftware,
   onAddExistingNode,
   onAddExistingNetwork,
 }: TechnologyTabProps) {
@@ -52,6 +54,7 @@ export function TechnologyTab({
               componentId={componentId}
               componentName={componentName}
               onAddExisting={onAddExistingSystemSoftware}
+              onCreate={onCreateSystemSoftware}
             />
           </TabsContent>
 

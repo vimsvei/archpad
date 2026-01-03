@@ -139,7 +139,10 @@ function SidebarProvider({
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+            // Constrain the entire app shell to the viewport height so that
+            // scrolling happens inside dedicated scroll areas (tables, panels),
+            // not on the document/body.
+            "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex h-svh w-full overflow-hidden",
             className
           )}
           {...props}
@@ -309,7 +312,9 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex w-full flex-1 flex-col",
+        // min-h-0 is critical for nested flex + overflow containers to allow
+        // inner areas to scroll instead of growing the page.
+        "bg-background relative flex w-full flex-1 flex-col min-h-0",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className
       )}

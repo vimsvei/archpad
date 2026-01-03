@@ -44,6 +44,7 @@ export type ArchimateItemTableProps<T extends RelatedItem> = {
   itemTypeKey?: string
   customColumns?: React.ReactNode
   renderCustomCells?: (item: T) => React.ReactNode
+  hideDescription?: boolean
 }
 
 // Memoized table row component to prevent unnecessary re-renders
@@ -55,6 +56,7 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
   onDelete,
   onToggleItem,
   customCells,
+  hideDescription,
   t,
 }: {
   item: T
@@ -64,6 +66,7 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
   onDelete?: (item: T) => void
   onToggleItem?: (itemId: string) => void
   customCells?: React.ReactNode
+  hideDescription?: boolean
   t: (key: string, defaultValue?: string) => string
 }) {
   // Memoize handlers to prevent creating new functions on each render
@@ -104,16 +107,18 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
       {/* Custom cells */}
       {customCells}
       {/* Description */}
-      <TableCell className="text-muted-foreground">
-        {item.description ? (
-          <div className="max-w-md truncate">{item.description}</div>
-        ) : (
-          <span className="text-muted-foreground/50">—</span>
-        )}
-      </TableCell>
+      {!hideDescription && (
+        <TableCell className="text-muted-foreground">
+          {item.description ? (
+            <div className="max-w-md truncate">{item.description}</div>
+          ) : (
+            <span className="text-muted-foreground/50">—</span>
+          )}
+        </TableCell>
+      )}
       {/* Actions */}
       <TableCell>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-end gap-1 w-full">
           {editUrl && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -157,7 +162,8 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
     prevProps.editPath === nextProps.editPath &&
     prevProps.onDelete === nextProps.onDelete &&
     prevProps.onToggleItem === nextProps.onToggleItem &&
-    prevProps.Icon === nextProps.Icon
+    prevProps.Icon === nextProps.Icon &&
+    prevProps.hideDescription === nextProps.hideDescription
   )
 }) as <T extends RelatedItem>(props: {
   item: T
@@ -167,6 +173,7 @@ const TableRowMemo = React.memo(function TableRowMemo<T extends RelatedItem>({
   onDelete?: (item: T) => void
   onToggleItem?: (itemId: string) => void
   customCells?: React.ReactNode
+  hideDescription?: boolean
   t: (key: string, defaultValue?: string) => string
 }) => React.ReactElement
 
@@ -186,6 +193,7 @@ function ArchimateItemTableInner<T extends RelatedItem>({
   itemTypeKey,
   customColumns,
   renderCustomCells,
+  hideDescription = false,
 }: ArchimateItemTableProps<T>) {
   const { t } = useTranslate()
 
@@ -216,6 +224,8 @@ function ArchimateItemTableInner<T extends RelatedItem>({
       "nodes": "nodes",
       "networks": "networks",
       "flows": "flows",
+      "parents": "parents",
+      "children": "children",
     }
     const key = translationKeyMap[itemTypeKey] || itemTypeKey
     const titleKey = `table.component.${key}.no-results`
@@ -299,47 +309,50 @@ function ArchimateItemTableInner<T extends RelatedItem>({
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-auto min-h-0 px-6">
+      <div className="flex-1 min-h-0 px-6 overflow-hidden">
         {!isLoading && items.length === 0 ? (
           <div className="py-8">
             {renderEmpty()}
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {onToggleItem && <TableHead className="w-12"></TableHead>}
-                {Icon && <TableHead className="w-12"></TableHead>}
-                <TableHead className="w-32">{t("item.code")}</TableHead>
-                <TableHead>{t("item.name")}</TableHead>
-                {customColumns}
-                <TableHead>{t("item.description")}</TableHead>
-                <TableHead className="w-24"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {memoizedItems.map((item) => {
-                // Pre-compute selection state to avoid repeated lookups
-                const itemIsSelected = isSelected(item.id)
-                // Pre-render custom cells if needed
-                const customCells = renderCustomCells ? renderCustomCells(item) : undefined
-                
-                return (
-                  <TableRowMemo
-                    key={item.id}
-                    item={item}
-                    isSelected={itemIsSelected}
-                    Icon={Icon}
-                    editPath={editPath}
-                    onDelete={onDelete}
-                    onToggleItem={onToggleItem}
-                    customCells={customCells}
-                    t={t}
-                  />
-                )
-              })}
-            </TableBody>
-          </Table>
+          // Single table + sticky header inside the scroll container keeps columns perfectly aligned
+          // (no scrollbar-width mismatch between header and body).
+          <div className="flex h-full min-h-0 overflow-auto">
+            <Table className="min-w-max" containerClassName="overflow-x-auto">
+              <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-card">
+                <TableRow>
+                  {onToggleItem && <TableHead className="w-12"></TableHead>}
+                  {Icon && <TableHead className="w-12"></TableHead>}
+                  <TableHead className="w-32">{t("item.code")}</TableHead>
+                  <TableHead>{t("item.name")}</TableHead>
+                  {customColumns}
+                  {!hideDescription && <TableHead>{t("item.description")}</TableHead>}
+                  <TableHead className="w-24 text-right"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {memoizedItems.map((item) => {
+                  const itemIsSelected = isSelected(item.id)
+                  const customCells = renderCustomCells ? renderCustomCells(item) : undefined
+
+                  return (
+                    <TableRowMemo
+                      key={item.id}
+                      item={item}
+                      isSelected={itemIsSelected}
+                      Icon={Icon}
+                      editPath={editPath}
+                      onDelete={onDelete}
+                      onToggleItem={onToggleItem}
+                      customCells={customCells}
+                      hideDescription={hideDescription}
+                      t={t}
+                    />
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </div>
     </>

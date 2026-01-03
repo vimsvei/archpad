@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import type { RelatedItem } from "@/components/shared/related-items-list"
-import type { ArchimateObjectIconType } from "@/components/archimate/archimate-object-icon"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
-import { ArchimateItemTable } from "@/components/archimate/archimate-item-table"
+import type { ArchimateObjectIconType } from "@/components/shared/archimate/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
+import { ArchimateItemTable } from "@/components/shared/archimate/archimate-item-table"
 
 export function RelatedItemsMapTab<T extends RelatedItem>({
   items,

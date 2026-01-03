@@ -1,0 +1,34 @@
+import * as React from 'react';
+import type { SVGProps } from 'react';
+import { Ref, forwardRef } from 'react';
+const SvgOutgoingFlow = (
+  props: SVGProps<SVGSVGElement>,
+  ref: Ref<SVGSVGElement>,
+) => (
+  <svg
+    width="1em"
+    height="1em"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    ref={ref}
+    {...props}
+  >
+    <path
+      d="M11 9H10V11H11V10V9ZM22.7071 10.7071C23.0976 10.3166 23.0976 9.68342 22.7071 9.29289L16.3431 2.92893C15.9526 2.53841 15.3195 2.53841 14.9289 2.92893C14.5384 3.31946 14.5384 3.95262 14.9289 4.34315L20.5858 10L14.9289 15.6569C14.5384 16.0474 14.5384 16.6805 14.9289 17.0711C15.3195 17.4616 15.9526 17.4616 16.3431 17.0711L22.7071 10.7071ZM11 10V11L22 11V10V9L11 9V10Z"
+      fill="currentColor"
+    />
+    <rect
+      x={2}
+      y={3}
+      width={8}
+      height={18}
+      rx={1}
+      stroke="currentColor"
+      strokeWidth={2}
+    />
+    <line x1={14.5} y1={17} x2={14.5} y2={22} stroke="currentColor" />
+    <line x1={17} y1={19.5} x2={12} y2={19.5} stroke="currentColor" />
+  </svg>
+);
+const ForwardRef = forwardRef(SvgOutgoingFlow);
+export default ForwardRef;

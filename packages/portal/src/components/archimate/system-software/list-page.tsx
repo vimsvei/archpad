@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import type { ColumnDef } from "@tanstack/react-table"
 import { useTranslate } from "@tolgee/react"
-import { MoreHorizontal } from "lucide-react"
+import { Pencil } from "lucide-react"
 
 import type { SystemSoftware } from "@/@types/system-software"
 import { BaseObjectList } from "@/components/shared/base-object/base-object-list"
@@ -15,15 +15,7 @@ import {
   useGetSystemSoftwareQuery,
 } from "@/store/apis/system-software-api"
 import { Badge } from "@/components/ui/badge"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { Button } from "@/components/ui/button"
 
 export function ListPage() {
@@ -130,21 +122,12 @@ export function ListPage() {
           const item = row.original
           return (
             <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0" aria-label={t("table.item.actions")}>
-                    <span className="sr-only">{t("table.item.actions")}</span>
-                    <MoreHorizontal />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{t("table.item.actions")}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href={`/technologies/system-software/${item.id}`}>{t("action.edit")}</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button asChild size="icon" variant="ghost" aria-label={t("action.edit")}>
+                <Link href={`/technologies/system-software/${item.id}`}>
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">{t("action.edit")}</span>
+                </Link>
+              </Button>
             </div>
           )
         },

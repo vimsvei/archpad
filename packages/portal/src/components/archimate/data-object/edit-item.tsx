@@ -39,7 +39,7 @@ import { GeneralTab } from "./general-tab"
 import { AttributesTab } from "./attributes-tab"
 import { ComponentsTable } from "./components-table"
 import { FunctionsTable } from "./functions-table"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
+import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 
 type EditItemProps = {
   id: string
@@ -217,7 +217,7 @@ export function EditItem({ id }: EditItemProps) {
   }
 
   if (queryError || editState.error || (!fullData && !editState.baseline)) {
-    const errorMessage = editState.error || (queryError as any)?.message || tr("error.notFound")
+    const errorMessage = editState.error || (queryError as any)?.message || tr("error.not-found")
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
@@ -263,8 +263,8 @@ export function EditItem({ id }: EditItemProps) {
           </Tooltip>
 
           <div className="flex items-start gap-3">
-            <div className="flex items-center justify-center rounded-full bg-muted p-2 shrink-0">
-              <ArchimateObjectIcon type="application-data-object" className="text-foreground" size={32} />
+            <div className="grid place-items-center rounded-full bg-muted shrink-0 size-12">
+              <ArchimateObjectIcon type="application-data-object" className="text-foreground" size={28} />
             </div>
             <div className="flex flex-col">
               <h1 className="text-2xl font-semibold">

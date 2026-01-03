@@ -22,10 +22,21 @@ import {
 } from "@/components/animate-ui/components/animate/tabs"
 import {
   useGetApplicationComponentFullQuery,
+  useGetApplicationComponentsQuery,
   useUpdateApplicationComponentFullMutation,
 } from "@/store/apis/application-component-api"
-import { useCreateApplicationFunctionMutation } from "@/store/apis/application-function-api"
-import { useCreateDataObjectMutation } from "@/store/apis/data-object-api"
+import {
+  useCreateApplicationFunctionMutation,
+  useGetApplicationFunctionsQuery,
+} from "@/store/apis/application-function-api"
+import {
+  useCreateDataObjectMutation,
+  useGetDataObjectsQuery,
+} from "@/store/apis/data-object-api"
+import {
+  useGetSystemSoftwareQuery,
+  useCreateSystemSoftwareMutation,
+} from "@/store/apis/system-software-api"
 import type { RootState, AppDispatch } from "@/store/store"
 import {
   reset,
@@ -37,25 +48,40 @@ import {
   addDataObject,
   addInterface,
   addEvent,
+  addSystemSoftware,
+  addTechnologyNode,
+  addTechnologyNetwork,
+  addParent,
+  addChild,
   updateBaseline,
   selectIsDirty,
   selectIsDraftValid,
 } from "@/store/slices/application-component-edit-slice"
 import { GeneralTab } from "./general-tab"
 import { ClassificationTab } from "./classification-tab"
+import { StakeholdersTab } from "./stakeholders-tab"
 import { ApplicationTab } from "./application-tab"
 import { TechnologyTab } from "./technology-tab"
 import { FlowsTable } from "./flows-table"
 import { SchemasTab } from "./schemas-tab"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
-import { getSheetConfig, type SheetType } from "@/components/archimate/sheet-configs"
-import { ArchimateObjectIcon } from "@/components/archimate/archimate-object-icon"
+import { getSheetConfig, type SheetType } from "@/components/shared/archimate/sheet-configs"
+import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
 import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
 import * as ApplicationEventRest from "@/services/application-event.rest"
 
 type EditItemProps = {
   id: string
+}
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = React.useState(value)
+  React.useEffect(() => {
+    const t = window.setTimeout(() => setDebounced(value), delayMs)
+    return () => window.clearTimeout(t)
+  }, [value, delayMs])
+  return debounced
 }
 
 export function EditItem({ id }: EditItemProps) {
@@ -70,6 +96,7 @@ export function EditItem({ id }: EditItemProps) {
   const [updateComponentFull] = useUpdateApplicationComponentFullMutation()
   const [createDataObject] = useCreateDataObjectMutation()
   const [createApplicationFunction] = useCreateApplicationFunctionMutation()
+  const [createSystemSoftware] = useCreateSystemSoftwareMutation()
 
   // Load full component data
   const { data: fullData, error: queryError, isLoading, isFetching } = useGetApplicationComponentFullQuery(
@@ -113,6 +140,13 @@ export function EditItem({ id }: EditItemProps) {
         technologyNetworks: fullData.technologyNetworks,
         parents: fullData.parents,
         children: fullData.children,
+        stakeholders: (fullData.stakeholders || []).map((s) => ({
+          id: `${id}-${s.stakeholderId}-${s.roleId}`,
+          stakeholderId: s.stakeholderId,
+          stakeholderName: s.stakeholderName,
+          roleId: s.roleId,
+          roleName: s.roleName,
+        })),
         incomingFlows: (fullData.incomingFlows || []).map((flow) => ({
           id: flow.id,
           code: flow.code,
@@ -260,11 +294,18 @@ export function EditItem({ id }: EditItemProps) {
           dataObjectIds: editState.dataObjects.map((d) => resolveId(d.id)),
           interfaceIds: editState.interfaces.map((i) => resolveId(i.id)),
           eventIds: editState.events.map((e) => resolveId(e.id)),
-          systemSoftwareIds: editState.systemSoftware.map((s) => ({ id: resolveId(s.id), kind: s.kind })),
+          systemSoftwareIds: editState.systemSoftware.map((s) => ({
+            id: resolveId(s.id),
+            kind: (s as any).kind ?? undefined,
+          })),
           technologyNodeIds: editState.technologyNodes.map((n) => resolveId(n.id)),
           technologyNetworkIds: editState.technologyNetworks.map((n) => resolveId(n.id)),
           parentIds: editState.parents.map((p) => resolveId(p.id)),
           childIds: editState.children.map((c) => resolveId(c.id)),
+          stakeholderIds: editState.stakeholders.map((s) => ({
+            stakeholderId: s.stakeholderId,
+            roleId: s.roleId,
+          })),
         },
       }).unwrap()
 
@@ -292,8 +333,97 @@ export function EditItem({ id }: EditItemProps) {
   const [sheetType, setSheetType] = React.useState<SheetType | null>(null)
   const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
   const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
-  const [sheetAvailableItems, setSheetAvailableItems] = React.useState<SelectableItem[]>([])
-  const [sheetIsLoading, setSheetIsLoading] = React.useState(false)
+  const [sheetPage, setSheetPage] = React.useState(1)
+  const [sheetPageSize, setSheetPageSize] = React.useState<10 | 25 | 50 | 100>(25)
+
+  const debouncedSheetSearch = useDebouncedValue(sheetSearchQuery, 300)
+  const sheetSearch = debouncedSheetSearch.trim() ? debouncedSheetSearch.trim() : undefined
+
+  const dataObjectsList = useGetDataObjectsQuery(
+    { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
+    { skip: !sheetOpen || sheetType !== "data-objects" }
+  )
+  const functionsList = useGetApplicationFunctionsQuery(
+    { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
+    { skip: !sheetOpen || sheetType !== "functions" }
+  )
+  const systemSoftwareList = useGetSystemSoftwareQuery(
+    { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
+    { skip: !sheetOpen || sheetType !== "system-software" }
+  )
+  const componentsList = useGetApplicationComponentsQuery(
+    { search: sheetSearch, page: sheetPage, pageSize: sheetPageSize },
+    { skip: !sheetOpen || (sheetType !== "parent" && sheetType !== "child") }
+  )
+
+  const sheetItems: SelectableItem[] = React.useMemo(() => {
+    switch (sheetType) {
+      case "data-objects":
+        return (dataObjectsList.data?.items ?? []).map((d) => ({
+          id: String(d.id),
+          code: String(d.code ?? ""),
+          name: String(d.name ?? ""),
+          description: (d as any).description ?? null,
+        }))
+      case "functions":
+        return (functionsList.data?.items ?? []).map((f) => ({
+          id: String(f.id),
+          code: String(f.code ?? ""),
+          name: String(f.name ?? ""),
+          description: (f as any).description ?? null,
+        }))
+      case "system-software":
+        return (systemSoftwareList.data?.items ?? []).map((s) => ({
+          id: String(s.id),
+          code: String(s.code ?? ""),
+          name: String(s.name ?? ""),
+          description: (s as any).description ?? null,
+          kind: (s as any).kind ?? null,
+        }))
+      case "parent":
+      case "child":
+        return (componentsList.data?.items ?? []).map((c) => ({
+          id: String(c.id),
+          code: String(c.code ?? ""),
+          name: String(c.name ?? ""),
+          description: (c as any).description ?? null,
+        }))
+      default:
+        return []
+    }
+  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data, componentsList.data])
+
+  const sheetPageCount = React.useMemo(() => {
+    switch (sheetType) {
+      case "data-objects":
+        return dataObjectsList.data?.pageCount ?? 1
+      case "functions":
+        return functionsList.data?.pageCount ?? 1
+      case "system-software":
+        return systemSoftwareList.data?.pageCount ?? 1
+      case "parent":
+      case "child":
+        return componentsList.data?.pageCount ?? 1
+      default:
+        return 1
+    }
+  }, [sheetType, dataObjectsList.data, functionsList.data, systemSoftwareList.data, componentsList.data])
+
+  const sheetIsLoading = React.useMemo(() => {
+    switch (sheetType) {
+      case "data-objects":
+        return Boolean(dataObjectsList.isLoading || dataObjectsList.isFetching)
+      case "functions":
+        return Boolean(functionsList.isLoading || functionsList.isFetching)
+      case "system-software":
+        return Boolean(systemSoftwareList.isLoading || systemSoftwareList.isFetching)
+      case "parent":
+      case "child":
+        return Boolean(componentsList.isLoading || componentsList.isFetching)
+      default:
+        return false
+    }
+  }, [sheetType, dataObjectsList.isLoading, dataObjectsList.isFetching, functionsList.isLoading, functionsList.isFetching, systemSoftwareList.isLoading, systemSoftwareList.isFetching, componentsList.isLoading, componentsList.isFetching])
 
   // Create named-object sheet state (right sidebar)
   const [createSheetOpen, setCreateSheetOpen] = React.useState(false)
@@ -444,7 +574,38 @@ export function EditItem({ id }: EditItemProps) {
     const name = createSheetDraft.name.trim()
     const description = createSheetDraft.description.trim()
     if (!name) {
-      toast.error(tr("action.validationFailed"))
+      toast.error(tr("action.validation.failed"))
+      return
+    }
+
+    // System software supports immediate creation; we add the created entity to Redux.
+    if (createSheetType === "system-software") {
+      void (async () => {
+        try {
+          const created = await createSystemSoftware({
+            input: {
+              ...(code ? { code } : {}),
+              name,
+              ...(description ? { description } : {}),
+            },
+          }).unwrap()
+
+          dispatch(
+            addSystemSoftware({
+              id: String(created.id),
+              code: String(created.code ?? ""),
+              name: String(created.name ?? ""),
+              description: created.description ?? null,
+              kind: (created as any).kind ?? undefined,
+            } as any)
+          )
+
+          toast.success(tr("action.created"))
+          setCreateSheetOpen(false)
+        } catch (e: any) {
+          toast.error(e?.message ?? tr("action.createFailed"))
+        }
+      })()
       return
     }
 
@@ -470,16 +631,16 @@ export function EditItem({ id }: EditItemProps) {
 
     toast.success(tr("action.created"))
     setCreateSheetOpen(false)
-  }, [createSheetDraft, createSheetType, dispatch, tr])
+  }, [createSheetDraft, createSheetType, createSystemSoftware, dispatch, tr])
 
   // Handler for opening add existing items sheet
   const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
     setSheetType(type)
     setSheetSearchQuery("")
     setSheetSelectedItems(new Set())
-    setSheetAvailableItems([])
+    setSheetPage(1)
+    setSheetPageSize(25)
     setSheetOpen(true)
-    // TODO: Load available items based on type
   }, [])
 
   // Handler for toggling item selection in sheet
@@ -499,12 +660,34 @@ export function EditItem({ id }: EditItemProps) {
   const handleSheetAdd = React.useCallback(() => {
     if (!sheetType) return
     
-    const itemsToAdd = sheetAvailableItems.filter((item) => sheetSelectedItems.has(item.id))
-    console.log(`Adding ${sheetType}:`, itemsToAdd)
-    // TODO: Add items via Redux mutation based on sheetType
-    // After adding, refresh the appropriate table and close the sheet
+    const itemsToAdd = sheetItems.filter((item) => sheetSelectedItems.has(item.id))
+    if (itemsToAdd.length === 0) return
+
+    if (sheetType === "data-objects") {
+      itemsToAdd.forEach((item) => dispatch(addDataObject(item)))
+    } else if (sheetType === "functions") {
+      itemsToAdd.forEach((item) => dispatch(addFunction(item)))
+    } else if (sheetType === "interfaces") {
+      itemsToAdd.forEach((item) => dispatch(addInterface(item)))
+    } else if (sheetType === "events") {
+      itemsToAdd.forEach((item) => dispatch(addEvent(item)))
+    } else if (sheetType === "system-software") {
+      itemsToAdd.forEach((item) =>
+        dispatch(addSystemSoftware({ ...(item as any), kind: (item as any).kind ?? undefined } as any))
+      )
+    } else if (sheetType === "node") {
+      itemsToAdd.forEach((item) => dispatch(addTechnologyNode(item as any)))
+    } else if (sheetType === "network") {
+      itemsToAdd.forEach((item) => dispatch(addTechnologyNetwork(item as any)))
+    } else if (sheetType === "parent") {
+      itemsToAdd.forEach((item) => dispatch(addParent(item as any)))
+    } else if (sheetType === "child") {
+      itemsToAdd.forEach((item) => dispatch(addChild(item as any)))
+    }
+
+    toast.success(tr("action.added"))
     setSheetOpen(false)
-  }, [sheetType, sheetAvailableItems, sheetSelectedItems])
+  }, [sheetType, sheetItems, sheetSelectedItems, dispatch, tr])
 
   // Get sheet title and icon based on type
   const sheetConfig = React.useMemo(() => {
@@ -554,7 +737,7 @@ export function EditItem({ id }: EditItemProps) {
 
   // Show error state
   if (queryError || editState.error || (!isLoading && !isFetching && !fullData && !editState.baseline)) {
-    const errorMessage = editState.error || (queryError as any)?.message || tr("error.notFound")
+    const errorMessage = editState.error || (queryError as any)?.message || tr("error.not-found")
     
     return (
       <div className="flex flex-col gap-4">
@@ -611,8 +794,8 @@ export function EditItem({ id }: EditItemProps) {
             <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
           </Tooltip>
           <div className="flex items-start gap-3">
-            <div className="flex items-center justify-center rounded-full bg-muted p-2 shrink-0">
-              <ArchimateObjectIcon type="application-component" className="text-foreground" size={32} />
+            <div className="grid place-items-center rounded-full bg-muted shrink-0 size-12">
+              <ArchimateObjectIcon type="application-component" className="text-foreground" size={28} />
             </div>
             <div className="flex flex-col">
               <h1 className="text-2xl font-semibold">
@@ -646,6 +829,9 @@ export function EditItem({ id }: EditItemProps) {
           <TabsTrigger value="classification">
             {tr("tab.classification")}
           </TabsTrigger>
+          <TabsTrigger value="stakeholders">
+            {tr("tab.stakeholders")}
+          </TabsTrigger>
           <TabsTrigger value="application">
             {tr("tab.application")}
           </TabsTrigger>
@@ -678,6 +864,13 @@ export function EditItem({ id }: EditItemProps) {
             />
           </TabsContent>
 
+          <TabsContent value="stakeholders" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
+            <StakeholdersTab
+              componentId={id}
+              componentName={editState.name}
+            />
+          </TabsContent>
+
           <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <ApplicationTab
               componentId={id}
@@ -700,6 +893,7 @@ export function EditItem({ id }: EditItemProps) {
               componentId={id}
               componentName={editState.name}
               onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
+              onCreateSystemSoftware={() => handleOpenCreateSheet("system-software")}
               onAddExistingNode={() => handleOpenAddExistingSheet("node")}
               onAddExistingNetwork={() => handleOpenAddExistingSheet("network")}
             />
@@ -738,13 +932,26 @@ export function EditItem({ id }: EditItemProps) {
           onOpenChange={setSheetOpen}
           title={sheetConfig.title}
           icon={sheetConfig.icon}
-          items={sheetAvailableItems}
+          items={sheetItems}
           isLoading={sheetIsLoading}
           searchQuery={sheetSearchQuery}
-          onSearchChange={setSheetSearchQuery}
+          onSearchChange={(q) => {
+            setSheetSearchQuery(q)
+            setSheetPage(1)
+          }}
           selectedItems={sheetSelectedItems}
           onToggleItem={handleSheetToggleItem}
           onAdd={handleSheetAdd}
+          pagination={{
+            page: sheetPage,
+            pageCount: sheetPageCount,
+            onPageChange: setSheetPage,
+            pageSize: sheetPageSize,
+            onPageSizeChange: (s) => {
+              setSheetPageSize(s)
+              setSheetPage(1)
+            },
+          }}
         />
       )}
 

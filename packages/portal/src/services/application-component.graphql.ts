@@ -88,6 +88,12 @@ export type ApplicationComponentFull = {
   technologyNetworks: Array<{ id: string; code: string; name: string }>
   parents: Array<{ id: string; code: string; name: string; description?: string | null }>
   children: Array<{ id: string; code: string; name: string; description?: string | null }>
+  stakeholders: Array<{
+    stakeholderId: string
+    stakeholderName: string
+    roleId: string
+    roleName: string
+  }>
   incomingFlows: Array<{
     id: string
     code: string
@@ -138,6 +144,12 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
     technologyNetworks: (data.technologyNetworks || []).map((x: any) => x.logicalNetwork).filter(Boolean),
     parents: (data.parentComponents || []).map((x: any) => x.componentParent).filter(Boolean),
     children: (data.childComponents || []).map((x: any) => x.componentChild).filter(Boolean),
+    stakeholders: (data.stakeholders || []).map((x: any) => ({
+      stakeholderId: x.stakeholder?.id ?? "",
+      stakeholderName: x.stakeholder?.name ?? "",
+      roleId: x.role?.id ?? "",
+      roleName: x.role?.name ?? "",
+    })).filter((x: any) => x.stakeholderId && x.roleId),
     incomingFlows: (data.incomingFlows || []).map((flow: any) => ({
       id: flow.id,
       code: flow.code,

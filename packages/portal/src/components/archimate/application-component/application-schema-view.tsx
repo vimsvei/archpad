@@ -14,18 +14,16 @@ import {
 import "@xyflow/react/dist/style.css"
 import { useGetApplicationComponentFullQuery } from "@/store/apis/application-component-api"
 import { ApplicationComponentNode, type ApplicationComponentNodeData } from "@/components/schema-elements/application-component-node"
-import { FloatingEdge } from "@/components/schema-elements/floating-edge"
+import { useElkLayout } from "@/components/schema-elements/use-elk-layout"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { useMemo } from "react"
 import type { Node as ReactFlowNode } from "@xyflow/react"
+import { useTheme } from "next-themes"
+import { Button } from "@/components/ui/button"
 
 const nodeTypes = {
   "application-component": ApplicationComponentNode,
-}
-
-const edgeTypes = {
-  floating: FloatingEdge,
 }
 
 type ApplicationSchemaViewProps = {
@@ -35,15 +33,20 @@ type ApplicationSchemaViewProps = {
 
 export function ApplicationSchemaView({
   componentId,
-  componentName,
 }: ApplicationSchemaViewProps) {
   const { data: componentData, isLoading, error } = useGetApplicationComponentFullQuery({ id: componentId })
+  const { theme, resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark" || theme === "dark"
 
   // Создаем узлы и связи на основе данных компонента
   const { initialNodes, initialEdges } = useMemo(() => {
     if (!componentData) {
       return { initialNodes: [], initialEdges: [] }
     }
+
+    // Цвет для нейтральных связей (потоков), видимый в обеих темах
+    // Используем серый цвет средней яркости, который хорошо виден на светлом и темном фоне
+    const edgeStrokeColor = isDark ? "#94a3b8" : "#475569" // slate-400 для темной темы, slate-600 для светлой
 
     const nodes: ReactFlowNode<ApplicationComponentNodeData>[] = []
     const edges: Edge[] = []
@@ -103,35 +106,6 @@ export function ApplicationSchemaView({
       }
     })
 
-    // Отладочный вывод
-    console.log("=== Application Schema Debug ===")
-    console.log("Main component:", componentData.id, componentData.name)
-    console.log("Incoming flows:", componentData.incomingFlows.length)
-    componentData.incomingFlows.forEach((flow) => {
-      console.log("  Incoming:", {
-        flowId: flow.id,
-        flowName: flow.name,
-        source: flow.sourceComponent?.id,
-        sourceName: flow.sourceComponent?.name,
-        target: flow.targetComponent?.id,
-        targetName: flow.targetComponent?.name,
-      })
-    })
-    console.log("Outgoing flows:", componentData.outgoingFlows.length)
-    componentData.outgoingFlows.forEach((flow) => {
-      console.log("  Outgoing:", {
-        flowId: flow.id,
-        flowName: flow.name,
-        source: flow.sourceComponent?.id,
-        sourceName: flow.sourceComponent?.name,
-        target: flow.targetComponent?.id,
-        targetName: flow.targetComponent?.name,
-      })
-    })
-    console.log("Incoming components:", Array.from(incomingComponents.values()).map(c => c.name))
-    console.log("Outgoing components:", Array.from(outgoingComponents.values()).map(c => c.name))
-    console.log("================================")
-
     // Компоненты слева (из входящих flows)
     const incomingComponentsArray = Array.from(incomingComponents.values())
     incomingComponentsArray.forEach((comp, index) => {
@@ -166,46 +140,78 @@ export function ApplicationSchemaView({
       nodes.push(node)
     })
 
-    // Создаем связи (edges)
+    // Создаем связи (edges) после создания всех узлов
+    // Создаем Set для быстрой проверки существования узлов
+    const nodeIds = new Set(nodes.map((node) => node.id))
+
     // incomingFlows: потоки, которые входят в текущий компонент (sourceComponent -> targetComponent, где targetComponent = текущий)
     componentData.incomingFlows.forEach((flow) => {
       if (flow.sourceComponent && flow.targetComponent) {
-        edges.push({
-          id: `edge-${flow.id}-incoming`,
-          source: flow.sourceComponent.id,
-          target: flow.targetComponent.id,
-          type: "floating",
-          animated: false,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-          style: { strokeDasharray: "5,5", strokeWidth: 2, stroke: "#000000" },
-        })
+        const sourceId = flow.sourceComponent.id
+        const targetId = flow.targetComponent.id
+        
+        // Проверяем, что оба узла существуют
+        if (nodeIds.has(sourceId) && nodeIds.has(targetId)) {
+          edges.push({
+            id: `edge-${flow.id}-incoming`,
+            source: sourceId,
+            target: targetId,
+            type: "smoothstep",
+            animated: false,
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: edgeStrokeColor,
+            },
+            style: { 
+              strokeDasharray: "5,5", 
+              strokeWidth: 2, 
+              stroke: edgeStrokeColor,
+              zIndex: 1,
+            },
+          })
+        }
       }
     })
 
     // outgoingFlows: потоки, которые выходят из текущего компонента (sourceComponent -> targetComponent, где sourceComponent = текущий)
     componentData.outgoingFlows.forEach((flow) => {
       if (flow.sourceComponent && flow.targetComponent) {
-        edges.push({
-          id: `edge-${flow.id}-outgoing`,
-          source: flow.sourceComponent.id,
-          target: flow.targetComponent.id,
-          type: "floating",
-          animated: false,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-          style: { strokeDasharray: "5,5", strokeWidth: 2, stroke: "#000000" },
-        })
+        const sourceId = flow.sourceComponent.id
+        const targetId = flow.targetComponent.id
+        
+        // Проверяем, что оба узла существуют
+        if (nodeIds.has(sourceId) && nodeIds.has(targetId)) {
+          edges.push({
+            id: `edge-${flow.id}-outgoing`,
+            source: sourceId,
+            target: targetId,
+            type: "smoothstep",
+            animated: false,
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: edgeStrokeColor,
+            },
+            style: { 
+              strokeDasharray: "5,5", 
+              strokeWidth: 2, 
+              stroke: edgeStrokeColor,
+              zIndex: 1,
+            },
+          })
+        }
       }
     })
 
     return { initialNodes: nodes, initialEdges: edges }
-  }, [componentData])
+  }, [componentData, isDark])
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const { runLayout, isLayingOut } = useElkLayout(nodes, edges, setNodes, {
+    direction: "RIGHT",
+    spacing: 90,
+    padding: 50,
+  })
 
   // Обновляем узлы и связи при изменении данных
   React.useEffect(() => {
@@ -235,6 +241,16 @@ export function ApplicationSchemaView({
 
   return (
     <Card className="flex min-h-0 flex-1 flex-col p-0 overflow-hidden">
+      <div className="flex items-center justify-end gap-2 px-3 py-2 border-b border-border">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => void runLayout({ force: true })}
+          disabled={isLayingOut || nodes.length === 0}
+        >
+          {isLayingOut ? "Laying out..." : "Auto layout"}
+        </Button>
+      </div>
       <div className="flex-1 w-full" style={{ minHeight: 0 }}>
         <ReactFlow
           nodes={nodes}
@@ -242,7 +258,6 @@ export function ApplicationSchemaView({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
           fitView
           className="bg-background"
         >

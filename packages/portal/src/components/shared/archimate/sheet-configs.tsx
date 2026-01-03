@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import ApplicationComponent from "@/components/icons/ApplicationComponent"
-import ApplicationDataObject from "@/components/icons/ApplicationDataObject"
+import ApplicationDataObject2 from "@/components/icons/ApplicationDataObject2"
 import ApplicationFunction2 from "@/components/icons/ApplicationFunction2"
 import ApplicationInterface from "@/components/icons/ApplicationInterface"
 import ApplicationEvent from "@/components/icons/ApplicationEvent"
@@ -37,12 +37,13 @@ export const SHEET_CONFIGS: Record<SheetType, SheetConfig> = {
   "system-software": {
     tableKey: "technologies.system-software",
     icon: (props) => <SystemSoftwareIcon width={24} height={24} {...props} />,
+    canCreate: true,
     canAdd: true,
     canDelete: true,
   },
   "data-objects": {
     tableKey: "application.data-objects",
-    icon: (props) => <ApplicationDataObject width={24} height={24} {...props} />,
+    icon: (props) => <ApplicationDataObject2 width={24} height={24} {...props} />,
     canCreate: true,
     canAdd: true,
     canDelete: true,

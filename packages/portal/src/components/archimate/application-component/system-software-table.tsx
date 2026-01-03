@@ -4,7 +4,7 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import { RelatedItemsMapTab } from "@/components/archimate/maps-tabs/related-items-map-tab"
+import { RelatedItemsMapTab } from "@/components/shared/archimate/maps-tabs/related-items-map-tab"
 import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeSystemSoftware } from "@/store/slices/application-component-edit-slice"
@@ -17,12 +17,14 @@ type SystemSoftwareTableProps = {
   componentId: string
   componentName?: string
   onAddExisting?: () => void
+  onCreate?: () => void
 }
 
 export function SystemSoftwareTable({
   componentId: _componentId,
   componentName,
   onAddExisting,
+  onCreate,
 }: SystemSoftwareTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
@@ -66,9 +68,9 @@ export function SystemSoftwareTable({
       items={items}
       isLoading={isLoading}
       iconType="system-software"
-      editPath={(item) => `/system/software/${item.id}`}
+      editPath={(item) => `/technologies/system-software/${item.id}`}
       onRefresh={handleRefresh}
-      actions={{ onAddExisting, onDelete: handleDelete }}
+      actions={{ onCreate, onAddExisting, onDelete: handleDelete }}
       selection={{ selectedItems, onToggleItem: handleToggleItem }}
       emptyState={{ componentName, itemTypeKey: "system-software" }}
     />

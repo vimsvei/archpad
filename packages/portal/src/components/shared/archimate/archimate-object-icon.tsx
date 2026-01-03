@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { getSheetConfig } from "@/components/archimate/sheet-configs"
-import type { ArchimateObjectType } from "@/components/archimate/archimate-object-type"
-import { getSheetTypeFromObjectType } from "@/components/archimate/archimate-object-type"
+import { getSheetConfig } from "@/components/shared/archimate/sheet-configs"
+import type { ArchimateObjectType } from "@/components/shared/archimate/archimate-object-type"
+import { getSheetTypeFromObjectType } from "@/components/shared/archimate/archimate-object-type"
 
 export type ArchimateObjectIconType = ArchimateObjectType
 
@@ -30,7 +30,9 @@ export function ArchimateObjectIcon({ type, className, size = 24 }: ArchimateObj
     <IconComponent
       width={size}
       height={size}
-      className={cn("shrink-0", className)}
+      // `block` avoids baseline alignment issues that can visually offset icons
+      // inside perfectly centered (e.g. rounded-full) containers.
+      className={cn("shrink-0 block", className)}
       aria-hidden={true}
     />
   )

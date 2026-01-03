@@ -27,6 +27,14 @@ export type FlowItem = RelatedItem & {
   targetInterface?: string | null
 }
 
+export type StakeholderItem = {
+  id: string // composite key: componentId-stakeholderId-roleId
+  stakeholderId: string
+  stakeholderName: string
+  roleId: string
+  roleName: string
+}
+
 export type ApplicationComponentEditState = {
   // Basic fields
   code: string
@@ -47,6 +55,7 @@ export type ApplicationComponentEditState = {
   technologyNetworks: TechnologyNetworkItem[]
   parents: RelatedItem[]
   children: RelatedItem[]
+  stakeholders: StakeholderItem[]
   incomingFlows: FlowItem[]
   outgoingFlows: FlowItem[]
 
@@ -66,6 +75,7 @@ export type ApplicationComponentEditState = {
       technologyNetworks: TechnologyNetworkItem[]
       parents: RelatedItem[]
       children: RelatedItem[]
+      stakeholders: StakeholderItem[]
       incomingFlows: FlowItem[]
       outgoingFlows: FlowItem[]
     } | null
@@ -102,6 +112,7 @@ const initialState: ApplicationComponentEditState = {
   technologyNetworks: [],
   parents: [],
   children: [],
+  stakeholders: [],
   incomingFlows: [],
   outgoingFlows: [],
   baseline: null,
@@ -158,6 +169,7 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: TechnologyNetworkItem[]
         parents: RelatedItem[]
         children: RelatedItem[]
+        stakeholders: StakeholderItem[]
         incomingFlows: FlowItem[]
         outgoingFlows: FlowItem[]
       }>
@@ -176,6 +188,7 @@ export const applicationComponentEditSlice = createSlice({
       state.technologyNetworks = action.payload.technologyNetworks
       state.parents = action.payload.parents
       state.children = action.payload.children
+      state.stakeholders = action.payload.stakeholders
       state.incomingFlows = action.payload.incomingFlows
       state.outgoingFlows = action.payload.outgoingFlows
 
@@ -195,6 +208,7 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: [...action.payload.technologyNetworks],
         parents: [...action.payload.parents],
         children: [...action.payload.children],
+        stakeholders: [...action.payload.stakeholders],
         incomingFlows: [...action.payload.incomingFlows],
         outgoingFlows: [...action.payload.outgoingFlows],
       }
@@ -308,6 +322,16 @@ export const applicationComponentEditSlice = createSlice({
       state.children = state.children.filter((c) => c.id !== action.payload)
     },
 
+    addStakeholder: (state, action: PayloadAction<StakeholderItem>) => {
+      if (!state.stakeholders.find((s) => s.id === action.payload.id)) {
+        state.stakeholders.push(action.payload)
+      }
+    },
+
+    removeStakeholder: (state, action: PayloadAction<string>) => {
+      state.stakeholders = state.stakeholders.filter((s) => s.id !== action.payload)
+    },
+
     addFlow: (state, action: PayloadAction<FlowItem & { isIncoming: boolean }>) => {
       const { isIncoming, ...flow } = action.payload
       if (isIncoming) {
@@ -346,6 +370,7 @@ export const applicationComponentEditSlice = createSlice({
           technologyNetworks: [...state.technologyNetworks],
           parents: [...state.parents],
           children: [...state.children],
+          stakeholders: [...state.stakeholders],
           incomingFlows: [...state.incomingFlows],
           outgoingFlows: [...state.outgoingFlows],
         }
@@ -382,6 +407,8 @@ export const {
   removeParent,
   addChild,
   removeChild,
+  addStakeholder,
+  removeStakeholder,
   addFlow,
   removeFlow,
   updateBaseline,
