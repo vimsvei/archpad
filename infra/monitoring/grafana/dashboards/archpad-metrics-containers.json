@@ -1,0 +1,83 @@
+{
+  "uid": "archpad-containers",
+  "title": "Archpad / Containers (CPU & Memory)",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "tags": ["archpad", "metrics", "docker", "cadvisor"],
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(container_cpu_usage_seconds_total{image!=\"\"}, container_label_com_docker_compose_service)",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": { "text": "All", "value": ".*" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "CPU (cores) by compose service",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (container_label_com_docker_compose_service) (rate(container_cpu_usage_seconds_total{image!=\"\", container_label_com_docker_compose_service=~\"$service\"}[5m]))",
+          "legendFormat": "{{container_label_com_docker_compose_service}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory (working set) by compose service",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (container_label_com_docker_compose_service) (container_memory_working_set_bytes{image!=\"\", container_label_com_docker_compose_service=~\"$service\"})",
+          "legendFormat": "{{container_label_com_docker_compose_service}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "table",
+      "title": "Top containers by CPU (5m rate)",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 10 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(20, sum by (name, image, container_label_com_docker_compose_service) (rate(container_cpu_usage_seconds_total{image!=\"\", container_label_com_docker_compose_service=~\"$service\"}[5m])))",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "indexByName": { "Value": 3, "name": 0, "container_label_com_docker_compose_service": 1, "image": 2 } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "cores" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [ { "id": "displayName", "value": "CPU cores" } ] },
+          { "matcher": { "id": "byName", "options": "name" }, "properties": [ { "id": "displayName", "value": "container" } ] },
+          { "matcher": { "id": "byName", "options": "container_label_com_docker_compose_service" }, "properties": [ { "id": "displayName", "value": "service" } ] }
+        ]
+      },
+      "options": { "showHeader": true, "sortBy": [ { "displayName": "CPU cores", "desc": true } ] }
+    }
+  ]
+}
+
+

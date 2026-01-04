@@ -1,0 +1,62 @@
+{
+  "uid": "archpad-logs",
+  "title": "Archpad / Logs (Loki)",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "tags": ["archpad", "logs"],
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "loki" },
+        "query": "label_values(service_name)",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": { "text": "All", "value": ".*" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Logs",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 14 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{service_name=~\"$service\"}",
+          "queryType": "range"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "dedupStrategy": "none"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Log lines rate (per service)",
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service_name) (rate({service_name=~\"$service\"}[1m]))",
+          "queryType": "range"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    }
+  ]
+}
+
+
