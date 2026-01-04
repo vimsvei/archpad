@@ -46,5 +46,3 @@ export type ImportJobReporter = {
   setProgress(progress: number): void;
   log(key: string, params?: ImportJobLogItem['params']): void;
 };
-
-

@@ -59,5 +59,3 @@ import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-sy
   providers: [OpenExchangeImportService, OpenExchangeImportJobStore],
 })
 export class OpenExchangeImportModule {}
-
-

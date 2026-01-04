@@ -46,7 +46,10 @@ export class NamedObjectService<T extends NamedObject> {
     const search = rawSearch.length ? rawSearch : undefined;
 
     const page = Math.max(1, Number(query.page ?? 1) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 25) || 25));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query.pageSize ?? 25) || 25),
+    );
     const offset = (page - 1) * pageSize;
 
     const where: FilterQuery<T> = search

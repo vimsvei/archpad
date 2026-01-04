@@ -82,7 +82,7 @@ export abstract class TechnologyNode extends NamedObject {
     deleteRule: 'no action',
   })
   network!: TechnologyNetwork;
-  
+
   @HasuraRefName()
   @ManyToOne({
     entity: () => OperatingSystem,

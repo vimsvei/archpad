@@ -91,5 +91,3 @@ export class ApplicationInterfaceController {
     return this.service.createWithComponent(dto, context);
   }
 }
-
-

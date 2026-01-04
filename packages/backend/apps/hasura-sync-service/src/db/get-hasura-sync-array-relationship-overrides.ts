@@ -26,7 +26,7 @@ export async function getHasuraSyncArrayRelationshipOverrides(
 
   const res = await hasura.runSql(sql);
   const rows = res.result?.slice(1) ?? [];
-  return rows.map(([json]) => JSON.parse(json) as HasuraSyncArrayRelationshipOverride);
+  return rows.map(
+    ([json]) => JSON.parse(json) as HasuraSyncArrayRelationshipOverride,
+  );
 }
-
-

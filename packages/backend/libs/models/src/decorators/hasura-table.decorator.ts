@@ -22,5 +22,3 @@ export function HasuraTable(): ClassDecorator {
     HASURA_TABLES.push({ entity: target });
   };
 }
-
-

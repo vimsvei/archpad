@@ -114,4 +114,3 @@ export class SystemSoftwareController {
     return this.service.delete(id);
   }
 }
-

@@ -1,12 +1,11 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
-import {DirectoryObject} from "@/model/abstract/directory-object.abstract";
+import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_directory' })
 export class ApplicationComponentDirectoryMap extends MappedObject {
-
   @HasuraRefName('directories')
   @ManyToOne({
     entity: () => ApplicationComponent,
@@ -16,7 +15,7 @@ export class ApplicationComponentDirectoryMap extends MappedObject {
     deleteRule: 'no action',
   })
   component!: ApplicationComponent;
-  
+
   @HasuraRefName('components')
   @ManyToOne({
     entity: () => DirectoryObject,

@@ -42,5 +42,3 @@ CREATE TABLE IF NOT EXISTS hasura_sync.array_relationship_overrides (
 CREATE UNIQUE INDEX IF NOT EXISTS array_relationship_overrides_unique_name_per_pk
   ON hasura_sync.array_relationship_overrides (pk_table_schema, pk_table_name, name);
 `;
-
-

@@ -1,4 +1,8 @@
-import { ArchimateCode, HasuraRefCollection, HasuraTable } from '@archpad/models';
+import {
+  ArchimateCode,
+  HasuraRefCollection,
+  HasuraTable,
+} from '@archpad/models';
 import {
   Collection,
   Entity,

@@ -18,7 +18,7 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
     deleteRule: 'no action',
   })
   componentFunction!: ApplicationComponentFunctionMap;
-  
+
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     primary: true,

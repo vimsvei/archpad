@@ -38,5 +38,3 @@ export function HasuraRefName(name?: string): PropertyDecorator {
  * Prefer using HasuraRefName().
  */
 export const HasuraName = HasuraRefName;
-
-

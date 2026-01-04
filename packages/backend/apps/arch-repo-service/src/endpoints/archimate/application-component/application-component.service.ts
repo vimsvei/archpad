@@ -139,7 +139,6 @@ export class ApplicationComponentService {
     return entity;
   }
 
-
   async addDataObject(componentId: string, dataObjectId: string) {
     const em = this.repo.getEntityManager();
 
@@ -206,7 +205,9 @@ export class ApplicationComponentService {
       { component: componentId as any } as any,
       { populate: ['function'] as any } as any,
     );
-    return maps.map((m: any) => m.function as ApplicationFunction).filter(Boolean);
+    return maps
+      .map((m: any) => m.function as ApplicationFunction)
+      .filter(Boolean);
   }
 
   async removeFunction(componentId: string, functionId: string) {
@@ -304,7 +305,7 @@ export class ApplicationComponentService {
     outgoing: ApplicationFlow[];
   }> {
     await this.findOne(componentId);
-    
+
     const [incoming, outgoing] = await Promise.all([
       this.flowRepo.find(
         { targetComponent: componentId as any } as any,
@@ -345,7 +346,9 @@ export class ApplicationComponentService {
 
     // Start transaction
     await em.transactional(async (trxEm) => {
-      const entity = await trxEm.findOneOrFail(ApplicationComponent, { id } as FilterQuery<ApplicationComponent>);
+      const entity = await trxEm.findOneOrFail(ApplicationComponent, {
+        id,
+      } as FilterQuery<ApplicationComponent>);
 
       // Update basic fields
       const patch: Partial<ApplicationComponent> = {
@@ -371,14 +374,20 @@ export class ApplicationComponentService {
         ...(dto.architectureStyleId !== undefined
           ? {
               architectureStyle: dto.architectureStyleId
-                ? trxEm.getReference(ArchitectureStyleDirectory, dto.architectureStyleId)
+                ? trxEm.getReference(
+                    ArchitectureStyleDirectory,
+                    dto.architectureStyleId,
+                  )
                 : undefined,
             }
           : {}),
         ...(dto.criticalLevelId !== undefined
           ? {
               criticalLevel: dto.criticalLevelId
-                ? trxEm.getReference(CriticalLevelDirectory, dto.criticalLevelId)
+                ? trxEm.getReference(
+                    CriticalLevelDirectory,
+                    dto.criticalLevelId,
+                  )
                 : undefined,
             }
           : {}),
@@ -399,14 +408,20 @@ export class ApplicationComponentService {
         ...(dto.redundancyTypeId !== undefined
           ? {
               redundancyType: dto.redundancyTypeId
-                ? trxEm.getReference(RedundancyTypeDirectory, dto.redundancyTypeId)
+                ? trxEm.getReference(
+                    RedundancyTypeDirectory,
+                    dto.redundancyTypeId,
+                  )
                 : undefined,
             }
           : {}),
         ...(dto.monitoringLevelId !== undefined
           ? {
               monitoringLevel: dto.monitoringLevelId
-                ? trxEm.getReference(MonitoringLevelDirectory, dto.monitoringLevelId)
+                ? trxEm.getReference(
+                    MonitoringLevelDirectory,
+                    dto.monitoringLevelId,
+                  )
                 : undefined,
             }
           : {}),
@@ -426,9 +441,12 @@ export class ApplicationComponentService {
       trxEm.assign(entity, patch as any);
 
       // Update functions - always replace all existing with provided ones
-      const existingFunctionMaps = await trxEm.find(ApplicationComponentFunctionMap, {
-        component: id as any,
-      } as any);
+      const existingFunctionMaps = await trxEm.find(
+        ApplicationComponentFunctionMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingFunctionMaps);
 
       if (dto.functionIds && dto.functionIds.length > 0) {
@@ -442,9 +460,12 @@ export class ApplicationComponentService {
       }
 
       // Update data objects - always replace all existing with provided ones
-      const existingDataObjectMaps = await trxEm.find(ApplicationComponentDataObjectMap, {
-        component: id as any,
-      } as any);
+      const existingDataObjectMaps = await trxEm.find(
+        ApplicationComponentDataObjectMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingDataObjectMaps);
 
       if (dto.dataObjectIds && dto.dataObjectIds.length > 0) {
@@ -458,9 +479,12 @@ export class ApplicationComponentService {
       }
 
       // Update interfaces - always replace all existing with provided ones
-      const existingInterfaceMaps = await trxEm.find(ApplicationComponentInterfaceMap, {
-        component: id as any,
-      } as any);
+      const existingInterfaceMaps = await trxEm.find(
+        ApplicationComponentInterfaceMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingInterfaceMaps);
 
       if (dto.interfaceIds && dto.interfaceIds.length > 0) {
@@ -490,9 +514,12 @@ export class ApplicationComponentService {
       }
 
       // Update system software - always replace all existing with provided ones
-      const existingSystemSoftwareMaps = await trxEm.find(ApplicationComponentSystemSoftwareMap, {
-        component: id as any,
-      } as any);
+      const existingSystemSoftwareMaps = await trxEm.find(
+        ApplicationComponentSystemSoftwareMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingSystemSoftwareMaps);
 
       if (dto.systemSoftwareIds && dto.systemSoftwareIds.length > 0) {
@@ -500,16 +527,20 @@ export class ApplicationComponentService {
           const map = trxEm.create(ApplicationComponentSystemSoftwareMap, {
             component: trxEm.getReference(ApplicationComponent, id),
             systemSoftware: trxEm.getReference(SystemSoftware, item.id),
-            kind: (item.kind as SystemSoftwareKind) || SystemSoftwareKind.LIBRARY,
+            kind:
+              (item.kind as SystemSoftwareKind) || SystemSoftwareKind.LIBRARY,
           } as any);
           await trxEm.persist(map);
         }
       }
 
       // Update technology nodes - always replace all existing with provided ones
-      const existingTechnologyNodeMaps = await trxEm.find(ApplicationComponentTechnologyNodeMap, {
-        component: id as any,
-      } as any);
+      const existingTechnologyNodeMaps = await trxEm.find(
+        ApplicationComponentTechnologyNodeMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingTechnologyNodeMaps);
 
       if (dto.technologyNodeIds && dto.technologyNodeIds.length > 0) {
@@ -523,25 +554,37 @@ export class ApplicationComponentService {
       }
 
       // Update technology networks - always replace all existing with provided ones
-      const existingTechnologyNetworkMaps = await trxEm.find(ApplicationComponentTechnologyLogicalNetworkMap, {
-        component: id as any,
-      } as any);
+      const existingTechnologyNetworkMaps = await trxEm.find(
+        ApplicationComponentTechnologyLogicalNetworkMap,
+        {
+          component: id as any,
+        } as any,
+      );
       await trxEm.remove(existingTechnologyNetworkMaps);
 
       if (dto.technologyNetworkIds && dto.technologyNetworkIds.length > 0) {
         for (const networkId of dto.technologyNetworkIds) {
-          const map = trxEm.create(ApplicationComponentTechnologyLogicalNetworkMap, {
-            component: trxEm.getReference(ApplicationComponent, id),
-            logicalNetwork: trxEm.getReference(TechnologyLogicalNetwork, networkId),
-          } as any);
+          const map = trxEm.create(
+            ApplicationComponentTechnologyLogicalNetworkMap,
+            {
+              component: trxEm.getReference(ApplicationComponent, id),
+              logicalNetwork: trxEm.getReference(
+                TechnologyLogicalNetwork,
+                networkId,
+              ),
+            } as any,
+          );
           await trxEm.persist(map);
         }
       }
 
       // Update parents (hierarchy) - always replace all existing with provided ones
-      const existingParentMaps = await trxEm.find(ApplicationComponentHierarchyMap, {
-        child: id as any,
-      } as any);
+      const existingParentMaps = await trxEm.find(
+        ApplicationComponentHierarchyMap,
+        {
+          child: id as any,
+        } as any,
+      );
       await trxEm.remove(existingParentMaps);
 
       if (dto.parentIds && dto.parentIds.length > 0) {
@@ -555,9 +598,12 @@ export class ApplicationComponentService {
       }
 
       // Update children (hierarchy) - always replace all existing with provided ones
-      const existingChildMaps = await trxEm.find(ApplicationComponentHierarchyMap, {
-        parent: id as any,
-      } as any);
+      const existingChildMaps = await trxEm.find(
+        ApplicationComponentHierarchyMap,
+        {
+          parent: id as any,
+        } as any,
+      );
       await trxEm.remove(existingChildMaps);
 
       if (dto.childIds && dto.childIds.length > 0) {

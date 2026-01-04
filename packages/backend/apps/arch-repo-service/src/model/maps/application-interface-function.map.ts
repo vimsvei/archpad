@@ -7,7 +7,6 @@ import { HasuraRefName } from '@archpad/models';
 @HasuraTable()
 @Entity({ tableName: 'map_application_interface_function' })
 export class ApplicationInterfaceFunctionMap extends MappedObject {
-  
   @HasuraRefName('interfaces')
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,

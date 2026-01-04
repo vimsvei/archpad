@@ -5,6 +5,6 @@ import { bulkDirectoryLinkInputSchema } from '@archpad/contract';
 export const BulkDirectoryLinkDtoSchema = bulkDirectoryLinkInputSchema;
 
 @ApiExtraModels()
-export class BulkDirectoryLinkDto extends createZodDto(BulkDirectoryLinkDtoSchema) {}
-
-
+export class BulkDirectoryLinkDto extends createZodDto(
+  BulkDirectoryLinkDtoSchema,
+) {}

@@ -86,7 +86,8 @@ export async function applyCamelCaseCustomization(args: {
     }
 
     const customTableName =
-      hasuraTableName ?? (fallbackCamelCase ? toCamelCase(table.name) : table.name);
+      hasuraTableName ??
+      (fallbackCamelCase ? toCamelCase(table.name) : table.name);
 
     const configuration: any = {};
     const metadataArgs: any = {
@@ -111,7 +112,9 @@ export async function applyCamelCaseCustomization(args: {
     // so the change is visible in GraphQL queries.
     if (hasuraTableName) {
       configuration.custom_root_fields = buildDefaultRootFields(
-        configuration.custom_name ?? configuration.identifier ?? hasuraTableName,
+        configuration.custom_name ??
+          configuration.identifier ??
+          hasuraTableName,
       );
     }
 

@@ -1,6 +1,6 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
-import {TechnologyNetwork} from "@/model/archimate/technology/technology-network.entity";
+import { TechnologyNetwork } from '@/model/archimate/technology/technology-network.entity';
 
 @HasuraTable()
 @Entity({ tableName: 'map_technology_network_hierarchy' })

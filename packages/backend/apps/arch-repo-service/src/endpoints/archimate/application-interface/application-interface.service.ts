@@ -42,18 +42,24 @@ export class ApplicationInterfaceService {
     const search = rawSearch.length ? rawSearch : undefined;
 
     const page = Math.max(1, Number(query.page ?? 1) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 25) || 25));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query.pageSize ?? 25) || 25),
+    );
     const offset = (page - 1) * pageSize;
 
     const where: FilterQuery<ApplicationInterface> = search
       ? ({ name: { $ilike: `%${search}%` } } as any)
       : ({} as any);
 
-    const [items, total] = await (this.interfaceRepo as any).findAndCount(where, {
-      limit: pageSize,
-      offset,
-      orderBy: { name: QueryOrder.ASC } as any,
-    });
+    const [items, total] = await (this.interfaceRepo as any).findAndCount(
+      where,
+      {
+        limit: pageSize,
+        offset,
+        orderBy: { name: QueryOrder.ASC } as any,
+      },
+    );
 
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
@@ -66,11 +72,11 @@ export class ApplicationInterfaceService {
 
   async createWithComponent(
     dto: {
-    code: string;
-    name: string;
-    description?: string;
-    componentId: string;
-  },
+      code: string;
+      name: string;
+      description?: string;
+      componentId: string;
+    },
     context: ArchpadRequestContext,
   ) {
     const em = this.interfaceRepo.getEntityManager();
@@ -83,7 +89,10 @@ export class ApplicationInterfaceService {
         created: ActionStamp.now(context.userId),
       } as RequiredEntityData<ApplicationInterface>);
 
-      const componentRef = em.getReference(ApplicationComponent, dto.componentId);
+      const componentRef = em.getReference(
+        ApplicationComponent,
+        dto.componentId,
+      );
       const map = this.mapRepo.create({
         component: componentRef,
         interface: iface,
@@ -94,5 +103,3 @@ export class ApplicationInterfaceService {
     });
   }
 }
-
-

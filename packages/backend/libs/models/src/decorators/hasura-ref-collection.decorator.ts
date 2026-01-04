@@ -26,5 +26,3 @@ export function HasuraRefCollection(name?: string): PropertyDecorator {
     });
   };
 }
-
-
