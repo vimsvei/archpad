@@ -12,14 +12,20 @@ scrape_configs:
     static_configs:
       - targets: ["reverse-proxy:8080"]
 
+  # Hasura metrics: endpoint may require HASURA_GRAPHQL_METRICS_SECRET
+  # If metrics return 404, check Hasura logs and ensure metrics API is enabled
   - job_name: hasura
-    metrics_path: /metrics
+    metrics_path: /v1/metrics
     static_configs:
       - targets: ["hasura:8080"]
+    # Uncomment and configure if HASURA_GRAPHQL_METRICS_SECRET is set:
+    # basic_auth:
+    #   username: ""
+    #   password: "${HASURA_GRAPHQL_METRICS_SECRET}"
 
-  - job_name: cadvisor
+  - job_name: node-exporter
     static_configs:
-      - targets: ["cadvisor:8080"]
+      - targets: ["node-exporter:9100"]
 
   - job_name: postgres-exporter
     static_configs:
