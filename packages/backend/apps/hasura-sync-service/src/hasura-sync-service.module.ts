@@ -6,7 +6,11 @@ import { HasuraClientService } from './hasura-client/hasura-client.service';
 import { LoggerModule } from '@archpad/logger';
 
 @Module({
-  imports: [LoggerModule, ConfigModule.forRoot({ isGlobal: true }), HttpModule],
+  imports: [
+    LoggerModule.forRoot({ format: 'text' }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    HttpModule,
+  ],
   controllers: [],
   providers: [HasuraClientService, HasuraSyncService],
 })
