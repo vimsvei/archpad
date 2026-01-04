@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  - name: "archpad"
+    orgId: 1
+    folder: "Archpad"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
+
+
