@@ -1,14 +1,13 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
-import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';
-import { Constraint } from '@/model/archimate/motivation/constraint.entity';
+import {MotivationElementGeneric} from "@/model/archimate/core/motivation-element.generic";
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_constraint' })
-@Unique({ properties: ['constraint', 'solution'] })
-export class SolutionConstraintMap extends MappedObject {
-  @HasuraRefName('constraints')
+@Unique({ properties: ['motivation', 'solution'] })
+export class SolutionMotivationElementMap extends MappedObject {
+  @HasuraRefName('motivation')
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -20,11 +19,11 @@ export class SolutionConstraintMap extends MappedObject {
 
   @HasuraRefName('solutions')
   @ManyToOne({
-    entity: () => Constraint,
+    entity: () => MotivationElementGeneric,
     primary: true,
-    fieldName: 'constraint_id',
+    fieldName: 'motivation_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  constraint!: Constraint;
+  motivation!: MotivationElementGeneric;
 }
