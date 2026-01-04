@@ -213,7 +213,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
                 await create.onCreate(values)
                 toast.success(tr("action.created"))
               } catch (e: any) {
-                toast.error(e?.message ?? tr("action.createFailed"))
+                toast.error(e?.message ?? tr("action.create.failed"))
               } finally {
                 void refetch()
               }
@@ -242,7 +242,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
           />
           {error ? (
             <div className="text-destructive mt-2 text-sm">
-              {(error as any)?.message ?? tr("action.loadFailed")}
+              {(error as any)?.message ?? tr("action.load.failed")}
             </div>
           ) : null}
         </>
