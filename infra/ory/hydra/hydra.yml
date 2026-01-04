@@ -12,7 +12,7 @@ serve:
   public:
     host: 0.0.0.0
     port: 4444
-    cors:
+      cors:
       enabled: true
       allowed_origins:
         - https://portal.192-168-1-119.sslip.io
