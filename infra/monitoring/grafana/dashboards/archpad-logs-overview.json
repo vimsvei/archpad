@@ -12,44 +12,25 @@
       {
         "name": "service",
         "type": "query",
-        "datasource": { "type": "loki", "uid": "loki" },
-        "query": "label_values(service_name)",
+        "datasource": { "type": "loki", "uid": "loki", "name": "Loki" },
+        "query": "label_values(container)",
         "refresh": 1,
         "includeAll": true,
-        "allValue": ".*",
-        "current": { "text": "All", "value": ".*" }
+        "allValue": ".+",
+        "current": { "text": "All", "value": ".+" }
       }
     ]
   },
   "panels": [
     {
-      "type": "logs",
-      "title": "Logs",
-      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 14 },
-      "datasource": { "type": "loki", "uid": "loki" },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "{service_name=~\"$service\"}",
-          "queryType": "range"
-        }
-      ],
-      "options": {
-        "showTime": true,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": true,
-        "dedupStrategy": "none"
-      }
-    },
-    {
       "type": "timeseries",
-      "title": "Log lines rate (per service)",
-      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 },
-      "datasource": { "type": "loki", "uid": "loki" },
+      "title": "Log lines rate (per container)",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 12 },
+      "datasource": { "type": "loki", "uid": "loki", "name": "Loki" },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (service_name) (rate({service_name=~\"$service\"}[1m]))",
+          "expr": "sum by (container) (rate({container=~\"$service\"}[1m]))",
           "queryType": "range"
         }
       ],

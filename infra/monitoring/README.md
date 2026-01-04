@@ -3,11 +3,12 @@
 This repo can run a local “single pane of glass” stack:
 
 - **Grafana** (UI): metrics + logs + traces in one place
-- **Prometheus**: metrics scraping (Traefik/Hasura/cAdvisor/Postgres exporter + uptime probes)
+- **Prometheus**: metrics scraping (Traefik/Hasura/Node Exporter/Postgres exporter + uptime probes)
 - **Loki**: centralized logs
 - **Tempo**: distributed tracing storage/query
 - **OpenTelemetry Collector**: OTLP receiver → Tempo
 - **Vector**: reads Docker container logs via Docker socket → Loki
+- **Node Exporter**: host-level metrics (CPU, memory, disk) - **Kubernetes-compatible**
 
 ### How to start
 
@@ -60,7 +61,7 @@ Notes:
 - **Prometheus**:
   - via Traefik (recommended): `https://${PROMETHEUS_HOST}`
   - fallback direct: `http://localhost:9090`
-- **cAdvisor**: `http://localhost:8081`
+- **Node Exporter**: `http://localhost:9100` (host metrics - **Kubernetes-compatible**)
 - **Loki**: `http://localhost:3100`
 - **Tempo**: `http://localhost:3200`
 - **OTLP (send traces here)**:
@@ -80,5 +81,18 @@ Configure your services to export OTLP traces to the collector:
 
 - **OTLP HTTP**: `http://otel-collector:4318` (from containers)
 - **OTLP gRPC**: `otel-collector:4317` (from containers)
+
+### Kubernetes Compatibility
+
+This observability stack is designed to work seamlessly when migrating to Kubernetes:
+
+- **Node Exporter**: Works identically in Docker Compose and Kubernetes (DaemonSet)
+- **Container Metrics**: In Kubernetes, container/pod metrics come from kubelet (which includes cAdvisor) - no additional setup needed
+- **Prometheus**: Same configuration, just change scrape targets to Kubernetes service discovery
+- **Loki**: Same setup, works with any log source
+- **Tempo**: Same configuration, works with any trace source
+- **Grafana**: Same dashboards work in both environments
+
+**Note**: In Docker Desktop, individual container metrics are not available. Use Node Exporter for host-level metrics. In Kubernetes, kubelet automatically provides container/pod metrics.
 
 
