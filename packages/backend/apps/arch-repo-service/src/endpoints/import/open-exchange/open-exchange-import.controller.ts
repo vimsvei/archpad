@@ -9,7 +9,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UploadedFile } from '@nestjs/common';
 import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
@@ -29,7 +34,9 @@ export class OpenExchangeImportController {
   ) {}
 
   @Post('jobs')
-  @ApiOperation({ summary: 'Создать job импорта Open Exchange XML (multipart/form-data)' })
+  @ApiOperation({
+    summary: 'Создать job импорта Open Exchange XML (multipart/form-data)',
+  })
   @ApiOkResponse({ type: CreateImportJobResponse })
   @UseInterceptors(
     FileInterceptor('file', {
@@ -87,5 +94,3 @@ export class OpenExchangeImportController {
     return job;
   }
 }
-
-

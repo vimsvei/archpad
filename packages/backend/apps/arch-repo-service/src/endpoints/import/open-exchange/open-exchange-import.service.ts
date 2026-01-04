@@ -3,7 +3,10 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { ActionStamp } from '@archpad/models';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
-import type { ImportJobReporter, ImportJob } from './open-exchange-import.types';
+import type {
+  ImportJobReporter,
+  ImportJob,
+} from './open-exchange-import.types';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
 import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
@@ -92,7 +95,11 @@ function sliceBetween(input: string, startTag: string, endTag: string): string {
 
 function parseOpenExchangeXml(xml: string): ParsedModel {
   const elementsBlock = sliceBetween(xml, '<elements>', '</elements>');
-  const relationshipsBlock = sliceBetween(xml, '<relationships>', '</relationships>');
+  const relationshipsBlock = sliceBetween(
+    xml,
+    '<relationships>',
+    '</relationships>',
+  );
 
   const elements: ParsedElement[] = [];
   const relationships: ParsedRelationship[] = [];
@@ -115,8 +122,7 @@ function parseOpenExchangeXml(xml: string): ParsedModel {
   }
 
   // <relationship ... /> OR <relationship ...>...</relationship>
-  const relRe =
-    /<relationship\b([^>]*?)(?:\/>|>([\s\S]*?)<\/relationship>)/gi;
+  const relRe = /<relationship\b([^>]*?)(?:\/>|>([\s\S]*?)<\/relationship>)/gi;
   while ((m = relRe.exec(relationshipsBlock))) {
     const attrs = parseAttributes(m[1] ?? '');
     const body = m[2] ?? '';
@@ -212,16 +218,28 @@ export class OpenExchangeImportService {
     const appInterfaces = parsed.elements.filter(
       (e) => e.type === 'ApplicationInterface',
     );
-    const appEvents = parsed.elements.filter((e) => e.type === 'ApplicationEvent');
-    const businessActors = parsed.elements.filter((e) => e.type === 'BusinessActor');
-    const businessRoles = parsed.elements.filter((e) => e.type === 'BusinessRole');
-    const systemSoftware = parsed.elements.filter((e) => e.type === 'SystemSoftware');
-    const communicationNetworks = parsed.elements.filter((e) => e.type === 'CommunicationNetwork');
+    const appEvents = parsed.elements.filter(
+      (e) => e.type === 'ApplicationEvent',
+    );
+    const businessActors = parsed.elements.filter(
+      (e) => e.type === 'BusinessActor',
+    );
+    const businessRoles = parsed.elements.filter(
+      (e) => e.type === 'BusinessRole',
+    );
+    const systemSoftware = parsed.elements.filter(
+      (e) => e.type === 'SystemSoftware',
+    );
+    const communicationNetworks = parsed.elements.filter(
+      (e) => e.type === 'CommunicationNetwork',
+    );
     const devices = parsed.elements.filter((e) => e.type === 'Device');
     const nodes = parsed.elements.filter((e) => e.type === 'Node');
     const principles = parsed.elements.filter((e) => e.type === 'Principle');
     const constraints = parsed.elements.filter((e) => e.type === 'Constraint');
-    const requirements = parsed.elements.filter((e) => e.type === 'Requirement');
+    const requirements = parsed.elements.filter(
+      (e) => e.type === 'Requirement',
+    );
     const assessments = parsed.elements.filter((e) => e.type === 'Assessment');
 
     reporter.setProgress(8);
@@ -302,7 +320,10 @@ export class OpenExchangeImportService {
       // - business actor ↔ role: Assignment
       const componentFunctionRelTypes = new Set(['Assignment', 'Realization']);
       const maps: ApplicationComponentFunctionMap[] = [];
-      const componentsByFunctionXmlId = new Map<string, ApplicationComponent[]>();
+      const componentsByFunctionXmlId = new Map<
+        string,
+        ApplicationComponent[]
+      >();
 
       for (const rel of parsed.relationships) {
         if (!rel.source || !rel.target || !rel.type) continue;
@@ -471,7 +492,11 @@ export class OpenExchangeImportService {
                 dataObject,
                 accessKind,
               } as any);
-              await txEm.persistAndFlush([componentFunction, componentDataObject, map]);
+              await txEm.persistAndFlush([
+                componentFunction,
+                componentDataObject,
+                map,
+              ]);
             }
           }
         }
@@ -659,7 +684,10 @@ export class OpenExchangeImportService {
     return DataAccessKind.READ;
   }
 
-  private async clearRepository(em: EntityManager, reporter: ImportJobReporter) {
+  private async clearRepository(
+    em: EntityManager,
+    reporter: ImportJobReporter,
+  ) {
     // Keep directories (and directory items) intact; remove only ArchiMate domain tables.
     // Order matters due to FK constraints (maps first, then base tables).
     const maps = [
@@ -705,7 +733,9 @@ export class OpenExchangeImportService {
       'solutions',
     ];
 
-    reporter.log('upload.open-exchange.clear-repo.count', { count: tables.length });
+    reporter.log('upload.open-exchange.clear-repo.count', {
+      count: tables.length,
+    });
 
     for (const table of tables) {
       // `DELETE` (not TRUNCATE) to avoid accidental CASCADE into directory tables.
@@ -741,7 +771,9 @@ export class OpenExchangeImportService {
     // Business layer
     for (const e of input.businessActors) {
       const name = e.name ?? e.id;
-      const existing = input.dedupe ? await em.findOne(BusinessActor, { name } as any) : null;
+      const existing = input.dedupe
+        ? await em.findOne(BusinessActor, { name } as any)
+        : null;
       const entity =
         existing ??
         em.create(BusinessActor, {
@@ -755,7 +787,9 @@ export class OpenExchangeImportService {
 
     for (const e of input.businessRoles) {
       const name = e.name ?? e.id;
-      const existing = input.dedupe ? await em.findOne(BusinessRole, { name } as any) : null;
+      const existing = input.dedupe
+        ? await em.findOne(BusinessRole, { name } as any)
+        : null;
       const entity =
         existing ??
         em.create(BusinessRole, {
@@ -771,7 +805,10 @@ export class OpenExchangeImportService {
     for (const e of input.systemSoftware) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(SystemSoftware, { name, kind: SystemSoftwareKind.OTHER as any } as any)
+        ? await em.findOne(SystemSoftware, {
+            name,
+            kind: SystemSoftwareKind.OTHER as any,
+          } as any)
         : null;
       const entity =
         existing ??
@@ -835,10 +872,14 @@ export class OpenExchangeImportService {
     }
 
     // Technology layer: Node -> TechnologyHostNode
-    const defaultHostNodeType = await this.ensureNodeTypeDirectory(em, context, {
-      name: 'Host',
-      makeDefault: false,
-    });
+    const defaultHostNodeType = await this.ensureNodeTypeDirectory(
+      em,
+      context,
+      {
+        name: 'Host',
+        makeDefault: false,
+      },
+    );
 
     for (const e of input.nodes) {
       const name = e.name ?? e.id;
@@ -864,7 +905,10 @@ export class OpenExchangeImportService {
     for (const e of input.principles) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(Principle, { name, kind: MotivationKind.PRINCIPLE as any } as any)
+        ? await em.findOne(Principle, {
+            name,
+            kind: MotivationKind.PRINCIPLE as any,
+          } as any)
         : null;
       const entity =
         existing ??
@@ -880,7 +924,10 @@ export class OpenExchangeImportService {
     for (const e of input.constraints) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(Constraint, { name, kind: MotivationKind.CONSTRAINT as any } as any)
+        ? await em.findOne(Constraint, {
+            name,
+            kind: MotivationKind.CONSTRAINT as any,
+          } as any)
         : null;
       const entity =
         existing ??
@@ -896,7 +943,10 @@ export class OpenExchangeImportService {
     for (const e of input.requirements) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(Requirement, { name, kind: MotivationKind.REQUIREMENT as any } as any)
+        ? await em.findOne(Requirement, {
+            name,
+            kind: MotivationKind.REQUIREMENT as any,
+          } as any)
         : null;
       const entity =
         existing ??
@@ -912,7 +962,10 @@ export class OpenExchangeImportService {
     for (const e of input.assessments) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(Assessment, { name, kind: MotivationKind.ASSESSMENT as any } as any)
+        ? await em.findOne(Assessment, {
+            name,
+            kind: MotivationKind.ASSESSMENT as any,
+          } as any)
         : null;
       const entity =
         existing ??
@@ -939,8 +992,18 @@ export class OpenExchangeImportService {
       systemSoftwareEntityByXmlId: Map<string, SystemSoftware>;
     },
   ) {
-    const networkRelKinds = new Set(['Realization', 'Aggregation', 'Composition', 'Association']);
-    const softwareRelKinds = new Set(['Realization', 'Composition', 'Aggregation', 'Association']);
+    const networkRelKinds = new Set([
+      'Realization',
+      'Aggregation',
+      'Composition',
+      'Association',
+    ]);
+    const softwareRelKinds = new Set([
+      'Realization',
+      'Composition',
+      'Aggregation',
+      'Association',
+    ]);
 
     for (const rel of input.relationships) {
       if (!rel.source || !rel.target || !rel.type) continue;
@@ -983,8 +1046,10 @@ export class OpenExchangeImportService {
 
       // Device ↔ SystemSoftware => map_technology_node_system_software
       if (softwareRelKinds.has(rel.type)) {
-        const aIsTechNode = sourceEl.type === 'Device' || sourceEl.type === 'Node';
-        const bIsTechNode = targetEl.type === 'Device' || targetEl.type === 'Node';
+        const aIsTechNode =
+          sourceEl.type === 'Device' || sourceEl.type === 'Node';
+        const bIsTechNode =
+          targetEl.type === 'Device' || targetEl.type === 'Node';
         const aIsSoftware = sourceEl.type === 'SystemSoftware';
         const bIsSoftware = targetEl.type === 'SystemSoftware';
 
@@ -1039,7 +1104,10 @@ export class OpenExchangeImportService {
     em: EntityManager,
     context: ArchpadRequestContext,
   ): Promise<NodeTypeDirectory> {
-    return this.ensureNodeTypeDirectory(em, context, { name: 'Device', makeDefault: true });
+    return this.ensureNodeTypeDirectory(em, context, {
+      name: 'Device',
+      makeDefault: true,
+    });
   }
 
   private async ensureNodeTypeDirectory(
@@ -1048,11 +1116,15 @@ export class OpenExchangeImportService {
     input: { name: string; makeDefault: boolean },
   ): Promise<NodeTypeDirectory> {
     if (input.makeDefault) {
-      const byDefault = await em.findOne(NodeTypeDirectory, { byDefault: true } as any);
+      const byDefault = await em.findOne(NodeTypeDirectory, {
+        byDefault: true,
+      } as any);
       if (byDefault) return byDefault;
     }
 
-    const existing = await em.findOne(NodeTypeDirectory, { name: input.name } as any);
+    const existing = await em.findOne(NodeTypeDirectory, {
+      name: input.name,
+    } as any);
     if (existing) return existing;
 
     const created = ActionStamp.now(context.userId);
@@ -1067,5 +1139,3 @@ export class OpenExchangeImportService {
     return entity;
   }
 }
-
-

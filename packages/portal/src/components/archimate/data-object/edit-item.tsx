@@ -109,7 +109,7 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(updateBaseline())
       toast.success(tr("action.saved"))
     } catch (e: any) {
-      const errorMessage = e?.message ?? tr("action.saveFailed")
+      const errorMessage = e?.message ?? tr("action.save.failed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       throw e

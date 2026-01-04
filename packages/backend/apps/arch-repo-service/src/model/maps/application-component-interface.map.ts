@@ -26,5 +26,3 @@ export class ApplicationComponentInterfaceMap extends MappedObject {
   })
   interface!: ApplicationInterface;
 }
-
-

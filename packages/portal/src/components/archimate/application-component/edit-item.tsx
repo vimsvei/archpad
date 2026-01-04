@@ -313,7 +313,7 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(updateBaseline())
       dispatch(setSaveError(null))
     } catch (e: any) {
-      const errorMessage = e?.message ?? tr("action.saveFailed")
+      const errorMessage = e?.message ?? tr("action.save.failed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       
@@ -566,7 +566,7 @@ export function EditItem({ id }: EditItemProps) {
 
     const config = getSheetConfig(createSheetType)
     if (!config?.canCreate) {
-      toast.error(tr("action.notAllowed"))
+      toast.error(tr("action.not-allowed"))
       return
     }
 
@@ -603,7 +603,7 @@ export function EditItem({ id }: EditItemProps) {
           toast.success(tr("action.created"))
           setCreateSheetOpen(false)
         } catch (e: any) {
-          toast.error(e?.message ?? tr("action.createFailed"))
+          toast.error(e?.message ?? tr("action.create.failed"))
         }
       })()
       return
@@ -905,7 +905,7 @@ export function EditItem({ id }: EditItemProps) {
               componentName={editState.name}
               onCreate={() => {
                 // TODO: Implement flow creation
-                toast.info(t("action.notImplemented"))
+                toast.info(t("action.not-implemented"))
               }}
             />
           </TabsContent>

@@ -36,9 +36,10 @@ function upperFirst(s: string): string {
   return s.length ? s[0].toUpperCase() + s.slice(1) : s;
 }
 
-
 @Injectable()
-export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap {
+export class HasuraRelationshipNameInitializer
+  implements OnApplicationBootstrap
+{
   private readonly loggerContext = HasuraRelationshipNameInitializer.name;
 
   constructor(
@@ -89,7 +90,9 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
     }
   }
 
-  private resolveRefNameUsages(usages: HasuraRefNameUsage[]): ResolvedHasuraName[] {
+  private resolveRefNameUsages(
+    usages: HasuraRefNameUsage[],
+  ): ResolvedHasuraName[] {
     return this.resolveManyToOneUsages(usages);
   }
 
@@ -138,7 +141,9 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
 
       const targetName: string | undefined =
         prop.targetMeta?.className ?? prop.type;
-      const targetMeta: any = targetName ? (meta as any).get?.(targetName) : null;
+      const targetMeta: any = targetName
+        ? (meta as any).get?.(targetName)
+        : null;
       if (!targetMeta) {
         this.logger.warn(
           `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found`,
@@ -148,7 +153,9 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
       }
 
       const mappedBy: string | undefined = prop.mappedBy;
-      const owningProp: any = mappedBy ? targetMeta.properties?.[mappedBy] : null;
+      const owningProp: any = mappedBy
+        ? targetMeta.properties?.[mappedBy]
+        : null;
       if (!owningProp) {
         this.logger.warn(
           `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: can't resolve owning side via mappedBy="${mappedBy}"`,
@@ -157,7 +164,8 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
         continue;
       }
 
-      const owningKind: string | undefined = owningProp.kind ?? owningProp.reference;
+      const owningKind: string | undefined =
+        owningProp.kind ?? owningProp.reference;
       if (
         owningKind !== ReferenceKind.MANY_TO_ONE &&
         owningKind !== ReferenceKind.ONE_TO_ONE
@@ -253,7 +261,9 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
 
       const targetName: string | undefined =
         prop.targetMeta?.className ?? prop.type;
-      const targetMeta: any = targetName ? (meta as any).get?.(targetName) : null;
+      const targetMeta: any = targetName
+        ? (meta as any).get?.(targetName)
+        : null;
       if (!targetMeta) {
         this.logger.warn(
           `Skipping @HasuraRefName(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found`,
@@ -460,7 +470,10 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
     );
   }
 
-  private async upsertArrayRelationshipOverride(conn: any, r: ResolvedHasuraName) {
+  private async upsertArrayRelationshipOverride(
+    conn: any,
+    r: ResolvedHasuraName,
+  ) {
     const cols = r.fkColumns.map((c) => `'${escapeSqlString(c)}'`).join(', ');
     const pkSchema = escapeSqlString(r.pkSchema);
     const pkTable = escapeSqlString(r.pkTable);
@@ -613,5 +626,3 @@ export class HasuraRelationshipNameInitializer implements OnApplicationBootstrap
     `;
   }
 }
-
-

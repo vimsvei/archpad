@@ -8,7 +8,6 @@ import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 @Entity({ tableName: 'map_technology_node_system_software' })
 @Unique({ properties: ['node', 'systemSoftware'] })
 export class TechnologyNodeSystemSoftwareMap extends MappedObject {
-  
   @HasuraRefName('systemSoftware')
   @ManyToOne({
     entity: () => TechnologyNode,

@@ -11,6 +11,17 @@ entryPoints:
 api:
   dashboard: true
 
+# Health endpoint for uptime checks (e.g. Prometheus Blackbox)
+ping:
+  entryPoint: traefik
+
+# Prometheus metrics at :8080/metrics
+metrics:
+  prometheus:
+    entryPoint: traefik
+    addEntryPointsLabels: true
+    addServicesLabels: true
+
 providers:
   docker:
     exposedByDefault: false

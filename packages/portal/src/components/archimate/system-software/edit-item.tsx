@@ -322,7 +322,7 @@ export function EditItem({ id }: EditItemProps) {
                         toast.success(tr("action.saved"))
                         baselineRef.current = normalize(values)
                       } catch (e: any) {
-                        toast.error(e?.message ?? tr("action.saveFailed"))
+                        toast.error(e?.message ?? tr("action.save.failed"))
                       }
                     }}
                   />
@@ -435,7 +435,7 @@ export function EditItem({ id }: EditItemProps) {
                     setConfirmOpen(false)
                     goBack()
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed"))
+                    toast.error(e?.message ?? tr("action.save.failed"))
                   }
                 })()
               }}

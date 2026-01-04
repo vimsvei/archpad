@@ -51,7 +51,7 @@ export function FlowsTable({ componentId, componentName, onCreate }: FlowsTableP
           })
           toast.success(t("action.deleted"))
         } catch (e: any) {
-          toast.error(e?.message ?? t("action.deleteFailed"))
+          toast.error(e?.message ?? t("action.delete.failed"))
         } finally {
           setIsLoading(false)
         }

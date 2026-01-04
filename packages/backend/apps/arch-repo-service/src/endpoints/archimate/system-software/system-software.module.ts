@@ -10,4 +10,3 @@ import { SystemSoftware } from '@/model/archimate/technology/system-software.ent
   providers: [SystemSoftwareService],
 })
 export class SystemSoftwareModule {}
-

@@ -191,7 +191,8 @@ export class ApplicationComponentController {
 
   @Get(':id/interfaces')
   @ApiOperation({
-    summary: 'Получить интерфейсы компонента (через map_application_component_interface)',
+    summary:
+      'Получить интерфейсы компонента (через map_application_component_interface)',
   })
   getInterfaces(@Param('id') componentId: string) {
     return this.service.getInterfaces(componentId);
@@ -223,7 +224,8 @@ export class ApplicationComponentController {
 
   @Get(':id/events')
   @ApiOperation({
-    summary: 'Получить события компонента (через map_application_component_event)',
+    summary:
+      'Получить события компонента (через map_application_component_event)',
   })
   getEvents(@Param('id') componentId: string) {
     return this.service.getEvents(componentId);
@@ -231,7 +233,8 @@ export class ApplicationComponentController {
 
   @Post(':id/events')
   @ApiOperation({
-    summary: 'Создать связь компонент ↔ событие (map_application_component_event)',
+    summary:
+      'Создать связь компонент ↔ событие (map_application_component_event)',
   })
   addEvent(@Param('id') componentId: string, @Body() dto: LinkEventDto) {
     return this.service.addEvent(componentId, dto.eventId);
@@ -239,7 +242,8 @@ export class ApplicationComponentController {
 
   @Delete(':id/events/:eventId')
   @ApiOperation({
-    summary: 'Удалить связь компонент ↔ событие (map_application_component_event)',
+    summary:
+      'Удалить связь компонент ↔ событие (map_application_component_event)',
   })
   removeEvent(
     @Param('id') componentId: string,

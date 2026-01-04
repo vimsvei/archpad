@@ -97,7 +97,13 @@ export class BaseDirectoryModule {
     }
 
     @ApiTags(swaggerTag ?? EntityClass.name ?? path)
-    @ApiExtraModels(EntityClass, CreateDtoClass, UpdateDtoClass, DirectoryItemsMap, BulkDirectoryLinkDto)
+    @ApiExtraModels(
+      EntityClass,
+      CreateDtoClass,
+      UpdateDtoClass,
+      DirectoryItemsMap,
+      BulkDirectoryLinkDto,
+    )
     @Controller(path)
     class DirectoryController {
       constructor(private readonly service: DirectoryService) {}

@@ -75,7 +75,11 @@ export class BaseDirectoryService<
       await this.repo.getEntityManager().persistAndFlush(entities);
       return entities;
     } catch (error) {
-      this.logger.error('Error in bulkCreate()', error as any, this.loggerContext);
+      this.logger.error(
+        'Error in bulkCreate()',
+        error as any,
+        this.loggerContext,
+      );
       throw error;
     }
   }
@@ -106,7 +110,9 @@ export class BaseDirectoryService<
     const existing = codes.length
       ? await this.repo.find({ code: { $in: codes } } as any)
       : [];
-    const byCode = new Map(existing.map((e: any) => [String(e.code).trim(), e]));
+    const byCode = new Map(
+      existing.map((e: any) => [String(e.code).trim(), e]),
+    );
 
     const createdEntities: Entity[] = [];
     const resolved: Entity[] = [];
@@ -239,18 +245,24 @@ export class BaseDirectoryService<
     ).filter(Boolean) as string[];
 
     // Load all referenced entities in one go.
-    const entitiesById = ids.length ? await this.repo.find({ id: { $in: ids } } as any) : [];
-    const entitiesByCode = codes.length ? await this.repo.find({ code: { $in: codes } } as any) : [];
+    const entitiesById = ids.length
+      ? await this.repo.find({ id: { $in: ids } } as any)
+      : [];
+    const entitiesByCode = codes.length
+      ? await this.repo.find({ code: { $in: codes } } as any)
+      : [];
     const entities = [...entitiesById, ...entitiesByCode];
     const byId = new Map(entities.map((e: any) => [e.id, e]));
     const byCode = new Map(entities.map((e: any) => [e.code, e]));
 
     const name = (this.entityName as any).name ?? 'Entity';
     for (const id of ids) {
-      if (!byId.has(id)) throw new NotFoundException(`${name} with id=${id} not found`);
+      if (!byId.has(id))
+        throw new NotFoundException(`${name} with id=${id} not found`);
     }
     for (const code of codes) {
-      if (!byCode.has(code)) throw new NotFoundException(`${name} with code=${code} not found`);
+      if (!byCode.has(code))
+        throw new NotFoundException(`${name} with code=${code} not found`);
     }
 
     const pairs = dtos.map((dto) => {
@@ -264,12 +276,16 @@ export class BaseDirectoryService<
 
       if (!source) {
         throw new NotFoundException(
-          dto.sourceId ? `${name} with id=${dto.sourceId} not found` : `${name} with code=${anyDto.sourceCode} not found`,
+          dto.sourceId
+            ? `${name} with id=${dto.sourceId} not found`
+            : `${name} with code=${anyDto.sourceCode} not found`,
         );
       }
       if (!target) {
         throw new NotFoundException(
-          dto.targetId ? `${name} with id=${dto.targetId} not found` : `${name} with code=${anyDto.targetCode} not found`,
+          dto.targetId
+            ? `${name} with id=${dto.targetId} not found`
+            : `${name} with code=${anyDto.targetCode} not found`,
         );
       }
 
@@ -290,7 +306,7 @@ export class BaseDirectoryService<
     for (let i = 0; i < pairs.length; i += chunkSize) {
       const chunk = pairs.slice(i, i + chunkSize);
 
-      const rows = await knex("map_directory_items")
+      const rows = await knex('map_directory_items')
         .insert(
           chunk.map((p) => ({
             source_id: p.sourceId,
@@ -300,14 +316,14 @@ export class BaseDirectoryService<
             // but `onCreate` hooks don't run for raw knex inserts.
             created_at: knex.fn.now(),
             created_by: createdBy,
-          }))
+          })),
         )
-        .onConflict(["source_id", "target_id"])
+        .onConflict(['source_id', 'target_id'])
         .ignore()
         .returning([
           knex.raw('source_id as "sourceId"'),
           knex.raw('target_id as "targetId"'),
-          "type",
+          'type',
         ]);
 
       // Return value is used only for client feedback; keep it lightweight

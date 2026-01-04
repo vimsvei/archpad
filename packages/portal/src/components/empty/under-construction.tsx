@@ -1,4 +1,7 @@
+"use client"
+
 import { Construction } from "lucide-react"
+import { useTranslate } from "@tolgee/react"
 
 import {
   Empty,
@@ -9,19 +12,24 @@ import {
 } from "@/components/ui/empty"
 
 export interface UnderConstructionProps {
-  title: string
-  description?: string
+  titleKey?: string
+  descriptionKey?: string
 }
 
-export function UnderConstructionBlock({ title, description }: UnderConstructionProps) {
+export function UnderConstructionBlock({ 
+  titleKey = "under-construction.title",
+  descriptionKey = "under-construction.description"
+}: UnderConstructionProps) {
+  const { t } = useTranslate()
+  
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Construction />
         </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        {description ? <EmptyDescription>{description}</EmptyDescription> : null}
+        <EmptyTitle>{t(titleKey)}</EmptyTitle>
+        {descriptionKey ? <EmptyDescription>{t(descriptionKey)}</EmptyDescription> : null}
       </EmptyHeader>
     </Empty>
   )

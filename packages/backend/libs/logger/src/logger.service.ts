@@ -2,11 +2,21 @@ import {
   Injectable,
   LoggerService as NestLoggerService,
   LogLevel,
+  Optional,
+  Inject,
 } from '@nestjs/common';
+import type { LoggerFormat, LoggerOptions } from './logger-options.interface';
+
+export const LOGGER_OPTIONS = 'LOGGER_OPTIONS';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {
   private levels: LogLevel[] = ['log', 'error', 'warn', 'debug', 'verbose'];
+  private format: LoggerFormat;
+
+  constructor(@Optional() @Inject(LOGGER_OPTIONS) options?: LoggerOptions) {
+    this.format = options?.format ?? 'text';
+  }
 
   log(message: any, context?: string) {
     this.write('log', message, context);
@@ -42,6 +52,19 @@ export class LoggerService implements NestLoggerService {
       return;
     }
 
+    if (this.format === 'json') {
+      this.writeJson(level, message, context, trace);
+    } else {
+      this.writeText(level, message, context, trace);
+    }
+  }
+
+  private writeJson(
+    level: LogLevel,
+    message: any,
+    context?: string,
+    trace?: string,
+  ) {
     const now = new Date().toISOString();
 
     const payload: Record<string, any> = {
@@ -57,10 +80,38 @@ export class LoggerService implements NestLoggerService {
     const json = JSON.stringify(payload, null, 2);
     console.log(colorize(level, json));
   }
+
+  private writeText(
+    level: LogLevel,
+    message: any,
+    context?: string,
+    trace?: string,
+  ) {
+    const timestamp = new Date().toISOString();
+    const levelStr = level.toUpperCase().padEnd(7);
+    const contextStr = context ? `[${context}]` : '';
+
+    let messageStr: string;
+    if (typeof message === 'string') {
+      messageStr = message;
+    } else if (message instanceof Error) {
+      messageStr = message.message;
+    } else {
+      messageStr = JSON.stringify(toJsonSafe(message), null, 2);
+    }
+
+    const parts = [timestamp, levelStr, contextStr, messageStr].filter(Boolean);
+    const logLine = parts.join(' ');
+
+    console.log(colorize(level, logLine));
+
+    if (trace) {
+      console.log(colorize(level, trace));
+    }
+  }
 }
 
 function colorize(level: LogLevel, text: string): string {
-  // Keep logs machine-readable by default (plain JSON).
   // Add color only in interactive terminals unless explicitly disabled.
   const enable =
     process.env.LOGGER_COLOR !== 'false' &&

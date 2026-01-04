@@ -56,9 +56,7 @@ export class HasuraSyncService {
     const metadata = exportResult?.metadata ?? exportResult;
     const sources: any[] = metadata?.sources ?? [];
     const source =
-      sources.find((s) => s?.name === this.hasura.source) ??
-      sources[0] ??
-      null;
+      sources.find((s) => s?.name === this.hasura.source) ?? sources[0] ?? null;
     if (!source) {
       this.logger.warn(
         `Source "${this.hasura.source}" not found in metadata.`,

@@ -22,5 +22,3 @@ export async function getHasuraSyncTableOverrides(
     custom_name,
   }));
 }
-
-

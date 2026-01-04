@@ -23,7 +23,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
 
 @Module({
   imports: [
-    LoggerModule,
+    LoggerModule.forRoot({ format: 'text' }),
     ArchimateBootstrapModule,
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({

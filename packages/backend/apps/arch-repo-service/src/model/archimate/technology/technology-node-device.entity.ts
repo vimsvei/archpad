@@ -10,5 +10,3 @@ import { TechnologyNode } from '@/model/archimate/technology/technology-node.ent
  */
 @Entity({ discriminatorValue: NodeKind.DEVICE })
 export class TechnologyDeviceNode extends TechnologyNode {}
-
-

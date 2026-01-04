@@ -8,7 +8,7 @@ import { LoggerModule } from '@archpad/logger';
 
 @Module({
   imports: [
-    LoggerModule,
+    LoggerModule.forRoot({ format: 'text' }),
     MikroOrmModule.forRoot({
       entities: [
         './dist/**/*.entity{.ts,.js}',

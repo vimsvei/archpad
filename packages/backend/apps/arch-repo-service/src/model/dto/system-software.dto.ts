@@ -11,4 +11,3 @@ export class CreateDtoSystemSoftware extends createZodDto(
 export class UpdateDtoSystemSoftware extends createZodDto(
   updateSystemSoftwareInputSchema,
 ) {}
-

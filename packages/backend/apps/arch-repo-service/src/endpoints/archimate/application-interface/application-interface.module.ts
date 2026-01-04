@@ -6,10 +6,13 @@ import { ApplicationInterface } from '@/model/archimate/application/application-
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([ApplicationInterface, ApplicationComponentInterfaceMap])],
+  imports: [
+    MikroOrmModule.forFeature([
+      ApplicationInterface,
+      ApplicationComponentInterfaceMap,
+    ]),
+  ],
   controllers: [ApplicationInterfaceController],
   providers: [ApplicationInterfaceService],
 })
 export class ApplicationInterfaceModule {}
-
-

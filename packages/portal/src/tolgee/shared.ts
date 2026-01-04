@@ -4,7 +4,7 @@ import {FormatIcu} from "@tolgee/format-icu";
 const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 
-export const ALL_LANGUAGES = ['en', 'ru-RU', 'es-ES'];
+export const ALL_LANGUAGES = ['en', 'ru-RU', 'es-ES', 'sr'];
 
 export type Locale = {
   code: string;
@@ -16,6 +16,7 @@ export const LOCALES: Locale[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "ru-RU", label: "Русский", flag: "🇷🇺" },
   { code: "es-ES", label: "Español", flag: "🇪🇸" },
+  { code: "sr", label: "Srpski", flag: "🇷🇸" },
 ]
 
 export const DEFAULT_LANGUAGE = 'ru-RU';

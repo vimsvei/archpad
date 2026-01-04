@@ -21,5 +21,3 @@ export function HasuraCamelCase(): PropertyDecorator {
     });
   };
 }
-
-

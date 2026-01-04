@@ -227,7 +227,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                       toast.success(tr("action.deleted"))
                       goBack()
                     } catch (e: any) {
-                      toast.error(e?.message ?? tr("action.deleteFailed"))
+                      toast.error(e?.message ?? tr("action.delete.failed"))
                     }
                   })()
                 }}
@@ -295,7 +295,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                     toast.success(tr("action.saved"))
                     baselineRef.current = normalize(values)
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed"))
+                    toast.error(e?.message ?? tr("action.save.failed"))
                   }
                 }}
               />
@@ -337,7 +337,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                     setConfirmOpen(false)
                     goBack()
                   } catch (e: any) {
-                    toast.error(e?.message ?? tr("action.saveFailed"))
+                    toast.error(e?.message ?? tr("action.save.failed"))
                   }
                 })()
               }}

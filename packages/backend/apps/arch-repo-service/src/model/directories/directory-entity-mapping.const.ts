@@ -3,17 +3,17 @@ import { DirectoryKind } from '@/model/enums/directory-kind.enum';
 /**
  * Маппинг сущностей на разрешенные типы справочников (DirectoryKind).
  * Используется для валидации связей через map-таблицы и для UI на фронтенде.
- * 
+ *
  * Ключ - имя сущности (например, 'ApplicationComponent')
  * Значение - массив разрешенных DirectoryKind для этой сущности
- * 
+ *
  * @example
  * // Валидация при создании связи:
  * const directoryKind = directory.kind;
  * if (!isDirectoryKindAllowedForEntity('ApplicationComponent', directoryKind)) {
  *   throw new BadRequestException(`Directory kind ${directoryKind} is not allowed for ApplicationComponent`);
  * }
- * 
+ *
  * @example
  * // Получение списка разрешенных kinds для фронтенда:
  * const allowedKinds = getAllowedDirectoryKindsForEntity('ApplicationComponent');
@@ -55,4 +55,3 @@ export function isDirectoryKindAllowedForEntity(
   const allowedKinds = getAllowedDirectoryKindsForEntity(entityName);
   return allowedKinds.includes(directoryKind);
 }
-

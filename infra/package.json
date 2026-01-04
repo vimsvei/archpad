@@ -9,22 +9,10 @@
     "dev:app": "docker compose --project-name archpad --env-file ../.env --profile app up -d portal",
     "dev:app:deps": "docker compose --project-name archpad --env-file ../.env --profile app exec portal sh -lc \"pnpm install --frozen-lockfile --filter @archpad/portal...\"",
 
-    "dev:mon": "docker compose --project-name archpad --env-file ../.env --profile monitoring up -d",
-    "dev:all": "docker compose --project-name archpad --env-file ../.env --profile app --profile monitoring up -d",
-    "dev:up": "docker compose --project-name archpad --env-file ../.env up -d",
-    "dev:up:base": "docker compose --project-name archpad --env-file ../.env -f docker-compose.yml up -d",
-    "dev:down": "docker compose --project-name archpad --env-file ../.env down",
-    "logs": "docker compose --project-name archpad --env-file ../.env logs -f --tail=200",
-    "stop:app": "docker compose --project-name archpad --env-file ../.env stop portal strapi",
-    "keycloak:sync": "docker compose --project-name archpad --env-file ../.env up -d keycloak-sync",
-    "reset:db": "docker compose --project-name archpad --env-file ../.env down && docker volume rm archpad_pgdata || true && docker compose --project-name archpad --env-file ../.env up -d",
-    "reset:all": "docker compose --project-name archpad --env-file ../.env down -v && docker compose --project-name archpad --env-file ../.env up -d",
-    "hasura:metadata": "docker compose --project-name archpad --env-file ../.env up -d hasura-metadata",
-    "hasura:sync": "bash ./hasura/scripts/track_all.sh",
-    "hasura:sync:after": "bash ./hasura/scripts/sync_after_archrepo.sh",
-    "hasura:sync:host": "HASURA_ENDPOINT=${HASURA_HOST} bash ./hasura/scripts/track_all.sh",
-    "hasura:sync:after:host": "HASURA_ENDPOINT=${HASURA_HOST} ARCH_REPO_HEALTH_URL=${ARCH_REPO_HOST}/healthz bash ./hasura/scripts/sync_after_archrepo.sh",
-    "curl:check": " curl -i ${HASURA_HOST}/healthz"
-  },
+    "dev:obs": "docker compose --project-name archpad --env-file ../.env --profile observability up -d",
+    "dev:mon": "pnpm -s dev:obs",
+    "dev:all": "docker compose --project-name archpad --env-file ../.env --profile backend --profile app --profile observability up -d",
+    "dev:grafana:restart": "docker compose -project-name archpad --env-file ../.env restart grafana"
+    },
   "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
 }
