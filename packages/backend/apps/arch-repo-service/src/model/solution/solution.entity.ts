@@ -9,6 +9,10 @@ import {
 import { ArchimateElementGeneric } from '../archimate/core/archimate-element.generic';
 import { SolutionApplicationComponentMap } from '../maps/solution-application-component.map';
 import { SolutionStateDirectory } from '@/model/directories/directories';
+import {SolutionFlowMap} from "@/model/maps/solution-flow.map";
+import {SolutionDataObjectMap} from "@/model/maps/solution-data-object.map";
+import {SolutionApplicationFunctionMap} from "@/model/maps/solution-application-function.map";
+import {SolutionMotivationElementMap} from "@/model/maps/solution-motivation-item.map";
 
 @HasuraTable()
 @Entity({ tableName: 'solutions' })
@@ -19,7 +23,7 @@ export class Solution extends ArchimateElementGeneric {
   @ApiProperty({
     format: 'uuid',
     type: SolutionStateDirectory,
-    description: 'Тип лицензии',
+    description: 'Статус решения',
   })
   @HasuraRefName()
   @ManyToOne({
@@ -36,4 +40,32 @@ export class Solution extends ArchimateElementGeneric {
     mappedBy: 'solution',
   })
   components = new Collection<SolutionApplicationComponentMap>(this);
+  
+  @HasuraRefCollection()
+  @OneToMany({
+    entity: () => SolutionApplicationFunctionMap,
+    mappedBy: 'solution',
+  })
+  functions = new Collection<SolutionApplicationFunctionMap>(this);
+  
+  @HasuraRefCollection()
+  @OneToMany({
+    entity: () => SolutionDataObjectMap,
+    mappedBy: 'solution',
+  })
+  dataObjects = new Collection<SolutionDataObjectMap>(this);
+  
+  @HasuraRefCollection()
+  @OneToMany({
+    entity: () => SolutionFlowMap,
+    mappedBy: 'solution',
+  })
+  flows = new Collection<SolutionFlowMap>(this)
+  
+  @HasuraRefCollection()
+  @OneToMany({
+    entity: () => SolutionMotivationElementMap,
+    mappedBy: 'solution',
+  })
+  motivations = new Collection<SolutionMotivationElementMap>(this)
 }

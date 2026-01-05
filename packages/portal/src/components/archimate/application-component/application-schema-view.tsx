@@ -10,17 +10,26 @@ import {
   useEdgesState,
   MarkerType,
   type Edge,
+  type ReactFlowInstance,
 } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import { useGetApplicationComponentFullQuery } from "@/store/apis/application-component-api"
 import { ApplicationComponentNode, type ApplicationComponentNodeData } from "@/components/schema-elements/application-component-node"
 import { useElkLayout } from "@/components/schema-elements/use-elk-layout"
+import { useSchemaExport } from "@/components/schema-elements/use-schema-export"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { useMemo } from "react"
 import type { Node as ReactFlowNode } from "@xyflow/react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Download, FileImage, FileText } from "lucide-react"
 
 const nodeTypes = {
   "application-component": ApplicationComponentNode,
@@ -33,6 +42,7 @@ type ApplicationSchemaViewProps = {
 
 export function ApplicationSchemaView({
   componentId,
+  componentName,
 }: ApplicationSchemaViewProps) {
   const { data: componentData, isLoading, error } = useGetApplicationComponentFullQuery({ id: componentId })
   const { theme, resolvedTheme } = useTheme()
@@ -152,23 +162,23 @@ export function ApplicationSchemaView({
         
         // Проверяем, что оба узла существуют
         if (nodeIds.has(sourceId) && nodeIds.has(targetId)) {
-          edges.push({
-            id: `edge-${flow.id}-incoming`,
+        edges.push({
+          id: `edge-${flow.id}-incoming`,
             source: sourceId,
             target: targetId,
             type: "smoothstep",
-            animated: false,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
+          animated: false,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
               color: edgeStrokeColor,
-            },
+          },
             style: { 
               strokeDasharray: "5,5", 
               strokeWidth: 2, 
               stroke: edgeStrokeColor,
               zIndex: 1,
             },
-          })
+        })
         }
       }
     })
@@ -181,23 +191,23 @@ export function ApplicationSchemaView({
         
         // Проверяем, что оба узла существуют
         if (nodeIds.has(sourceId) && nodeIds.has(targetId)) {
-          edges.push({
-            id: `edge-${flow.id}-outgoing`,
+        edges.push({
+          id: `edge-${flow.id}-outgoing`,
             source: sourceId,
             target: targetId,
             type: "smoothstep",
-            animated: false,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
+          animated: false,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
               color: edgeStrokeColor,
-            },
+          },
             style: { 
               strokeDasharray: "5,5", 
               strokeWidth: 2, 
               stroke: edgeStrokeColor,
               zIndex: 1,
             },
-          })
+        })
         }
       }
     })
@@ -212,6 +222,17 @@ export function ApplicationSchemaView({
     spacing: 90,
     padding: 50,
   })
+
+  // ReactFlow instance для экспорта
+  const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
+  const { exportToPNG, exportToPDF } = useSchemaExport(
+    reactFlowInstance,
+    componentName || componentData?.name
+  )
+
+  const onInit = React.useCallback((instance: ReactFlowInstance) => {
+    setReactFlowInstance(instance)
+  }, [])
 
   // Обновляем узлы и связи при изменении данных
   React.useEffect(() => {
@@ -250,6 +271,28 @@ export function ApplicationSchemaView({
         >
           {isLayingOut ? "Laying out..." : "Auto layout"}
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={nodes.length === 0}
+            >
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => void exportToPNG()}>
+              <FileImage className="mr-2 h-4 w-4" />
+              Export as PNG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void exportToPDF()}>
+              <FileText className="mr-2 h-4 w-4" />
+              Export as PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex-1 w-full" style={{ minHeight: 0 }}>
         <ReactFlow
@@ -257,6 +300,7 @@ export function ApplicationSchemaView({
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onInit={onInit}
           nodeTypes={nodeTypes}
           fitView
           className="bg-background"

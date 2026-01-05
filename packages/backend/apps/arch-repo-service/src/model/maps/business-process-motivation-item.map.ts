@@ -1,12 +1,12 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
-import { Assessment } from '@/model/archimate/motivation/assessment.entity';
+import {MotivationElementGeneric} from "@/model/archimate/core/motivation-element.generic";
 
 @HasuraTable()
-@Entity({ tableName: 'map_business_process_assessment' })
-export class BusinessProcessAssessmentMap extends MappedObject {
-  @HasuraRefName('assessments')
+@Entity({ tableName: 'map_business_process_motivation_item' })
+export class BusinessProcessMotivationItemMap extends MappedObject {
+  @HasuraRefName('motivations')
   @ManyToOne({
     entity: () => BusinessProcess,
     primary: true,
@@ -18,11 +18,11 @@ export class BusinessProcessAssessmentMap extends MappedObject {
 
   @HasuraRefName('processes')
   @ManyToOne({
-    entity: () => Assessment,
+    entity: () => MotivationElementGeneric,
     primary: true,
-    fieldName: 'assessment_id',
+    fieldName: 'motivation_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  assessment!: Assessment;
+  assessment!: MotivationElementGeneric;
 }

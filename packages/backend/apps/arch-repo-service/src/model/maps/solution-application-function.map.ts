@@ -5,11 +5,11 @@ import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 import { HasuraRefName } from '@archpad/models';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
+import {ApplicationComponentFunctionMap} from "@/model/maps/application-component-function.map";
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_application_function' })
-@Unique({ properties: ['function', 'solution'] })
-export class SolutionApplicationComponentMap extends MappedSolutionObject {
+export class SolutionApplicationFunctionMap extends MappedSolutionObject {
   @HasuraRefName()
   @ManyToOne({
     entity: () => Solution,
@@ -22,11 +22,12 @@ export class SolutionApplicationComponentMap extends MappedSolutionObject {
 
   @HasuraRefName()
   @ManyToOne({
-    entity: () => ApplicationFunction,
+    entity: () => ApplicationComponentFunctionMap,
     primary: true,
-    fieldName: 'component_id',
+    joinColumns:  ['component_id', 'function_id'],
+    referencedColumnNames:  ['component_id', 'function_id'],
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  function!: ApplicationFunction;
+  functionComponent!: ApplicationComponentFunctionMap;
 }

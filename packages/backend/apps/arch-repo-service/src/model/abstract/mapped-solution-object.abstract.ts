@@ -1,22 +1,14 @@
-import { Entity, Enum, Property} from '@mikro-orm/core';
-import { BaseObject } from '@archpad/models';
+import { Entity, Enum, Property } from '@mikro-orm/core';
+import { MappedObject } from '@archpad/models';
 import { SolutionItemState } from '@/model/enums/solution-item-state.enum';
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ abstract: true })
-export abstract class MappedSolutionObject extends BaseObject {
+export abstract class MappedSolutionObject extends MappedObject {
   
-  @ApiProperty({
-    description: 'tenant object',
-    format: 'uuid',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-  })
-  @Property({
-    type: 'uuid',
-    name: 'tenant_id',
-    nullable: false,
-  })
-  tenantId!: string;
+  @ApiProperty({ description: 'Описание изменений' })
+  @Property({ type: 'text', nullable: true })
+  description!: string;
   
   @Enum({
     items: () => SolutionItemState,

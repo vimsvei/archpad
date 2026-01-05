@@ -1,11 +1,8 @@
-import { HasuraTable } from '@archpad/models';
+import { HasuraTable, HasuraRefName } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
-import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
-import { HasuraRefName } from '@archpad/models';
-import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
-import {TechnologyNode} from "@/model/archimate/technology/technology-node.entity";
+import { TechnologyNode } from '@/model/archimate/technology/technology-node.entity';
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_technology_node' })

@@ -1,16 +1,13 @@
-import { HasuraTable } from '@archpad/models';
+import { HasuraTable, HasuraRefName } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
-import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
-import { HasuraRefName } from '@archpad/models';
-import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
-import {ApplicationComponentFunctionMap} from "@/model/maps/application-component-function.map";
+import {ApplicationComponentDataObjectMap} from "@/model/maps/application-component-data-object.map";
 
 @HasuraTable()
-@Entity({ tableName: 'map_solution_application_function' })
-export class SolutionApplicationFunctionMap extends MappedSolutionObject {
-  @HasuraRefName()
+@Entity({ tableName: 'map_solution_data_object' })
+export class SolutionDataObjectMap extends MappedSolutionObject {
+  @HasuraRefName('dataObjectsInComponent')
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -20,14 +17,14 @@ export class SolutionApplicationFunctionMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraRefName()
+  @HasuraRefName('solutions')
   @ManyToOne({
-    entity: () => ApplicationComponentFunctionMap,
+    entity: () => ApplicationComponentDataObjectMap,
     primary: true,
-    joinColumns:  ['component_id', 'function_id'],
-    referencedColumnNames:  ['component_id', 'function_id'],
+    joinColumns:  ['component_id', 'data_object_id'],
+    referencedColumnNames:  ['component_id', 'data_object_id'],
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  functionComponent!: ApplicationComponentFunctionMap;
+  functionComponent!: ApplicationComponentDataObjectMap;
 }

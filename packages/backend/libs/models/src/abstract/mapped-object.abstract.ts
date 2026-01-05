@@ -1,10 +1,9 @@
-import { Entity, Property} from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 import { BaseObject } from './base-object.abstract';
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ abstract: true })
 export abstract class MappedObject extends BaseObject {
-  
   @ApiProperty({
     description: 'tenant object',
     format: 'uuid',

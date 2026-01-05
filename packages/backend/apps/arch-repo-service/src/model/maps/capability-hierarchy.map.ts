@@ -2,30 +2,31 @@ import { HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { TechnologyNode } from '@/model/archimate/technology/technology-node.entity';
 import { HasuraRefName } from '@archpad/models';
+import { Capability } from '@/model/archimate/strategy/capability.entity';
 
 @HasuraTable()
-@Entity({ tableName: 'map_technology_node_hierarchy' })
+@Entity({ tableName: 'map_capability_hierarchy' })
 @Unique({ properties: ['parent', 'child'] })
-export class TechnologyNodeHierarchyMap extends MappedObject {
+export class CapabilityHierarchyMap extends MappedObject {
   @HasuraRefName()
   @ManyToOne({
-    entity: () => TechnologyNode,
+    entity: () => Capability,
     primary: true,
-    fieldName: 'node_parent_id',
+    fieldName: 'parent_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  parent!: TechnologyNode;
+  parent!: Capability;
 
   @HasuraRefName()
   @ManyToOne({
-    entity: () => TechnologyNode,
+    entity: () => Capability,
     primary: true,
-    fieldName: 'node_child_id',
+    fieldName: 'child_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  child!: TechnologyNode;
+  child!: Capability;
 
   @Property({ type: 'int', nullable: true })
   order?: number;

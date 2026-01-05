@@ -2,7 +2,7 @@ import { FunctionGeneric } from '@/model/archimate/core/function.generic';
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
-import { ApplicationInterfaceFunctionMap } from '@/model/maps/application-interface-function.map';
+import { ApplicationFunctionInterfaceMap } from '@/model/maps/application-function-interface.map';
 import { HasuraRefCollection } from '@archpad/models';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
@@ -15,8 +15,8 @@ export class ApplicationFunction extends FunctionGeneric {
   components = new Collection<ApplicationComponentFunctionMap>(this);
 
   // @OneToMany({
-  //   entity: () => ApplicationInterfaceFunctionMap,
+  //   entity: () => ApplicationFunctionInterfaceMap,
   //   mappedBy: 'function',
   // })
-  // interfaces = new Collection<ApplicationInterfaceFunctionMap>(this);
+  // interfaces = new Collection<ApplicationFunctionInterfaceMap>(this);
 }

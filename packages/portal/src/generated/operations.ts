@@ -4691,7 +4691,7 @@ export type ApplicationInterfaceFunctionMap_Set_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** Streaming cursor of the table "ApplicationInterfaceFunctionMap" */
+/** Streaming cursor of the table "ApplicationFunctionInterfaceMap" */
 export type ApplicationInterfaceFunctionMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
   initial_value: ApplicationInterfaceFunctionMap_Stream_Cursor_Value_Input;

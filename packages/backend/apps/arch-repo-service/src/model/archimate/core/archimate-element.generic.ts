@@ -1,4 +1,4 @@
-import { Entity, Property} from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { NamedObject } from '@archpad/models';
 

@@ -1,10 +1,10 @@
 import { InterfaceGeneric } from '@/model/archimate/core/interface.generic';
 import { Collection, Entity, Enum, OneToMany } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
-import { ApplicationInterfaceFunctionMap } from '@/model/maps/application-interface-function.map';
+import { ApplicationFunctionInterfaceMap } from '@/model/maps/application-function-interface.map';
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 import { HasuraRefCollection } from '@archpad/models';
-import {InterfaceMethodEnum} from "@/model/enums/interface-method.enum";
+import { InterfaceMethodEnum } from '@/model/enums/interface-method.enum';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
 export class ApplicationInterface extends InterfaceGeneric {
@@ -14,7 +14,7 @@ export class ApplicationInterface extends InterfaceGeneric {
     array: true,
   })
   methods!: InterfaceMethodEnum[];
-  
+
   @HasuraRefCollection()
   @OneToMany({
     entity: () => ApplicationComponentInterfaceMap,
@@ -24,8 +24,8 @@ export class ApplicationInterface extends InterfaceGeneric {
 
   @HasuraRefCollection()
   @OneToMany({
-    entity: () => ApplicationInterfaceFunctionMap,
+    entity: () => ApplicationFunctionInterfaceMap,
     mappedBy: 'interface',
   })
-  functions = new Collection<ApplicationInterfaceFunctionMap>(this);
+  functions = new Collection<ApplicationFunctionInterfaceMap>(this);
 }

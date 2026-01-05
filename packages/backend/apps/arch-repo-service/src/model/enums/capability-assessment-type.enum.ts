@@ -1,0 +1,9 @@
+export enum CapabilityAssessmentType {
+  MATURITY = 'MATURITY',
+  HEALTH = 'HEALTH',
+  RISK = 'RISK',
+  SECURITY = 'SECURITY',
+  COMPLIANCE = 'COMPLIANCE',
+  TECH_FIT = 'TECH_FIT',
+  INVESTMENT_NEED = 'INVESTMENT_NEED',
+}

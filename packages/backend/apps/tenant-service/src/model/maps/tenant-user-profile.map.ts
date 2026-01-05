@@ -3,18 +3,9 @@ import { MappedObject } from '@archpad/models';
 import { UserProfile } from '../entities/user-profile.entity';
 import { Tenant } from '../entities/tenant.entity';
 
-@Entity({ tableName: 'map_user_tenant' })
+@Entity({ tableName: 'map_tenant_user_profiles' })
 @Unique({ properties: ['user', 'tenant'] })
-export class UserTenantMap extends MappedObject {
-  @ManyToOne({
-    entity: () => UserProfile,
-    primary: true,
-    fieldName: 'user_id',
-    updateRule: 'cascade',
-    deleteRule: 'no action',
-  })
-  user!: UserProfile;
-
+export class TenantUserProfileMap extends MappedObject {
   @ManyToOne({
     entity: () => Tenant,
     primary: true,
@@ -23,4 +14,13 @@ export class UserTenantMap extends MappedObject {
     deleteRule: 'no action',
   })
   tenant!: Tenant;
+  
+  @ManyToOne({
+    entity: () => UserProfile,
+    primary: true,
+    fieldName: 'user_id',
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
+  user!: UserProfile;
 }
