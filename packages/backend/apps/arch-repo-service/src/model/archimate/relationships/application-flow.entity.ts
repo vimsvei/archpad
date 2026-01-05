@@ -4,7 +4,7 @@ import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 import { HasuraRefName } from '@archpad/models';
-import {ApplicationComponentDataObjectMap} from "@/model/maps/application-component-data-object.map";
+import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
 export class ApplicationFlow extends FlowGeneric {
@@ -49,7 +49,7 @@ export class ApplicationFlow extends FlowGeneric {
     deleteRule: 'no action',
   })
   targetFunction!: ApplicationComponentFunctionMap;
-  
+
   @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
@@ -60,7 +60,7 @@ export class ApplicationFlow extends FlowGeneric {
     deleteRule: 'no action',
   })
   requestDataObject!: ApplicationComponentDataObjectMap;
-  
+
   @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
@@ -70,5 +70,5 @@ export class ApplicationFlow extends FlowGeneric {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  responseDataObject!: ApplicationComponentDataObjectMap
+  responseDataObject!: ApplicationComponentDataObjectMap;
 }

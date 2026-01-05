@@ -1,7 +1,7 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
-import {MotivationElementGeneric} from "@/model/archimate/core/motivation-element.generic";
+import { MotivationElementGeneric } from '@/model/archimate/core/motivation-element.generic';
 
 @HasuraTable()
 @Entity({ tableName: 'map_business_process_motivation_item' })

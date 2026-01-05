@@ -1,12 +1,11 @@
-import {HasuraRefName, HasuraTable, MappedObject} from "@archpad/models";
-import {Entity, ManyToOne, Unique} from "@mikro-orm/core";
-import {MotivationElementGeneric} from "@/model/archimate/core/motivation-element.generic";
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
+import { MotivationElementGeneric } from '@/model/archimate/core/motivation-element.generic';
 
 @HasuraTable()
 @Entity({ tableName: 'map_motivation_item_hierarchy' })
 @Unique({ properties: ['parent', 'child'] })
-export class MotivationItemHierarchyMap extends MappedObject{
-  
+export class MotivationItemHierarchyMap extends MappedObject {
   @HasuraRefName('children')
   @ManyToOne({
     entity: () => MotivationElementGeneric,
@@ -16,7 +15,7 @@ export class MotivationItemHierarchyMap extends MappedObject{
     deleteRule: 'no action',
   })
   parent!: MotivationElementGeneric;
-  
+
   @HasuraRefName('parents')
   @ManyToOne({
     entity: () => MotivationElementGeneric,
@@ -26,5 +25,4 @@ export class MotivationItemHierarchyMap extends MappedObject{
     deleteRule: 'no action',
   })
   child!: MotivationElementGeneric;
-  
 }

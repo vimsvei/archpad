@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject} from '@archpad/models';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { Solution } from '@/model/solution/solution.entity';
 import { MotivationElementGeneric } from '@/model/archimate/core/motivation-element.generic';

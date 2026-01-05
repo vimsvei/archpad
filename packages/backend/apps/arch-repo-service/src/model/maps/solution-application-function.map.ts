@@ -5,7 +5,7 @@ import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 import { HasuraRefName } from '@archpad/models';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
-import {ApplicationComponentFunctionMap} from "@/model/maps/application-component-function.map";
+import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_application_function' })
@@ -24,8 +24,8 @@ export class SolutionApplicationFunctionMap extends MappedSolutionObject {
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,
-    joinColumns:  ['component_id', 'function_id'],
-    referencedColumnNames:  ['component_id', 'function_id'],
+    joinColumns: ['component_id', 'function_id'],
+    referencedColumnNames: ['component_id', 'function_id'],
     updateRule: 'cascade',
     deleteRule: 'no action',
   })

@@ -5,11 +5,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ abstract: true })
 export abstract class MappedSolutionObject extends MappedObject {
-  
   @ApiProperty({ description: 'Описание изменений' })
   @Property({ type: 'text', nullable: true })
   description!: string;
-  
+
   @Enum({
     items: () => SolutionItemState,
     nativeEnumName: 'solution_item_state',

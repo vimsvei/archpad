@@ -14,7 +14,7 @@ export class TenantUserProfileMap extends MappedObject {
     deleteRule: 'no action',
   })
   tenant!: Tenant;
-  
+
   @ManyToOne({
     entity: () => UserProfile,
     primary: true,

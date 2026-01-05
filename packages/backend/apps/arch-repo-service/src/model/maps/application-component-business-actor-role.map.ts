@@ -1,9 +1,9 @@
-import {HasuraRefName, MappedObject} from "@archpad/models";
-import {ManyToOne} from "@mikro-orm/core";
-import {ApplicationComponent} from "@/model/archimate/application/application-component.entity";
-import {BusinessActorRoleMap} from "@/model/maps/business-actor-role.map";
+import { HasuraRefName, MappedObject } from '@archpad/models';
+import { ManyToOne } from '@mikro-orm/core';
+import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
+import { BusinessActorRoleMap } from '@/model/maps/business-actor-role.map';
 
-export class ApplicationComponentBusinessActorRoleMap extends MappedObject{
+export class ApplicationComponentBusinessActorRoleMap extends MappedObject {
   @HasuraRefName('actorRole')
   @ManyToOne({
     entity: () => ApplicationComponent,
@@ -13,7 +13,7 @@ export class ApplicationComponentBusinessActorRoleMap extends MappedObject{
     deleteRule: 'no action',
   })
   component!: ApplicationComponent;
-  
+
   @HasuraRefName('components')
   @ManyToOne({
     entity: () => BusinessActorRoleMap,

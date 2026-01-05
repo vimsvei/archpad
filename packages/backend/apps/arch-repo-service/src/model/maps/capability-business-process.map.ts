@@ -15,7 +15,7 @@ export class CapabilityBusinessProcessMap extends MappedObject {
     deleteRule: 'no action',
   })
   capability!: Capability;
-  
+
   @HasuraRefName('capabilities')
   @ManyToOne({
     entity: () => BusinessProcess,
