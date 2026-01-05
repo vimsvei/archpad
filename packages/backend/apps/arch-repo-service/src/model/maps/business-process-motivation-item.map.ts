@@ -1,12 +1,11 @@
-import {HasuraRefName, HasuraTable, MappedObject} from "@archpad/models";
-import {Entity, ManyToOne} from "@mikro-orm/core";
-import {BusinessProcess} from "@/model/archimate/business/business-process.entity";
-import {Assessment} from "@/model/archimate/motivation/assessment.entity";
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { Entity, ManyToOne } from '@mikro-orm/core';
+import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
+import { Assessment } from '@/model/archimate/motivation/assessment.entity';
 
 @HasuraTable()
 @Entity({ tableName: 'map_business_process_assessment' })
 export class BusinessProcessAssessmentMap extends MappedObject {
-  
   @HasuraRefName('assessments')
   @ManyToOne({
     entity: () => BusinessProcess,
@@ -16,7 +15,7 @@ export class BusinessProcessAssessmentMap extends MappedObject {
     deleteRule: 'no action',
   })
   process!: BusinessProcess;
-  
+
   @HasuraRefName('processes')
   @ManyToOne({
     entity: () => Assessment,
