@@ -1,11 +1,11 @@
 import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_hierarchy' })
 export class ApplicationComponentHierarchyMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraRefName('children')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -15,7 +15,7 @@ export class ApplicationComponentHierarchyMap extends MappedObject {
   })
   parent!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraRefName('parents')
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,

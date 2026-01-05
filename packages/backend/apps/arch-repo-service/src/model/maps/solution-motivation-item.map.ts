@@ -4,7 +4,7 @@ import { Solution } from '@/model/solution/solution.entity';
 import {MotivationElementGeneric} from "@/model/archimate/core/motivation-element.generic";
 
 @HasuraTable()
-@Entity({ tableName: 'map_solution_constraint' })
+@Entity({ tableName: 'map_solution_motivation' })
 @Unique({ properties: ['motivation', 'solution'] })
 export class SolutionMotivationElementMap extends MappedObject {
   @HasuraRefName('motivation')
