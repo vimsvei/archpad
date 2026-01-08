@@ -1,0 +1,23 @@
+query GetSolutions($where: Solution_bool_exp!, $limit: Int!, $offset: Int!) {
+  Solution(where: $where, order_by: { name: asc }, limit: $limit, offset: $offset) {
+    id
+    code
+    name
+    description
+    context
+    decision
+    consequences
+    alternatives
+    decisionStatus
+    implementationStatus
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+  SolutionAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
