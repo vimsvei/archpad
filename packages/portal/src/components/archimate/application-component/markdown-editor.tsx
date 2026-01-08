@@ -35,6 +35,7 @@ import { ParagraphNode, TextNode } from "lexical"
 
 import { editorTheme } from "@/components/editor/themes/editor-theme"
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable"
+import { MarkdownToolbarPlugin } from "@/components/editor/plugins/toolbar/markdown-toolbar-plugin"
 
 const editorConfig: InitialConfigType = {
   namespace: "MarkdownEditor",
@@ -66,6 +67,7 @@ type MarkdownEditorProps = {
   onChange: (value: string) => void
   disabled?: boolean
   placeholder?: string
+  showToolbar?: boolean
 }
 
 function MarkdownInitializerPlugin({
@@ -136,6 +138,7 @@ export function MarkdownEditor({
   onChange,
   disabled = false,
   placeholder = "Start typing...",
+  showToolbar = false,
 }: MarkdownEditorProps) {
   const initialConfig = React.useMemo(
     () => ({
@@ -148,6 +151,7 @@ export function MarkdownEditor({
   return (
     <div className="bg-background w-full h-full overflow-hidden rounded-lg border flex flex-col">
     <LexicalComposer initialConfig={initialConfig}>
+        {showToolbar && <MarkdownToolbarPlugin />}
         <div className="relative flex-1 flex flex-col min-h-0">
           <div className="relative flex-1 flex flex-col min-h-0">
         <RichTextPlugin

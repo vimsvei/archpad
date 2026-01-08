@@ -129,9 +129,6 @@ query GetComponentFull($id: uuid!) {
       name
       description
     }
-    role {
-      id
-      name
-    }
+    role
   }
 }

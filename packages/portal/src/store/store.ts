@@ -4,7 +4,9 @@ import { applicationComponentApi } from "@/store/apis/application-component-api"
 import { systemSoftwareApi } from "@/store/apis/system-software-api"
 import { dataObjectApi } from "@/store/apis/data-object-api"
 import { applicationFunctionApi } from "@/store/apis/application-function-api"
+import { solutionApi } from "@/store/apis/solution-api"
 import { applicationComponentEditReducer } from "@/store/slices/application-component-edit-slice"
+import { solutionEditReducer } from "@/store/slices/solution-edit-slice"
 import { dataObjectEditReducer } from "@/store/slices/data-object-edit-slice"
 import { directoriesReducer } from "@/store/slices/directories-slice"
 import { authFormsReducer } from "@/store/slices/auth-forms-slice"
@@ -20,8 +22,10 @@ export function makeStore() {
       [systemSoftwareApi.reducerPath]: systemSoftwareApi.reducer,
       [dataObjectApi.reducerPath]: dataObjectApi.reducer,
       [applicationFunctionApi.reducerPath]: applicationFunctionApi.reducer,
+      [solutionApi.reducerPath]: solutionApi.reducer,
       authForms: authFormsReducer,
       applicationComponentEdit: applicationComponentEditReducer,
+      solutionEdit: solutionEditReducer,
       dataObjectEdit: dataObjectEditReducer,
       directories: directoriesReducer,
       openExchangeImport: openExchangeImportReducer,
@@ -36,6 +40,7 @@ export function makeStore() {
         .concat(systemSoftwareApi.middleware)
         .concat(dataObjectApi.middleware)
         .concat(applicationFunctionApi.middleware)
+        .concat(solutionApi.middleware)
         .prepend(directoriesMiddleware.middleware),
         // .concat(logger),
     // devTools: process.env.NODE_ENV !== "production",

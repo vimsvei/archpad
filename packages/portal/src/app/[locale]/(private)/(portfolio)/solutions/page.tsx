@@ -1,9 +1,7 @@
-import { UnderConstructionBlock } from "@/components/empty/under-construction"
+import { ListPage } from "@/components/archimate/solution/list-page"
 
 export default async function SolutionsPage() {
-  return (
-    <UnderConstructionBlock />
-  )
+  return <ListPage />
 }
 
 

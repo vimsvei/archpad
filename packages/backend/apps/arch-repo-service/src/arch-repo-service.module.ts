@@ -11,6 +11,7 @@ import { SystemSoftwareModule } from './endpoints/archimate/system-software/syst
 import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import { ApplicationInterfaceModule } from './endpoints/archimate/application-interface/application-interface.module';
+import { SolutionModule } from './endpoints/solution/solution.module';
 import { OpenExchangeImportModule } from '@/endpoints/import/open-exchange/open-exchange-import.module';
 import {
   LoggerModule,
@@ -70,6 +71,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
     ApplicationInterfaceModule,
+    SolutionModule,
     SystemSoftwareModule,
     DirectoriesModule,
     OpenExchangeImportModule,

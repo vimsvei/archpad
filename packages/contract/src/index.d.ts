@@ -7,6 +7,7 @@ export * from "./directories/directory-link-bulk";
 export * from "./archimate/system-software-kind";
 export * from "./archimate/system-software";
 export * from "./archimate/application-component.dto";
+export * from "./solution/solution.dto";
 
 
 

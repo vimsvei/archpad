@@ -40,10 +40,15 @@ export async function httpRequestJson<T = unknown>(
     | null
 
   if (!res.ok) {
-    const error =
+    const errorMessage =
       (json as any)?.error ??
       (json as any)?.message ??
+      (typeof json === "string" ? json : null) ??
       `Request failed (${res.status})`
+    // Ensure errorMessage is always a string
+    const error = typeof errorMessage === "string" 
+      ? errorMessage 
+      : JSON.stringify(errorMessage) || `Request failed (${res.status})`
     throw new Error(error)
   }
 

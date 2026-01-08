@@ -11,6 +11,7 @@ export type ArchimateObjectType =
   | "system-software"
   | "technology-node"
   | "technology-network"
+  | "solution"
 
 /**
  * Types used in sheet configurations.
@@ -22,12 +23,14 @@ export type SheetType =
   | "data-objects" // Plural form (uses application-data-object icon)
   | "parent" // Uses application-component icon
   | "child" // Uses application-component icon
+  | "components" // Uses application-component icon
   | "functions" // Plural form (uses application-function icon)
   | "interfaces" // Plural form (uses application-interface icon)
   | "events" // Plural form (uses application-event icon)
   | "node" // Short form for technology-node
   | "network" // Short form for technology-network
   | "flows" // Application flows
+  | "solution" // Solution
 
 /**
  * Map ArchimateObjectType to SheetType for sheet configurations.
@@ -56,6 +59,8 @@ export function getSheetTypeFromObjectType(
       return "node"
     case "technology-network":
       return "network"
+    case "solution":
+      return "solution"
     default:
       // Fallback - should not happen with proper typing
       return "system-software"
