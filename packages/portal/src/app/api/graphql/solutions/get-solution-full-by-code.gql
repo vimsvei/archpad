@@ -1,0 +1,77 @@
+query GetSolutionFullByCode($code: String!) {
+  solution: Solution(where: { code: { _eq: $code } }, limit: 1) {
+    id
+    code
+    name
+    description
+    context
+    decision
+    consequences
+    alternatives
+    decisionStatus
+    implementationStatus
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+    components {
+      component {
+        id
+        code
+        name
+        description
+      }
+    }
+    functions {
+      componentId
+      functionId
+    }
+    dataObjects {
+      componentId
+      dataObjectId
+    }
+    flows {
+      flow {
+        id
+        code
+        name
+        description
+        sourceComponent {
+          id
+          code
+          name
+        }
+        targetComponent {
+          id
+          code
+          name
+        }
+      }
+    }
+    motivations {
+      motivation {
+        id
+        code
+        name
+        description
+      }
+    }
+    stakeholders {
+      stakeholder {
+        id
+        code
+        name
+        description
+      }
+      role
+    }
+  }
+  technologyNodes: SolutionTechnologyNodeMap(where: { solution: { code: { _eq: $code } } }) {
+    node {
+      id
+      code
+      name
+      description
+    }
+  }
+}
