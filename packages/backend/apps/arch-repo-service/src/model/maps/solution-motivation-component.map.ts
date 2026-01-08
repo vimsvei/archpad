@@ -20,7 +20,7 @@ export class SolutionMotivationComponentMap extends MappedSolutionObject {
 
   @HasuraRefName('componentsInSolution')
   @ManyToOne({
-    entity: () => SolutionApplicationComponentMap,
+    entity: () => SolutionMotivationElementMap,
     primary: true,
     joinColumns: ['solution_id', 'motivation_id'],
     referencedColumnNames: ['solution_id', 'motivation_id'],

@@ -53,6 +53,15 @@
         "tsConfigPath": "libs/models/tsconfig.lib.json"
       }
     },
+    "schema-initializer": {
+      "type": "library",
+      "root": "libs/schema-initializer",
+      "entryFile": "index",
+      "sourceRoot": "libs/schema-initializer/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/schema-initializer/tsconfig.lib.json"
+      }
+    },
     "tenant-service": {
       "type": "application",
       "root": "apps/tenant-service",

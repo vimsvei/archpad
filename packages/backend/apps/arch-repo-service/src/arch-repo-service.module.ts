@@ -28,15 +28,18 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot({
       entities: [
-        './dist/**/*.entity{.ts,.js}',
-        './dist/**/*.generic{.ts,.js}',
-        './dist/**/*.map{.ts,.js}',
-        './dist/**/*.directory{.ts,.js}',
-        './dist/**/directories{.ts,.js}',
-        './dist/**/directory-object.abstract{.ts,.js}',
-        './dist/**/mapped-solution-object.abstract{.ts,.js}',
-        '../../dist/libs/models/**/*.abstract{.ts,.js}',
-        '../../dist/libs/models/**/*.embeddable{.ts,.js}',
+        // Only arch-repo-service entities - use absolute paths to prevent scanning tenant-service
+        // Structure: dist/apps/arch-repo-service/apps/arch-repo-service/src/...
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.entity{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.generic{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.map{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.directory{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directories{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directory-object.abstract{.ts,.js}'),
+        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/mapped-solution-object.abstract{.ts,.js}'),
+        // Shared models from libs (only those compiled in arch-repo-service dist)
+        path.join(process.cwd(), 'dist/libs/models/src/**/*.abstract{.ts,.js}'),
+        path.join(process.cwd(), 'dist/libs/models/src/**/*.embeddable{.ts,.js}'),
       ],
       driver: PostgreSqlDriver,
       host:

@@ -17,7 +17,7 @@ export class SolutionMotivationElementMap extends MappedObject {
   })
   solution!: Solution;
 
-  @HasuraRefName('solutions')
+  @HasuraRefName('solutionMotivations')
   @ManyToOne({
     entity: () => MotivationElementGeneric,
     primary: true,

@@ -63,6 +63,9 @@ export class HasuraRelationshipNameInitializer
     const conn = this.orm.em.getConnection();
     await this.ensureRegistry(conn);
 
+    // Clear old overrides to avoid conflicts with stale data
+    await this.clearHasuraSyncOverrides(conn);
+
     // 1) Relationships (array names via FK constraint comments)
     const resolved = [
       ...this.resolveRefNameUsages(refNames),
@@ -107,7 +110,29 @@ export class HasuraRelationshipNameInitializer
 
     const out: ResolvedHasuraName[] = [];
     for (const u of usages) {
-      const ownerMeta: any = (meta as any).get?.(u.entity.name);
+      if (!u.entity || !u.entity.name) {
+        this.logger.warn(
+          `Skipping @HasuraRefCollection(${u.name}) on unknown entity.${String(
+            u.propertyKey,
+          )}: entity is undefined or has no name`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
+      let ownerMeta: any;
+      try {
+        ownerMeta = meta.get(u.entity.name);
+      } catch (error) {
+        this.logger.warn(
+          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${String(
+            u.propertyKey,
+          )}: entity metadata not found (entity not discovered?)`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
       if (!ownerMeta) {
         this.logger.warn(
           `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${String(
@@ -141,12 +166,17 @@ export class HasuraRelationshipNameInitializer
 
       const targetName: string | undefined =
         prop.targetMeta?.className ?? prop.type;
-      const targetMeta: any = targetName
-        ? (meta as any).get?.(targetName)
-        : null;
+      let targetMeta: any = null;
+      if (targetName) {
+        try {
+          targetMeta = meta.get(targetName);
+        } catch (error) {
+          // Metadata not found, will log warning below
+        }
+      }
       if (!targetMeta) {
         this.logger.warn(
-          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found`,
+          `Skipping @HasuraRefCollection(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found${targetName ? ` (${targetName})` : ''}`,
           this.loggerContext,
         );
         continue;
@@ -224,7 +254,29 @@ export class HasuraRelationshipNameInitializer
     const out: ResolvedHasuraName[] = [];
 
     for (const u of usages) {
-      const ownerMeta: any = (meta as any).get?.(u.entity.name);
+      if (!u.entity || !u.entity.name) {
+        this.logger.warn(
+          `Skipping @HasuraRefName(${u.name}) on unknown entity.${String(
+            u.propertyKey,
+          )}: entity is undefined or has no name`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
+      let ownerMeta: any;
+      try {
+        ownerMeta = meta.get(u.entity.name);
+      } catch (error) {
+        this.logger.warn(
+          `Skipping @HasuraRefName(${u.name}) on ${u.entity.name}.${String(
+            u.propertyKey,
+          )}: entity metadata not found (entity not discovered?)`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
       if (!ownerMeta) {
         this.logger.warn(
           `Skipping @HasuraRefName(${u.name}) on ${u.entity.name}.${String(
@@ -261,12 +313,17 @@ export class HasuraRelationshipNameInitializer
 
       const targetName: string | undefined =
         prop.targetMeta?.className ?? prop.type;
-      const targetMeta: any = targetName
-        ? (meta as any).get?.(targetName)
-        : null;
+      let targetMeta: any = null;
+      if (targetName) {
+        try {
+          targetMeta = meta.get(targetName);
+        } catch (error) {
+          // Metadata not found, will log warning below
+        }
+      }
       if (!targetMeta) {
         this.logger.warn(
-          `Skipping @HasuraRefName(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found`,
+          `Skipping @HasuraRefName(${u.name}) on ${u.entity.name}.${propName}: target entity metadata not found${targetName ? ` (${targetName})` : ''}`,
           this.loggerContext,
         );
         continue;
@@ -316,7 +373,25 @@ export class HasuraRelationshipNameInitializer
       'public';
 
     for (const t of tables) {
-      const m: any = (meta as any).get?.(t.entity.name);
+      if (!t.entity || !t.entity.name) {
+        this.logger.warn(
+          `Skipping @HasuraTable on unknown entity: entity is undefined or has no name`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
+      let m: any;
+      try {
+        m = meta.get(t.entity.name);
+      } catch (error) {
+        this.logger.warn(
+          `Skipping @HasuraTable on ${t.entity.name}: entity metadata not found (entity not discovered?)`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
       if (!m) {
         this.logger.warn(
           `Skipping @HasuraTable on ${t.entity.name}: entity metadata not found (entity not discovered?)`,
@@ -367,7 +442,29 @@ export class HasuraRelationshipNameInitializer
       'public';
 
     for (const f of fields) {
-      const m: any = (meta as any).get?.(f.entity.name);
+      if (!f.entity || !f.entity.name) {
+        this.logger.warn(
+          `Skipping @HasuraCamelCase on unknown entity.${String(
+            f.propertyKey,
+          )}: entity is undefined or has no name`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
+      let m: any;
+      try {
+        m = meta.get(f.entity.name);
+      } catch (error) {
+        this.logger.warn(
+          `Skipping @HasuraCamelCase on ${f.entity.name}.${String(
+            f.propertyKey,
+          )}: entity metadata not found (entity not discovered?)`,
+          this.loggerContext,
+        );
+        continue;
+      }
+
       if (!m) {
         this.logger.warn(
           `Skipping @HasuraCamelCase on ${f.entity.name}.${String(
@@ -429,6 +526,17 @@ export class HasuraRelationshipNameInitializer
   private async ensureRegistry(conn: any) {
     // contains multiple statements
     await conn.execute(HASURA_SYNC_REGISTRY_SQL);
+  }
+
+  private async clearHasuraSyncOverrides(conn: any) {
+    // Clear all override tables to avoid conflicts with stale data
+    await conn.execute(`DELETE FROM hasura_sync.array_relationship_overrides;`);
+    await conn.execute(`DELETE FROM hasura_sync.table_overrides;`);
+    await conn.execute(`DELETE FROM hasura_sync.column_overrides;`);
+    this.logger.log(
+      'Cleared all Hasura sync override tables',
+      this.loggerContext,
+    );
   }
 
   private async upsertTableOverride(

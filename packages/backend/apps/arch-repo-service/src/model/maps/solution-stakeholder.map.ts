@@ -9,7 +9,7 @@ import {StakeholderRole} from "@/model/enums/stakeholder-role.enum";
 @Entity({ tableName: 'map_solution_stakeholder' })
 @Unique({ properties: ['stakeholder', 'solution'] })
 export class SolutionStakeholderMap extends MappedSolutionObject {
-  @HasuraRefName('flows')
+  @HasuraRefName('stakeholders')
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -19,7 +19,7 @@ export class SolutionStakeholderMap extends MappedSolutionObject {
   })
   solution!: Solution;
   
-  @HasuraRefName('components')
+  @HasuraRefName('solutions')
   @ManyToOne({
     entity: () => Stakeholder,
     primary: true,

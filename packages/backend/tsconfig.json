@@ -32,6 +32,9 @@
       "@archpad/models": [
         "libs/models/src"
       ],
+      "@archpad/schema-initializer": [
+        "libs/schema-initializer/src"
+      ],
       "archpad/health-checker": [
         "libs/health-checker/src"
       ],
