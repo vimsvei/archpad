@@ -88,6 +88,23 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     }
   }, [])
 
+  // Memoize translations used in columns to prevent recreation
+  const translations = React.useMemo(
+    () => ({
+      code: t("table.code"),
+      name: t("table.name"),
+      description: t("table.description"),
+      color: t("table.color"),
+      byDefault: t("table.by-default"),
+      created: t("table.created"),
+      updated: t("table.updated"),
+      actions: t("table.item.actions"),
+      edit: t("action.edit"),
+      delete: t("action.delete"),
+    }),
+    [t]
+  )
+
   // Get items from Redux store (preloaded on app start)
   // Auto-refresh when page is visited
   const { items: remoteItems, isLoading, refetch } = useDirectoryItems(directorySlug, {
@@ -226,7 +243,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       },
       {
         accessorKey: "code",
-        header: t("table.code"),
+        header: translations.code,
         cell: ({ row }) => {
           const item = row.original
           const code = String(item.code ?? "").trim()
@@ -247,12 +264,12 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       },
       {
         accessorKey: "name",
-        header: t("table.name"),
+        header: translations.name,
         cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
       },
       {
         accessorKey: "description",
-        header: t("table.description"),
+        header: translations.description,
         cell: ({ row }) => {
           const v = row.original.description
           return v ? (
@@ -264,7 +281,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       },
       {
         accessorKey: "color",
-        header: t("table.color"),
+        header: translations.color,
         cell: ({ row }) => {
           const c = row.original.color
           if (!c) return <span className="text-muted-foreground text-sm">—</span>
@@ -278,19 +295,19 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       },
       {
         accessorKey: "byDefault",
-        header: t("table.by-default"),
+        header: translations.byDefault,
         cell: ({ row }) => {
           const v = Boolean(row.original.byDefault)
           return (
             <div className="flex items-center justify-center">
-              <Checkbox checked={v} disabled aria-label={t("table.by-default")} />
+              <Checkbox checked={v} disabled aria-label={translations.byDefault} />
             </div>
           )
         },
       },
       {
         id: "created",
-        header: t("table.created"),
+        header: translations.created,
         cell: ({ row }) => {
           const at = formatDateTime(row.original.created?.at)
           const by = row.original.created?.by ?? null
@@ -305,7 +322,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       },
       {
         id: "updated",
-        header: t("table.updated"),
+        header: translations.updated,
         cell: ({ row }) => {
           const at = formatDateTime(row.original.updated?.at)
           const by = row.original.updated?.by ?? null
@@ -329,16 +346,16 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0" aria-label={t("table.item.actions")}>
-                    <span className="sr-only">{t("table.item.actions")}</span>
+                  <Button variant="ghost" className="h-8 w-8 p-0" aria-label={translations.actions}>
+                    <span className="sr-only">{translations.actions}</span>
                     <MoreHorizontal />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{t("table.item.actions")}</DropdownMenuLabel>
+                  <DropdownMenuLabel>{translations.actions}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/directories/${directorySlug}/${item.id}`}>{t("action.edit")}</Link>
+                    <Link href={`/directories/${directorySlug}/${item.id}`}>{translations.edit}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
@@ -350,13 +367,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                         try {
                           await deleteItem({ slug: directorySlug, id: item.id }).unwrap()
                           toast.success("Deleted")
+                          void refetch()
                         } catch (err: any) {
                           toast.error(err?.message ?? "Failed to delete")
                         }
                       })()
                     }}
                   >
-                    {t("action.delete")}
+                    {translations.delete}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -365,7 +383,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         },
       },
     ],
-    [deleteItem, directorySlug, formatDateTime, t]
+    [deleteItem, directorySlug, formatDateTime, translations]
   )
 
   return (
