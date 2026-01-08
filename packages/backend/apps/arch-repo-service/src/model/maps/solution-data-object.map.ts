@@ -1,5 +1,5 @@
 import { HasuraTable, HasuraRefName } from '@archpad/models';
-import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/core';
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
