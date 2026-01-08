@@ -14,7 +14,7 @@ import {
   SecurityZoneDirectory,
   SoftwareTypeDirectory,
   // SolutionStateDirectory,
-  StakeholderRoleDirectory,
+  // StakeholderRoleDirectory,
 } from '@/model/directories/directories';
 
 export const DIRECTORIES = [
