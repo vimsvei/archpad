@@ -13,7 +13,7 @@ import {
   ScalingTypeDirectory,
   SecurityZoneDirectory,
   SoftwareTypeDirectory,
-  SolutionStateDirectory,
+  // SolutionStateDirectory,
   StakeholderRoleDirectory,
 } from '@/model/directories/directories';
 
@@ -48,16 +48,16 @@ export const DIRECTORIES = [
     path: 'protocol-types',
     swaggerTag: 'Тип сетевых протоколов',
   },
-  {
-    entity: StakeholderRoleDirectory,
-    path: 'stakeholder-roles',
-    swaggerTag: 'Роли стейкхолдеров',
-  },
-  {
-    entity: SolutionStateDirectory,
-    path: 'solution-states',
-    swaggerTag: 'Состояния решения',
-  },
+  // {
+  //   entity: StakeholderRoleDirectory,
+  //   path: 'stakeholder-roles',
+  //   swaggerTag: 'Роли стейкхолдеров',
+  // },
+  // {
+  //   entity: SolutionStateDirectory,
+  //   path: 'solution-states',
+  //   swaggerTag: 'Состояния решения',
+  // },
   {
     entity: ComponentStateDirectory,
     path: 'component-states',

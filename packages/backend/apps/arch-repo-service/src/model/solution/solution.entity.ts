@@ -1,38 +1,71 @@
-import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
+import { Collection, Embedded, Entity, Enum, OneToMany, Property} from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ActionStamp,
   ArchimateCode,
   HasuraRefCollection,
-  HasuraRefName,
   HasuraTable,
 } from '@archpad/models';
 import { ArchimateElementGeneric } from '../archimate/core/archimate-element.generic';
 import { SolutionApplicationComponentMap } from '../maps/solution-application-component.map';
-import { SolutionStateDirectory } from '@/model/directories/directories';
 import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
 import { SolutionDataObjectMap } from '@/model/maps/solution-data-object.map';
 import { SolutionApplicationFunctionMap } from '@/model/maps/solution-application-function.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
+import {SolutionLifecycle} from "@/model/enums/solution-life-cycle.enum";
+import {SolutionImplementationStatus} from "@/model/enums/solution-implementation-status.enum";
 
 @HasuraTable()
 @Entity({ tableName: 'solutions' })
 export class Solution extends ArchimateElementGeneric {
   @ArchimateCode('SOLUTION')
   override code: string = undefined as any;
+  
+  @ApiProperty()
+  @Property({ type: 'text' })
+  context!: string;
+  
+  @ApiProperty()
+  @Property({ type: 'text' })
+  decision!: string;
+  
+  @ApiProperty()
+  @Property({ type: 'text' })
+  consequences!: string;
+  
+  @ApiProperty()
+  @Property({ type: 'text' })
+  alternatives!: string;
 
   @ApiProperty({
-    format: 'uuid',
-    type: SolutionStateDirectory,
+    enum: SolutionLifecycle,
     description: 'Статус решения',
   })
-  @HasuraRefName()
-  @ManyToOne({
-    entity: () => SolutionStateDirectory,
-    name: 'state_id',
-    updateRule: 'cascade',
-    deleteRule: 'no action',
+  @Enum({
+    items: () => SolutionLifecycle,
+    nativeEnumName: 'solution_life_cycle_enum',
+    default: SolutionLifecycle.PROPOSED
   })
-  state!: SolutionStateDirectory;
+  decisionStatus!: SolutionLifecycle;
+  
+  @ApiProperty({
+    enum: SolutionImplementationStatus,
+    description: 'Статус реализации решения',
+  })
+  @Enum({
+    items: () => SolutionImplementationStatus,
+    nativeEnumName: 'solution_implementation_status_enum',
+    default: SolutionImplementationStatus.NOT_STARTED,
+  })
+  ImplementationStatus!: SolutionImplementationStatus;
+  
+  @Embedded({
+    entity: () => ActionStamp,
+    prefix: 'accepted_',
+    prefixMode: 'absolute',
+    nullable: true,
+  })
+  accepted!: ActionStamp;
 
   @HasuraRefCollection()
   @OneToMany({

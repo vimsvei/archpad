@@ -4,8 +4,6 @@ import { ApplicationComponent } from '@/model/archimate/application/application-
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 import { HasuraRefName } from '@archpad/models';
-import { SolutionItemState } from '@/model/enums/solution-item-state.enum';
-import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_application_component' })

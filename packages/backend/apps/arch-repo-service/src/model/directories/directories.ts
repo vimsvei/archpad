@@ -23,11 +23,11 @@ export class ProtocolTypeDirectory extends DirectoryObject {}
 @Entity({ discriminatorValue: DirectoryKind.SOFTWARE_TYPE })
 export class SoftwareTypeDirectory extends DirectoryObject {}
 
-@Entity({ discriminatorValue: DirectoryKind.SOLUTION_STATE })
-export class SolutionStateDirectory extends DirectoryObject {}
+// @Entity({ discriminatorValue: DirectoryKind.SOLUTION_STATE })
+// export class SolutionStateDirectory extends DirectoryObject {}
 
-@Entity({ discriminatorValue: DirectoryKind.STAKEHOLDER_ROLE })
-export class StakeholderRoleDirectory extends DirectoryObject {}
+// @Entity({ discriminatorValue: DirectoryKind.STAKEHOLDER_ROLE })
+// export class StakeholderRoleDirectory extends DirectoryObject {}
 
 @Entity({ discriminatorValue: DirectoryKind.FAILURE_HANDLING })
 export class FailureHandlingDirectory extends DirectoryObject {}

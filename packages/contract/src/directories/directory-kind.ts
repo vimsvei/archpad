@@ -10,7 +10,7 @@ export enum DirectoryKind {
   SOFTWARE_TYPE = "directory.software.type",
   SECURITY_ZONE = "directory.security.zone",
   CRITICAL_LEVEL = "directory.critical.level",
-  SOLUTION_STATE = "directory.solution.state",
+  // SOLUTION_STATE = "directory.solution.state",
   COMPONENT_STATE = "directory.component.state",
   STAKEHOLDER_ROLE = "directory.stakeholder.role",
   ARCHITECTURE_STYLE = "directory.architecture.style",
@@ -21,6 +21,7 @@ export enum DirectoryKind {
   MONITORING_LEVEL = "directory.monitoring.level",
   SCALING_TYPE = "directory.scaling.type"
 }
+
 
 
 
