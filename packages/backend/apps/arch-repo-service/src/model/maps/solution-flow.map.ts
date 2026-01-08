@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
 
 @HasuraTable()
-@Entity({ tableName: 'map_solution_data_object' })
+@Entity({ tableName: 'map_solution_flow' })
 export class SolutionFlowMap extends MappedSolutionObject {
   @ApiProperty({ description: 'System name in solution', required: true })
   @Property({ type: 'string', nullable: true })
@@ -26,7 +26,7 @@ export class SolutionFlowMap extends MappedSolutionObject {
   @ManyToOne({
     entity: () => FlowGeneric,
     primary: true,
-    fieldName: 'solution_id',
+    fieldName: 'flow_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
   })

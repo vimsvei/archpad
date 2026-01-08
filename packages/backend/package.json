@@ -8,9 +8,11 @@
   "scripts": {
     "start:arch-repo": "nest start arch-repo-service",
     "start:hasura-repo-sync": "nest start hasura-sync-service",
+    "start:tenant-service": "nest start tenant-service",
 
     "start:dev:arch-repo": "NODE_ENV=local nest start arch-repo-service --watch",
     "start:dev:hasura-repo-sync": "NODE_ENV=local NODE_EXTRA_CA_CERTS=../../infra/traefik/certs/rootCA.pem nest start hasura-sync-service --watch",
+    "start:dev:tenant-service": "NODE_ENV=local nest start tenant-service --watch",
 
     "build:arch-repo": "nest build arch-repo-service",
     "build:hasura-repo-sync": "nest build hasura-sync-service",

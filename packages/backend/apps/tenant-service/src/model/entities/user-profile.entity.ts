@@ -1,11 +1,14 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { IdentifiedObject } from '@archpad/models';
+import {ArchimateCode, IdentifiedObject } from '@archpad/models';
 
 @Entity({
   tableName: 'user_profiles',
 })
 export abstract class UserProfile extends IdentifiedObject {
+  @ArchimateCode('USER')
+  code: string = undefined as any;
+  
   @ApiProperty({ description: 'First name', required: true })
   @Property({ type: 'string', name: 'first_name' })
   firstName!: string;
@@ -27,10 +30,10 @@ export abstract class UserProfile extends IdentifiedObject {
   phone?: string;
 
   @ApiProperty({ description: 'Position', required: true })
-  @Property({ type: 'string' })
+  @Property({ type: 'string', nullable: true })
   position!: string;
 
-  @ApiProperty({ description: 'Department', required: true })
-  @Property({ type: 'string' })
+  @ApiProperty({ description: 'Department', required: false })
+  @Property({ type: 'string', nullable: true })
   department!: string;
 }

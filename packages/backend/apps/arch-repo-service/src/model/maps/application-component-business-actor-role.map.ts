@@ -1,8 +1,10 @@
-import { HasuraRefName, MappedObject } from '@archpad/models';
-import { ManyToOne } from '@mikro-orm/core';
+import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import {Entity, ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { BusinessActorRoleMap } from '@/model/maps/business-actor-role.map';
 
+@HasuraTable()
+@Entity({ tableName: 'map_application_component_actor_role' })
 export class ApplicationComponentBusinessActorRoleMap extends MappedObject {
   @HasuraRefName('actorRole')
   @ManyToOne({
