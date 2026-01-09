@@ -1,5 +1,0 @@
-# Пример файла с переменными
-# Скопируйте этот файл в terraform.tfvars и заполните значениями
-
-twc_token = "your_timeweb_cloud_api_token_here"
-project_id = 1984197
