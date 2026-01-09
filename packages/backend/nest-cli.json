@@ -62,6 +62,15 @@
         "tsConfigPath": "libs/schema-initializer/tsconfig.lib.json"
       }
     },
+    "vault-config": {
+      "type": "library",
+      "root": "libs/vault-config",
+      "entryFile": "index",
+      "sourceRoot": "libs/vault-config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/vault-config/tsconfig.lib.json"
+      }
+    },
     "tenant-service": {
       "type": "application",
       "root": "apps/tenant-service",

@@ -6,23 +6,45 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
 import { LoggerModule } from '@archpad/logger';
+import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from "node:path";
 import { BootstrapModule } from './bootstrap.module';
 
 @Module({
   imports: [
     LoggerModule.forRoot({ format: 'text' }),
+    VaultConfigModule.forRoot({
+      nodeEnv: process.env.NODE_ENV,
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     MikroOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => {
+      imports: [ConfigModule, VaultConfigModule],
+      useFactory: (configService: ConfigService, vaultConfigService: VaultConfigService) => {
+        // VaultConfigService.get() reads from cache (secrets loaded in main.ts via loadVaultSecrets)
+        // or from process.env as fallback
+        const nodeEnv = vaultConfigService.get('NODE_ENV') || configService.get<string>('NODE_ENV') || process.env.NODE_ENV;
+        const dbName = vaultConfigService.get('TENANT_DB') || configService.get<string>('TENANT_DB') || process.env.TENANT_DB || 'tenant';
+        const dbUser = vaultConfigService.get('PROJECT_DB_USER') || configService.get<string>('PROJECT_DB_USER') || process.env.PROJECT_DB_USER;
+        const dbPass = vaultConfigService.get('PROJECT_DB_PASS') || configService.get<string>('PROJECT_DB_PASS') || process.env.PROJECT_DB_PASS;
+        const pgHost = nodeEnv === 'local'
+          ? (vaultConfigService.get('PG_HOST') || configService.get<string>('PG_HOST') || process.env.PG_HOST || 'postgres')
+          : (vaultConfigService.get('PG_ENDPOINT') || configService.get<string>('PG_ENDPOINT') || process.env.PG_ENDPOINT || 'postgres');
+        const pgPort = +(vaultConfigService.get('PG_PORT') || configService.get<string>('PG_PORT') || process.env.PG_PORT || '5432');
+
+        console.log(`[TenantService MikroORM Config] dbName: "${dbName}"`);
+        console.log(`[TenantService MikroORM Config] user: "${dbUser}"`);
+        console.log(`[TenantService MikroORM Config] password: ${dbPass ? '***SET***' : 'NOT SET'}`);
+        console.log(`[TenantService MikroORM Config] host: "${pgHost}"`);
+        console.log(`[TenantService MikroORM Config] port: ${pgPort}`);
+
         // Resolve paths relative to the backend package root (process.cwd() should be packages/backend when running)
         const backendRoot = process.cwd();
         const tenantServiceDist = path.join(backendRoot, 'dist/apps/tenant-service');
         
         return {
+          driver: PostgreSqlDriver,
           entities: [
             // Only tenant-service entities - use absolute paths to prevent scanning arch-repo-service
             path.join(tenantServiceDist, 'apps/tenant-service/src/**/*.entity{.ts,.js}'),
@@ -33,34 +55,30 @@ import { BootstrapModule } from './bootstrap.module';
           ],
           // Disable auto-discovery to prevent scanning wrong directories
           discoverEntities: false,
-          driver: PostgreSqlDriver,
-        host:
-          process.env.NODE_ENV === 'local'
-            ? configService.get<string>('PG_HOST')
-            : configService.get<string>('PG_ENDPOINT'),
-        port: +(configService.get<string>('PG_PORT') ?? '5432'),
-        dbName: configService.get<string>('TENANT_DB') ?? 'tenant',
-        user: configService.get<string>('PROJECT_DB_USER'),
-        password: configService.get<string>('PROJECT_DB_PASS'),
-        debug: process.env.NODE_ENV !== 'production',
-        driverOptions:
-          process.env.NODE_ENV === 'local'
-            ? {
-              pgSsl: {
-                pgSslCertFile: path.join(
-                  path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                  'local.crt',
-                ),
-                pgSslKeyFile: path.join(
-                  path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                  'local.key',
-                ),
-              },
-            }
-            : {},
+          host: pgHost,
+          port: pgPort,
+          dbName,
+          user: dbUser,
+          password: dbPass,
+          debug: nodeEnv !== 'production',
+          driverOptions:
+            nodeEnv === 'local'
+              ? {
+                  pgSsl: {
+                    pgSslCertFile: path.join(
+                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
+                      'local.crt',
+                    ),
+                    pgSslKeyFile: path.join(
+                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
+                      'local.key',
+                    ),
+                  },
+                }
+              : {},
         };
       },
-      inject: [ConfigService],
+      inject: [ConfigService, VaultConfigService],
     }),
     BootstrapModule,
   ],

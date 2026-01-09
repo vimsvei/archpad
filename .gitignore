@@ -15,6 +15,8 @@ yarn-error.log*
 # Local envs
 **/.env
 **/.env.local
+**/docker-compose.env
+**/docker-compose.*.env
 
 # Docker
 **/pgdata

@@ -3,13 +3,9 @@ services:
     image: traefik:v3.6.2
     command:
       - --configFile=/etc/traefik/traefik.yml
-#      - --api.dashboard=true
-#      - --providers.docker=true
-#      - --entrypoints.web.address=:80
-#      - --entrypoints.traefik.address=:8080
-#      - --entrypoints.pg.address=:5432
-#      - --ping=true
-#      - --ping.entryPoint=traefik
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
     ports:
       - "80:80"
       - "443:443"
@@ -38,31 +34,19 @@ services:
 
   postgres:
     image: postgres:16-alpine
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+    env_file:
+      - ./vault/docker-compose.env
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      # pass app DB params to init script
+      # Only non-secret configs that don't need to be in Vault
       DB_OWNERSHIP_MODE: ${DB_OWNERSHIP_MODE:-app_owner}
-      PROJECT_DB: ${PROJECT_DB}
-      PROJECT_DB_USER: ${PROJECT_DB_USER}
-      PROJECT_DB_PASS: ${PROJECT_DB_PASS}
-      HASURA_DB: ${HASURA_DB}
-      HASURA_DB_USER: ${HASURA_DB_USER}
-      HASURA_DB_PASS: ${HASURA_DB_PASS}
-      KRATOS_DB: ${KRATOS_DB}
-      KRATOS_DB_USER: ${KRATOS_DB_USER}
-      KRATOS_DB_PASS: ${KRATOS_DB_PASS}
-      HYDRA_DB: ${HYDRA_DB}
-      HYDRA_DB_USER: ${HYDRA_DB_USER}
-      HYDRA_DB_PASS: ${HYDRA_DB_PASS}
-      TOLGEE_DB: ${TOLGEE_DB}
-      TOLGEE_DB_USER: ${TOLGEE_DB_USER}
-      TOLGEE_DB_PASS: ${TOLGEE_DB_PASS}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sh:/docker-entrypoint-initdb.d/00-init.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -79,14 +63,18 @@ services:
   kratos-migrate:
     image: oryd/kratos:latest
     command: ["migrate", "sql", "-e", "--yes"]
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
       - ./ory/kratos/identities/default.schema.json:/etc/kratos/identities/default.schema.json:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
     restart: "no"
     networks:
       - archpad_network
@@ -94,14 +82,18 @@ services:
   kratos:
     image: oryd/kratos:v25.4.0
     command: ["serve", "-c", "/etc/config/kratos.yml", "--dev", "--watch-courier"]
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      kratos-migrate:
+        condition: service_completed_successfully
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       DSN: postgres://${KRATOS_DB_USER}:${KRATOS_DB_PASS}@postgres:5432/${KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - ./ory/kratos/kratos.yml:/etc/config/kratos.yml:ro
       - ./ory/kratos/identities/default.schema.json:/etc/config/kratos/identities/default.schema.json:ro
-    depends_on:
-      kratos-migrate:
-        condition: service_completed_successfully
     networks:
       - archpad_network
     labels:
@@ -128,12 +120,16 @@ services:
   hydra-migrate:
     image: oryd/hydra:v25.4.0
     command: ["migrate", "sql", "-e", "--yes"]
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
       SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - archpad_network
     restart: "no"
@@ -141,16 +137,20 @@ services:
   hydra:
     image: oryd/hydra:v25.4.0
     command: ["serve", "all", "--config", "/etc/config/hydra.yml", "--dev"]
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_started
+      hydra-migrate:
+        condition: service_completed_successfully
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       DSN: postgres://${HYDRA_DB_USER}:${HYDRA_DB_PASS}@postgres:5432/${HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
       SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET}
     volumes:
       - ./ory/hydra/hydra.yml:/etc/config/hydra.yml:ro
-    depends_on:
-      postgres:
-        condition: service_started
-      hydra-migrate:
-        condition: service_completed_successfully
     networks:
       - archpad_network
     labels:
@@ -177,8 +177,12 @@ services:
   hydra-init-client:
     image: alpine:3.20
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       hydra:
         condition: service_started
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       HYDRA_ADMIN_URL: http://hydra:4445
       # Portal OAuth2 client (PKCE)
@@ -202,6 +206,13 @@ services:
     command:
       - serve
       - --config=/etc/oathkeeper/config.yml
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      reverse-proxy:
+        condition: service_started
+    env_file:
+      - ./vault/docker-compose.env
     volumes:
       - ./ory/oathkeeper/config.yml:/etc/oathkeeper/config.yml:ro
       - ./ory/oathkeeper/access-rules.yml:/etc/oathkeeper/access-rules.yml:ro
@@ -209,9 +220,6 @@ services:
       LOG_LEVEL: debug
       ORY_CLIENT_ID: ${ORY_CLIENT_ID}
       ORY_CLIENT_SECRET: ${ORY_CLIENT_SECRET}
-    depends_on:
-      reverse-proxy:
-        condition: service_started
     networks:
       - archpad_network
     labels:
@@ -232,12 +240,16 @@ services:
   hasura:
     image: hasura/graphql-engine:v2.48.6
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       kratos:
         condition: service_started
       hydra:
         condition: service_started
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${HASURA_DB}
       HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER}:${HASURA_DB_PASS}@postgres:5432/${HASURA_DB}
@@ -276,8 +288,12 @@ services:
   hasura-metadata:
     image: alpine:3.20
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       hasura:
         condition: service_started
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       HASURA_URL: http://hasura:8080
       HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
@@ -311,8 +327,12 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -343,10 +363,21 @@ services:
   tolgee:
     image: tolgee/tolgee:latest
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       TOLGEE_POSTGRES_AUTOSTART_ENABLED: false
+      # SPRING_DATASOURCE_URL is built from TOLGEE_DB (from Vault)
+      # Note: The following variables should be added to Vault with these exact names:
+      # - SPRING_DATASOURCE_USERNAME (same value as TOLGEE_DB_USER)
+      # - SPRING_DATASOURCE_PASSWORD (same value as TOLGEE_DB_PASS)
+      # - TOLGEE_AUTHENTICATION_INITIAL_USERNAME (same value as TOLGEE_ADMIN_USER)
+      # - TOLGEE_AUTHENTICATION_INITIAL_PASSWORD (same value as TOLGEE_ADMIN_PASS)
+      # Once added to Vault, remove the mapping below and these vars will be loaded via env_file
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${TOLGEE_DB}
       SPRING_DATASOURCE_USERNAME: ${TOLGEE_DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${TOLGEE_DB_PASS}
@@ -381,14 +412,40 @@ services:
     pull_policy: build
     environment:
       NODE_ENV: development
-      PG_ENDPOINT: ${POSTGRES_ENDPOINT}
-      PG_PORT: ${PG_PORT:-5432}
-      PROJECT_DB: ${PROJECT_DB}
-      PROJECT_DB_USER: ${PROJECT_DB_USER}
-      PROJECT_DB_PASS: ${PROJECT_DB_PASS}
+      VAULT_ADDR: http://vault:8200
+      # Use tokens from .env file (user-provided)
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      VAULT_TOKEN_ROOT: ${VAULT_TOKEN_ROOT}
     depends_on:
       postgres:
         condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O- http://localhost:3000/healthz || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    networks:
+      - archpad_network
+    profiles: [ "backend" ]
+
+  tenant-service:
+    build:
+      context: ..
+      dockerfile: packages/backend/apps/tenant-service/Dockerfile
+    pull_policy: build
+    environment:
+      NODE_ENV: development
+      VAULT_ADDR: http://vault:8200
+      # Use tokens from .env file (user-provided)
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      VAULT_TOKEN_ROOT: ${VAULT_TOKEN_ROOT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
     healthcheck:
       test: [ "CMD-SHELL", "wget -q -O- http://localhost:3000/healthz || exit 1" ]
       interval: 5s
@@ -408,14 +465,13 @@ services:
         condition: service_healthy
       hasura:
         condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
     environment:
-      HASURA_ENDPOINT: ${HASURA_ENDPOINT}
-      HASURA_ADMIN_SECRET: ${HASURA_ADMIN_SECRET}
-      HASURA_SOURCE: ${HASURA_SOURCE}
-      HASURA_SCHEMA: ${HASURA_SCHEMA}
-      HASURA_UNTRACK_ITEMS: ${HASURA_UNTRACK_ITEMS}
-      HASURA_RENAME_COLUMNS_CAMELCASE: ${HASURA_RENAME_COLUMNS_CAMELCASE}
-      HASURA_DEFAULT_ROLE: public
+      VAULT_ADDR: http://vault:8200
+      # Use tokens from .env file (user-provided)
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      VAULT_TOKEN_ROOT: ${VAULT_TOKEN_ROOT}
     restart: "no"
     networks:
       - archpad_network
@@ -426,12 +482,16 @@ services:
       context: ..
       dockerfile: packages/portal/Dockerfile.dev
     depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
       hasura:
         condition: service_started
       tolgee:
         condition: service_started
       hydra-init-client:
         condition: service_completed_successfully
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_ORY_SDK_URL: https://${KRATOS_HOST}
@@ -500,6 +560,17 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      prometheus:
+        condition: service_started
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
@@ -514,10 +585,6 @@ services:
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3001:3000"
-    depends_on:
-      - prometheus
-      - loki
-      - tempo
     networks:
       - archpad_network
     labels:
@@ -619,16 +686,89 @@ services:
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:latest
+    depends_on:
+      vault-env-generator:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./vault/docker-compose.env
     environment:
       DATA_SOURCE_NAME: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postgres?sslmode=disable
     ports:
       - "9187:9187"
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - archpad_network
     profiles: [ "observability" ]
+
+  vault:
+    image: hashicorp/vault:latest
+    command: ["server", "-dev", "-dev-root-token-id=${VAULT_TOKEN_ROOT:-root}", "-dev-listen-address=0.0.0.0:8200"]
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: http://0.0.0.0:8200
+    volumes:
+      - vault_data:/vault/file
+      # Note: config.hcl is not used in dev mode, Vault uses -dev flags instead
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - archpad_network
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.vault-http.entrypoints=web
+      - traefik.http.routers.vault-http.rule=Host(`${VAULT_HOST}`)
+      - traefik.http.routers.vault-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.vault-http.service=vault
+
+      - traefik.http.routers.vault.entrypoints=websecure
+      - traefik.http.routers.vault.rule=Host(`${VAULT_HOST}`)
+      - traefik.http.routers.vault.tls=true
+      - traefik.http.routers.vault.service=vault
+
+      - traefik.http.services.vault.loadbalancer.server.port=8200
+
+  vault-init:
+    image: hashicorp/vault:latest
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: http://vault:8200
+      # Use root token from .env for initialization
+      VAULT_TOKEN: ${VAULT_TOKEN_ROOT}
+      VAULT_DEV_MODE: ${VAULT_DEV_MODE:-true}
+    volumes:
+      - ./vault:/vault-config:ro
+      - ..:/app:ro  # Mount project root to access .env
+    entrypoint: ["sh", "/vault-config/init.sh"]
+    restart: "no"
+    networks:
+      - archpad_network
+
+  vault-env-generator:
+    image: hashicorp/vault:latest
+    depends_on:
+      vault-init:
+        condition: service_completed_successfully
+    environment:
+      VAULT_ADDR: http://vault:8200
+      # Use root token from .env for reading secrets
+      VAULT_TOKEN: ${VAULT_TOKEN_ROOT:-root}
+    volumes:
+      - ./vault:/vault-config:ro
+      - ./vault:/vault-env-output
+    entrypoint: ["sh", "/vault-config/generate-env.sh"]
+    command: ["/vault-env-output/docker-compose.env"]
+    restart: "no"
+    networks:
+      - archpad_network
 
 networks:
   archpad_network:
@@ -644,3 +784,5 @@ volumes:
   grafana_data:
   loki_data:
   tempo_data:
+  vault_data:
+  vault_env_output:

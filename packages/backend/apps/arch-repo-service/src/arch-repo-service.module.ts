@@ -3,7 +3,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
@@ -19,6 +19,7 @@ import {
   RequestLoggerInterceptor,
 } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
+import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import { RequiredHeadersGuard } from '@/common/guards/required-headers.guard';
 import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-request-context.middleware';
 
@@ -26,47 +27,70 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
   imports: [
     LoggerModule.forRoot({ format: 'text' }),
     ArchimateBootstrapModule,
+    VaultConfigModule.forRoot({
+      nodeEnv: process.env.NODE_ENV,
+    }),
     ConfigModule.forRoot(),
-    MikroOrmModule.forRoot({
-      entities: [
-        // Only arch-repo-service entities - use absolute paths to prevent scanning tenant-service
-        // Structure: dist/apps/arch-repo-service/apps/arch-repo-service/src/...
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.entity{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.generic{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.map{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.directory{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directories{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directory-object.abstract{.ts,.js}'),
-        path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/mapped-solution-object.abstract{.ts,.js}'),
-        // Shared models from libs (only those compiled in arch-repo-service dist)
-        path.join(process.cwd(), 'dist/libs/models/src/**/*.abstract{.ts,.js}'),
-        path.join(process.cwd(), 'dist/libs/models/src/**/*.embeddable{.ts,.js}'),
-      ],
-      driver: PostgreSqlDriver,
-      host:
-        process.env.NODE_ENV === 'local'
-          ? process.env.PG_HOST
-          : process.env.PG_ENDPOINT,
-      port: +(process.env.PG_PORT ?? '5432'),
-      dbName: process.env.PROJECT_DB,
-      user: process.env.PROJECT_DB_USER,
-      password: process.env.PROJECT_DB_PASS,
-      debug: process.env.NODE_ENV !== 'production',
-      driverOptions:
-        process.env.NODE_ENV === 'local'
-          ? {
-              pgSsl: {
-                pgSslCertFile: path.join(
-                  path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                  'local.crt',
-                ),
-                pgSslKeyFile: path.join(
-                  path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                  'local.key',
-                ),
-              },
-            }
-          : {},
+    MikroOrmModule.forRootAsync({
+      imports: [ConfigModule, VaultConfigModule],
+      useFactory: (configService: ConfigService, vaultConfigService: VaultConfigService) => {
+        // VaultConfigService.get() reads from cache (secrets loaded in main.ts via loadVaultSecrets)
+        // or from process.env as fallback
+        const nodeEnv = vaultConfigService.get('NODE_ENV') || configService.get<string>('NODE_ENV') || process.env.NODE_ENV;
+        const dbName = vaultConfigService.get('PROJECT_DB') || configService.get<string>('PROJECT_DB') || process.env.PROJECT_DB;
+        const dbUser = vaultConfigService.get('PROJECT_DB_USER') || configService.get<string>('PROJECT_DB_USER') || process.env.PROJECT_DB_USER;
+        const dbPass = vaultConfigService.get('PROJECT_DB_PASS') || configService.get<string>('PROJECT_DB_PASS') || process.env.PROJECT_DB_PASS;
+        const pgHost = nodeEnv === 'local'
+          ? (vaultConfigService.get('PG_HOST') || configService.get<string>('PG_HOST') || process.env.PG_HOST || 'postgres')
+          : (vaultConfigService.get('PG_ENDPOINT') || configService.get<string>('PG_ENDPOINT') || process.env.PG_ENDPOINT || 'postgres');
+        const pgPort = +(vaultConfigService.get('PG_PORT') || configService.get<string>('PG_PORT') || process.env.PG_PORT || '5432');
+
+        console.log(`[MikroORM Config] dbName: "${dbName}"`);
+        console.log(`[MikroORM Config] user: "${dbUser}"`);
+        console.log(`[MikroORM Config] password: ${dbPass ? '***SET***' : 'NOT SET'}`);
+        console.log(`[MikroORM Config] host: "${pgHost}"`);
+        console.log(`[MikroORM Config] port: ${pgPort}`);
+
+        return {
+          driver: PostgreSqlDriver,
+          entities: [
+            // Only arch-repo-service entities - use absolute paths to prevent scanning tenant-service
+            // Structure: dist/apps/arch-repo-service/apps/arch-repo-service/src/...
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.entity{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.generic{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.map{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.directory{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directories{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/directory-object.abstract{.ts,.js}'),
+            path.join(process.cwd(), 'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/mapped-solution-object.abstract{.ts,.js}'),
+            // Shared models from libs (only those compiled in arch-repo-service dist)
+            path.join(process.cwd(), 'dist/libs/models/src/**/*.abstract{.ts,.js}'),
+            path.join(process.cwd(), 'dist/libs/models/src/**/*.embeddable{.ts,.js}'),
+          ],
+          host: pgHost,
+          port: pgPort,
+          dbName,
+          user: dbUser,
+          password: dbPass,
+          debug: nodeEnv !== 'production',
+          driverOptions:
+            nodeEnv === 'local'
+              ? {
+                  pgSsl: {
+                    pgSslCertFile: path.join(
+                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
+                      'local.crt',
+                    ),
+                    pgSslKeyFile: path.join(
+                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
+                      'local.key',
+                    ),
+                  },
+                }
+              : {},
+        };
+      },
+      inject: [ConfigService, VaultConfigService],
     }),
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,

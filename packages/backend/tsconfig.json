@@ -35,6 +35,9 @@
       "@archpad/schema-initializer": [
         "libs/schema-initializer/src"
       ],
+      "@archpad/vault-config": [
+        "libs/vault-config/src"
+      ],
       "archpad/health-checker": [
         "libs/health-checker/src"
       ],
