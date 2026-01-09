@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { LibraryBig, MoreHorizontal, Plus, RefreshCcw, Upload } from "lucide-react"
+import { Edit, LibraryBig, Plus, RefreshCcw, Trash2, Upload } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef } from "@tanstack/react-table"
 
@@ -31,14 +31,6 @@ import { EntityDataTable } from "@/components/common/entity-data-table"
 import { EntityColumnsMenu } from "@/components/common/entity-columns-menu"
 import { usePersistedColumnVisibility } from "@/components/common/use-persisted-column-visibility"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import type { DirectoryItem } from "@/@types/directories"
 
 type DirectoryListPageProps = {
@@ -96,8 +88,6 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       description: t("table.description"),
       color: t("table.color"),
       byDefault: t("table.by-default"),
-      created: t("table.created"),
-      updated: t("table.updated"),
       actions: t("table.item.actions"),
       edit: t("action.edit"),
       delete: t("action.delete"),
@@ -306,84 +296,56 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         },
       },
       {
-        id: "created",
-        header: translations.created,
-        cell: ({ row }) => {
-          const at = formatDateTime(row.original.created?.at)
-          const by = row.original.created?.by ?? null
-          if (!at && !by) return null
-          return (
-            <div className="flex flex-col leading-snug">
-              {at ? <div className="text-sm">{at}</div> : null}
-              {by ? <div className="text-muted-foreground text-xs">{by}</div> : null}
-            </div>
-          )
-        },
-      },
-      {
-        id: "updated",
-        header: translations.updated,
-        cell: ({ row }) => {
-          const at = formatDateTime(row.original.updated?.at)
-          const by = row.original.updated?.by ?? null
-          if (!at && !by) return null
-          return (
-            <div className="flex flex-col leading-snug">
-              {at ? <div className="text-sm">{at}</div> : null}
-              {by ? <div className="text-muted-foreground text-xs">{by}</div> : null}
-            </div>
-          )
-        },
-      },
-      {
         id: "actions",
         enableSorting: false,
         enableHiding: false,
         header: () => null,
         cell: ({ row }) => {
           const item = row.original
+          const editUrl = `/directories/${directorySlug}/${item.id}`
+          const handleDelete = async (e: React.MouseEvent) => {
+            e.preventDefault()
+            const ok = window.confirm("Delete this item?")
+            if (!ok) return
+            try {
+              await deleteItem({ slug: directorySlug, id: item.id }).unwrap()
+              toast.success("Deleted")
+              void handleRefetch()
+            } catch (err: any) {
+              toast.error(err?.message ?? "Failed to delete")
+            }
+          }
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0" aria-label={translations.actions}>
-                    <span className="sr-only">{translations.actions}</span>
-                    <MoreHorizontal />
+            <div className="flex items-center justify-end gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+                    <Link href={editUrl}>
+                      <Edit className="h-4 w-4" />
+                    </Link>
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{translations.actions}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href={`/directories/${directorySlug}/${item.id}`}>{translations.edit}</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onSelect={(e) => {
-                      e.preventDefault()
-                      const ok = window.confirm("Delete this item?")
-                      if (!ok) return
-                      void (async () => {
-                        try {
-                          await deleteItem({ slug: directorySlug, id: item.id }).unwrap()
-                          toast.success("Deleted")
-                          void refetch()
-                        } catch (err: any) {
-                          toast.error(err?.message ?? "Failed to delete")
-                        }
-                      })()
-                    }}
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{translations.edit}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDelete}
+                    className="h-8 w-8 text-destructive hover:text-destructive"
                   >
-                    {translations.delete}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{translations.delete}</TooltipContent>
+              </Tooltip>
             </div>
           )
         },
       },
     ],
-    [deleteItem, directorySlug, formatDateTime, translations]
+    [deleteItem, directorySlug, translations, handleRefetch]
   )
 
   return (
@@ -513,10 +475,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
             onColumnVisibilityChange={setColumnVisibility}
             emptyTitle={t("table.directory.no-results")}
             emptyDescription={t("table.directory.no-results.description")}
-            // Важно: ограничиваем высоту таблицы, чтобы скролл был ВНУТРИ,
-            // а не растягивалась вся страница (особенно при pageSize=50/100).
-            // `EntityDataTable` по умолчанию использует `max-h-[60vh]`,
-            // поэтому для справочников не переопределяем maxHeightClassName.
+            maxHeightClassName="min-h-0 flex-1"
           />
           {remoteError ? (
             <div className="text-destructive mt-2 text-sm">

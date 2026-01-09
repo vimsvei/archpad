@@ -94,7 +94,7 @@ export function EntityDataTable<TData>({
   }, [])
 
   return (
-    <div className={cn("w-full min-w-0 max-w-full flex flex-col", className)}>
+    <div className={cn("w-full min-w-0 max-w-full h-full flex flex-col", className)}>
       {/* Vertical scroll lives here; horizontal scroll lives inside Table (table-container) */}
       <div className={cn("overflow-auto rounded-md border max-w-full flex-1 min-h-0 relative", maxHeightClassName)}>
         <Table className="min-w-max" containerClassName="overflow-x-auto">

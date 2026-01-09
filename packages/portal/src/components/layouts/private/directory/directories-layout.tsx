@@ -62,7 +62,7 @@ export function DirectoriesLayout({ children, currentDirectorySlug }: Directorie
       </div>
 
       {/* Right content - 3/4 width */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 min-h-0 flex-1 flex-col h-full">
         {children}
       </div>
     </div>
