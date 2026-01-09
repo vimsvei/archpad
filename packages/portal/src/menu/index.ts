@@ -1,5 +1,5 @@
 import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
-import {BrickWallShield, Folder, House, LayoutDashboard,
+import {BrickWallShield, BringToFront, Folder, House, LayoutDashboard,
   LibraryBig, LifeBuoy, Send, Settings, Settings2, Tent, TrendingUp, Upload} from "lucide-react";
 import { DirectoryKind } from "@/@types/directory-kind";
 
@@ -157,6 +157,11 @@ export const menu: TMenu = [
         title: 'management.directories',
         icon: LibraryBig,
         url: '/directories',
+      },
+      {
+        title: 'management.state.schemas',
+        icon: BringToFront,
+        url: '/state-schemas',
       },
       {
         title: 'management.settings.tenants',

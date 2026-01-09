@@ -9,7 +9,8 @@
     "lint": "eslint",
     "env:render": "ROOT_ENV_PATH=../../.env ../scripts/render-env.sh",
     "gql:codegen": "NODE_EXTRA_CA_CERTS=../../infra/traefik/certs/rootCA.pem NODE_ENV=development graphql-codegen --config codegen.ts",
-    "icons:generate": "svgr --out-dir src/components/icons -- src/assets/icon"
+    "icons:generate": "svgr --out-dir src/components/icons -- src/assets/icon",
+    "images:generate": "svgr --out-dir src/components/images -- src/assets/images"
   },
   "dependencies": {
     "@archpad/contract": "workspace:*",
