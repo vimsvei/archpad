@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev:infra": "docker compose --project-name archpad --env-file ../.env up -d",
+    "dev:vault": "docker compose --project-name archpad --env-file ../.env --profile infra up -d",
     "dev:backend": "docker compose --project-name archpad --env-file ../.env --profile backend up -d",
 
     "dev:app:build": "docker compose --project-name archpad --env-file ../.env --profile app build portal",
@@ -12,7 +13,9 @@
     "dev:obs": "docker compose --project-name archpad --env-file ../.env --profile observability up -d",
     "dev:mon": "pnpm -s dev:obs",
     "dev:all": "docker compose --project-name archpad --env-file ../.env --profile backend --profile app --profile observability up -d",
-    "dev:grafana:restart": "docker compose -project-name archpad --env-file ../.env restart grafana"
+    "dev:grafana:restart": "docker compose -project-name archpad --env-file ../.env restart grafana",
+
+    "restart:vault-init": "docker compose --project-name archpad restart vault-init"
     },
   "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
 }

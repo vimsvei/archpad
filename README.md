@@ -16,3 +16,5 @@ Domains:
 - tolgee.192-168-1-119.sslip.io
 - prometheus.192-168-1-119.sslip.io
 - grafana.192-168-1-119.sslip.io
+- vault.192-168-1-119.sslip.io
+
