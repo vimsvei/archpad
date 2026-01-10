@@ -91,6 +91,16 @@ variable "vault_token" {
   default     = null
 }
 
+variable "vault_helm_chart_version" {
+  type        = string
+  default     = "0.31.0"
+}
+
+variable "vault_version" {
+  type        = string
+  default     = "1.20.4"
+}
+
 variable "enable_kv_secrets_engine" {
   type        = bool
   description = "Enable KV secrets engine at path 'kv' (default: true)"

@@ -31,7 +31,7 @@ resource "null_resource" "helm_repo_update_hashicorp" {
     command    = "bash '${path.module}/scripts/helm-repo-update.sh' || echo 'Helm repo update failed, using cached chart if available'"
     on_failure = continue
   }
-  
+
   # Триггер срабатывает только при первом применении
   # Для повторного обновления репозитория используйте: terraform taint null_resource.helm_repo_update_hashicorp
 }
@@ -41,22 +41,22 @@ resource "helm_release" "vault" {
   namespace  = kubernetes_namespace.vault.metadata[0].name
   repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
-  version    = "0.28.0"
-  
+  version    = var.vault_helm_chart_version
+
   # Увеличиваем timeout для обработки возможных проблем с доступом к репозиторию
   timeout    = 600
-  
+
   # Отключаем атомарные операции, чтобы позволить удаление даже при ошибках
   # Это необходимо при переключении между Raft и S3 storage
   atomic                     = false
   cleanup_on_fail           = false
   disable_webhooks          = true
-  
+
   depends_on = [
     null_resource.helm_repo_update_hashicorp,
     kubernetes_namespace.vault
   ]
-  
+
   # Используем lifecycle для более безопасного обновления
   lifecycle {
     create_before_destroy = false  # Сначала удаляем старый release, затем создаем новый
@@ -70,6 +70,10 @@ resource "helm_release" "vault" {
     }
 
     server = merge({
+      image = {
+        repository = "hashicorp/vault"
+        tag        = var.vault_version
+      }
       ha = {
         enabled  = var.use_s3_storage ? false : true  # Отключаем HA при использовании S3
         replicas = 1
