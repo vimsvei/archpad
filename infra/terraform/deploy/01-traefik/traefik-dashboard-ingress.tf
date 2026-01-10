@@ -5,26 +5,17 @@ resource "null_resource" "traefik_dashboard_ingressroute" {
   depends_on = [
     time_sleep.wait_for_traefik_crd,
     helm_release.traefik,
+    kubernetes_manifest.traefik_dashboard_basicauth_middleware,
   ]
 
   provisioner "local-exec" {
     command = <<-EOT
-      kubectl apply --kubeconfig=${local.kubeconfig_file} -f - <<'YAML_EOF'
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: traefik-dashboard
-  namespace: ${kubernetes_namespace.traefik.metadata[0].name}
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`traefik.archpad.pro`)
-      kind: Rule
-      services:
-        - name: api@internal
-          kind: TraefikService
-  tls: {}
+      kubectl apply --kubeconfig=${local.kubeconfig_file} -f - <<YAML_EOF
+${templatefile("${path.module}/traefik-dashboard-ingressroute.yaml.tpl", {
+  namespace        = kubernetes_namespace.traefik.metadata[0].name
+  middleware_enabled = local.traefik_dashboard_auth_enabled
+  middleware_name   = local.traefik_dashboard_auth_enabled ? "traefik-dashboard-basicauth" : ""
+})}
 YAML_EOF
     EOT
   }

@@ -46,10 +46,9 @@ variable "twc_s3_bucket_name" {
   default     = "archpad-s3"
 }
 
-variable "databases" {
-  description = "Databases inside managed DB cluster"
-  type = map(object({
-    charset   = optional(string)
-    collation = optional(string)
-  }))
+variable "postgres_admin_password" {
+  description = "PostgreSQL admin password for the managed database cluster. If not provided, you will need to get it from TimeWeb Cloud panel or API after cluster creation."
+  type        = string
+  sensitive   = true
+  default     = null
 }

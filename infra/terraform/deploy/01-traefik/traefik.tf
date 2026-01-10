@@ -79,6 +79,12 @@ resource "helm_release" "traefik" {
         port = 8443  # Порт внутри пода (непривилегированный)
         exposedPort = 443  # Порт в LoadBalancer (публичный)
       }
+      # TCP entryPoint для PostgreSQL через Traefik
+      postgres = {
+        port = 5432  # Порт внутри пода для PostgreSQL
+        exposedPort = 5432  # Порт в LoadBalancer (публичный)
+        protocol = "TCP"
+      }
     }
 
     providers = {
@@ -93,6 +99,7 @@ resource "helm_release" "traefik" {
       "--entrypoints.web.http.redirections.entrypoint.to=websecure",
       "--entrypoints.web.http.redirections.entrypoint.scheme=https",
       "--entrypoints.web.http.redirections.entrypoint.permanent=true",
+      "--entrypoints.postgres.address=:5432",  # TCP entryPoint для PostgreSQL
     ]
   }))]
 

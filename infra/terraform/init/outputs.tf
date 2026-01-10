@@ -57,17 +57,8 @@ output "db_cluster" {
   }
 }
 
-output "db_instances" {
-  description = "DB instances inside the managed cluster (by name)"
-  value = {
-    for db_name, db_res in twc_database_instance.db :
-    db_name => {
-      id         = db_res.id
-      name       = db_res.name
-      cluster_id = db_res.cluster_id
-    }
-  }
-}
+# DB instances теперь создаются в модуле 04-database, не в init
+# output "db_instances" удален - базы данных создаются на шаге 4
 
 output "s3_bucket" {
   description = "S3 bucket summary"
@@ -75,4 +66,10 @@ output "s3_bucket" {
     id   = twc_s3_bucket.archpad-s3-bucket.id
     name = twc_s3_bucket.archpad-s3-bucket.name
   }
+}
+
+output "postgres_admin_password" {
+  description = "PostgreSQL admin password for the managed database cluster (sensitive). Retrieved from variable or TimeWeb Cloud API after cluster creation."
+  value       = local.postgres_admin_password_resolved
+  sensitive   = true
 }
