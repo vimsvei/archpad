@@ -25,3 +25,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+!/vault-keys.json
+!/timeweb-cloud.cyberduckprofile
+
+!/twc-archpad-k8s-cluster-config.yaml

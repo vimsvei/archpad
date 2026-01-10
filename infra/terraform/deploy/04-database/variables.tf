@@ -50,14 +50,14 @@ variable "postgres_port" {
 
 variable "postgres_admin_database" {
   type        = string
-  description = "Admin database name (usually 'postgres')"
-  default     = "postgres"
+  description = "Admin database name (usually 'default_db' for TimeWeb Cloud managed PostgreSQL)"
+  default     = "default_db"
 }
 
 variable "postgres_admin_user" {
   type        = string
-  description = "PostgreSQL admin user (usually 'postgres')"
-  default     = "postgres"
+  description = "PostgreSQL admin user (retrieved from Vault secret database-cluster, key POSTGRES_USERNAME)"
+  default     = null
   sensitive   = true
 }
 
@@ -70,8 +70,8 @@ variable "postgres_admin_password" {
 
 variable "postgres_ssl_mode" {
   type        = string
-  description = "PostgreSQL SSL mode (require, prefer, disable, etc.)"
-  default     = "prefer"
+  description = "PostgreSQL SSL mode. Supported values: require (default), verify-full, verify-ca, disable. Для подключения через Traefik TCP проксирование обычно используется 'disable'"
+  default     = "disable"
 }
 
 variable "postgres_connect_timeout" {
@@ -157,8 +157,20 @@ variable "postgres_traefik_host" {
   default     = null
 }
 
+variable "postgres_traefik_port" {
+  type        = number
+  description = "Порт Traefik для подключения к PostgreSQL через домен (по умолчанию используется postgres_port, но может быть 8080 или другой порт LoadBalancer)"
+  default     = null
+}
+
 variable "postgres_traefik_namespace" {
   type        = string
   description = "Namespace для Traefik IngressRouteTCP (по умолчанию используется namespace из Traefik)"
   default     = null
+}
+
+variable "k8s_namespace_traefik" {
+  type        = string
+  description = "Kubernetes namespace для Traefik (используется для port-forward к Traefik Service)"
+  default     = "traefik"
 }

@@ -5,10 +5,11 @@
 # выполнен перед созданием ресурсов PostgreSQL
 
 # PROJECT_DB_USER - используется для PROJECT_DB и TENANT_DB
-# Примечание: Если используется port-forward, зависит от null_resource.postgres_port_forward
-# Если используется Traefik routing, маршрутизация создается в модуле 01-traefik и будет готова до запуска этого модуля
+# Примечание: Если используется Traefik routing, маршрутизация создается в модуле 01-traefik и будет готова до запуска этого модуля
+# Если используется port-forward, порт-форвард создается через null_resource.postgres_port_forward
+# Зависим от маркерного ресурса postgres_connection_ready, который синхронизирует подключение
 resource "postgresql_role" "project_user" {
-  depends_on = var.use_kubectl_port_forward ? [null_resource.postgres_port_forward[0]] : []
+  depends_on = [null_resource.postgres_connection_ready]
 
   name            = local.db_users_config.project.user_name
   password        = local.db_passwords.project
@@ -20,7 +21,7 @@ resource "postgresql_role" "project_user" {
 
 # HASURA_DB_USER
 resource "postgresql_role" "hasura_user" {
-  depends_on = var.use_kubectl_port_forward ? [null_resource.postgres_port_forward[0]] : []
+  depends_on = [null_resource.postgres_connection_ready]
 
   name            = local.db_users_config.hasura.user_name
   password        = local.db_passwords.hasura
@@ -32,7 +33,7 @@ resource "postgresql_role" "hasura_user" {
 
 # KRATOS_DB_USER
 resource "postgresql_role" "kratos_user" {
-  depends_on = var.use_kubectl_port_forward ? [null_resource.postgres_port_forward[0]] : []
+  depends_on = [null_resource.postgres_connection_ready]
 
   name            = local.db_users_config.kratos.user_name
   password        = local.db_passwords.kratos
@@ -44,7 +45,7 @@ resource "postgresql_role" "kratos_user" {
 
 # HYDRA_DB_USER
 resource "postgresql_role" "hydra_user" {
-  depends_on = var.use_kubectl_port_forward ? [null_resource.postgres_port_forward[0]] : []
+  depends_on = [null_resource.postgres_connection_ready]
 
   name            = local.db_users_config.hydra.user_name
   password        = local.db_passwords.hydra
@@ -56,7 +57,7 @@ resource "postgresql_role" "hydra_user" {
 
 # TOLGEE_DB_USER
 resource "postgresql_role" "tolgee_user" {
-  depends_on = var.use_kubectl_port_forward ? [null_resource.postgres_port_forward[0]] : []
+  depends_on = [null_resource.postgres_connection_ready]
 
   name            = local.db_users_config.tolgee.user_name
   password        = local.db_passwords.tolgee
