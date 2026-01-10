@@ -1,0 +1,28 @@
+# ============================================================================
+# Пример конфигурации для модуля 03-certificates
+# ============================================================================
+
+# Скопируйте этот файл в terraform.tfvars и заполните своими значениями
+# Или используйте общий terraform.tfvars в корне terraform/
+
+# ----------------------------------------------------------------------------
+# Обязательные переменные
+# ----------------------------------------------------------------------------
+acme_email = "contact@zelentsov.solutions"  # Email для Let's Encrypt
+
+# ----------------------------------------------------------------------------
+# Опциональные переменные
+# ----------------------------------------------------------------------------
+domain_root = "archpad.pro"  # Корневой домен для wildcard сертификата
+
+# Для использования DNS-01 challenge (вместо HTTP-01):
+# timeweb_dns01_group_name = "timeweb-dns01-group-xxxxx"  # Получить после установки webhook
+# timeweb_dns01_solver_name = "timeweb-dns01-solver"
+
+# Container Registry (опционально)
+# registry_url = "archpad-cr.registry.twcstorage.ru"
+# registry_token = "your-registry-token"
+
+# Kubernetes конфигурация (опционально)
+# kubeconfig_path = ""  # По умолчанию используется из init/kubeconfig.yaml
+# kubeconfig_context = null
