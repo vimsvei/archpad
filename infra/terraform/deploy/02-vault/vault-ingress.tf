@@ -1,30 +1,21 @@
 # Используем null_resource с kubectl для создания IngressRoute после установки Traefik CRD
 # Это позволяет избежать ошибок на этапе plan, когда CRD еще не установлен
+# IngressRoute будет создан только если Traefik уже развернут
 
 resource "null_resource" "vault_ingressroute" {
+  count = local.traefik_ready ? 1 : 0
+
   depends_on = [
-    time_sleep.wait_for_traefik_crd,
     helm_release.vault,
   ]
 
   provisioner "local-exec" {
     command = <<-EOT
       kubectl apply --kubeconfig=${local.kubeconfig_file} -f - <<'YAML_EOF'
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: vault
-  namespace: ${kubernetes_namespace.vault.metadata[0].name}
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`${var.vault_host}`)
-      kind: Rule
-      services:
-        - name: vault
-          port: 8200
-  tls: {}
+${templatefile("${path.module}/ingressroute.yaml.tpl", {
+  vault_namespace = kubernetes_namespace.vault.metadata[0].name
+  vault_host      = var.vault_host
+})}
 YAML_EOF
     EOT
   }
@@ -39,7 +30,7 @@ YAML_EOF
   triggers = {
     vault_namespace = kubernetes_namespace.vault.metadata[0].name
     vault_host      = var.vault_host
-    traefik_crd     = time_sleep.wait_for_traefik_crd.id
+    traefik_crd     = try(local.traefik_crd_ready, "not-ready")
     vault_release   = helm_release.vault.id
     kubeconfig_file = local.kubeconfig_file
   }

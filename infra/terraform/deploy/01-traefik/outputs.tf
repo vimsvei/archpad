@@ -7,6 +7,16 @@ output "traefik_service" {
   }
 }
 
+output "traefik_namespace" {
+  description = "Traefik namespace name"
+  value       = kubernetes_namespace.traefik.metadata[0].name
+}
+
+output "traefik_crd_ready" {
+  description = "Traefik CRD ready signal (for dependent services like Vault)"
+  value       = time_sleep.wait_for_traefik_crd.id
+}
+
 locals {
   traefik_status = try(data.kubernetes_service.traefik.status, [])
   traefik_status_any = try(jsondecode(jsonencode(local.traefik_status)), [])
@@ -18,7 +28,7 @@ output "traefik_lb_ip" {
     External IP of Traefik LoadBalancer (публичный IP для доступа к сервисам)
     
     ВАЖНО: Этот IP адрес нужно использовать для настройки DNS записей:
-    - hasura.archpad.pro → этот IP
+    - traefik.archpad.pro → этот IP
     - vault.archpad.pro → этот IP
     - *.archpad.pro → этот IP (wildcard)
     

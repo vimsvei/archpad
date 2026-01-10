@@ -40,7 +40,7 @@ resource "helm_release" "traefik" {
     # ServiceAccount настройки
     # Если используется registry, используем существующий ServiceAccount
     # Иначе Helm chart создаст свой ServiceAccount
-    serviceAccountName = local.registry_enabled ? kubernetes_service_account.registry_sa["traefik"].metadata[0].name : null
+    serviceAccountName = local.registry_enabled ? kubernetes_service_account.registry_sa[0].metadata[0].name : null
     
     deployment = {
       replicas = 1  # Уменьшаем количество реплик для отладки

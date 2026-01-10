@@ -1,85 +1,105 @@
-# Terraform конфигурация для Archpad на TimeWeb Cloud
+# Terraform Infrastructure для ArchPad
 
-Конфигурация разделена на два этапа для упрощения развертывания:
+Этот каталог содержит Terraform конфигурации для развертывания инфраструктуры ArchPad в TimeWeb Cloud.
+
+## Быстрый старт
+
+1. **Скопируйте файл переменных:**
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+
+2. **Заполните переменные в `terraform.tfvars`**
+
+3. **Следуйте инструкциям по порядку развертывания (см. ниже)**
 
 ## Структура
 
-- **`init/`** - Базовая инфраструктура (кластер, БД)
-- **`deploy/`** - Развертывание сервисов в Kubernetes
+```
+terraform/
+├── terraform.tfvars          # Общий файл переменных (создайте из terraform.tfvars.example)
+├── terraform.tfvars.example  # Пример файла переменных
+├── doc/                      # Вся документация (см. doc/README.md)
+├── init/                     # Инициализация инфраструктуры (K8s, DB, S3)
+└── deploy/                   # Пошаговое развертывание сервисов
+    ├── 01-traefik/           # Traefik Ingress Controller
+    ├── 02-vault/             # HashiCorp Vault
+    └── ...
+```
 
 ## Порядок развертывания
 
-### 1. Создание базовой инфраструктуры
-
-Перейдите в папку `init/`:
-
 ```bash
+# 1. Инициализация инфраструктуры
 cd init
 terraform init
-terraform plan
 terraform apply
-```
 
-Это создаст:
-- Kubernetes кластер (k0s)
-- Node группу для рабочих узлов
-- PostgreSQL кластер
-- Базы данных
-
-Kubeconfig будет автоматически сохранен в `init/kubeconfig.yaml`.
-
-### 2. Развертывание сервисов
-
-После успешного создания кластера перейдите в папку `deploy/`:
-
-```bash
-cd ../deploy
+# 2. Развертывание Traefik
+cd ../deploy/01-traefik
 terraform init
-```
-
-Настройте переменные в `terraform.tfvars`:
-- `hasura_database_url` - URL для подключения к БД Hasura
-- `hasura_metadata_database_url` - URL для метаданных Hasura
-- `timeweb_dns01_group_name` - GroupName для cert-manager webhook
-- `timeweb_dns01_solver_name` - SolverName для cert-manager webhook
-
-Затем выполните:
-
-```bash
-terraform plan
 terraform apply
+
+# 3. Развертывание Vault
+cd ../02-vault
+terraform init
+terraform apply
+
+# ... и т.д.
 ```
 
-Это развернет:
-- Traefik (Ingress Controller с LoadBalancer)
-- Cert-Manager (автоматические TLS сертификаты)
-- Hasura (GraphQL Engine)
-- Vault (хранение секретов)
-- Container Registry (опционально)
+## Использование общего terraform.tfvars
 
-### 3. Получение публичного IP и настройка DNS
+Все модули используют один общий файл `terraform.tfvars` из корня `terraform/`.
 
-После развертывания получите публичный IP:
+Файлы `terraform.tfvars` в подпапках являются символическими ссылками на общий файл.
 
+### Создание файла переменных
+
+1. Скопируйте пример файла:
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+
+2. Заполните переменные в `terraform.tfvars`
+
+3. Файл автоматически будет использоваться всеми модулями через симлинки
+
+### Если нужно переопределить переменные для конкретного модуля
+
+Вы можете создать локальный файл `terraform.tfvars.local` в папке модуля или использовать флаг:
 ```bash
-cd deploy
-terraform output traefik_lb_ip
+terraform apply -var-file=terraform.tfvars.local
 ```
 
-Настройте DNS записи для ваших доменов на полученный IP:
-- `hasura.archpad.pro` → IP Traefik
-- `vault.archpad.pro` → IP Traefik
-- `*.archpad.pro` → IP Traefik (wildcard)
+## Документация
 
-## Преимущества разделения
+Вся подробная документация находится в папке `doc/`:
+- `doc/README.md` - обзор документации
+- `doc/DNS_SETUP.md` - настройка DNS
+- `doc/TLS_CERTIFICATES.md` - настройка TLS
+- `doc/DEBUG.md` - отладка Traefik
+- `doc/RECOVERY.md` - восстановление после ошибок
+- `doc/VAULT_DEBUG.md` - отладка Vault
 
-1. **Независимость**: Базовую инфраструктуру можно создавать отдельно
-2. **Простота**: Нет проблем с kubeconfig на этапе plan
-3. **Гибкость**: Можно обновлять сервисы без пересоздания кластера
-4. **Безопасность**: Разделение ответственности между этапами
+Каждый модуль также имеет свой `README.md` с инструкциями по использованию.
 
-## Подробности
+## Безопасность
 
-См. README в каждой папке:
-- [`init/README.md`](init/README.md)
-- [`deploy/README.md`](deploy/README.md)
+⚠️ **ВАЖНО:** Файл `terraform.tfvars` содержит чувствительные данные (токены, ключи) и **не должен** попадать в git.
+
+Файл уже добавлен в `.gitignore`, но убедитесь, что он не отслеживается:
+```bash
+git status
+```
+
+Если файл уже был закоммичен ранее, удалите его из истории:
+```bash
+git rm --cached terraform.tfvars
+```
+
+## Зависимости между модулями
+
+- `init/` - основа, создает K8s кластер, DB, S3
+- `deploy/01-traefik/` зависит от `init/` (kubeconfig, S3 bucket)
+- `deploy/02-vault/` зависит от `init/` (kubeconfig, S3 bucket) и `01-traefik/` (Traefik CRD)

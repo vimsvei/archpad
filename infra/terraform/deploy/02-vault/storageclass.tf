@@ -4,7 +4,7 @@
 # Используем YAML манифесты, так как Helm chart может быть недоступен
 
 resource "null_resource" "local_path_provisioner" {
-  count = var.s3_endpoint == null ? 1 : 0
+  count = var.use_s3_storage ? 0 : 1
 
   provisioner "local-exec" {
     command = <<-EOT

@@ -1,18 +1,11 @@
-# Container Registry configuration for Traefik and Vault namespaces
-
-locals {
-  registry_namespaces = [
-    "traefik",
-    "vault",
-  ]
-}
+# Container Registry configuration for Traefik namespace
 
 resource "kubernetes_secret" "registry_credentials" {
-  for_each = local.registry_enabled ? toset(local.registry_namespaces) : toset([])
+  count = local.registry_enabled ? 1 : 0
 
   metadata {
     name      = "registry-credentials"
-    namespace = each.value
+    namespace = var.k8s_namespace_traefik
   }
 
   type = "kubernetes.io/dockerconfigjson"
@@ -31,15 +24,15 @@ resource "kubernetes_secret" "registry_credentials" {
 }
 
 resource "kubernetes_service_account" "registry_sa" {
-  for_each = local.registry_enabled ? toset(local.registry_namespaces) : toset([])
+  count = local.registry_enabled ? 1 : 0
 
   metadata {
     name      = "registry-service-account"
-    namespace = each.value
+    namespace = var.k8s_namespace_traefik
   }
 
   image_pull_secret {
-    name = kubernetes_secret.registry_credentials[each.value].metadata[0].name
+    name = kubernetes_secret.registry_credentials[0].metadata[0].name
   }
 
   depends_on = [kubernetes_secret.registry_credentials]

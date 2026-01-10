@@ -1,0 +1,12 @@
+# TimeWeb Cloud API token (не требуется для Traefik, но может быть использован для других ресурсов)
+# twc_token = "your-token-here"
+
+# Путь к kubeconfig (по умолчанию используется из init/kubeconfig.yaml)
+kubeconfig_path = ""
+
+# Container Registry (опционально)
+# registry_url = "archpad-cr.registry.twcstorage.ru"
+# registry_token = "your-registry-token-here"
+
+# Namespace для Traefik
+# k8s_namespace_traefik = "traefik"

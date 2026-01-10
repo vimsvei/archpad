@@ -1,0 +1,29 @@
+# TimeWeb Cloud API token (требуется для создания S3 bucket, если он еще не создан)
+# twc_token = "your-token-here"
+
+# Путь к kubeconfig (по умолчанию используется из init/kubeconfig.yaml)
+kubeconfig_path = ""
+
+# Домен для Vault UI
+vault_host = "vault.archpad.pro"
+
+# Container Registry (опционально)
+# registry_url = "archpad-cr.registry.twcstorage.ru"
+# registry_token = "your-registry-token-here"
+
+# S3 Storage для Vault (опционально, но рекомендуется для production)
+# Bucket берется из init через remote state (archpad-s3-bucket)
+# Если use_s3_storage = true, Vault будет использовать S3 как backend storage вместо Raft
+use_s3_storage = true                      # Включить использование S3 storage для Vault
+s3_endpoint = "https://s3.timeweb.com"     # TimeWeb S3 endpoint (по умолчанию https://s3.timeweb.com)
+s3_access_key = "your-access-key"          # TimeWeb S3 access key (обязательно если use_s3_storage = true)
+s3_secret_key = "your-secret-key"          # TimeWeb S3 secret key (обязательно если use_s3_storage = true)
+s3_region = "ru-1"                         # TimeWeb S3 region (по умолчанию ru-1)
+vault_s3_path = "vault_storage"            # Префикс (папка) в S3 bucket для Vault (по умолчанию vault_storage)
+
+# Vault configuration (после инициализации и разблокировки Vault)
+# vault_address = "https://vault.archpad.pro"  # Vault API address (опционально, будет использован vault_host)
+# vault_token = "your-root-token-here"         # Vault root token (обязательно для настройки secrets engines)
+# enable_kv_secrets_engine = true              # Включить KV secrets engine автоматически (по умолчанию true)
+# kv_secrets_engine_path = "kv"                # Путь для KV secrets engine (по умолчанию kv)
+# kv_secrets_engine_version = 2                # Версия KV secrets engine: 1 или 2 (по умолчанию 2)

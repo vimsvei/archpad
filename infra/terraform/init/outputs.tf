@@ -68,3 +68,11 @@ output "db_instances" {
     }
   }
 }
+
+output "s3_bucket" {
+  description = "S3 bucket summary"
+  value = {
+    id   = twc_s3_bucket.archpad-s3-bucket.id
+    name = twc_s3_bucket.archpad-s3-bucket.name
+  }
+}
