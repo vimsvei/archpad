@@ -1,20 +1,3 @@
-# Traefik LoadBalancer информация
-data "kubernetes_service" "traefik" {
-  metadata {
-    name      = "traefik"
-    namespace = kubernetes_namespace.traefik.metadata[0].name
-  }
-
-  depends_on = [helm_release.traefik]
-}
-
-locals {
-  traefik_status = try(data.kubernetes_service.traefik.status, [])
-  # Превращаем в JSON и обратно, чтобы работать как с типом "any"
-  traefik_status_any = try(jsondecode(jsonencode(local.traefik_status)), [])
-  traefik_lb_ingress = try(local.traefik_status_any[0].load_balancer[0].ingress, [])
-}
-
 output "traefik_service" {
   description = "Traefik Service (LoadBalancer) basics"
   value = {
@@ -22,6 +5,12 @@ output "traefik_service" {
     name      = data.kubernetes_service.traefik.metadata[0].name
     type      = data.kubernetes_service.traefik.spec[0].type
   }
+}
+
+locals {
+  traefik_status = try(data.kubernetes_service.traefik.status, [])
+  traefik_status_any = try(jsondecode(jsonencode(local.traefik_status)), [])
+  traefik_lb_ingress = try(local.traefik_status_any[0].load_balancer[0].ingress, [])
 }
 
 output "traefik_lb_ip" {

@@ -29,5 +29,7 @@ resource "helm_release" "cert_manager" {
       value = kubernetes_service_account.registry_sa["cert-manager"].metadata[0].name
     }
   }
+
+  depends_on = [kubernetes_namespace.cert_manager]
 }
 

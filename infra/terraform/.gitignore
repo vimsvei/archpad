@@ -1,3 +1,5 @@
 terraform.tfvars
 *.tfvars
 .kubeconfig
+
+twc-archpad-k8s-cluster-config.yaml

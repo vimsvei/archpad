@@ -135,10 +135,6 @@ resource "kubernetes_manifest" "hasura_ingressroute" {
     }
   }
 
-  depends_on = [
-    helm_release.traefik,
-  ]
-  
-  # TLSStore создается условно, поэтому зависимость не обязательна
-  # depends_on = [kubernetes_manifest.traefik_tlsstore_default]
+  # Traefik развернут в 1st-step, поэтому явная зависимость не требуется
+  # TLSStore создается в этом же шаге (3rd-step)
 }

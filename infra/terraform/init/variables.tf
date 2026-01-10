@@ -40,6 +40,12 @@ variable "twc_network_id" {
   default     = "network-974c97ae99c64b41b106db46e2efdaa6"
 }
 
+variable "twc_s3_bucket_name" {
+  description = "S3 Bucket Name"
+  type        = string
+  default     = "archpad-s3"
+}
+
 variable "databases" {
   description = "Databases inside managed DB cluster"
   type = map(object({

@@ -10,11 +10,6 @@ variable "kubeconfig_context" {
   default     = null
 }
 
-variable "k8s_namespace_traefik" {
-  type        = string
-  default     = "traefik"
-}
-
 variable "hasura_admin_secret" {
   description = "Hasura admin secret"
   type        = string
@@ -43,12 +38,6 @@ variable "domain_root" {
   description = "Root domain zone"
   type        = string
   default     = "archpad.pro"
-}
-
-variable "vault_host" {
-  description = "Public host for Vault UI/API"
-  type        = string
-  default     = "vault.archpad.pro"
 }
 
 variable "acme_email" {

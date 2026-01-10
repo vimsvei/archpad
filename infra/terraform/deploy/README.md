@@ -1,67 +1,82 @@
 # Deploy - Развертывание сервисов в Kubernetes
 
-Эта папка содержит Terraform конфигурацию для развертывания сервисов в Kubernetes:
-- Traefik (Ingress Controller с LoadBalancer)
-- Cert-Manager (автоматические TLS сертификаты)
-- Hasura (GraphQL Engine)
-- Vault (хранение секретов)
-- Container Registry (опционально)
+Развертывание происходит в строгой последовательности:
+
+1. **1st-step** - Traefik и Vault
+2. **2nd-step** - Остальные сервисы (Cert-Manager, Hasura и др.)
 
 ## Предварительные требования
 
-**ВАЖНО:** Перед развертыванием сервисов нужно создать базовую инфраструктуру:
+Перед началом развертывания нужно создать базовую инфраструктуру:
 
-1. Перейдите в папку `../init`
-2. Выполните `terraform apply` для создания кластера и БД
-3. Дождитесь завершения создания (kubeconfig будет сохранен в `../init/kubeconfig.yaml`)
+```bash
+cd ../init
+terraform init
+terraform apply
+```
 
-## Использование
+Это создаст:
+- Kubernetes кластер
+- PostgreSQL кластер
+- Базы данных
+- Kubeconfig файл
 
-1. **Инициализация:**
-   ```bash
-   terraform init
-   ```
+## Порядок развертывания
 
-2. **Настройка переменных:**
-   
-   Отредактируйте `terraform.tfvars`:
-   - `hasura_database_url` - URL для подключения к БД Hasura
-   - `hasura_metadata_database_url` - URL для метаданных Hasura
-   - `timeweb_dns01_group_name` - GroupName для cert-manager webhook
-   - `timeweb_dns01_solver_name` - SolverName для cert-manager webhook
+### Шаг 1: Traefik и Vault
 
-3. **Проверка плана:**
-   ```bash
-   terraform plan
-   ```
+```bash
+cd 1st-step
+terraform init
+terraform plan
+terraform apply
+```
 
-4. **Развертывание:**
-   ```bash
-   terraform apply
-   ```
+**ВАЖНО:** После развертывания получите публичный IP:
 
-5. **Получение публичного IP:**
-   ```bash
-   terraform output traefik_lb_ip
-   ```
+```bash
+terraform output traefik_lb_ip
+```
 
-6. **Настройка DNS:**
-   
-   Используйте полученный IP для настройки DNS записей:
-   - `hasura.archpad.pro` → IP Traefik
-   - `vault.archpad.pro` → IP Traefik
-   - `*.archpad.pro` → IP Traefik (wildcard)
+Используйте этот IP для настройки DNS записей:
+- `vault.archpad.pro` → IP Traefik
+- `hasura.archpad.pro` → IP Traefik
+- `*.archpad.pro` → IP Traefik (wildcard)
 
-## Компоненты
+После развертывания Traefik и Vault будут доступны:
+- Vault: `https://vault.archpad.pro` (если настроен DNS)
 
-- **Traefik** - Ingress Controller с LoadBalancer (публичный доступ)
-- **Cert-Manager** - Автоматические TLS сертификаты (Let's Encrypt)
-- **Hasura** - GraphQL Engine
-- **Vault** - Хранилище секретов
-- **Container Registry** - Поддержка приватного реестра образов (опционально)
+### Шаг 2: Остальные сервисы
 
-## Зависимости
+```bash
+cd ../2nd-step
+terraform init
+```
 
-Deploy использует remote state из `../init/terraform.tfstate` для получения:
-- Kubeconfig файла (`../init/kubeconfig.yaml`)
-- Информации о кластере и БД (через remote state)
+**Настройте переменные в `terraform.tfvars`:**
+- `hasura_database_url` - URL для подключения к БД Hasura
+- `hasura_metadata_database_url` - URL для метаданных Hasura
+- `timeweb_dns01_group_name` - GroupName для cert-manager webhook
+- `timeweb_dns01_solver_name` - SolverName для cert-manager webhook
+
+```bash
+terraform plan
+terraform apply
+```
+
+После развертывания все сервисы должны быть доступны:
+- `https://hasura.archpad.pro` (Hasura)
+- `https://vault.archpad.pro` (Vault)
+
+## Структура
+
+- **`1st-step/`** - Traefik (Ingress Controller) и Vault (хранение секретов)
+- **`2nd-step/`** - Cert-Manager, Hasura, TLS и другие сервисы
+
+Каждый шаг использует remote state из предыдущих шагов для получения необходимой информации.
+
+## Дополнительная информация
+
+См. README в каждой папке:
+- [`1st-step/README.md`](1st-step/README.md)
+- [`2nd-step/README.md`](2nd-step/README.md)
