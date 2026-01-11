@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pgadmin-servers
-  namespace: platform
+  namespace: pgadmin
   annotations:
     argocd.argoproj.io/sync-wave: "20"
 data:

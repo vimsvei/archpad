@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pgadmin
-  namespace: platform
+  namespace: pgadmin
   annotations:
     argocd.argoproj.io/sync-wave: "30"
   labels:
