@@ -11,14 +11,14 @@ data:
 
     serve:
       public:
-        base_url: https://kratos.archpad.pro
+        base_url: https://auth.archpad.pro
         port: 4433
         cors:
           enabled: true
           allowed_origins:
             - https://portal.archpad.pro
-            - https://kratos.archpad.pro
-            - https://hydra.archpad.pro
+            - https://auth.archpad.pro
+            - https://authz.archpad.pro
           allowed_methods:
             - GET
             - POST

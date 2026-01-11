@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`hydra.archpad.pro`)
+    - match: Host(`authz.archpad.pro`)
       kind: Rule
       services:
         - name: hydra
@@ -32,7 +32,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`hydra.archpad.pro`)
+    - match: Host(`authz.archpad.pro`)
       kind: Rule
       services:
         - name: hydra
