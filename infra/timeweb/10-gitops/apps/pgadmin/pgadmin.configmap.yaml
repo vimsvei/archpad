@@ -1,0 +1,14 @@
+# ConfigMap с servers.json для pgAdmin
+# Подключение к PostgreSQL можно настроить через UI pgAdmin или обновить этот файл
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-servers
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+data:
+  servers.json: |
+    {
+      "Servers": {}
+    }
