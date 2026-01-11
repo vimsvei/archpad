@@ -4,7 +4,7 @@ metadata:
   name: archpad-wildcard
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "40"
+    argocd.argoproj.io/sync-wave: "35"
 spec:
   secretName: wildcard-archpad-pro-tls
   issuerRef:

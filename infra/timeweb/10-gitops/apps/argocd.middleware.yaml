@@ -4,7 +4,7 @@ metadata:
   name: redirect-to-https
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "20"
+    argocd.argoproj.io/sync-wave: "40"
 spec:
   redirectScheme:
     scheme: https
