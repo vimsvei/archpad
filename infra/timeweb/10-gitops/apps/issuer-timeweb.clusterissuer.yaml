@@ -6,7 +6,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "30"
 spec:
   acme:
-    email: you@archpad.pro
+    email: admin@archpad.pro
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: le-timeweb-account-key
