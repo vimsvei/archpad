@@ -1,0 +1,20 @@
+# IngressRoute для HTTP редиректа на HTTPS для дашборда Traefik
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard-http
+  namespace: traefik
+  annotations:
+    argocd.argoproj.io/sync-wave: "16"
+spec:
+  entryPoints:
+    - web  # Только HTTP entrypoint
+  routes:
+    - match: Host(`proxy.archpad.pro`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+      middlewares:
+        - name: redirect-to-https
+          namespace: traefik
