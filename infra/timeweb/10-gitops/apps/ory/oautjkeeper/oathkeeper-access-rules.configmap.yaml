@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oathkeeper-access-rules
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+data:
+  access-rules.yml: |
+    # ==== GraphQL Hasura через Oathkeeper ====
+    - id: hasura-graphql
+      match:
+        url: <https|http>://api.archpad.pro/graphql<(/.*)?>
+        methods: ["GET", "POST", "OPTIONS"]
+      upstream:
+        url: http://hasura:8080
+        preserve_host: true
+        strip_path: /graphql
+      authenticators:
+        - handler: oauth2_introspection
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers:
+              X-Hasura-User-Id: "{{ .Subject }}"
+              X-Hasura-Role: "public"
+              X-Hasura-Allowed-Roles: "public"
+
+    # ==== Arch-repo-service через Oathkeeper ====
+    - id: arch-repo-api
+      match:
+        url: <https|http>://api.archpad.pro/rest<(/.*)>
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+      upstream:
+        url: http://arch-repo:3000
+        preserve_host: true
+        strip_path: /rest
+      authenticators:
+        - handler: oauth2_introspection
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers:
+              X-Archpad-User-Id: "{{ .Subject }}"

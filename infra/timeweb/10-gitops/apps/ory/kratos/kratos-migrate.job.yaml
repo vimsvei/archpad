@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kratos-migrate
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "55"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
+        vault.hashicorp.com/agent-inject-template-kratos: |
+          {{- with secret "kv/data/archpad/demo/ory/kratos" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
+    spec:
+      serviceAccountName: kratos
+      restartPolicy: Never
+      containers:
+        - name: kratos-migrate
+          image: oryd/kratos:v25.4.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              source /vault/secrets/kratos
+              exec kratos migrate sql -e --yes -c /etc/config/kratos.yml
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config/kratos.yml
+              subPath: kratos.yml
+            - name: identity-schema
+              mountPath: /etc/config/kratos/identities/default.schema.json
+              subPath: default.schema.json
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: kratos
+        - name: identity-schema
+          configMap:
+            name: kratos-identity-schema
+  backoffLimit: 3

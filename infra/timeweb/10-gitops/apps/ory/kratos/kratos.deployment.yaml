@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kratos
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kratos
+  template:
+    metadata:
+      labels:
+        app: kratos
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
+        vault.hashicorp.com/agent-inject-template-kratos: |
+          {{- with secret "kv/data/archpad/demo/ory/kratos" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
+    spec:
+      serviceAccountName: kratos
+      containers:
+        - name: kratos
+          image: oryd/kratos:v25.4.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              source /vault/secrets/kratos
+              exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
+          ports:
+            - name: public
+              containerPort: 4433
+              protocol: TCP
+            - name: admin
+              containerPort: 4434
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config/kratos.yml
+              subPath: kratos.yml
+            - name: identity-schema
+              mountPath: /etc/config/kratos/identities/default.schema.json
+              subPath: default.schema.json
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4434
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4434
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: kratos
+        - name: identity-schema
+          configMap:
+            name: kratos-identity-schema

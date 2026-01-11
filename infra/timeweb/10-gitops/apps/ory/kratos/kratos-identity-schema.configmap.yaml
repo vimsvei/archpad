@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kratos-identity-schema
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+data:
+  default.schema.json: |
+    {
+      "$id": "https://archpad.local/kratos/identities/default.schema.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ArchPad User",
+      "type": "object",
+      "properties": {
+        "traits": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "title": "E-mail",
+              "type": "string",
+              "format": "email",
+              "ory.sh/kratos": {
+                "credentials": {
+                  "password": {
+                    "identifier": true
+                  },
+                  "code": {
+                    "identifier": true,
+                    "via": "email"
+                  }
+                },
+                "recovery": {
+                  "via": "email"
+                },
+                "verification": {
+                  "via": "email"
+                }
+              },
+              "minLength": 5,
+              "maxLength": 320
+            },
+            "phone": {
+              "type": "string",
+              "format": "tel",
+              "title": "Phone number"
+            },
+            "name": {
+              "type": "object",
+              "required": [ "first", "last"],
+              "properties": {
+                "first": {
+                  "title": "First name",
+                  "type": "string"
+                },
+                "last": {
+                  "title": "Last name",
+                  "type": "string"
+                }
+              }
+            },
+            "accepted_tos": {
+              "title": "Terms of Service",
+              "type": "boolean"
+            }
+          },
+          "required": ["email"],
+          "additionalProperties": false
+        }
+      }
+    }

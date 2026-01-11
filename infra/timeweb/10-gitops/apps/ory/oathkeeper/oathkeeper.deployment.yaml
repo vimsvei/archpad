@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oathkeeper
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oathkeeper
+  template:
+    metadata:
+      labels:
+        app: oathkeeper
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        # ВАЖНО: Пользователь указал путь "/v1/kv/data/archpad/demo/ory/oauthkeeper"
+        # Если путь должен быть "oathkeeper" вместо "oauthkeeper", измените здесь
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-oathkeeper: "kv/data/archpad/demo/ory/oauthkeeper"
+        vault.hashicorp.com/agent-inject-template-oathkeeper: |
+          {{- with secret "kv/data/archpad/demo/ory/oauthkeeper" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
+    spec:
+      serviceAccountName: oathkeeper
+      containers:
+        - name: oathkeeper
+          image: oryd/oathkeeper:v25.4.0
+          command:
+            - serve
+            - --config=/etc/oathkeeper/config.yml
+          command: ["sh", "-c"]
+          args:
+            - |
+              source /vault/secrets/oathkeeper
+              exec oathkeeper serve --config=/etc/oathkeeper/config.yml
+          env:
+            - name: LOG_LEVEL
+              value: "info"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/oathkeeper/config.yml
+              subPath: config.yml
+            - name: access-rules
+              mountPath: /etc/oathkeeper/access-rules.yml
+              subPath: access-rules.yml
+              readOnly: true
+          ports:
+            - name: proxy
+              containerPort: 4455
+              protocol: TCP
+            - name: api
+              containerPort: 4456
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/alive
+              port: 4456
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4456
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: oathkeeper
+        - name: access-rules
+          configMap:
+            name: oathkeeper-access-rules
