@@ -55,9 +55,9 @@ spec:
           dataStorage:
             enabled: true
             size: 10Gi
-            # Используем стандартный StorageClass кластера
-            # Если local-path недоступен, будет использован default
-            storageClass: ""  # Пустая строка использует default StorageClass
+            # Используем hostpath StorageClass (временное решение)
+            # Для production рекомендуется использовать S3 storage
+            storageClass: "hostpath"
             accessMode: ReadWriteOnce
 
           # Отключаем extraConfig (не используем S3)

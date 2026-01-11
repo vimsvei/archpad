@@ -1,0 +1,18 @@
+# PersistentVolume для Vault на основе hostPath
+# Это временное решение до настройки S3 storage
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vault-data-pv
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+  hostPath:
+    path: /var/lib/vault-data
+    type: DirectoryOrCreate
