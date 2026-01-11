@@ -14,6 +14,7 @@ resources:
   - apps/ory/kratos.app.yaml
   - apps/ory/hydra.app.yaml
   - apps/ory/oathkeeper.app.yaml
+  - apps/pgadmin/pgadmin.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
@@ -39,12 +40,4 @@ resources:
   - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml
 
-  # pgAdmin (после сертификатов и vault)
-  - apps/pgadmin/pgadmin.secret.yaml
-  - apps/pgadmin/pgadmin.configmap.yaml
-  - apps/pgadmin/pgadmin.deployment.yaml
-  - apps/pgadmin/pgadmin.service.yaml
-  - apps/pgadmin/pgadmin-redirect-to-https.middleware.yaml
-  - apps/pgadmin/pgadmin-http.ingressroute.yaml
-  - apps/pgadmin/pgadmin.ingressroute.yaml
 
