@@ -49,18 +49,18 @@ spec:
             port: 8200
 
           # PersistentVolume не нужен при использовании S3 storage
+          # Но Vault все еще нужен доступ к /vault/data для временных файлов
           dataStorage:
             enabled: false
 
-          # PersistentVolume не нужен при использовании S3 storage
-          # Но Vault все еще нужен доступ к /vault/data для временных файлов
-          # Используем emptyDir с правильными правами через securityContext
-          dataStorage:
-            enabled: true
-            size: 1Gi
-            storageClass: ""  # Используем default (emptyDir будет создан автоматически)
-            accessMode: ReadWriteOnce
-            mountPath: /vault/data
+          # Используем extraVolumes для добавления emptyDir вместо PVC
+          # Это нужно для временных файлов, даже при использовании S3
+          extraVolumes:
+            - type: emptyDir
+              name: data
+              config:
+                medium: ""
+                sizeLimit: "1Gi"
 
           # Настройка securityContext для автоматической настройки прав доступа
           # fsGroup автоматически настроит права для volumes
