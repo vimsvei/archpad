@@ -4,7 +4,7 @@ metadata:
   name: letsencrypt-timeweb
 spec:
   acme:
-    email: PATCHME_EMAIL
+    email: admin@archpad.pro
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-timeweb-account-key
