@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # ServiceAccount
+  - hydra.serviceaccount.yaml
+
+  # ConfigMaps
+  - hydra.configmap.yaml
+  - hydra-init-client.configmap.yaml
+
+  # Migration Job (PreSync hook)
+  - hydra-migrate.job.yaml
+
+  # Deployment и Service
+  - hydra.deployment.yaml
+  - hydra.service.yaml
+
+  # Init клиентов Hydra (PostSync hook)
+  - hydra-init-client.job.yaml
+
+  # Middleware и IngressRoute
+  - hydra.middleware.yaml
+  - hydra.ingressroute.yaml
