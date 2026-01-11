@@ -10,11 +10,15 @@ spec:
   entryPoints:
     - web  # Только HTTP entrypoint
   routes:
+    # HTTP маршрут: редирект всех запросов на HTTPS
+    # Включая корень и все подпути
     - match: Host(`proxy.archpad.pro`)
       kind: Rule
       services:
+        # Используем встроенный service для редиректа
         - name: api@internal
           kind: TraefikService
       middlewares:
+        # Редирект с HTTP на HTTPS
         - name: redirect-to-https
           namespace: traefik

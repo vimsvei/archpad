@@ -17,9 +17,6 @@ spec:
     targetRevision: v0.31.0
     path: .
     helm:
-      valueFiles:
-        - values.yaml
-    helm:
       releaseName: vault
       values: |
         global:
