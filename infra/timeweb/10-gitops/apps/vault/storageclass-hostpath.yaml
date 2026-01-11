@@ -1,0 +1,11 @@
+# Простой StorageClass на основе hostPath для Vault
+# Это временное решение до настройки S3 или другого storage
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: false

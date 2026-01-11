@@ -27,6 +27,8 @@ resources:
   - apps/argocd/argocd-wildcard.certificate.yaml
 
   # Vault (после сертификатов)
+  - apps/vault/storageclass-hostpath.yaml
+  - apps/vault/persistentvolume-hostpath.yaml
   - apps/vault/vault.middleware.yaml
   - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml
