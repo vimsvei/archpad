@@ -3,6 +3,9 @@ kind: Middleware
 metadata:
   name: redirect-to-https
   namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   redirectScheme:
     scheme: https
