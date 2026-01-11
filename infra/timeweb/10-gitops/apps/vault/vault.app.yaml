@@ -52,11 +52,15 @@ spec:
           dataStorage:
             enabled: false
 
-          # Используем emptyDir для /vault/data с правильными правами
-          # Это нужно для временных файлов, даже при использовании S3
-          volumes:
-            - type: emptyDir
-              name: data
+          # PersistentVolume не нужен при использовании S3 storage
+          # Но Vault все еще нужен доступ к /vault/data для временных файлов
+          # Используем emptyDir с правильными правами через securityContext
+          dataStorage:
+            enabled: true
+            size: 1Gi
+            storageClass: ""  # Используем default (emptyDir будет создан автоматически)
+            accessMode: ReadWriteOnce
+            mountPath: /vault/data
 
           # Настройка securityContext для автоматической настройки прав доступа
           # fsGroup автоматически настроит права для volumes
@@ -64,6 +68,7 @@ spec:
             fsGroup: 1000
             runAsUser: 100
             runAsGroup: 1000
+            runAsNonRoot: true
 
           # Конфигурация S3 backend для Vault
           # Vault будет использовать отдельную папку в S3 bucket для хранения данных
