@@ -1,19 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-root
+  name: cert-manager
   namespace: argocd
 spec:
   project: platform
   source:
-    repoURL: https://gitlab.com/zs-archipad/archpad.git
-    targetRevision: HEAD
-    path: infra/timeweb/10-gitops
-    directory:
-      recurse: true
+    repoURL: https://charts.jetstack.io
+    chart: cert-manager
+    targetRevision: v1.14.6
+    helm:
+      values: |
+        installCRDs: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: cert-manager
   syncPolicy:
     automated:
       prune: true
