@@ -32,20 +32,16 @@ spec:
           isDefaultClass: true
           name: traefik
 
-        # В v38+ ВАЖНО: expose — это object, а не boolean.
+        # В v38+ структура портов изменилась - expose.default больше не используется
         ports:
           web:
             port: 8000
-            expose:
-              default: true
             exposedPort: 80
             protocol: TCP
             redirectTo:
               port: websecure
           websecure:
             port: 8443
-            expose:
-              default: true
             exposedPort: 443
             protocol: TCP
             tls:
