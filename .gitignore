@@ -28,3 +28,4 @@ yarn-error.log*
 **/public/uploads
 !/pnpm-lock.yaml
 !/infra/terraform/vault-keys.json
+/infra/timeweb/.env
