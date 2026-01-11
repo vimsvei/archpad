@@ -6,25 +6,26 @@ resources:
   - projects/platform.project.yaml
 
   # Apps (дочерние ArgoCD Applications)
-  - apps/traefik.app.yaml
-  - apps/vault.app.yaml
+  - apps/traefik/traefik.app.yaml
+  - apps/vault/vault.app.yaml
 
   # После Traefik CRD
-  - apps/traefik-redirect-to-https.middleware.yaml
-  - apps/traefik-dashboard-basicauth-secret.yaml
-  - apps/traefik-dashboard-basicauth.middleware.yaml
-  - apps/traefik-dashboard.ingressroute.yaml
-  - apps/traefik-dashboard-http.ingressroute.yaml
-  - apps/argocd.middleware.yaml
-  - apps/argocd.ingressroute.yaml
+  - apps/traefik/traefik-redirect-to-https.middleware.yaml
+  - apps/traefik/traefik-dashboard-basicauth-secret.yaml
+  - apps/traefik/traefik-dashboard-basicauth.middleware.yaml
+  - apps/traefik/traefik-dashboard-root-redirect.middleware.yaml
+  - apps/traefik/traefik-dashboard.ingressroute.yaml
+  - apps/traefik/traefik-dashboard-http.ingressroute.yaml
+  - apps/argocd/argocd.middleware.yaml
+  - apps/argocd/argocd.ingressroute.yaml
 
   # RBAC для cert-manager TimeWeb webhook (после cert-manager аддона)
-  - apps/cert-manager-timeweb-webhook-rbac.yaml
+  - apps/tls/cert-manager-timeweb-webhook-rbac.yaml
 
   # Серты (после cert-manager + webhook, которые вы ставите аддоном)
-  - apps/issuer-timeweb.clusterissuer.yaml
-  - apps/wildcard-argocd.certificate.yaml
+  - apps/tls/issuer-timeweb.clusterissuer.yaml
+  - apps/argocd/argocd-wildcard.certificate.yaml
 
   # Vault (после сертификатов)
-  - apps/vault.middleware.yaml
-  - apps/vault.ingressroute.yaml
+  - apps/vault/vault.middleware.yaml
+  - apps/vault/vault.ingressroute.yaml

@@ -1,0 +1,14 @@
+# Middleware для редиректа с корня на /dashboard/
+# Чтобы https://proxy.archpad.pro открывался без /dashboard/ в URL
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-dashboard-root-redirect
+  namespace: traefik
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+spec:
+  redirectRegex:
+    regex: "^/$"
+    replacement: "/dashboard/"
+    permanent: false
