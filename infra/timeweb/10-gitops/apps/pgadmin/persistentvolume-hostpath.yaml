@@ -1,5 +1,6 @@
 # PersistentVolume для pgAdmin на основе hostPath
 # PersistentVolume - cluster-scoped ресурс, не имеет namespace
+# Этот файл управляется через корневой kustomization.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
