@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-timeweb
+spec:
+  acme:
+    email: PATCHME_EMAIL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-timeweb-account-key
+    solvers:
+      - dns01:
+          webhook:
+            groupName: PATCHME_CLUSTER_ID.timeweb
+            solverName: PATCHME_SOLVER_NAME

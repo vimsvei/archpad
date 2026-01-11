@@ -1,0 +1,19 @@
+global:
+  # purely cosmetic; can stay
+  domain: argocd.archpad.dev
+
+configs:
+  params:
+    # We will terminate TLS at Traefik later.
+    # During bootstrap we expose HTTP via port-forward.
+    server.insecure: true
+
+server:
+  service:
+    type: ClusterIP
+
+dex:
+  enabled: true
+
+redis:
+  enabled: true
