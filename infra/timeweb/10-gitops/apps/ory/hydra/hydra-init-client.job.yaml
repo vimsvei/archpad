@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hydra-init-client
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "65"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    metadata:
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-hydra-init: "kv/data/archpad/demo/ory/hydra"
+        vault.hashicorp.com/agent-inject-template-hydra-init: |
+          {{- with secret "kv/data/archpad/demo/ory/hydra" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
+    spec:
+      serviceAccountName: hydra
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-hydra
+          image: curlimages/curl:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Waiting for Hydra admin to be ready..."
+              until curl -fsS http://hydra:4445/health/ready >/dev/null 2>&1; do
+                echo "Waiting..."
+                sleep 2
+              done
+              echo "Hydra admin is ready!"
+      containers:
+        - name: hydra-init-client
+          image: alpine:3.20
+          command: ["sh", "-c"]
+          args:
+            - |
+              apk add --no-cache curl
+              source /vault/secrets/hydra-init
+              export HYDRA_ADMIN_URL=http://hydra:4445
+              sh /init-client/entrypoint.sh
+          volumeMounts:
+            - name: init-client
+              mountPath: /init-client
+              readOnly: true
+      volumes:
+        - name: init-client
+          configMap:
+            name: hydra-init-client
+            defaultMode: 0755
+  backoffLimit: 3

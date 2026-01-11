@@ -1,0 +1,42 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hydra
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`hydra.archpad.pro`)
+      kind: Rule
+      services:
+        - name: hydra
+          port: 4444
+      middlewares:
+        - name: redirect-to-https
+          namespace: secure
+  tls:
+    secretName: wildcard-archpad-pro-tls
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hydra-http
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`hydra.archpad.pro`)
+      kind: Rule
+      services:
+        - name: hydra
+          port: 4444
+      middlewares:
+        - name: redirect-to-https
+          namespace: secure

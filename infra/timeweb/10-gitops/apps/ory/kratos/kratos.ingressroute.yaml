@@ -1,0 +1,42 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kratos
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kratos.archpad.pro`)
+      kind: Rule
+      services:
+        - name: kratos
+          port: 4433
+      middlewares:
+        - name: redirect-to-https
+          namespace: secure
+  tls:
+    secretName: wildcard-archpad-pro-tls
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kratos-http
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`kratos.archpad.pro`)
+      kind: Rule
+      services:
+        - name: kratos
+          port: 4433
+      middlewares:
+        - name: redirect-to-https
+          namespace: secure
