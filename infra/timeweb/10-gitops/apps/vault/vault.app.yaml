@@ -53,7 +53,7 @@ spec:
             enabled: false
 
           # Конфигурация S3 backend для Vault
-          # Vault будет использовать S3 bucket для хранения данных
+          # Vault будет использовать отдельную папку в S3 bucket для хранения данных
           extraConfig: |
             storage "s3" {
               access_key = "1V87S1B2IPAWIR1K0SL8"
@@ -61,7 +61,7 @@ spec:
               bucket     = "9f328daa-archpad-s3-storage"
               endpoint   = "https://s3.twcstorage.ru"
               region     = "ru-1"
-              path       = "vault/"
+              path       = "vault-secret/"
             }
 
           # Отключаем webhooks для упрощения развертывания
