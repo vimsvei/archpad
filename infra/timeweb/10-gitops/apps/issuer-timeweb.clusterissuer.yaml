@@ -15,7 +15,7 @@ spec:
           webhook:
             # ВАЖНО: groupName должен содержать ID вашего кластера (CLUSTER_ID).
             # Примерный паттерн у Timeweb: twcloud-<CLUSTER_ID>
-            groupName: twcloud-<CLUSTER_ID>
+            groupName: twcloud-1067343
             # solverName — имя солвера аддона. Если у вас в аддоне это тоже завязано на CLUSTER_ID —
             # оставьте так же, иначе замените на фактическое значение.
             solverName: twcloud
