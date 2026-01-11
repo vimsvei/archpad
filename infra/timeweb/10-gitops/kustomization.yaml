@@ -11,9 +11,9 @@ resources:
   # Apps (дочерние ArgoCD Applications)
   - apps/traefik/traefik.app.yaml
   - apps/vault/vault.app.yaml
-  - apps/ory/kratos/kratos.app.yaml
-  - apps/ory/hydra/hydra.app.yaml
-  - apps/ory/oathkeeper/oathkeeper.app.yaml
+  - apps/ory/kratos.app.yaml
+  - apps/ory/hydra.app.yaml
+  - apps/ory/oathkeeper.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
