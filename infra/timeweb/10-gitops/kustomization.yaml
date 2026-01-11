@@ -12,6 +12,9 @@ resources:
   - apps/argocd.middleware.yaml
   - apps/argocd.ingressroute.yaml
 
+  # RBAC для cert-manager TimeWeb webhook (после cert-manager аддона)
+  - apps/cert-manager-timeweb-webhook-rbac.yaml
+
   # Серты (после cert-manager + webhook, которые вы ставите аддоном)
   - apps/issuer-timeweb.clusterissuer.yaml
   - apps/wildcard-argocd.certificate.yaml
