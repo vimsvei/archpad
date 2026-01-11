@@ -14,6 +14,7 @@ resources:
   - apps/traefik-dashboard-basicauth-secret.yaml
   - apps/traefik-dashboard-basicauth.middleware.yaml
   - apps/traefik-dashboard.ingressroute.yaml
+  - apps/traefik-dashboard-http.ingressroute.yaml
   - apps/argocd.middleware.yaml
   - apps/argocd.ingressroute.yaml
 
