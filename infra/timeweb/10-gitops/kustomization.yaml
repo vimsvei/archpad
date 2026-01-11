@@ -38,4 +38,6 @@ resources:
   - apps/pgadmin/pgadmin.configmap.yaml
   - apps/pgadmin/pgadmin.deployment.yaml
   - apps/pgadmin/pgadmin.service.yaml
+  - apps/pgadmin/pgadmin-redirect-to-https.middleware.yaml
+  - apps/pgadmin/pgadmin-http.ingressroute.yaml
   - apps/pgadmin/pgadmin.ingressroute.yaml
