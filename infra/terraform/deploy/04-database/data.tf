@@ -18,41 +18,32 @@ data "vault_kv_secret_v2" "database_cluster" {
 
 locals {
   # Маппинг конфигурации баз данных
-  # Имена БД берутся из init state (outputs.db_instances) или используются ключи из databases конфигурации
-  # Имена пользователей могут быть получены из Vault, переменных или иметь значения по умолчанию
-
   # Имена пользователей могут быть получены из Vault, переменных или иметь значения по умолчанию
   # Значения по умолчанию соответствуют именам переменных окружения из init.sh
   db_user_names = {
     project = coalesce(
       try(data.vault_kv_secret_v2.database.data["ARCHPAD_DB_USER"], null),
-      var.archpad_db_user_name,
-      "archpad_db_user"
+      var.archpad_db_user_name
     )
     tenant = coalesce(
       try(data.vault_kv_secret_v2.database.data["TENANT_DB_USER"], null),
-      var.tenant_db_user_name,
-      "tenant_db_user"
+      var.tenant_db_user_name
     )
     hasura = coalesce(
       try(data.vault_kv_secret_v2.database.data["HASURA_DB_USER"], null),
-      var.hasura_db_user_name,
-      "hasura_db_user"
+      var.hasura_db_user_name
     )
     kratos = coalesce(
       try(data.vault_kv_secret_v2.database.data["KRATOS_DB_USER"], null),
-      var.kratos_db_user_name,
-      "kratos_db_user"
+      var.kratos_db_user_name
     )
     hydra = coalesce(
       try(data.vault_kv_secret_v2.database.data["HYDRA_DB_USER"], null),
-      var.hydra_db_user_name,
-      "hydra_db_user"
+      var.hydra_db_user_name
     )
     tolgee = coalesce(
       try(data.vault_kv_secret_v2.database.data["TOLGEE_DB_USER"], null),
-      var.tolgee_db_user_name,
-      "tolgee_db_user"
+      var.tolgee_db_user_name
     )
   }
 

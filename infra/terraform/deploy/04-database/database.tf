@@ -31,6 +31,72 @@ resource "null_resource" "grant_createrole" {
   }
 }
 
+# Удаляем неправильные пользователи (созданные с неправильными именами)
+# Это нужно для исправления ситуации, когда пользователи были созданы с именами баз данных вместо имен пользователей
+resource "null_resource" "drop_incorrect_users" {
+  depends_on = [null_resource.postgres_connection_ready, null_resource.grant_createrole]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Удаляем пользователей с неправильными именами (имена баз данных вместо имен пользователей)
+      # Список неправильных имен, которые могли быть созданы ранее
+      INCORRECT_USERS=(
+        "${local.db_users_config.project.db_name}"  # archpad вместо archpad_user
+        "${local.db_users_config.hasura.db_name}"    # hasura вместо hasura_user
+        "${local.db_users_config.kratos.db_name}"    # kratos вместо kratos_user
+        "${local.db_users_config.hydra.db_name}"    # hydra вместо hydra_user
+        "${local.db_users_config.tolgee.db_name}"   # tolgee вместо tolgee_user
+        "hasura_db"                                  # hasura_db вместо hasura_user
+        "tolgee_db"                                  # tolgee_db вместо tolgee_user
+        "kratos_db"                                  # kratos_db вместо kratos_user
+        "archpad_db_user"                            # старое имя с _db
+        "hasura_db_user"                             # старое имя с _db
+        "tolgee_db_user"                             # старое имя с _db
+        "kratos_db_user"                             # старое имя с _db
+        "hydra_db_user"                              # старое имя с _db
+        "tenant_db_user"                             # старое имя с _db
+      )
+      
+      echo "Attempting to drop incorrect users..."
+      for user in "$${INCORRECT_USERS[@]}"; do
+        # Проверяем, существует ли пользователь
+        USER_EXISTS=$(PGPASSWORD="${local.postgres_admin_password_from_vault}" psql \
+          -h "${local.postgres_connection_host}" \
+          -p "${local.postgres_connection_port}" \
+          -U "${local.postgres_admin_user_from_vault}" \
+          -d "${var.postgres_admin_database}" \
+          -tAc "SELECT 1 FROM pg_roles WHERE rolname='$user'" 2>/dev/null || echo "0")
+        
+        if [ "$USER_EXISTS" = "1" ]; then
+          echo "Dropping incorrect user: $user"
+          PGPASSWORD="${local.postgres_admin_password_from_vault}" psql \
+            -h "${local.postgres_connection_host}" \
+            -p "${local.postgres_connection_port}" \
+            -U "${local.postgres_admin_user_from_vault}" \
+            -d "${var.postgres_admin_database}" \
+            -c "DROP ROLE IF EXISTS \"$user\";" 2>&1 || \
+          echo "Warning: Could not drop user $user (may be in use or require superuser)"
+        else
+          echo "User $user does not exist, skipping"
+        fi
+      done
+      
+      echo "Finished attempting to drop incorrect users"
+    EOT
+  }
+
+  triggers = {
+    # Запускаем при изменении имен пользователей или баз
+    project_user = local.db_users_config.project.user_name
+    hasura_user = local.db_users_config.hasura.user_name
+    kratos_user = local.db_users_config.kratos.user_name
+    hydra_user = local.db_users_config.hydra.user_name
+    tolgee_user = local.db_users_config.tolgee.user_name
+    # Принудительно пересоздаем ресурс при каждом apply для очистки
+    force_recreate = timestamp()
+  }
+}
+
 # PROJECT_DB_USER - используется для PROJECT_DB и TENANT_DB
 # Примечание: Если используется Traefik routing, маршрутизация создается в модуле 01-traefik и будет готова до запуска этого модуля
 # Если используется port-forward, порт-форвард создается через null_resource.postgres_port_forward
@@ -38,7 +104,8 @@ resource "null_resource" "grant_createrole" {
 resource "postgresql_role" "project_user" {
   depends_on = [
     null_resource.postgres_connection_ready,
-    null_resource.grant_createrole
+    null_resource.grant_createrole,
+    null_resource.drop_incorrect_users
   ]
 
   name            = local.db_users_config.project.user_name
@@ -53,7 +120,8 @@ resource "postgresql_role" "project_user" {
 resource "postgresql_role" "hasura_user" {
   depends_on = [
     null_resource.postgres_connection_ready,
-    null_resource.grant_createrole
+    null_resource.grant_createrole,
+    null_resource.drop_incorrect_users
   ]
 
   name            = local.db_users_config.hasura.user_name
@@ -68,7 +136,8 @@ resource "postgresql_role" "hasura_user" {
 resource "postgresql_role" "kratos_user" {
   depends_on = [
     null_resource.postgres_connection_ready,
-    null_resource.grant_createrole
+    null_resource.grant_createrole,
+    null_resource.drop_incorrect_users
   ]
 
   name            = local.db_users_config.kratos.user_name
@@ -83,7 +152,8 @@ resource "postgresql_role" "kratos_user" {
 resource "postgresql_role" "hydra_user" {
   depends_on = [
     null_resource.postgres_connection_ready,
-    null_resource.grant_createrole
+    null_resource.grant_createrole,
+    null_resource.drop_incorrect_users
   ]
 
   name            = local.db_users_config.hydra.user_name
@@ -98,7 +168,8 @@ resource "postgresql_role" "hydra_user" {
 resource "postgresql_role" "tolgee_user" {
   depends_on = [
     null_resource.postgres_connection_ready,
-    null_resource.grant_createrole
+    null_resource.grant_createrole,
+    null_resource.drop_incorrect_users
   ]
 
   name            = local.db_users_config.tolgee.user_name
@@ -159,8 +230,8 @@ resource "null_resource" "drop_existing_databases" {
     kratos_db = local.db_users_config.kratos.db_name
     hydra_db = local.db_users_config.hydra.db_name
     tolgee_db = local.db_users_config.tolgee.db_name
-    # Принудительно пересоздаем ресурс при каждом apply (удаляем старые базы)
-    force_recreate = timestamp()
+    # Убрали force_recreate = timestamp(), чтобы не пересоздавать базы при каждом apply
+    # Базы будут удаляться только при изменении их имен
   }
 }
 
