@@ -10,7 +10,7 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`argocd.archpad.pro`)
+    - match: Host(`argo.archpad.pro`)
       kind: Rule
       services:
         - name: argocd-server
