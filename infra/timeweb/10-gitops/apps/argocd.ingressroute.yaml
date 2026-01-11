@@ -1,0 +1,30 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd
+  namespace: platform
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    # HTTP -> HTTPS redirect
+    - match: Host(`argocd.archpad.pro`)
+      kind: Rule
+      middlewares:
+        - name: redirect-to-https
+          namespace: platform
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 80
+
+    # HTTPS main
+    - match: Host(`argocd.archpad.pro`)
+      kind: Rule
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 80
+  tls:
+    secretName: archpad-wildcard-tls
