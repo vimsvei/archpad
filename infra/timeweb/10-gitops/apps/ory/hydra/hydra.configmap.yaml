@@ -25,8 +25,8 @@ data:
           enabled: true
           allowed_origins:
             - https://portal.archpad.pro
-            - https://kratos.archpad.pro
-            - https://hydra.archpad.pro
+            - https://auth.archpad.pro
+            - https://authz.archpad.pro
             - https://api.archpad.pro
           allowed_methods:
             - GET
@@ -65,7 +65,7 @@ data:
 
     urls:
       self:
-        issuer: https://hydra.archpad.pro
+        issuer: https://authz.archpad.pro
       login: https://portal.archpad.pro/hydra/login
       consent: https://portal.archpad.pro/hydra/consent
       logout: https://portal.archpad.pro/logout
