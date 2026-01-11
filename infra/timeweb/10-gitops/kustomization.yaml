@@ -41,3 +41,40 @@ resources:
   - apps/pgadmin/pgadmin-redirect-to-https.middleware.yaml
   - apps/pgadmin/pgadmin-http.ingressroute.yaml
   - apps/pgadmin/pgadmin.ingressroute.yaml
+
+  # Ory (после сертификатов и vault)
+  # ServiceAccounts
+  - apps/ory/kratos/kratos.serviceaccount.yaml
+  - apps/ory/hydra/hydra.serviceaccount.yaml
+  - apps/ory/oathkeeper/oathkeeper.serviceaccount.yaml
+
+  # ConfigMaps
+  - apps/ory/kratos/kratos.configmap.yaml
+  - apps/ory/kratos/kratos-identity-schema.configmap.yaml
+  - apps/ory/hydra/hydra.configmap.yaml
+  - apps/ory/hydra/hydra-init-client.configmap.yaml
+  - apps/ory/oathkeeper/oathkeeper.configmap.yaml
+  - apps/ory/oathkeeper/oathkeeper-access-rules.configmap.yaml
+
+  # Migrations (Jobs)
+  - apps/ory/kratos/kratos-migrate.job.yaml
+  - apps/ory/hydra/hydra-migrate.job.yaml
+
+  # Deployments и Services
+  - apps/ory/kratos/kratos.deployment.yaml
+  - apps/ory/kratos/kratos.service.yaml
+  - apps/ory/hydra/hydra.deployment.yaml
+  - apps/ory/hydra/hydra.service.yaml
+  - apps/ory/oathkeeper/oathkeeper.deployment.yaml
+  - apps/ory/oathkeeper/oathkeeper.service.yaml
+
+  # Init клиентов Hydra (PostSync hook)
+  - apps/ory/hydra/hydra-init-client.job.yaml
+
+  # Middlewares и IngressRoutes
+  - apps/ory/kratos/kratos.middleware.yaml
+  - apps/ory/kratos/kratos.ingressroute.yaml
+  - apps/ory/hydra/hydra.middleware.yaml
+  - apps/ory/hydra/hydra.ingressroute.yaml
+  - apps/ory/oathkeeper/oathkeeper.middleware.yaml
+  - apps/ory/oathkeeper/oathkeeper.ingressroute.yaml
