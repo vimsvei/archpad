@@ -11,5 +11,5 @@ spec:
     name: le-timeweb-dns01
     kind: ClusterIssuer
   dnsNames:
-    - "archpad.pro"
     - "*.archpad.pro"
+    - "archpad.pro"
