@@ -52,6 +52,19 @@ spec:
           dataStorage:
             enabled: false
 
+          # Используем emptyDir для /vault/data с правильными правами
+          # Это нужно для временных файлов, даже при использовании S3
+          volumes:
+            - type: emptyDir
+              name: data
+
+          # Настройка securityContext для автоматической настройки прав доступа
+          # fsGroup автоматически настроит права для volumes
+          securityContext:
+            fsGroup: 1000
+            runAsUser: 100
+            runAsGroup: 1000
+
           # Конфигурация S3 backend для Vault
           # Vault будет использовать отдельную папку в S3 bucket для хранения данных
           extraConfig: |
@@ -63,6 +76,8 @@ spec:
               region     = "ru-1"
               path       = "vault-secret/"
             }
+            
+            disable_mlock = true
 
           # Отключаем webhooks для упрощения развертывания
           disableWebhooks: true
