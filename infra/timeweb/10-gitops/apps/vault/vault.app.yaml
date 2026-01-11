@@ -28,18 +28,15 @@ spec:
             repository: hashicorp/vault
             tag: "1.18.0"
 
-          # HA режим отключен для простоты (одна реплика)
-          # Для production с Raft можно использовать HA=true с несколькими репликами
+          # HA режим отключен при использовании S3 storage
+          # S3 storage позволяет использовать одну реплику без проблем
           ha:
             enabled: false
             replicas: 1
 
-          # Raft storage для production (локальное хранилище)
-          # Без S3 используем Raft на локальном PersistentVolume
-          # Raft работает даже с одной репликой для production
+          # Raft storage отключен, используем S3 storage
           raft:
-            enabled: true
-            setNodeId: true
+            enabled: false
 
           # UI включен для доступа через веб-интерфейс
           ui:
@@ -51,17 +48,21 @@ spec:
             type: ClusterIP
             port: 8200
 
-          # PersistentVolume для Raft хранилища
+          # PersistentVolume не нужен при использовании S3 storage
           dataStorage:
-            enabled: true
-            size: 10Gi
-            # Используем hostpath StorageClass (временное решение)
-            # Для production рекомендуется использовать S3 storage
-            storageClass: "hostpath"
-            accessMode: ReadWriteOnce
+            enabled: false
 
-          # Отключаем extraConfig (не используем S3)
-          extraConfig: ""
+          # Конфигурация S3 backend для Vault
+          # Vault будет использовать S3 bucket для хранения данных
+          extraConfig: |
+            storage "s3" {
+              access_key = "1V87S1B2IPAWIR1K0SL8"
+              secret_key = "LMWtBOQE4xAq4klbAaosjPuRHqRjKxBEZUkUZYhj"
+              bucket     = "9f328daa-archpad-s3-storage"
+              endpoint   = "https://s3.twcstorage.ru"
+              region     = "ru-1"
+              path       = "vault/"
+            }
 
           # Отключаем webhooks для упрощения развертывания
           disableWebhooks: true
