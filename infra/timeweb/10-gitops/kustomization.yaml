@@ -32,3 +32,10 @@ resources:
   - apps/vault/vault.middleware.yaml
   - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml
+
+  # pgAdmin (после сертификатов и vault)
+  - apps/pgadmin/pgadmin.secret.yaml
+  - apps/pgadmin/pgadmin.configmap.yaml
+  - apps/pgadmin/pgadmin.deployment.yaml
+  - apps/pgadmin/pgadmin.service.yaml
+  - apps/pgadmin/pgadmin.ingressroute.yaml

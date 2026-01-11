@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pgadmin
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+spec:
+  entryPoints:
+    - websecure  # Только HTTPS entrypoint
+  routes:
+    - match: Host(`pgadmin.archpad.pro`)
+      kind: Rule
+      services:
+        - name: pgadmin
+          port: 80
+  tls:
+    # TLS secret должен быть скопирован в namespace platform
+    # Скопируйте из namespace argocd: kubectl get secret wildcard-archpad-pro-tls -n argocd -o yaml | sed 's/namespace: argocd/namespace: platform/' | sed '/resourceVersion:/d' | sed '/uid:/d' | sed '/creationTimestamp:/d' | kubectl apply -f -
+    secretName: wildcard-archpad-pro-tls
