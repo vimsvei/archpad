@@ -1,0 +1,11 @@
+# Middleware для HTTP Basic Auth дашборда Traefik
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-dashboard-basicauth
+  namespace: traefik
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+spec:
+  basicAuth:
+    secret: traefik-dashboard-auth  # Secret с htpasswd файлом

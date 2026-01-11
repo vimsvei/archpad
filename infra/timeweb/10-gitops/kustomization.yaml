@@ -7,8 +7,13 @@ resources:
 
   # Apps (дочерние ArgoCD Applications)
   - apps/traefik.app.yaml
+  - apps/vault.app.yaml
 
   # После Traefik CRD
+  - apps/traefik-redirect-to-https.middleware.yaml
+  - apps/traefik-dashboard-basicauth-secret.yaml
+  - apps/traefik-dashboard-basicauth.middleware.yaml
+  - apps/traefik-dashboard.ingressroute.yaml
   - apps/argocd.middleware.yaml
   - apps/argocd.ingressroute.yaml
 
@@ -18,3 +23,7 @@ resources:
   # Серты (после cert-manager + webhook, которые вы ставите аддоном)
   - apps/issuer-timeweb.clusterissuer.yaml
   - apps/wildcard-argocd.certificate.yaml
+
+  # Vault (после сертификатов)
+  - apps/vault.middleware.yaml
+  - apps/vault.ingressroute.yaml

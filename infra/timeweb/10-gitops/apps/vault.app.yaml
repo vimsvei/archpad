@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  source:
+    repoURL: https://helm.releases.hashicorp.com
+    chart: vault
+    targetRevision: 0.31.0
+    helm:
+      releaseName: vault
+      values: |
+        global:
+          enabled: true
+
+        server:
+          # Используем последнюю стабильную версию Vault
+          image:
+            repository: hashicorp/vault
+            tag: "1.18.0"
+
+          # HA режим отключен для простоты (одна реплика)
+          # Для production с Raft можно использовать HA=true с несколькими репликами
+          ha:
+            enabled: false
+            replicas: 1
+
+          # Raft storage для production (локальное хранилище)
+          # Без S3 используем Raft на локальном PersistentVolume
+          # Raft работает даже с одной репликой для production
+          raft:
+            enabled: true
+            setNodeId: true
+
+          # UI включен для доступа через веб-интерфейс
+          ui:
+            enabled: true
+
+          # Сервис ClusterIP на стандартном порту Vault
+          service:
+            enabled: true
+            type: ClusterIP
+            port: 8200
+
+          # PersistentVolume для Raft хранилища
+          dataStorage:
+            enabled: true
+            size: 10Gi
+            # Используем стандартный StorageClass кластера
+            # Если local-path недоступен, будет использован default
+            storageClass: ""  # Пустая строка использует default StorageClass
+            accessMode: ReadWriteOnce
+
+          # Отключаем extraConfig (не используем S3)
+          extraConfig: ""
+
+          # Отключаем webhooks для упрощения развертывания
+          disableWebhooks: true
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
