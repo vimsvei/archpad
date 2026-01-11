@@ -32,21 +32,32 @@ spec:
           isDefaultClass: true
           name: traefik
 
+        # В v38+ ВАЖНО: expose — это object, а не boolean.
         ports:
           web:
-            port: 80
+            port: 8000
             expose:
               default: true
+            exposedPort: 80
+            protocol: TCP
+            redirectTo:
+              port: websecure
           websecure:
-            port: 443
+            port: 8443
             expose:
               default: true
+            exposedPort: 443
+            protocol: TCP
+            tls:
+              enabled: true
 
         service:
+          enabled: true
+          single: true
           type: LoadBalancer
-        
-        additionalArguments:
-          - "--api.dashboard=true"
+
+        api:
+          dashboard: true
   syncPolicy:
     automated:
       prune: true

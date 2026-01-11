@@ -5,15 +5,15 @@ metadata:
   namespace: argocd
 spec:
   project: platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: HEAD
     path: infra/timeweb/10-gitops
     directory:
       recurse: true
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
   syncPolicy:
     automated:
       prune: true

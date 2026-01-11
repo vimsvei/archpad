@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Проект Argo
+  - projects/platform.project.yaml
+
+  # Apps (дочерние ArgoCD Applications)
+  - apps/traefik.app.yaml
+
+  # После Traefik CRD
+  - apps/argocd.middleware.yaml
+  - apps/argocd.ingressroute.yaml
+
+  # Серты (после cert-manager + webhook, которые вы ставите аддоном)
+  - apps/issuer-timeweb.clusterissuer.yaml
+  - apps/wildcard-argocd.certificate.yaml
