@@ -33,13 +33,12 @@ spec:
           name: traefik
 
         # В v38+ структура портов изменилась - expose.default больше не используется
+        # redirectTo также не поддерживается, редирект настраивается через middleware
         ports:
           web:
             port: 8000
             exposedPort: 80
             protocol: TCP
-            redirectTo:
-              port: websecure
           websecure:
             port: 8443
             exposedPort: 443
