@@ -1,0 +1,12 @@
+# Middleware для редиректа HTTP → HTTPS в namespace traefik
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: traefik
+  annotations:
+    argocd.argoproj.io/sync-wave: "14"
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

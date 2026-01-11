@@ -1,0 +1,23 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vault
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`vault.archpad.pro`)
+      kind: Rule
+      services:
+        - name: vault
+          port: 8200
+      middlewares:
+        - name: redirect-to-https
+          namespace: vault
+  tls:
+    # TLS secret будет скопирован из namespace argocd через vault-tls-secret.yaml
+    secretName: wildcard-archpad-pro-tls
