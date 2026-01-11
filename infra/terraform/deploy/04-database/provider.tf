@@ -108,9 +108,9 @@ locals {
   )
   
   # Определяем, к какому ресурсу делать port-forward (только если use_kubectl_port_forward = true)
-  # Если используется Traefik и нужен port-forward, делаем port-forward к поду Traefik (внутри пода есть порт 5432 для entryPoint postgres)
+  # Если используется Traefik и нужен port-forward, делаем port-forward к поду Traefik
   # Иначе используем указанные postgres_k8s_service или postgres_k8s_pod
-  # Для Traefik используем pod, так как Service не экспортирует порт 5432
+  # Для Traefik используем pod, так как Service может не экспортировать нужный порт
   port_forward_resource_type = local.use_traefik_port_forward ? "pod" : (
     var.postgres_k8s_service != null ? "service" : (
       var.postgres_k8s_pod != null ? "pod" : null
@@ -138,12 +138,18 @@ provider "postgresql" {
   password        = local.postgres_admin_password_from_vault
   sslmode         = var.postgres_ssl_mode
   connect_timeout = var.postgres_connect_timeout
+  # Для managed database в TimeWeb Cloud пользователь обычно не является SUPERUSER.
+  # Provider не может читать пароли ролей, если superuser = true, но пользователь не superuser.
+  # Устанавливаем superuser = false, чтобы provider не пытался читать пароли.
+  # Для создания ролей пользователю нужны права CREATEROLE (выдаются через SQL перед созданием ролей).
   superuser       = false
 }
 
 # Запускаем kubectl port-forward перед применением, если нужно
 # Поддерживается port-forward к pod или service
-# Если указан postgres_traefik_host, автоматически делаем port-forward к Traefik Service
+# Port-forward для подключения к PostgreSQL через Traefik (если use_kubectl_port_forward = true)
+# ВАЖНО: При использовании Traefik делаем port-forward к поду Traefik на порт 8000 (entryPoint web внутри пода)
+# LoadBalancer мапит внешний порт 80 на порт 8000 внутри пода Traefik
 resource "null_resource" "postgres_port_forward" {
   count = local.actual_use_port_forward && local.port_forward_resource_name != null ? 1 : 0
   

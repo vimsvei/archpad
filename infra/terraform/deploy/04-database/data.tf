@@ -132,4 +132,9 @@ locals {
     for db_key, password in local.db_passwords :
     db_key => password != null
   }
+
+  # Отдельные локальные переменные для debug output (без sensitive данных)
+  # Эти значения используются только для вывода и не содержат sensitive информации
+  debug_connection_host = local.postgres_connection_host
+  debug_connection_port = local.postgres_connection_port
 }

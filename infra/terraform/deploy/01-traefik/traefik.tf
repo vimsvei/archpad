@@ -80,11 +80,9 @@ resource "helm_release" "traefik" {
         exposedPort = 443  # Порт в LoadBalancer (публичный)
       }
       # TCP entryPoint для PostgreSQL через Traefik
-      postgres = {
-        port = 5432  # Порт внутри пода для PostgreSQL
-        exposedPort = 5432  # Порт в LoadBalancer (публичный)
-        protocol = "TCP"
-      }
+      # НЕ создаем отдельный entryPoint postgres, так как LoadBalancer может экспортировать только один порт 80
+      # Используем существующий entryPoint web (порт 80) для TCP маршрутизации PostgreSQL
+      # HTTP редиректы не будут мешать TCP трафику, так как Traefik различает протоколы
     }
 
     providers = {
@@ -94,12 +92,13 @@ resource "helm_release" "traefik" {
 
     additionalArguments = [
       "--api.dashboard=true",
-      "--entrypoints.web.address=:8000",  # Используем непривилегированный порт
-      "--entrypoints.websecure.address=:8443",  # Используем непривилегированный порт
+      "--entrypoints.web.address=:8000",  # HTTP/TCP entryPoint (внутри пода, экспортируется на 80)
+      "--entrypoints.websecure.address=:8443",  # HTTPS entryPoint (внутри пода, экспортируется на 443)
       "--entrypoints.web.http.redirections.entrypoint.to=websecure",
       "--entrypoints.web.http.redirections.entrypoint.scheme=https",
       "--entrypoints.web.http.redirections.entrypoint.permanent=true",
-      "--entrypoints.postgres.address=:5432",  # TCP entryPoint для PostgreSQL
+      # Примечание: PostgreSQL TCP маршрутизация будет использовать entryPoint web
+      # HTTP редиректы не мешают TCP трафику, так как Traefik различает протоколы
     ]
   }))]
 

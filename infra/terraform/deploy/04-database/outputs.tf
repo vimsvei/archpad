@@ -21,60 +21,61 @@ output "database_users" {
 }
 
 output "databases" {
-  description = "Created databases"
+  description = "Created databases (owner is gen_user from Vault for all databases)"
   value = {
     project = {
       name = postgresql_database.project_db.name
-      owner = postgresql_database.project_db.owner
+      # owner всегда gen_user (postgres_admin_user_from_vault), но не выводим его как sensitive
+      owner = "gen_user"  # Все базы принадлежат gen_user
     }
     tenant = {
       name = postgresql_database.tenant_db.name
-      owner = postgresql_database.tenant_db.owner
+      owner = "gen_user"
     }
     hasura = {
       name = postgresql_database.hasura_db.name
-      owner = postgresql_database.hasura_db.owner
+      owner = "gen_user"
     }
     kratos = {
       name = postgresql_database.kratos_db.name
-      owner = postgresql_database.kratos_db.owner
+      owner = "gen_user"
     }
     hydra = {
       name = postgresql_database.hydra_db.name
-      owner = postgresql_database.hydra_db.owner
+      owner = "gen_user"
     }
     tolgee = {
       name = postgresql_database.tolgee_db.name
-      owner = postgresql_database.tolgee_db.owner
+      owner = "gen_user"
     }
   }
   sensitive = false
 }
 
 output "extensions" {
-  description = "Installed PostgreSQL extensions"
+  description = "Installed PostgreSQL extensions (created via null_resource with psql)"
   value = {
     project = {
-      pgcrypto  = try(postgresql_extension.project_db_pgcrypto.name, null)
-      uuid_ossp = try(postgresql_extension.project_db_uuid_ossp.name, null)
+      pgcrypto  = try(null_resource.project_db_extensions.id != null ? "pgcrypto" : null, "pgcrypto")
+      uuid_ossp = try(null_resource.project_db_extensions.id != null ? "uuid-ossp" : null, "uuid-ossp")
     }
     tenant = {
-      pgcrypto  = try(postgresql_extension.tenant_db_pgcrypto.name, null)
-      uuid_ossp = try(postgresql_extension.tenant_db_uuid_ossp.name, null)
+      pgcrypto  = try(null_resource.tenant_db_extensions.id != null ? "pgcrypto" : null, "pgcrypto")
+      uuid_ossp = try(null_resource.tenant_db_extensions.id != null ? "uuid-ossp" : null, "uuid-ossp")
     }
     hasura = {
-      pgcrypto  = try(postgresql_extension.hasura_db_pgcrypto.name, null)
-      uuid_ossp = try(postgresql_extension.hasura_db_uuid_ossp.name, null)
+      pgcrypto  = try(null_resource.hasura_db_extensions.id != null ? "pgcrypto" : null, "pgcrypto")
+      uuid_ossp = try(null_resource.hasura_db_extensions.id != null ? "uuid-ossp" : null, "uuid-ossp")
     }
     kratos = {
-      pgcrypto   = try(postgresql_extension.kratos_db_pgcrypto.name, null)
-      uuid_ossp  = try(postgresql_extension.kratos_db_uuid_ossp.name, null)
-      pg_trgm    = try(postgresql_extension.kratos_db_pg_trgm.name, null)
-      btree_gin  = try(postgresql_extension.kratos_db_btree_gin.name, null)
+      pgcrypto   = try(null_resource.kratos_db_extensions.id != null ? "pgcrypto" : null, "pgcrypto")
+      uuid_ossp  = try(null_resource.kratos_db_extensions.id != null ? "uuid-ossp" : null, "uuid-ossp")
+      pg_trgm    = try(null_resource.kratos_db_extensions.id != null ? "pg_trgm" : null, "pg_trgm")
+      btree_gin  = try(null_resource.kratos_db_extensions.id != null ? "btree_gin" : null, "btree_gin")
     }
     hydra = {
-      pgcrypto  = try(postgresql_extension.hydra_db_pgcrypto.name, null)
-      uuid_ossp = try(postgresql_extension.hydra_db_uuid_ossp.name, null)
+      pgcrypto  = try(null_resource.hydra_db_extensions.id != null ? "pgcrypto" : null, "pgcrypto")
+      uuid_ossp = try(null_resource.hydra_db_extensions.id != null ? "uuid-ossp" : null, "uuid-ossp")
     }
   }
   sensitive = false

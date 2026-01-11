@@ -77,7 +77,7 @@ variable "postgres_ssl_mode" {
 variable "postgres_connect_timeout" {
   type        = number
   description = "PostgreSQL connection timeout in seconds"
-  default     = 5
+  default     = 30
 }
 
 

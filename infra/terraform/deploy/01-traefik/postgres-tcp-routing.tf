@@ -118,19 +118,19 @@ resource "null_resource" "postgres_ingressroute_tcp" {
         exit 1
       fi
 
-      # Удаляем старый IngressRouteTCP, если он существует (может быть с неправильной конфигурацией)
-      echo "Removing old IngressRouteTCP if exists..."
-      kubectl delete ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} --ignore-not-found=true
-      sleep 2
+      # Принудительно удаляем старый IngressRouteTCP с неправильной конфигурацией (entryPoint "postgres")
+      echo "Removing old IngressRouteTCP if exists (may have wrong entryPoint 'postgres')..."
+      kubectl delete ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} --ignore-not-found=true || true
+      sleep 3
+      
+      # Проверяем, что ресурс действительно удален
+      echo "Checking if IngressRouteTCP was removed..."
+      if kubectl get ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} 2>/dev/null; then
+        echo "Warning: IngressRouteTCP still exists, forcing deletion..."
+        kubectl delete ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} --grace-period=0 --force 2>/dev/null || true
+        sleep 2
+      fi
 
-      # Применяем IngressRouteTCP - создаем YAML напрямую без шаблона
-      echo "Creating IngressRouteTCP for PostgreSQL..."
-      
-      # Сначала удаляем старый ресурс, если он существует
-      echo "Removing old IngressRouteTCP if exists..."
-      kubectl delete ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} --ignore-not-found=true
-      sleep 2
-      
       # Создаем новый ресурс с правильной конфигурацией
       echo "Creating new IngressRouteTCP..."
       kubectl apply --kubeconfig=${local.kubeconfig_file} -f - <<YAML_EOF
@@ -144,14 +144,17 @@ spec:
     - web
   routes:
     # Маршрутизация PostgreSQL через порт 80 (entryPoint web)
-    # LoadBalancer экспортирует TCP трафик на порту 80
-    - match: HostSNI("${var.postgres_traefik_host}")
+    # LoadBalancer экспортирует только порт 80, который соответствует entryPoint web
+    # Для TCP без TLS НЕЛЬЗЯ использовать HostSNI с доменом - HostSNI работает только с TLS
+    # Используем HostSNI("*") для всех TCP соединений без TLS на этом entryPoint
+    # HTTP редиректы не мешают TCP трафику, так как Traefik различает HTTP и raw TCP протоколы
+    - match: HostSNI("*")
       services:
         - name: postgres-external
           namespace: ${local.postgres_service_namespace}
           port: ${var.postgres_port}
 YAML_EOF
-      
+
       # Проверяем, что ресурс создан правильно
       echo "Verifying IngressRouteTCP was created..."
       kubectl get ingressroutetcp postgres -n ${kubernetes_namespace.traefik.metadata[0].name} --kubeconfig=${local.kubeconfig_file} -o yaml | grep -A 5 "match:" || echo "Warning: Could not verify match rule"
@@ -184,7 +187,10 @@ YAML_EOF
     postgres_host     = var.postgres_traefik_host
     postgres_port     = var.postgres_port
     kubeconfig_file   = local.kubeconfig_file
-    # Добавляем хэш содержимого YAML для принудительного обновления при изменении match правила
+    # Для TCP без TLS используем HostSNI("*") - нельзя использовать HostSNI с доменом без TLS
     match_rule        = "HostSNI(\"*\")"
+    service_name      = "postgres-external"
+    # ВАЖНО: entryPoint изменен с "postgres" на "web" - это принудительно пересоздаст ресурс
+    entrypoint        = "web"
   }
 }

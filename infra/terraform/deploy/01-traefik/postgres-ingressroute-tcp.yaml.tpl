@@ -9,7 +9,7 @@ spec:
   routes:
     # Для PostgreSQL без TLS используем маршрутизацию всего трафика на порту postgres
     # HostSNI("*") для TCP без TLS - используем двойные кавычки вместо обратных
-    - match: HostSNI(`pg.archpad.pro`)
+    - match: HostSNI(`*`)
       services:
         - name: postgres-external
           namespace: ${namespace}
