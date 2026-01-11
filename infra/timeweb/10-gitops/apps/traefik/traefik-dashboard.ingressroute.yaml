@@ -9,11 +9,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "16"
 spec:
   entryPoints:
-    - web
-    - websecure
+    - websecure  # Только HTTPS entrypoint
   routes:
-    # HTTPS маршрут с Basic Auth
-    # Dashboard доступен по корню (с редиректом на /dashboard/) и по /dashboard/
+    # Редирект с корня на /dashboard/
     - match: Host(`proxy.archpad.pro`) && Path(`/`)
       kind: Rule
       services:
@@ -23,11 +21,8 @@ spec:
         # Редирект с корня на /dashboard/
         - name: traefik-dashboard-root-redirect
           namespace: traefik
-        # HTTP Basic Auth для защиты дашборда
-        - name: traefik-dashboard-basicauth
-          namespace: traefik
-    # Маршрут для /dashboard/ и всех подпутей
-    - match: Host(`proxy.archpad.pro`) && PathPrefix(`/dashboard/`)
+    # HTTPS маршрут с Basic Auth для /dashboard/ и /api/
+    - match: Host(`proxy.archpad.pro`) && (PathPrefix(`/dashboard/`) || PathPrefix(`/api/`))
       kind: Rule
       services:
         # Используем встроенный service для dashboard Traefik
