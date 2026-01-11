@@ -11,9 +11,14 @@ spec:
     server: https://kubernetes.default.svc
     namespace: vault
   source:
-    repoURL: https://helm.releases.hashicorp.com
-    chart: vault
-    targetRevision: 0.31.0
+    # Используем Git репозиторий напрямую, так как Helm репозиторий HashiCorp недоступен (403)
+    # ArgoCD может работать с Helm чартами из Git репозиториев
+    repoURL: https://github.com/hashicorp/vault-helm.git
+    targetRevision: v0.31.0
+    path: .
+    helm:
+      valueFiles:
+        - values.yaml
     helm:
       releaseName: vault
       values: |
