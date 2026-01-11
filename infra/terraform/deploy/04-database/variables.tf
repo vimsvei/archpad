@@ -86,37 +86,37 @@ variable "postgres_connect_timeout" {
 variable "archpad_db_user_name" {
   type        = string
   description = "Project database user name (optional, defaults to 'project_db_user')"
-  default     = null
+  default     = "archpad_user"
 }
 
 variable "tenant_db_user_name" {
   type        = string
   description = "Project database user name (optional, defaults to 'project_db_user')"
-  default     = null
+  default     = "tenant_user"
 }
 
 variable "hasura_db_user_name" {
   type        = string
   description = "Hasura database user name (optional, defaults to 'hasura_db_user')"
-  default     = null
+  default     = "hasura_user"
 }
 
 variable "kratos_db_user_name" {
   type        = string
   description = "Kratos database user name (optional, defaults to 'kratos_db_user')"
-  default     = null
+  default     = "kratos_user"
 }
 
 variable "hydra_db_user_name" {
   type        = string
   description = "Hydra database user name (optional, defaults to 'hydra_db_user')"
-  default     = null
+  default     = "hydra_user"
 }
 
 variable "tolgee_db_user_name" {
   type        = string
   description = "Tolgee database user name (optional, defaults to 'tolgee_db_user')"
-  default     = null
+  default     = "tolgee_user"
 }
 
 # Kubernetes port-forward options (для подключения к приватному IP PostgreSQL)
