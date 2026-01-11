@@ -36,13 +36,15 @@ spec:
                   name: pgadmin-credentials
                   key: PGADMIN_DEFAULT_PASSWORD
             - name: PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION
-              value: "True"
+              value: "False"
             - name: PGADMIN_CONFIG_CONSOLE_LOG_LEVEL
               value: "25"
             - name: PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED
               value: "False"
             - name: PGADMIN_CONFIG_ALLOW_SAVE_PASSWORD
               value: "True"
+            - name: PGADMIN_CONFIG_CSRF_PROTECTION
+              value: "False"
           volumeMounts:
             - name: pgadmin-servers
               mountPath: /pgadmin4/servers.json
