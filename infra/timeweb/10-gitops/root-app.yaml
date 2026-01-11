@@ -12,8 +12,7 @@ spec:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: HEAD
     path: infra/timeweb/10-gitops
-    directory:
-      recurse: true
+    kustomize: {}
   syncPolicy:
     automated:
       prune: true
