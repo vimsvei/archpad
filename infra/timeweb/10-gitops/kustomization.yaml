@@ -28,4 +28,5 @@ resources:
 
   # Vault (после сертификатов)
   - apps/vault/vault.middleware.yaml
+  - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml

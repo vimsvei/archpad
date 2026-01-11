@@ -7,17 +7,14 @@ metadata:
     argocd.argoproj.io/sync-wave: "60"
 spec:
   entryPoints:
-    - web
-    - websecure
+    - websecure  # Только HTTPS entrypoint
   routes:
     - match: Host(`vault.archpad.pro`)
       kind: Rule
       services:
         - name: vault
           port: 8200
-      middlewares:
-        - name: redirect-to-https
-          namespace: vault
   tls:
-    # TLS secret будет скопирован из namespace argocd через vault-tls-secret.yaml
+    # TLS secret должен быть скопирован в namespace vault
+    # Скопируйте из namespace argocd: kubectl get secret wildcard-archpad-pro-tls -n argocd -o yaml | sed 's/namespace: argocd/namespace: vault/' | sed '/resourceVersion:/d' | sed '/uid:/d' | sed '/creationTimestamp:/d' | kubectl apply -f -
     secretName: wildcard-archpad-pro-tls
