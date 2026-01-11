@@ -1,0 +1,21 @@
+# IngressRoute для HTTP редиректа на HTTPS для Vault
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vault-http
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+spec:
+  entryPoints:
+    - web  # Только HTTP entrypoint
+  routes:
+    - match: Host(`vault.archpad.pro`)
+      kind: Rule
+      services:
+        - name: vault
+          port: 8200
+      middlewares:
+        # Редирект с HTTP на HTTPS
+        - name: redirect-to-https
+          namespace: vault
