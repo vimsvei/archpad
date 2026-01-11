@@ -46,6 +46,8 @@ spec:
             - name: PGADMIN_CONFIG_CSRF_PROTECTION
               value: "False"
           volumeMounts:
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin
             - name: pgadmin-servers
               mountPath: /pgadmin4/servers.json
               subPath: servers.json
@@ -75,6 +77,9 @@ spec:
               cpu: 500m
               memory: 512Mi
       volumes:
+        - name: pgadmin-data
+          persistentVolumeClaim:
+            claimName: pgadmin-data-pvc
         - name: pgadmin-servers
           configMap:
             name: pgadmin-servers

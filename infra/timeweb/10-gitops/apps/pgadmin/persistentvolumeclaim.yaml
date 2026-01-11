@@ -1,0 +1,15 @@
+# PersistentVolumeClaim для pgAdmin
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pgadmin-data-pvc
+  namespace: pgadmin
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: hostpath
