@@ -13,8 +13,21 @@ spec:
     - websecure
   routes:
     # HTTPS маршрут с Basic Auth
-    # Dashboard доступен по корню и по /dashboard/
-    - match: Host(`proxy.archpad.pro`)
+    # Dashboard доступен по корню (с редиректом на /dashboard/) и по /dashboard/
+    - match: Host(`proxy.archpad.pro`) && Path(`/`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+      middlewares:
+        # Редирект с корня на /dashboard/
+        - name: traefik-dashboard-root-redirect
+          namespace: traefik
+        # HTTP Basic Auth для защиты дашборда
+        - name: traefik-dashboard-basicauth
+          namespace: traefik
+    # Маршрут для /dashboard/ и всех подпутей
+    - match: Host(`proxy.archpad.pro`) && PathPrefix(`/dashboard/`)
       kind: Rule
       services:
         # Используем встроенный service для dashboard Traefik
