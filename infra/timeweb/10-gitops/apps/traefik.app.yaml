@@ -3,13 +3,19 @@ kind: Application
 metadata:
   name: traefik
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   project: platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
   source:
     repoURL: https://traefik.github.io/charts
     chart: traefik
     targetRevision: 38.0.2
     helm:
+      releaseName: traefik
       values: |
         deployment:
           replicas: 1
@@ -29,21 +35,20 @@ spec:
         ports:
           web:
             port: 80
-            enabled: true
+            expose:
+              default: true
           websecure:
             port: 443
-            enabled: true
+            expose:
+              default: true
 
         service:
+          enabled: true
+          single: true
           type: LoadBalancer
 
-        additionalArguments:
-          - "--api.dashboard=true"
-          - "--entryPoints.web.address=:80"
-          - "--entryPoints.websecure.address=:443"
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: traefik
+        api:
+          dashboard: true
   syncPolicy:
     automated:
       prune: true
