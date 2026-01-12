@@ -51,7 +51,8 @@ spec:
               fi
               # Используем envsubst для подстановки переменных
               # envsubst заменяет ${VAR} на значения переменных окружения
-              envsubst < /etc/config/kratos.yml > /tmp/kratos.yml
+              # Указываем конкретные переменные для подстановки
+              envsubst '${DSN} ${KRATOS_SECRET} ${SMTP_CONNECTION_URI} ${SMTP_FROM_ADDRESS}' < /etc/config/kratos.yml > /tmp/kratos.yml
               # Проверяем результат
               if ! grep -q "smtp://" /tmp/kratos.yml; then
                 echo "ERROR: Variable substitution failed"
