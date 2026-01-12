@@ -15,6 +15,7 @@ spec:
     spec:
       # Используем default ServiceAccount, так как Job не требует специальных прав
       # Job просто делает HTTP запросы к Vault API
+      serviceAccountName: default
       restartPolicy: Never
       containers:
         - name: hasura-vault-role
