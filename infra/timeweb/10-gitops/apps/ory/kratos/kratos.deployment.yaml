@@ -121,7 +121,7 @@ spec:
             smtp:
               connection_uri: {{ $kratos.Data.data.SMTP_CONNECTION_URI }}
               from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
-        vault.hashicorp.com/agent-inject-file-kratos-config: "/etc/config/kratos.yml"
+        vault.hashicorp.com/agent-inject-file-kratos-config: "/vault/secrets/kratos-config"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: kratos
@@ -131,8 +131,11 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              # Конфиг уже сгенерирован Vault Agent Injector в /etc/config/kratos.yml
-              # Просто запускаем Kratos
+              # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos-config
+              # Копируем его в нужное место
+              mkdir -p /etc/config
+              cp /vault/secrets/kratos-config /etc/config/kratos.yml
+              # Запускаем Kratos
               exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
           ports:
             - name: public
