@@ -18,24 +18,19 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
 COPY packages/contract/package.json packages/contract/package.json
 
-# Install dependencies for both contract and portal
-# Contract needs typescript (devDependency) for building
-# Using ... after contract ensures its devDependencies are installed
-# Portal depends on contract, so both need to be installed together
-RUN pnpm install --frozen-lockfile --filter @archpad/contract... --filter @archpad/portal...
+# Install dependencies for portal (which includes contract as a dependency)
+# Using ... after portal includes all dependencies including contract and its devDependencies
+# This is the same approach as backend Dockerfiles
+RUN pnpm install --frozen-lockfile --filter @archpad/portal...
 
 
-FROM base AS builder
+FROM deps AS builder
 WORKDIR /app
 
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-# Copy package files to ensure pnpm workspace structure is correct
-COPY --from=deps /app/package.json ./package.json
-COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-# Copy source code
-COPY . .
+# Copy source code (same approach as backend Dockerfiles)
+# This ensures all workspace packages are available with their node_modules
+COPY packages/portal ./packages/portal
+COPY packages/contract ./packages/contract
 
 # Build contract first (it's a dependency of portal)
 # pnpm will find tsc in node_modules/.bin when running the build script
@@ -48,10 +43,11 @@ FROM base AS dev
 WORKDIR /app
 
 # Install portal and contract deps (contract needs typescript for building)
+# Using same approach as deps stage
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
 COPY packages/contract/package.json packages/contract/package.json
-RUN pnpm install --frozen-lockfile --filter @archpad/contract... --filter @archpad/portal...
+RUN pnpm install --frozen-lockfile --filter @archpad/portal...
 
 # Source (will be bind-mounted in docker-compose for live reload)
 COPY packages/portal ./packages/portal
