@@ -15,21 +15,113 @@ spec:
       labels:
         app: kratos
       annotations:
-        # Vault Agent Injector аннотации для чтения секретов из Vault
+        # Vault Agent Injector аннотации для генерации конфига из шаблона
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
-        vault.hashicorp.com/agent-inject-template-kratos: |
+        # Генерируем полный конфиг Kratos из шаблона
+        vault.hashicorp.com/agent-inject-template-kratos-config: |
           {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
-          # Формируем DSN из компонентов
           {{- $password := $kratos.Data.data.KRATOS_DB_PASSWORD | urlquery }}
           {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
           {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
-          export DSN="postgres://{{ $kratos.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratos.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
-          export KRATOS_SECRET="{{ $kratos.Data.data.KRATOS_SECRET }}"
-          export SMTP_CONNECTION_URI="{{ $kratos.Data.data.SMTP_CONNECTION_URI }}"
-          export SMTP_FROM_ADDRESS="{{ $kratos.Data.data.SMTP_FROM_ADDRESS }}"
+          dsn: postgres://{{ $kratos.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratos.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4
+
+          serve:
+            public:
+              base_url: https://auth.archpad.pro
+              port: 4433
+              cors:
+                enabled: true
+                allowed_origins:
+                  - https://portal.archpad.pro
+                  - https://auth.archpad.pro
+                  - https://authz.archpad.pro
+                allowed_methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                allowed_headers:
+                  - Authorization
+                  - Cookie
+                  - Content-Type
+                exposed_headers:
+                  - Content-Type
+                  - Set-Cookie
+
+            admin:
+              base_url: http://kratos:4434/
+              host: 0.0.0.0
+              port: 4434
+
+          selfservice:
+            default_browser_return_url: https://portal.archpad.pro/
+            allowed_return_urls:
+              - https://portal.archpad.pro/
+            methods:
+              password:
+                enabled: true
+            flows:
+              login:
+                ui_url: https://portal.archpad.pro/sign-in
+                lifespan: 1h
+                style: unified
+              registration:
+                ui_url: https://portal.archpad.pro/sign-up
+                enabled: true
+                enable_legacy_one_step: false
+                lifespan: 1h
+                style: unified
+              settings:
+                ui_url: https://portal.archpad.pro/settings
+                lifespan: 1h
+                privileged_session_max_age: 1h
+                required_aal: highest_available
+              recovery:
+                enabled: true
+                lifespan: 1h
+                notify_unknown_recipients: false
+                use: code
+                ui_url: https://portal.archpad.pro/recovery
+              verification:
+                ui_url: https://portal.archpad.pro/verify
+                enabled: true
+                lifespan: 1h
+                notify_unknown_recipients: false
+                use: code
+
+          identity:
+            default_schema_id: default
+            schemas:
+              - id: default
+                url: file:///etc/config/kratos/identities/default.schema.json
+
+          cookies:
+            domain: .archpad.pro
+            path: /
+            same_site: Lax
+            secure: "auto"
+
+          log:
+            level: info
+            format: json
+
+          secrets:
+            default:
+              - {{ $kratos.Data.data.KRATOS_SECRET }}
+
+          session:
+            lifespan: 720h
+
+          # Email delivery (verification / recovery codes, etc.)
+          courier:
+            smtp:
+              connection_uri: {{ $kratos.Data.data.SMTP_CONNECTION_URI }}
+              from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
+        vault.hashicorp.com/agent-inject-file-kratos-config: "/etc/config/kratos.yml"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: kratos
@@ -39,30 +131,9 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              set -e
-              . /vault/secrets/kratos
-              # Подставляем переменные окружения в конфиг используя awk
-              # Устанавливаем gettext для envsubst (на случай, если понадобится)
-              apk add --no-cache gettext >/dev/null 2>&1 || true
-              # Проверяем, что переменные загружены
-              if [ -z "$DSN" ] || [ -z "$SMTP_CONNECTION_URI" ]; then
-                echo "ERROR: Variables not loaded from Vault"
-                exit 1
-              fi
-              # Используем awk для подстановки переменных
-              awk -v dsn="$DSN" \
-                  -v secret="$KRATOS_SECRET" \
-                  -v smtp_uri="$SMTP_CONNECTION_URI" \
-                  -v smtp_from="$SMTP_FROM_ADDRESS" \
-                  '{gsub(/\$\{DSN\}/, dsn); gsub(/\$\{KRATOS_SECRET\}/, secret); gsub(/\$\{SMTP_CONNECTION_URI\}/, smtp_uri); gsub(/\$\{SMTP_FROM_ADDRESS\}/, smtp_from); print}' \
-                  /etc/config/kratos.yml > /tmp/kratos.yml
-              # Проверяем результат
-              if ! grep -q "smtp://" /tmp/kratos.yml; then
-                echo "ERROR: Variable substitution failed"
-                cat /tmp/kratos.yml | grep -A 2 "smtp:"
-                exit 1
-              fi
-              exec kratos serve -c /tmp/kratos.yml --dev --watch-courier
+              # Конфиг уже сгенерирован Vault Agent Injector в /etc/config/kratos.yml
+              # Просто запускаем Kratos
+              exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
           ports:
             - name: public
               containerPort: 4433
@@ -71,9 +142,6 @@ spec:
               containerPort: 4434
               protocol: TCP
           volumeMounts:
-            - name: config
-              mountPath: /etc/config/kratos.yml
-              subPath: kratos.yml
             - name: identity-schema
               mountPath: /etc/config/kratos/identities/default.schema.json
               subPath: default.schema.json
@@ -91,9 +159,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
-        - name: config
-          configMap:
-            name: kratos
         - name: identity-schema
           configMap:
             name: kratos-identity-schema
