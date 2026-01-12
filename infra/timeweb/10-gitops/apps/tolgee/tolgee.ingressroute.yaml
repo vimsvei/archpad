@@ -1,0 +1,38 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tolgee
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`i18n.archpad.pro`)
+      kind: Rule
+      services:
+        - name: tolgee
+          port: 8080
+  tls:
+    secretName: wildcard-archpad-pro-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tolgee-http
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "75"
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`i18n.archpad.pro`)
+      kind: Rule
+      services:
+        - name: tolgee
+          port: 8080
+      middlewares:
+        - name: redirect-to-https
+          namespace: traefik
