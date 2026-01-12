@@ -13,6 +13,7 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-kratos: |
