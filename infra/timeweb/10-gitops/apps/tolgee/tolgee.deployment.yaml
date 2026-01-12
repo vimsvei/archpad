@@ -66,8 +66,17 @@ spec:
                 exit 1
               fi
               echo "Using external PostgreSQL: $SPRING_DATASOURCE_URL"
-              # Используем cmd.sh из образа Tolgee
-              exec /app/cmd.sh
+              # Передаем переменные окружения в процесс Java через env
+              # Это гарантирует, что Spring Boot увидит переменные
+              # Явно отключаем встроенную PostgreSQL
+              exec env SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
+                     SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
+                     SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
+                     TOLGEE_AUTHENTICATION_INITIAL_USERNAME="$TOLGEE_AUTHENTICATION_INITIAL_USERNAME" \
+                     TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="$TOLGEE_AUTHENTICATION_INITIAL_PASSWORD" \
+                     TOLGEE_POSTGRES_ENABLED="false" \
+                     TOLGEE_POSTGRES_AUTOCONFIGURE="false" \
+                     /app/cmd.sh
           ports:
             - name: http
               containerPort: 8080
