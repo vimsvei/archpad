@@ -46,7 +46,13 @@ spec:
           args:
             - |
               # Загружаем секреты из Vault Agent Injector
+              # Используем source для загрузки переменных окружения
+              set -a
               . /vault/secrets/tolgee
+              set +a
+              # Проверяем, что переменные загружены
+              echo "DB URL: $SPRING_DATASOURCE_URL"
+              echo "DB User: $SPRING_DATASOURCE_USERNAME"
               # Используем cmd.sh из образа Tolgee
               exec /app/cmd.sh
           ports:
