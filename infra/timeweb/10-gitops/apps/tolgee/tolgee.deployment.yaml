@@ -68,14 +68,13 @@ spec:
               echo "Using external PostgreSQL: $SPRING_DATASOURCE_URL"
               # Передаем переменные окружения в процесс Java через env
               # Это гарантирует, что Spring Boot увидит переменные
-              # Явно отключаем встроенную PostgreSQL
+              # Явно отключаем встроенную PostgreSQL (ключевая переменная из docker-compose.yml)
               exec env SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
                      SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
                      SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
                      TOLGEE_AUTHENTICATION_INITIAL_USERNAME="$TOLGEE_AUTHENTICATION_INITIAL_USERNAME" \
                      TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="$TOLGEE_AUTHENTICATION_INITIAL_PASSWORD" \
-                     TOLGEE_POSTGRES_ENABLED="false" \
-                     TOLGEE_POSTGRES_AUTOCONFIGURE="false" \
+                     TOLGEE_POSTGRES_AUTOSTART_ENABLED="false" \
                      /app/cmd.sh
           ports:
             - name: http
