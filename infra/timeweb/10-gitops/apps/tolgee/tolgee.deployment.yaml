@@ -39,24 +39,31 @@ spec:
       containers:
         - name: tolgee
           image: tolgee/tolgee:latest
-          # Загружаем секреты из Vault Agent Injector и используем дефолтный entrypoint образа
-          # Tolgee образ использует дефолтный entrypoint, который запускает приложение
-          # Мы загружаем секреты и затем запускаем дефолтную команду образа
+          # Используем дефолтный entrypoint образа Tolgee
+          # Секреты загружаются через Vault Agent Injector в /vault/secrets/tolgee
+          # Загружаем их через source перед запуском дефолтной команды
           command: ["/bin/sh", "-c"]
           args:
             - |
               # Загружаем секреты из Vault Agent Injector
               . /vault/secrets/tolgee
-              # Используем дефолтный entrypoint образа Tolgee
-              # Entrypoint обычно находится в переменной $0 или вызывается через exec
-              # Попробуем найти и запустить дефолтную команду
-              if [ -f /entrypoint.sh ]; then
-                exec /entrypoint.sh
-              elif [ -n "$JAVA_MAIN_CLASS" ]; then
-                exec java ${JAVA_OPTS:-} -cp "/app/lib/*" "$JAVA_MAIN_CLASS"
+              # Запускаем дефолтный entrypoint образа Tolgee
+              # Tolgee образ использует стандартный Spring Boot запуск через java -jar
+              # Ищем основной jar файл (обычно это самый большой файл с именем содержащим "app" или "tolgee")
+              # Или используем стандартный путь для Spring Boot приложений
+              if [ -f /app/app.jar ]; then
+                exec java ${JAVA_OPTS:-} -jar /app/app.jar
+              elif [ -f /app/tolgee.jar ]; then
+                exec java ${JAVA_OPTS:-} -jar /app/tolgee.jar
               else
-                # Используем Spring Boot стандартный запуск
-                exec java ${JAVA_OPTS:-} -cp "/app/lib/*" org.springframework.boot.loader.launch.JarLauncher
+                # Ищем jar файл в /app (исключая /app/lib)
+                JAR_FILE=$(find /app -maxdepth 1 -type f -name "*.jar" 2>/dev/null | head -1)
+                if [ -n "$JAR_FILE" ] && [ -f "$JAR_FILE" ]; then
+                  exec java ${JAVA_OPTS:-} -jar "$JAR_FILE"
+                else
+                  # Если не нашли, используем Spring Boot classpath запуск
+                  exec java ${JAVA_OPTS:-} -cp "/app/lib/*:/app/*" org.springframework.boot.loader.JarLauncher
+                fi
               fi
           ports:
             - name: http
