@@ -84,26 +84,10 @@ spec:
           env:
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
               value: "file:/config/config.yaml"
-            # Переменные окружения для Spring DataSource
-            # Они будут установлены через скрипт запуска из Vault секретов
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: tolgee-datasource
-                  key: url
-                  optional: true
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: tolgee-datasource
-                  key: username
-                  optional: true
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: tolgee-datasource
-                  key: password
-                  optional: true
+            # Отключаем автоматический запуск встроенной PostgreSQL
+            # Это ключевая переменная, которая предотвращает запуск PostgresEmbeddedRunner
+            - name: TOLGEE_POSTGRES_AUTOSTART_ENABLED
+              value: "false"
           volumeMounts:
             - name: config
               mountPath: /config/config.yaml
