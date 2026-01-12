@@ -22,7 +22,11 @@ variables:
     - echo "Building for commit: $COMMIT_SHA"
     - echo "Registry URL: $REGISTRY_URL"
     - echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"
-    - '[ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ] && (echo "ERROR: REGISTRY_USERNAME and REGISTRY_PASSWORD must be set in GitLab CI/CD Variables" && exit 1) || true'
+    - |
+      if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
+        echo "ERROR: REGISTRY_USERNAME and REGISTRY_PASSWORD must be set in GitLab CI/CD Variables"
+        exit 1
+      fi
     - echo "Logging in to container registry..."
     - docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" "$REGISTRY_URL"
     - echo "Successfully logged in to registry"
