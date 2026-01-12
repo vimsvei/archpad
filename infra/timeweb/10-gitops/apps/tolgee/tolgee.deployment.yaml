@@ -53,6 +53,12 @@ spec:
               # Проверяем, что переменные загружены
               echo "DB URL: $SPRING_DATASOURCE_URL"
               echo "DB User: $SPRING_DATASOURCE_USERNAME"
+              # Экспортируем переменные для передачи в Java процесс
+              export SPRING_DATASOURCE_URL
+              export SPRING_DATASOURCE_USERNAME
+              export SPRING_DATASOURCE_PASSWORD
+              export TOLGEE_AUTHENTICATION_INITIAL_USERNAME
+              export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD
               # Используем cmd.sh из образа Tolgee
               exec /app/cmd.sh
           ports:
