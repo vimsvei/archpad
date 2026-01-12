@@ -131,4 +131,3 @@ deploy:update-images:
     - 'echo "Example: kubectl set image deployment/arch-repo-service arch-repo-service=${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/arch-repo-service:${COMMIT_SHA} -n platform"'
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
