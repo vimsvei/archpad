@@ -144,6 +144,8 @@ spec:
               containerPort: 4434
               protocol: TCP
           volumeMounts:
+            - name: config
+              mountPath: /etc/config
             - name: identity-schema
               mountPath: /etc/config/kratos/identities/default.schema.json
               subPath: default.schema.json
@@ -161,6 +163,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
+        - name: config
+          emptyDir: {}
         - name: identity-schema
           configMap:
             name: kratos-identity-schema
