@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hasura-vault-role
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "45"
+data:
+  entrypoint.sh: |
+    #!/usr/bin/env sh
+    set -eu
+
+    VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+    VAULT_TOKEN="${VAULT_TOKEN:-}"
+
+    if [ -z "$VAULT_TOKEN" ]; then
+      echo "[hasura-vault-role] ERROR: VAULT_TOKEN is not set"
+      exit 1
+    fi
+
+    echo "[hasura-vault-role] Waiting for Vault at ${VAULT_ADDR}..."
+    tries=0
+    until curl -fsS "${VAULT_ADDR}/v1/sys/health" >/dev/null 2>&1; do
+      tries=$((tries+1))
+      if [ "$tries" -ge 60 ]; then
+        echo "[hasura-vault-role] Vault not ready after ${tries} tries"
+        exit 1
+      fi
+      sleep 2
+    done
+    echo "[hasura-vault-role] Vault is ready"
+
+    # Проверяем, включен ли Kubernetes Auth
+    echo "[hasura-vault-role] Checking if Kubernetes Auth is enabled..."
+    if ! curl -fsS -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null 2>&1; then
+      echo "[hasura-vault-role] Enabling Kubernetes Auth..."
+      curl -fsS -X POST \
+        -H "X-Vault-Token: ${VAULT_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"type":"kubernetes"}' \
+        "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null
+      echo "[hasura-vault-role] Kubernetes Auth enabled"
+    else
+      echo "[hasura-vault-role] Kubernetes Auth already enabled"
+    fi
+
+    # Настраиваем Kubernetes Auth config (если еще не настроен)
+    echo "[hasura-vault-role] Configuring Kubernetes Auth..."
+    # Используем @ для передачи файла напрямую (Vault API поддерживает это)
+    curl -fsS -X POST \
+      -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"kubernetes_host\": \"https://kubernetes.default.svc\",
+        \"kubernetes_ca_cert\": $(cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt | jq -Rs .)
+      }" \
+      "${VAULT_ADDR}/v1/auth/kubernetes/config" >/dev/null 2>&1 || echo "[hasura-vault-role] Kubernetes Auth config may already be set (ignoring error)"
+
+    # Проверяем, существует ли role platform
+    echo "[hasura-vault-role] Checking if role 'platform' exists..."
+    if curl -fsS -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/auth/kubernetes/role/platform" >/dev/null 2>&1; then
+      echo "[hasura-vault-role] Role 'platform' already exists, updating..."
+    else
+      echo "[hasura-vault-role] Creating role 'platform'..."
+    fi
+
+    # Создаем или обновляем role platform
+    payload="$(cat <<JSON
+    {
+      "bound_service_account_names": "hasura",
+      "bound_service_account_namespaces": "platform",
+      "policies": "archpad",
+      "ttl": "1h"
+    }
+    JSON
+    )"
+
+    code="$(curl -sS -o /dev/null -w "%{http_code}" \
+      -X POST \
+      -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      -H "Content-Type: application/json" \
+      --data "${payload}" \
+      "${VAULT_ADDR}/v1/auth/kubernetes/role/platform" || echo "000")"
+
+    if [ "${code}" = "200" ] || [ "${code}" = "204" ]; then
+      echo "[hasura-vault-role] ✓ Successfully created/updated role 'platform'"
+    else
+      echo "[hasura-vault-role] ✗ Failed to create/update role 'platform' (HTTP ${code})"
+      exit 1
+    fi
+
+    echo "[hasura-vault-role] Done"

@@ -6,17 +6,42 @@ Hasura pod не может аутентифицироваться в Vault че�
 
 ## Решение
 
-Нужно настроить Vault Kubernetes Auth Role для ServiceAccount `hasura` в namespace `platform`.
+Vault Kubernetes Auth Role для ServiceAccount `hasura` создается автоматически через Kubernetes Job `hasura-vault-role`.
+
+### Автоматический способ (GitOps)
+
+1. **Создайте Secret с root token Vault** (один раз, вручную):
+
+```bash
+kubectl create secret generic vault-root-token -n platform \
+  --from-literal=VAULT_ROOT_TOKEN='hvs.YX2ShaE5QOS4og5QCKtetvub'
+```
+
+2. **Job автоматически создаст role** при синхронизации ArgoCD Application `hasura`.
+
+Job выполняется как PreSync hook перед развертыванием Hasura и:
+- Проверяет/включает Kubernetes Auth в Vault
+- Настраивает Kubernetes Auth config
+- Создает или обновляет role `platform` для ServiceAccount `hasura`
+
+### Ручной способ (если нужно выполнить вручную)
 
 ### Вариант 1: Создать новый role `platform`
 
 Если role `platform` еще не существует:
 
 ```bash
-# Подключитесь к Vault pod
-kubectl exec -n vault vault-0 -- sh
+# Способ 1: Передать root token через переменную окружения
+kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN="hvs.YX2ShaE5QOS4og5QCKtetvub" vault write auth/kubernetes/role/platform \
+  bound_service_account_names=hasura \
+  bound_service_account_namespaces=platform \
+  policies=archpad \
+  ttl=1h'
 
-# Внутри pod выполните (используя root token)
+# Или способ 2: Войти в pod и аутентифицироваться
+kubectl exec -n vault vault-0 -- sh
+# Внутри pod:
+export VAULT_TOKEN="hvs.YX2ShaE5QOS4og5QCKtetvub"
 vault write auth/kubernetes/role/platform \
   bound_service_account_names=hasura \
   bound_service_account_namespaces=platform \
@@ -29,18 +54,15 @@ vault write auth/kubernetes/role/platform \
 Если role `platform` уже существует, обновите его, добавив ServiceAccount `hasura`:
 
 ```bash
-# Подключитесь к Vault pod
-kubectl exec -n vault vault-0 -- sh
+# Проверить существующий role
+kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN="hvs.YX2ShaE5QOS4og5QCKtetvub" vault read auth/kubernetes/role/platform'
 
-# Внутри pod выполните (используя root token)
-vault read auth/kubernetes/role/platform
-
-# Обновите role, добавив hasura в bound_service_account_names
-vault write auth/kubernetes/role/platform \
+# Обновить role, добавив hasura в bound_service_account_names
+kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN="hvs.YX2ShaE5QOS4og5QCKtetvub" vault write auth/kubernetes/role/platform \
   bound_service_account_names=hasura \
   bound_service_account_namespaces=platform \
   policies=archpad \
-  ttl=1h
+  ttl=1h'
 ```
 
 ### Вариант 3: Использовать существующий role `secure`
@@ -54,11 +76,11 @@ vault.hashicorp.com/role: "secure"
 
 И обновите role `secure` в Vault:
 ```bash
-kubectl exec -n vault vault-0 -- vault write auth/kubernetes/role/secure \
+kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN="hvs.YX2ShaE5QOS4og5QCKtetvub" vault write auth/kubernetes/role/secure \
   bound_service_account_names=kratos,hydra,oathkeeper,hasura \
   bound_service_account_namespaces=secure,platform \
   policies=archpad \
-  ttl=1h
+  ttl=1h'
 ```
 
 ## Проверка

@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hasura-vault-role
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "46"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      annotations:
+        argocd.argoproj.io/hook-weight: "0"
+    spec:
+      serviceAccountName: hasura
+      restartPolicy: Never
+      containers:
+        - name: hasura-vault-role
+          image: curlimages/curl:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              apk add --no-cache jq
+              export VAULT_TOKEN="${VAULT_ROOT_TOKEN:-}"
+              if [ -z "$VAULT_TOKEN" ]; then
+                echo "[hasura-vault-role] ERROR: VAULT_ROOT_TOKEN secret is required"
+                echo "[hasura-vault-role] Create secret: kubectl create secret generic vault-root-token -n platform --from-literal=VAULT_ROOT_TOKEN='<your-root-token>'"
+                exit 1
+              fi
+              sh /vault-role/entrypoint.sh
+          env:
+            - name: VAULT_ROOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-root-token
+                  key: VAULT_ROOT_TOKEN
+                  optional: false
+          volumeMounts:
+            - name: vault-role
+              mountPath: /vault-role
+              readOnly: true
+      volumes:
+        - name: vault-role
+          configMap:
+            name: hasura-vault-role
+            defaultMode: 0755
+  backoffLimit: 3
