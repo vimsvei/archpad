@@ -22,7 +22,23 @@ variables:
     - 'echo "Building for commit $COMMIT_SHA"'
     - |
       if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
-        echo "ERROR: REGISTRY_USERNAME and REGISTRY_PASSWORD must be set in GitLab CI/CD Variables"
+        echo "=========================================="
+        echo "ERROR: Missing required CI/CD Variables"
+        echo "=========================================="
+        echo "Please set the following variables in GitLab:"
+        echo "  Settings → CI/CD → Variables → Expand"
+        echo ""
+        echo "Required variables:"
+        [ -z "$REGISTRY_USERNAME" ] && echo "  ❌ REGISTRY_USERNAME (not set)" || echo "  ✅ REGISTRY_USERNAME (set)"
+        [ -z "$REGISTRY_PASSWORD" ] && echo "  ❌ REGISTRY_PASSWORD (not set)" || echo "  ✅ REGISTRY_PASSWORD (set)"
+        echo ""
+        echo "How to set:"
+        echo "  1. Go to: Settings → CI/CD → Variables"
+        echo "  2. Click 'Add variable'"
+        echo "  3. Set Key: REGISTRY_USERNAME, Value: your-registry-username"
+        echo "  4. Set Key: REGISTRY_PASSWORD, Value: your-registry-password (masked)"
+        echo "  5. Save and retry the pipeline"
+        echo "=========================================="
         exit 1
       fi
     - docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" "$REGISTRY_URL"
