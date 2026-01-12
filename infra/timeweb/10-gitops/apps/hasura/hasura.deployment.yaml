@@ -18,15 +18,18 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-hasura: "kv/data/archpad/demo/hasura"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-hasura: |
-          {{- with secret "kv/data/archpad/demo/hasura" }}
+          {{- $hasura := secret "kv/data/archpad/demo/hasura" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
           # Формируем строки подключения из компонентов
           # URL-кодируем пароль для безопасной передачи в URI
-          {{- $password := .Data.data.HASURA_DB_PASSWORD | urlquery }}
-          export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ .Data.data.HASURA_USER }}:{{ $password }}@{{ .Data.data.POSTGRES_HOST }}:{{ .Data.data.POSTGRES_PORT }}/{{ .Data.data.HASURA_DB }}?sslmode=disable"
-          export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ .Data.data.HASURA_USER }}:{{ $password }}@{{ .Data.data.POSTGRES_HOST }}:{{ .Data.data.POSTGRES_PORT }}/{{ .Data.data.HASURA_DB }}?sslmode=disable"
-          export HASURA_GRAPHQL_ADMIN_SECRET="{{ .Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
-          {{- end }}
+          {{- $password := $hasura.Data.data.HASURA_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
+          export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
+          export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasura.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
         vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: hasura

@@ -1,0 +1,33 @@
+# Mailpit
+
+Mailpit - это SMTP тестовый сервер для разработки, который перехватывает все отправленные письма и отображает их в веб-интерфейсе.
+
+## Доступ
+
+- **Веб-интерфейс:** https://mail.archpad.pro
+- **SMTP сервер:** `mailpit.platform.svc.cluster.local:1025` (внутри кластера)
+
+## Использование
+
+### Для Kratos
+
+В секретах Vault (`/v1/kv/data/archpad/demo/ory/kratos`) установите:
+
+```json
+{
+  "SMTP_CONNECTION_URI": "smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true",
+  "SMTP_FROM_ADDRESS": "no-reply@archpad.pro"
+}
+```
+
+### Для других сервисов
+
+Используйте `mailpit.platform.svc.cluster.local:1025` как SMTP сервер.
+
+## Особенности
+
+- Все письма сохраняются в памяти (не персистентно)
+- Веб-интерфейс показывает все отправленные письма
+- Поддерживает SMTP без аутентификации (для разработки)
+- Порт 8025 - веб-интерфейс
+- Порт 1025 - SMTP сервер
