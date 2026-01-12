@@ -28,6 +28,8 @@ data:
             - https://auth.archpad.pro
             - https://authz.archpad.pro
             - https://api.archpad.pro
+            - http://localhost:3000
+            - http://127.0.0.1:3000
           allowed_methods:
             - GET
             - POST
@@ -48,6 +50,8 @@ data:
           enabled: true
           allowed_origins:
             - https://portal.archpad.pro
+            - http://localhost:3000
+            - http://127.0.0.1:3000
           allowed_methods:
             - GET
             - POST

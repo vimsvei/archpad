@@ -38,11 +38,14 @@ data:
     REDIRECT_URI="${NEXT_PUBLIC_OAUTH_REDIRECT_URI:-${PORTAL_PUBLIC_URL}/oauth/callback}"
     SCOPE="${NEXT_PUBLIC_OAUTH_SCOPE:-openid offline_access}"
 
+    # Добавляем redirect URI для локальной разработки
+    REDIRECT_URI_LOCAL="http://localhost:3000/oauth/callback"
+
     payload="$(cat <<JSON
     {
       "client_id": "${CLIENT_ID}",
       "client_name": "Archpad Portal (PKCE)",
-      "redirect_uris": ["${REDIRECT_URI}"],
+      "redirect_uris": ["${REDIRECT_URI}", "${REDIRECT_URI_LOCAL}"],
       "grant_types": ["authorization_code", "refresh_token"],
       "response_types": ["code"],
       "scope": "${SCOPE}",
