@@ -39,13 +39,25 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
+              set -e
               . /vault/secrets/kratos
-              # Подставляем переменные окружения в конфиг используя sed
-              sed -e "s|\${DSN}|${DSN}|g" \
-                  -e "s|\${KRATOS_SECRET}|${KRATOS_SECRET}|g" \
-                  -e "s|\${SMTP_CONNECTION_URI}|${SMTP_CONNECTION_URI}|g" \
-                  -e "s|\${SMTP_FROM_ADDRESS}|${SMTP_FROM_ADDRESS}|g" \
-                  /etc/config/kratos.yml > /tmp/kratos.yml
+              # Подставляем переменные окружения в конфиг используя envsubst
+              # Устанавливаем gettext для envsubst
+              apk add --no-cache gettext >/dev/null 2>&1 || true
+              # Проверяем, что переменные загружены
+              if [ -z "$DSN" ] || [ -z "$SMTP_CONNECTION_URI" ]; then
+                echo "ERROR: Variables not loaded from Vault"
+                exit 1
+              fi
+              # Используем envsubst для подстановки переменных
+              # envsubst заменяет ${VAR} на значения переменных окружения
+              envsubst < /etc/config/kratos.yml > /tmp/kratos.yml
+              # Проверяем результат
+              if ! grep -q "smtp://" /tmp/kratos.yml; then
+                echo "ERROR: Variable substitution failed"
+                cat /tmp/kratos.yml | grep -A 2 "smtp:"
+                exit 1
+              fi
               exec kratos serve -c /tmp/kratos.yml --dev --watch-courier
           ports:
             - name: public
