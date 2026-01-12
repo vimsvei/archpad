@@ -18,7 +18,6 @@ spec:
     # Это обходит ограничение Kustomize на использование ../ путей
     directory:
       recurse: true
-      include: "*.app.yaml"
   syncPolicy:
     automated:
       prune: true
