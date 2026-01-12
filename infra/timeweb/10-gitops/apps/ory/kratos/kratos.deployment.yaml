@@ -41,18 +41,21 @@ spec:
             - |
               set -e
               . /vault/secrets/kratos
-              # Подставляем переменные окружения в конфиг используя envsubst
-              # Устанавливаем gettext для envsubst
+              # Подставляем переменные окружения в конфиг используя awk
+              # Устанавливаем gettext для envsubst (на случай, если понадобится)
               apk add --no-cache gettext >/dev/null 2>&1 || true
               # Проверяем, что переменные загружены
               if [ -z "$DSN" ] || [ -z "$SMTP_CONNECTION_URI" ]; then
                 echo "ERROR: Variables not loaded from Vault"
                 exit 1
               fi
-              # Используем envsubst для подстановки переменных
-              # envsubst заменяет ${VAR} на значения переменных окружения
-              # Указываем конкретные переменные для подстановки
-              envsubst '${DSN} ${KRATOS_SECRET} ${SMTP_CONNECTION_URI} ${SMTP_FROM_ADDRESS}' < /etc/config/kratos.yml > /tmp/kratos.yml
+              # Используем awk для подстановки переменных
+              awk -v dsn="$DSN" \
+                  -v secret="$KRATOS_SECRET" \
+                  -v smtp_uri="$SMTP_CONNECTION_URI" \
+                  -v smtp_from="$SMTP_FROM_ADDRESS" \
+                  '{gsub(/\$\{DSN\}/, dsn); gsub(/\$\{KRATOS_SECRET\}/, secret); gsub(/\$\{SMTP_CONNECTION_URI\}/, smtp_uri); gsub(/\$\{SMTP_FROM_ADDRESS\}/, smtp_from); print}' \
+                  /etc/config/kratos.yml > /tmp/kratos.yml
               # Проверяем результат
               if ! grep -q "smtp://" /tmp/kratos.yml; then
                 echo "ERROR: Variable substitution failed"
