@@ -43,14 +43,16 @@ data:
 
     # Настраиваем Kubernetes Auth config (если еще не настроен)
     echo "[secure-vault-role] Configuring Kubernetes Auth..."
+    # Используем base64 для кодирования CA cert (Vault принимает как base64, так и raw)
+    CA_CERT_B64=$(cat ${KUBERNETES_CA_CERT_PATH} | base64 -w 0)
     curl -fsS -X POST \
       -H "X-Vault-Token: ${VAULT_TOKEN}" \
       -H "Content-Type: application/json" \
       -d "{
         \"kubernetes_host\": \"${KUBERNETES_HOST}\",
-        \"kubernetes_ca_cert\": \"$(cat ${KUBERNETES_CA_CERT_PATH} | base64 -w 0)\"
+        \"kubernetes_ca_cert\": \"${CA_CERT_B64}\"
       }" \
-      "${VAULT_ADDR}/v1/auth/kubernetes/config" >/dev/null
+      "${VAULT_ADDR}/v1/auth/kubernetes/config" >/dev/null 2>&1 || echo "[secure-vault-role] Kubernetes Auth config may already be set (ignoring error)"
     echo "[secure-vault-role] Kubernetes Auth configured"
 
     # Создаем или обновляем role 'secure' для ServiceAccount'ов в namespace secure
