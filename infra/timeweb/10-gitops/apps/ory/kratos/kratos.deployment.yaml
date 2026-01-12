@@ -19,8 +19,8 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
-        # Генерируем полный конфиг Kratos из шаблона в файл /vault/secrets/kratos-config
-        vault.hashicorp.com/agent-inject-template-kratos-config: |
+        # Переопределяем шаблон для секрета kratos - генерируем полный конфиг YAML вместо переменных окружения
+        vault.hashicorp.com/agent-inject-template-kratos: |
           {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
           {{- $password := $kratos.Data.data.KRATOS_DB_PASSWORD | urlquery }}
@@ -121,7 +121,6 @@ spec:
             smtp:
               connection_uri: {{ $kratos.Data.data.SMTP_CONNECTION_URI }}
               from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
-        vault.hashicorp.com/agent-inject-file-kratos-config: "/vault/secrets/kratos-config"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: kratos
@@ -131,10 +130,10 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos-config
+              # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos
               # Копируем его в нужное место
               mkdir -p /etc/config
-              cp /vault/secrets/kratos-config /etc/config/kratos.yml
+              cp /vault/secrets/kratos /etc/config/kratos.yml
               # Запускаем Kratos
               exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
           ports:
