@@ -14,9 +14,6 @@ spec:
       services:
         - name: hydra
           port: 4444
-      middlewares:
-        - name: redirect-to-https
-          namespace: secure
   tls:
     secretName: wildcard-archpad-pro-tls
 
@@ -39,4 +36,4 @@ spec:
           port: 4444
       middlewares:
         - name: redirect-to-https
-          namespace: secure
+          namespace: traefik
