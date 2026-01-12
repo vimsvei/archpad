@@ -18,28 +18,42 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
 COPY packages/contract/package.json packages/contract/package.json
 
-# Install only portal deps (not backend/infra workspace packages)
-RUN pnpm install --frozen-lockfile --filter @archpad/portal...
+# Install dependencies for both contract and portal
+# Contract needs typescript (devDependency) for building
+# Portal depends on contract, so both need to be installed
+# We install contract first explicitly to ensure its devDependencies (typescript) are installed
+# Then install portal which will reuse contract from the workspace
+RUN pnpm install --frozen-lockfile --filter @archpad/contract && \
+    pnpm install --frozen-lockfile --filter @archpad/portal...
 
 
 FROM base AS builder
 WORKDIR /app
 
+# Copy node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
+# Copy package files to ensure pnpm workspace structure is correct
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+# Copy source code
 COPY . .
 
+# Build contract first (it's a dependency of portal)
+# pnpm will find tsc in node_modules/.bin
 RUN pnpm --filter @archpad/contract build
+# Then build portal
 RUN pnpm --filter @archpad/portal build
 
 
 FROM base AS dev
 WORKDIR /app
 
-# Install only portal deps
+# Install portal and contract deps (contract needs typescript for building)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/portal/package.json packages/portal/package.json
 COPY packages/contract/package.json packages/contract/package.json
-RUN pnpm install --frozen-lockfile --filter @archpad/portal...
+RUN pnpm install --frozen-lockfile --filter @archpad/contract --filter @archpad/portal...
 
 # Source (will be bind-mounted in docker-compose for live reload)
 COPY packages/portal ./packages/portal
