@@ -54,11 +54,18 @@ spec:
               echo "DB URL: $SPRING_DATASOURCE_URL"
               echo "DB User: $SPRING_DATASOURCE_USERNAME"
               # Экспортируем переменные для передачи в Java процесс
+              # Эти переменные должны быть установлены ДО запуска Spring Boot
               export SPRING_DATASOURCE_URL
               export SPRING_DATASOURCE_USERNAME
               export SPRING_DATASOURCE_PASSWORD
               export TOLGEE_AUTHENTICATION_INITIAL_USERNAME
               export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD
+              # Проверяем, что переменные установлены
+              if [ -z "$SPRING_DATASOURCE_URL" ]; then
+                echo "ERROR: SPRING_DATASOURCE_URL is not set"
+                exit 1
+              fi
+              echo "Using external PostgreSQL: $SPRING_DATASOURCE_URL"
               # Используем cmd.sh из образа Tolgee
               exec /app/cmd.sh
           ports:
@@ -68,6 +75,26 @@ spec:
           env:
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
               value: "file:/config/config.yaml"
+            # Переменные окружения для Spring DataSource
+            # Они будут установлены через скрипт запуска из Vault секретов
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tolgee-datasource
+                  key: url
+                  optional: true
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tolgee-datasource
+                  key: username
+                  optional: true
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tolgee-datasource
+                  key: password
+                  optional: true
           volumeMounts:
             - name: config
               mountPath: /config/config.yaml
