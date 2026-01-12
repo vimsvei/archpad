@@ -16,5 +16,13 @@ data:
       contentDelivery:
         allowedOrigins:
           - https://portal.archpad.pro
+          - https://i18n.archpad.pro
     server:
       port: 8080
+    spring:
+      datasource:
+        # Используем переменные окружения для подключения к внешней PostgreSQL
+        # Эти переменные устанавливаются через Vault Agent Injector
+        url: ${SPRING_DATASOURCE_URL}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
