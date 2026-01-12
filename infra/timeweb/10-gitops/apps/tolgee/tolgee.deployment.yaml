@@ -39,19 +39,25 @@ spec:
       containers:
         - name: tolgee
           image: tolgee/tolgee:latest
-          command: ["sh", "-c"]
+          # Загружаем секреты из Vault Agent Injector и используем дефолтный entrypoint образа
+          # Tolgee образ использует дефолтный entrypoint, который запускает приложение
+          # Мы загружаем секреты и затем запускаем дефолтную команду образа
+          command: ["/bin/sh", "-c"]
           args:
             - |
               # Загружаем секреты из Vault Agent Injector
               . /vault/secrets/tolgee
-              # Находим и запускаем jar файл Tolgee
-              JAR_FILE=$(find /app -name "*.jar" 2>/dev/null | head -1)
-              if [ -z "$JAR_FILE" ]; then
-                echo "ERROR: Tolgee jar file not found in /app"
-                exit 1
+              # Используем дефолтный entrypoint образа Tolgee
+              # Entrypoint обычно находится в переменной $0 или вызывается через exec
+              # Попробуем найти и запустить дефолтную команду
+              if [ -f /entrypoint.sh ]; then
+                exec /entrypoint.sh
+              elif [ -n "$JAVA_MAIN_CLASS" ]; then
+                exec java ${JAVA_OPTS:-} -cp "/app/lib/*" "$JAVA_MAIN_CLASS"
+              else
+                # Используем Spring Boot стандартный запуск
+                exec java ${JAVA_OPTS:-} -cp "/app/lib/*" org.springframework.boot.loader.launch.JarLauncher
               fi
-              echo "Starting Tolgee with jar: $JAR_FILE"
-              exec java ${JAVA_OPTS:-} -jar "$JAR_FILE"
           ports:
             - name: http
               containerPort: 8080
