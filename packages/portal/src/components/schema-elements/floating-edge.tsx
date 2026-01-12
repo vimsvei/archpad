@@ -9,20 +9,17 @@ import {
 } from "@xyflow/react"
 import { getEdgeParams } from "@/lib/utils"
 
-export function FloatingEdge({
-  id,
-  source,
-  target,
-  sourceHandle,
-  targetHandle,
-  markerEnd,
-  style,
-}: EdgeProps) {
+export function FloatingEdge(props: EdgeProps) {
+  const { id, source, target, markerEnd, style } = props
+  // sourceHandle and targetHandle may not be in EdgeProps type, but they exist on the edge object
+  const sourceHandle = (props as any).sourceHandle
+  const targetHandle = (props as any).targetHandle
+  
   const sourceNode = useStore(
-    useCallback((store) => store.nodeInternals?.get(source), [source]),
+    useCallback((store) => store.nodeLookup.get(source), [source]),
   )
   const targetNode = useStore(
-    useCallback((store) => store.nodeInternals?.get(target), [target]),
+    useCallback((store) => store.nodeLookup.get(target), [target]),
   )
 
   if (!sourceNode || !targetNode) {

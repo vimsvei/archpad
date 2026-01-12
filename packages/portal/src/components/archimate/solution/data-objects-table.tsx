@@ -63,7 +63,7 @@ export function DataObjectsTable({
     <RelatedItemsMapTab<RelatedItem>
       items={items}
       isLoading={isLoading}
-      iconType="data-object"
+      iconType="application-data-object"
       editPath={(item) => `/portfolio/application/data-objects/${item.id}`}
       onRefresh={handleRefresh}
       actions={{ onCreate, onAddExisting, onDelete: handleDelete }}

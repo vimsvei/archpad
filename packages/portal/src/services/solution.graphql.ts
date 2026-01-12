@@ -106,6 +106,9 @@ export type SolutionFullGraphQL = {
   technologyNetworks: Array<{ id: string; code: string; name: string; description?: string | null }>
 }
 
+// Alias for backward compatibility
+export type SolutionFull = SolutionFullGraphQL
+
 export async function getSolutionFullGraphql(idOrCode: string): Promise<SolutionFullGraphQL> {
   // Check if idOrCode is a UUID (id) or a string (code)
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrCode)

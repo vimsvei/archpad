@@ -25,6 +25,7 @@ import {
   useGetSolutionsQuery,
   useUpdateSolutionFullMutation,
 } from "@/store/apis/solution-api"
+import type { SolutionFull } from "@/services/solution.graphql"
 import {
   useCreateApplicationFunctionMutation,
   useGetApplicationFunctionsQuery,
@@ -117,7 +118,7 @@ export function EditItem({ id }: EditItemProps) {
         components: fullData.components,
         functions: fullData.functions,
         dataObjects: fullData.dataObjects,
-        flows: fullData.flows.map((flow) => ({
+        flows: fullData.flows.map((flow: SolutionFull['flows'][number]) => ({
           id: flow.id,
           code: flow.code,
           name: flow.name,
@@ -128,7 +129,7 @@ export function EditItem({ id }: EditItemProps) {
           targetFunction: null,
         })),
         motivations: fullData.motivations,
-        stakeholders: (fullData.stakeholders || []).map((s) => ({
+        stakeholders: (fullData.stakeholders || []).map((s: SolutionFull['stakeholders'][number]) => ({
           id: `${id}-${s.stakeholderId}-${s.roleId}`,
           stakeholderId: s.stakeholderId,
           stakeholderName: s.stakeholderName,
@@ -222,8 +223,8 @@ export function EditItem({ id }: EditItemProps) {
           decision: editState.decision.trim() || undefined,
           consequences: editState.consequences.trim() || undefined,
           alternatives: editState.alternatives.trim() || undefined,
-          decisionStatus: editState.decisionStatus || undefined,
-          implementationStatus: editState.implementationStatus || undefined,
+          decisionStatus: (editState.decisionStatus || undefined) as "solution.life-cycle.proposed" | "solution.life-cycle.accepted" | "solution.life-cycle.superseded" | "solution.life-cycle.deprecated" | "solution.life-cycle.rejected" | undefined,
+          implementationStatus: (editState.implementationStatus || undefined) as "solution.not-started" | "solution.in-progres" | "solution.implemented" | "solution.implementation" | "solution.rolled_back" | undefined,
           componentIds: editState.components.map((c) => resolveId(c.id)),
           functionIds: editState.functions.map((f) => resolveId(f.id)),
           dataObjectIds: editState.dataObjects.map((d) => resolveId(d.id)),
@@ -305,14 +306,14 @@ export function EditItem({ id }: EditItemProps) {
           description: c.description ?? null,
         }))
       case "node":
-        return (nodesList.data?.items ?? []).map((n) => ({
+        return (nodesList.data?.items ?? []).map((n: { id: unknown; code?: unknown; name?: unknown; description?: unknown }) => ({
           id: String(n.id),
           code: String(n.code ?? ""),
           name: String(n.name ?? ""),
           description: (n as any).description ?? null,
         }))
       case "network":
-        return (networksList.data?.items ?? []).map((n) => ({
+        return (networksList.data?.items ?? []).map((n: { id: unknown; code?: unknown; name?: unknown; description?: unknown }) => ({
           id: String(n.id),
           code: String(n.code ?? ""),
           name: String(n.name ?? ""),

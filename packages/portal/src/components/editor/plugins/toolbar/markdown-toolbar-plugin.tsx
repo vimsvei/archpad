@@ -132,7 +132,7 @@ export function MarkdownToolbarPlugin() {
           const markdownLink = `[${linkText}](${url})`
           selection.insertText(markdownLink)
         }
-      } else {
+      } else if (selection) {
         // Insert link template at cursor
         selection.insertText("[Link](https://)")
       }
@@ -185,7 +185,7 @@ export function MarkdownToolbarPlugin() {
           // Insert empty quote at cursor
           selection.insertText("> ")
         }
-      } else {
+      } else if (selection) {
         // Insert empty quote at cursor
         selection.insertText("> ")
       }
