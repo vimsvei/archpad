@@ -18,12 +18,18 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-kratos: |
-          {{- with secret "kv/data/archpad/demo/ory/kratos" }}
-          {{- range $k, $v := .Data.data }}
-          export {{ $k }}="{{ $v }}"
-          {{- end }}
-          {{- end }}
+          {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          # Формируем DSN из компонентов
+          {{- $password := $kratos.Data.data.KRATOS_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
+          export DSN="postgres://{{ $kratos.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratos.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
+          export KRATOS_SECRET="{{ $kratos.Data.data.KRATOS_SECRET }}"
+          export SMTP_CONNECTION_URI="{{ $kratos.Data.data.SMTP_CONNECTION_URI }}"
+          export SMTP_FROM_ADDRESS="{{ $kratos.Data.data.SMTP_FROM_ADDRESS }}"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: kratos
@@ -33,7 +39,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              source /vault/secrets/kratos
+              . /vault/secrets/kratos
               exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
           ports:
             - name: public

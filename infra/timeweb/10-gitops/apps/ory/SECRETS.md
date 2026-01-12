@@ -1,180 +1,144 @@
-# Секреты для Ory компонентов
+# Ory Secrets Reference
 
-Этот документ описывает, какие секреты необходимы для каждого компонента Ory и как их создать в Vault.
+Документация по структуре секретов Ory компонентов в Vault.
 
-## Секреты для Kratos
+**Важно:** Секреты уже должны быть созданы в Vault. Этот документ описывает структуру и использование существующих секретов.
 
-**Путь в Vault:** `/kv/data/archpad/demo/ory/kratos`
+## Структура секретов
 
-### Необходимые переменные:
+### PostgreSQL (общие секреты)
 
-1. **DSN** - строка подключения к PostgreSQL
-   - Формат: `postgres://<user>:<password>@<host>:<port>/<database>?sslmode=disable&max_conns=20&max_idle_conns=4`
-   - Пример: `postgres://kratos_user:password123@postgres-service:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4`
-   - **Важно:** В Kubernetes используйте имя сервиса PostgreSQL вместо `localhost`
+**Путь:** `/v1/kv/data/archpad/demo/postgres`
 
-2. **KRATOS_SECRET** - секретный ключ для подписи cookies и токенов
-   - Длина: минимум 32 символа
-   - **Важно:** Должен быть стабильным (не меняться между перезапусками)
-   - Пример: `ReMUeeq8tyEmmAHFBUiKtzkEmX9aMZr7` (32 символа)
-   - Можно сгенерировать: `openssl rand -base64 32`
+**Константы:**
+- `POSTGRES_HOST` - IP адрес PostgreSQL кластера (например, `192.168.0.4`)
+- `POSTGRES_PORT` - Порт PostgreSQL (например, `5432`)
 
-3. **SMTP_CONNECTION_URI** - URI подключения к SMTP серверу для отправки email
-   - Формат: `smtp://<host>:<port>/?disable_starttls=true` (для Mailpit/локального SMTP)
-   - Или: `smtps://<user>:<pass>@<host>:<port>` (для внешнего SMTP)
-   - Пример для Mailpit: `smtp://mailpit-service:1025/?disable_starttls=true`
-   - Пример для внешнего SMTP: `smtps://user:pass@smtp.gmail.com:465`
+**Примечание:** Эти секреты используются всеми сервисами (Hasura, Kratos, Hydra).
 
-4. **SMTP_FROM_ADDRESS** - адрес отправителя для email
-   - Пример: `no-reply@archpad.pro`
-   - Должен соответствовать настройкам SMTP сервера
+---
 
-### Пример JSON для Vault:
+### Kratos
 
+**Путь:** `/v1/kv/data/archpad/demo/ory/kratos`
+
+**Константы:**
+- `KRATOS_DB_USER` - Имя пользователя PostgreSQL для Kratos (например, `kratos_user`)
+- `KRATOS_DB_PASSWORD` - Пароль пользователя PostgreSQL
+- `KRATOS_DB` - Имя базы данных Kratos (например, `kratos`)
+- `KRATOS_SECRET` - Секрет для подписи сессий и токенов (32+ символов, base64)
+- `SMTP_CONNECTION_URI` - URI подключения к SMTP серверу (например, `smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true`)
+- `SMTP_FROM_ADDRESS` - Адрес отправителя email (например, `no-reply@archpad.pro`)
+
+**Примечание:** Mailpit развернут в namespace `platform` и доступен по адресу `mailpit.platform.svc.cluster.local:1025` (SMTP) и `https://mail.archpad.pro` (веб-интерфейс).
+
+**DSN формируется автоматически из компонентов:**
+`postgres://{KRATOS_DB_USER}:{KRATOS_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
+
+---
+
+### Hydra
+
+**Путь:** `/v1/kv/data/archpad/demo/ory/hydra`
+
+**Константы:**
+- `HYDRA_DB_USER` - Имя пользователя PostgreSQL для Hydra (например, `hydra_user`)
+- `HYDRA_DB_PASSWORD` - Пароль пользователя PostgreSQL
+- `HYDRA_DB` - Имя базы данных Hydra (например, `hydra`)
+- `SECRETS_SYSTEM` - Системный секрет для Hydra (32+ символов, base64)
+
+**DSN формируется автоматически из компонентов:**
+`postgres://{HYDRA_DB_USER}:{HYDRA_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
+
+---
+
+### Oathkeeper
+
+**Путь:** `/v1/kv/data/archpad/demo/ory/oauthkeeper`
+
+**Константы:**
+- `ORY_CLIENT_ID` - ID OAuth2 клиента для introspection (например, `archpad-oathkeeper`)
+- `ORY_CLIENT_SECRET` - Секрет OAuth2 клиента для introspection (32+ символов, base64)
+
+**Примечание:** Oathkeeper не использует БД напрямую, только OAuth2 клиент для подключения к Hydra.
+
+---
+
+## Примеры значений
+
+### PostgreSQL
 ```json
 {
-  "DSN": "postgres://kratos_user:password123@postgres-service:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4",
-  "KRATOS_SECRET": "ReMUeeq8tyEmmAHFBUiKtzkEmX9aMZr7",
-  "SMTP_CONNECTION_URI": "smtp://mailpit-service:1025/?disable_starttls=true",
+  "POSTGRES_HOST": "192.168.0.4",
+  "POSTGRES_PORT": "5432"
+}
+```
+
+### Kratos
+```json
+{
+  "KRATOS_DB_USER": "kratos_user",
+  "KRATOS_DB_PASSWORD": "your-secure-password",
+  "KRATOS_DB": "kratos",
+  "KRATOS_SECRET": "auto-generated-base64-secret",
+  "SMTP_CONNECTION_URI": "smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true",
   "SMTP_FROM_ADDRESS": "no-reply@archpad.pro"
 }
 ```
 
-## Секреты для Hydra
-
-**Путь в Vault:** `/kv/data/archpad/demo/ory/hydra`
-
-### Необходимые переменные:
-
-1. **DSN** - строка подключения к PostgreSQL
-   - Формат: `postgres://<user>:<password>@<host>:<port>/<database>?sslmode=disable&max_conns=20&max_idle_conns=4`
-   - Пример: `postgres://hydra_user:password123@postgres-service:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4`
-   - **Важно:** В Kubernetes используйте имя сервиса PostgreSQL вместо `localhost`
-
-2. **SECRETS_SYSTEM** - системный секрет для шифрования данных Hydra
-   - Длина: минимум 32 символа
-   - **Важно:** Должен быть стабильным (не меняться при использовании персистентной БД)
-   - Пример: `nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL` (32 символа)
-   - Можно сгенерировать: `openssl rand -base64 32`
-
-### Пример JSON для Vault:
-
+### Hydra
 ```json
 {
-  "DSN": "postgres://hydra_user:password123@postgres-service:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4",
-  "SECRETS_SYSTEM": "nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL"
+  "HYDRA_DB_USER": "hydra_user",
+  "HYDRA_DB_PASSWORD": "your-secure-password",
+  "HYDRA_DB": "hydra",
+  "SECRETS_SYSTEM": "auto-generated-base64-secret"
 }
 ```
 
-## Секреты для Oathkeeper
-
-**Путь в Vault:** `/kv/data/archpad/demo/ory/oauthkeeper`
-
-**Важно:** Путь содержит `oauthkeeper` (с "oauth"), а не `oathkeeper`. Это как указал пользователь.
-
-### Необходимые переменные:
-
-1. **ORY_CLIENT_ID** - ID OAuth2 клиента для Oathkeeper (используется для introspection токенов)
-   - Пример: `archpad-oathkeeper`
-   - Этот ID будет использован при создании OAuth2 клиента в Hydra через Job `hydra-init-client`
-
-2. **ORY_CLIENT_SECRET** - секрет OAuth2 клиента для Oathkeeper
-   - Длина: рекомендуется минимум 32 символа
-   - Пример: `4oG5JkhLBhSL1L41VimM36bc70YNOerv`
-   - Этот секрет будет использован при создании OAuth2 клиента в Hydra
-   - Можно сгенерировать: `openssl rand -base64 32`
-
-### Пример JSON для Vault:
-
+### Oathkeeper
 ```json
 {
   "ORY_CLIENT_ID": "archpad-oathkeeper",
-  "ORY_CLIENT_SECRET": "4oG5JkhLBhSL1L41VimM36bc70YNOerv"
+  "ORY_CLIENT_SECRET": "auto-generated-base64-secret"
 }
 ```
 
-## Создание секретов через Vault API
-
-Если у вас есть root token от Vault, вы можете создать секреты через API используя curl:
-
-### 1. Kratos
+## Проверка секретов
 
 ```bash
+# PostgreSQL
+vault kv get -format=json kv/archpad/demo/postgres | jq '.data.data'
+
+# Kratos
+vault kv get -format=json kv/archpad/demo/ory/kratos | jq '.data.data'
+
+# Hydra
+vault kv get -format=json kv/archpad/demo/ory/hydra | jq '.data.data'
+
+# Oathkeeper
+vault kv get -format=json kv/archpad/demo/ory/oauthkeeper | jq '.data.data'
+```
+
+## Обновление секретов
+
+```bash
+# Обновить через Vault CLI
+vault kv patch kv/archpad/demo/ory/kratos \
+  KRATOS_DB_PASSWORD="new-password"
+
+# Обновить через Vault API
 curl -X POST \
-  -H "X-Vault-Token: <root-token>" \
+  -H "X-Vault-Token: $VAULT_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "DSN": "postgres://kratos_user:password123@postgres-service:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4",
-      "KRATOS_SECRET": "ReMUeeq8tyEmmAHFBUiKtzkEmX9aMZr7",
-      "SMTP_CONNECTION_URI": "smtp://mailpit-service:1025/?disable_starttls=true",
-      "SMTP_FROM_ADDRESS": "no-reply@archpad.pro"
-    }
-  }' \
+  -d '{"data": {"KRATOS_DB_PASSWORD": "new-password"}}' \
   https://vault.archpad.pro/v1/kv/data/archpad/demo/ory/kratos
-```
-
-### 2. Hydra
-
-```bash
-curl -X POST \
-  -H "X-Vault-Token: <root-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "DSN": "postgres://hydra_user:password123@postgres-service:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4",
-      "SECRETS_SYSTEM": "nApRkoCIUm7lLYvGCvAmT8jgnqk0LhDAXlBaWVIngEL"
-    }
-  }' \
-  https://vault.archpad.pro/v1/kv/data/archpad/demo/ory/hydra
-```
-
-### 3. Oathkeeper
-
-```bash
-curl -X POST \
-  -H "X-Vault-Token: <root-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "ORY_CLIENT_ID": "archpad-oathkeeper",
-      "ORY_CLIENT_SECRET": "4oG5JkhLBhSL1L41VimM36bc70YNOerv"
-    }
-  }' \
-  https://vault.archpad.pro/v1/kv/data/archpad/demo/ory/oauthkeeper
-```
-
-## Использование скрипта
-
-Также можно использовать интерактивный скрипт `create-ory-secrets.sh`:
-
-```bash
-./create-ory-secrets.sh https://vault.archpad.pro <root-token>
-```
-
-Скрипт попросит ввести все необходимые значения и создаст секреты в Vault.
-
-## Генерация случайных секретов
-
-Для генерации случайных секретов можно использовать:
-
-```bash
-# Генерация 32-символьного секрета (base64)
-openssl rand -base64 32
-
-# Генерация 32-символьного секрета (hex)
-openssl rand -hex 32
-
-# Генерация случайного секрета через Python
-python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
 ## Важные замечания
 
-1. **DSN строки:** В Kubernetes используйте имя сервиса PostgreSQL вместо `localhost` или `postgres`. Например, если PostgreSQL сервис называется `postgres` в namespace `default`, используйте `postgres.default.svc.cluster.local` или просто `postgres` (если в том же namespace).
-
-2. **Стабильность секретов:** `KRATOS_SECRET` и `SECRETS_SYSTEM` должны быть стабильными (не меняться между перезапусками), иначе пользователи потеряют сессии и данные.
-
-3. **Путь Oathkeeper:** Путь в Vault для Oathkeeper - `oauthkeeper` (с "oauth"), а не `oathkeeper`. Это как указал пользователь в требованиях.
-
-4. **PostgreSQL:** Убедитесь, что PostgreSQL доступен в кластере и у вас есть credentials для создания пользователей и баз данных для Kratos и Hydra.
+1. **POSTGRES_HOST и POSTGRES_PORT** хранятся отдельно в `/v1/kv/data/archpad/demo/postgres` и используются всеми сервисами
+2. **DSN строки** формируются автоматически из компонентов в шаблонах Vault Agent Injector
+3. **Пароли** автоматически URL-кодируются для безопасной передачи в URI
+4. **SMTP сервис:** Mailpit развернут в namespace `platform`, доступен по `mailpit.platform.svc.cluster.local:1025` (SMTP) и `https://mail.archpad.pro` (веб-интерфейс)
+5. **Стабильность секретов:** `KRATOS_SECRET` и `SECRETS_SYSTEM` должны быть стабильными (не меняться между перезапусками)
