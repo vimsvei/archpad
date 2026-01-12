@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: secure-vault-role
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "40"
+data:
+  entrypoint.sh: |
+    #!/usr/bin/env sh
+    set -eu
+
+    VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+    VAULT_TOKEN="${VAULT_TOKEN}"
+    KUBERNETES_HOST="${KUBERNETES_HOST:-https://kubernetes.default.svc}"
+    KUBERNETES_CA_CERT_PATH="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    
+    echo "[secure-vault-role] Waiting for Vault to be ready at ${VAULT_ADDR}..."
+    tries=0
+    until curl -fsS "${VAULT_ADDR}/v1/sys/health" >/dev/null 2>&1; do
+      tries=$((tries+1))
+      if [ "$tries" -ge 60 ]; then
+        echo "[secure-vault-role] Vault not ready after ${tries} tries"
+        exit 1
+      fi
+      sleep 2
+    done
+    echo "[secure-vault-role] Vault is ready"
+
+    # Проверяем, включен ли Kubernetes Auth
+    echo "[secure-vault-role] Checking if Kubernetes Auth is enabled..."
+    if ! curl -fsS -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null 2>&1; then
+      echo "[secure-vault-role] Enabling Kubernetes Auth..."
+      curl -fsS -X POST \
+        -H "X-Vault-Token: ${VAULT_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"type":"kubernetes"}' \
+        "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null
+      echo "[secure-vault-role] Kubernetes Auth enabled"
+    else
+      echo "[secure-vault-role] Kubernetes Auth already enabled"
+    fi
+
+    # Настраиваем Kubernetes Auth config (если еще не настроен)
+    echo "[secure-vault-role] Configuring Kubernetes Auth..."
+    curl -fsS -X POST \
+      -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"kubernetes_host\": \"${KUBERNETES_HOST}\",
+        \"kubernetes_ca_cert\": \"$(cat ${KUBERNETES_CA_CERT_PATH} | base64 -w 0)\"
+      }" \
+      "${VAULT_ADDR}/v1/auth/kubernetes/config" >/dev/null
+    echo "[secure-vault-role] Kubernetes Auth configured"
+
+    # Создаем или обновляем role 'secure' для ServiceAccount'ов в namespace secure
+    echo "[secure-vault-role] Creating/updating Vault role 'secure' for ServiceAccounts in namespace 'secure'..."
+    curl -fsS -X POST \
+      -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "bound_service_account_names": "kratos,hydra,oathkeeper",
+        "bound_service_account_namespaces": "secure",
+        "policies": "archpad",
+        "ttl": "1h"
+      }' \
+      "${VAULT_ADDR}/v1/auth/kubernetes/role/secure" >/dev/null
+    echo "[secure-vault-role] Vault role 'secure' created/updated"
+
+    echo "[secure-vault-role] Done."
