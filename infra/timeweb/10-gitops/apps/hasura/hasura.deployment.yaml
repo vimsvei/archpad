@@ -27,6 +27,7 @@ spec:
           {{- end }}
         vault.hashicorp.com/role: "platform"
     spec:
+      serviceAccountName: hasura
       containers:
         - name: hasura
           image: hasura/graphql-engine:v2.48.6
