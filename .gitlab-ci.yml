@@ -51,24 +51,18 @@ build:arch-repo-service:
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/arch-repo-service/Dockerfile"
     BUILD_CONTEXT: "."
-  tags:
-    - docker
 
 build:tenant-service:
   extends: .build_docker_image
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/tenant-service/Dockerfile"
     BUILD_CONTEXT: "."
-  tags:
-    - docker
 
 build:hasura-sync-service:
   extends: .build_docker_image
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
     BUILD_CONTEXT: "."
-  tags:
-    - docker
 
 # ============================================
 # Frontend
@@ -79,8 +73,6 @@ build:portal:
   variables:
     DOCKERFILE_PATH: "packages/portal/Dockerfile"
     BUILD_CONTEXT: "."
-  tags:
-    - docker
 
 # ============================================
 # Deploy (опционально, для автоматического обновления образов в Kubernetes)
