@@ -13,7 +13,8 @@ spec:
       annotations:
         argocd.argoproj.io/hook-weight: "0"
     spec:
-      serviceAccountName: hasura
+      # Используем default ServiceAccount, так как Job не требует специальных прав
+      # Job просто делает HTTP запросы к Vault API
       restartPolicy: Never
       containers:
         - name: hasura-vault-role
