@@ -19,7 +19,7 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
-        # Генерируем полный конфиг Kratos из шаблона
+        # Генерируем полный конфиг Kratos из шаблона в файл
         vault.hashicorp.com/agent-inject-template-kratos-config: |
           {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
