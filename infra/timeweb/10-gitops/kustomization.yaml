@@ -17,6 +17,7 @@ resources:
   - apps/pgadmin/pgadmin.app.yaml
   - apps/hasura/hasura.app.yaml
   - apps/mailpit/mailpit.app.yaml
+  - apps/tolgee/tolgee.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml

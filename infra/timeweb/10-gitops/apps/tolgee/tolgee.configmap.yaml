@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tolgee
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+data:
+  config.yaml: |
+    tolgee:
+      postgres:
+        autoconfigure: false
+        enabled: false
+      authentication:
+        enabled: true
+      contentDelivery:
+        allowedOrigins:
+          - https://portal.archpad.pro
+    server:
+      port: 8080

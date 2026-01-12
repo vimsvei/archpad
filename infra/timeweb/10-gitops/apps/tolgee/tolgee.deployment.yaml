@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tolgee
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+  labels:
+    app: tolgee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tolgee
+  template:
+    metadata:
+      labels:
+        app: tolgee
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-tolgee: "kv/data/archpad/demo/tolgee"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-template-tolgee: |
+          {{- $tolgee := secret "kv/data/archpad/demo/tolgee" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          # Формируем JDBC URL из компонентов
+          {{- $password := $tolgee.Data.data.TOLGEE_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
+          export SPRING_DATASOURCE_URL="jdbc:postgresql://{{ $pgHost }}:{{ $pgPort }}/{{ $tolgee.Data.data.TOLGEE_DB }}"
+          export SPRING_DATASOURCE_USERNAME="{{ $tolgee.Data.data.TOLGEE_DB_USER }}"
+          export SPRING_DATASOURCE_PASSWORD="{{ $tolgee.Data.data.TOLGEE_DB_PASSWORD }}"
+          export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ $tolgee.Data.data.TOLGEE_ADMIN_USER }}"
+          export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgee.Data.data.TOLGEE_ADMIN_PASSWORD }}"
+        vault.hashicorp.com/role: "platform"
+    spec:
+      serviceAccountName: tolgee
+      containers:
+        - name: tolgee
+          image: tolgee/tolgee:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              # Загружаем секреты из Vault Agent
+              . /vault/secrets/tolgee
+              # Запускаем Tolgee (Spring Boot приложение)
+              exec java -jar /app/tolgee.jar
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: "file:/config/config.yaml"
+          volumeMounts:
+            - name: config
+              mountPath: /config/config.yaml
+              subPath: config.yaml
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: config
+          configMap:
+            name: tolgee

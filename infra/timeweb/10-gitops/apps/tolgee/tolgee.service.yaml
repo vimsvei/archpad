@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tolgee
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "65"
+  labels:
+    app: tolgee
+spec:
+  selector:
+    app: tolgee
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
