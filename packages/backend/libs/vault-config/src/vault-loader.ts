@@ -94,7 +94,7 @@ export async function loadVaultSecrets(options?: {
     // Set environment variables from Vault secrets (Vault has priority, overwrites existing vars)
     let loadedCount = 0;
     let overwrittenCount = 0;
-    const dbKeys = ['PROJECT_DB', 'PROJECT_DB_USER', 'PROJECT_DB_PASS', 'PG_HOST', 'PG_PORT'];
+    const dbKeys = ['PROJECT_DB', 'PROJECT_DB_USER', 'PROJECT_DB_PASSWORD', 'PG_HOST', 'POSTGRES_ENDPOINT', 'POSTGRES_PORT'];
     const dbSecrets: Record<string, string> = {};
     
     for (const [key, value] of Object.entries(secrets)) {

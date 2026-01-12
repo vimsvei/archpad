@@ -18,9 +18,11 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-hasura: "kv/data/archpad/demo/hasura"
+        vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura-secret"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-hasura: |
           {{- $hasura := secret "kv/data/archpad/demo/hasura" }}
+          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura-secret" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
           # Формируем строки подключения из компонентов
           # URL-кодируем пароль для безопасной передачи в URI
@@ -29,7 +31,7 @@ spec:
           {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
           export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
           export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
-          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasura.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
         vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: hasura
@@ -40,6 +42,7 @@ spec:
           args:
             - |
               . /vault/secrets/hasura
+              . /vault/secrets/hasura-secret
               exec graphql-engine serve
           ports:
             - name: http

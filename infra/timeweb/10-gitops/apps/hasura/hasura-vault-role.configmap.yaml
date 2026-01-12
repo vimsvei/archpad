@@ -67,7 +67,7 @@ data:
     # Создаем или обновляем role platform
     payload="$(cat <<JSON
     {
-      "bound_service_account_names": "hasura,tolgee",
+      "bound_service_account_names": "hasura,tolgee,arch-repo-service,tenant-service,hasura-sync-service,portal",
       "bound_service_account_namespaces": "platform",
       "policies": "archpad",
       "ttl": "1h"

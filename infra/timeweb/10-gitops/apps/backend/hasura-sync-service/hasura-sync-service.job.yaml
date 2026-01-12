@@ -1,0 +1,106 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hasura-sync-service
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+    # ArgoCD будет пересоздавать Job при каждом синхронизации
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+  labels:
+    app: hasura-sync-service
+spec:
+  # Job должен выполняться только один раз
+  completions: 1
+  parallelism: 1
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: hasura-sync-service
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-hasura-sync-service: "kv/data/archpad/demo/backend/hasura-sync-service"
+        vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura-secret"
+        vault.hashicorp.com/agent-inject-secret-common: "kv/data/archpad/demo/backend/common"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-template-hasura-sync-service: |
+          {{- $hasuraSync := secret "kv/data/archpad/demo/backend/hasura-sync-service" }}
+          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura-secret" }}
+          {{- $common := secret "kv/data/archpad/demo/backend/common" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          # Экспортируем переменные окружения для hasura-sync-service
+          export HASURA_ENDPOINT="{{ $hasuraSync.Data.data.HASURA_ENDPOINT }}"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          export HASURA_SOURCE="{{ $hasuraSync.Data.data.HASURA_SOURCE }}"
+          export HASURA_SCHEMA="{{ $hasuraSync.Data.data.HASURA_SCHEMA }}"
+          {{- if $hasuraSync.Data.data.HASURA_RENAME_COLUMNS_CAMELCASE }}
+          export HASURA_RENAME_COLUMNS_CAMELCASE="{{ $hasuraSync.Data.data.HASURA_RENAME_COLUMNS_CAMELCASE }}"
+          {{- end }}
+          {{- if $hasuraSync.Data.data.HASURA_APPLY_DEFAULT_PERMISSIONS }}
+          export HASURA_APPLY_DEFAULT_PERMISSIONS="{{ $hasuraSync.Data.data.HASURA_APPLY_DEFAULT_PERMISSIONS }}"
+          {{- end }}
+          {{- if $hasuraSync.Data.data.HASURA_DEFAULT_ROLE }}
+          export HASURA_DEFAULT_ROLE="{{ $hasuraSync.Data.data.HASURA_DEFAULT_ROLE }}"
+          {{- end }}
+          export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
+          export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
+          export POSTGRES_ENDPOINT="{{ $postgres.Data.data.POSTGRES_ENDPOINT }}"
+          export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
+        vault.hashicorp.com/role: "platform"
+        # Vault Agent должен завершиться после загрузки секретов
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+    spec:
+      serviceAccountName: hasura-sync-service
+      restartPolicy: Never
+      containers:
+        - name: hasura-sync-service
+          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
+          # image: registry.timeweb.cloud/archpad/hasura-sync-service:latest
+          image: node:20-alpine
+          command: ["sh", "-c"]
+          args:
+            - |
+              # Загружаем секреты из Vault Agent Injector
+              set -a
+              . /vault/secrets/hasura-sync-service
+              set +a
+              # Проверяем, что переменные установлены
+              if [ -z "$HASURA_ENDPOINT" ]; then
+                echo "ERROR: HASURA_ENDPOINT is not set"
+                exit 1
+              fi
+              if [ -z "$HASURA_GRAPHQL_ADMIN_SECRET" ]; then
+                echo "ERROR: HASURA_GRAPHQL_ADMIN_SECRET is not set"
+                exit 1
+              fi
+              if [ -z "$HASURA_SOURCE" ]; then
+                echo "ERROR: HASURA_SOURCE is not set"
+                exit 1
+              fi
+              if [ -z "$HASURA_SCHEMA" ]; then
+                echo "ERROR: HASURA_SCHEMA is not set"
+                exit 1
+              fi
+              echo "Hasura endpoint: $HASURA_ENDPOINT"
+              echo "Hasura source: $HASURA_SOURCE"
+              echo "Hasura schema: $HASURA_SCHEMA"
+              # Запускаем синхронизацию
+              # TODO: После сборки образа использовать правильный путь к main.js
+              # exec node dist/apps/hasura-sync-service/apps/hasura-sync-service/src/main.js
+              # Временная заглушка для проверки конфигурации
+              echo "Hasura Sync Service starting..."
+              echo "This is a placeholder. Replace with actual sync command after building the image."
+              exit 0
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

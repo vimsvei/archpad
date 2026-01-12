@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: arch-repo-service
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "65"
+  labels:
+    app: arch-repo-service
+spec:
+  selector:
+    app: arch-repo-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP

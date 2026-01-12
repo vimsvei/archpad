@@ -1,17 +1,120 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - secret_detection
-  - test
+  - build
+  - deploy
 
-include:
-  - template: Jobs/Secret-Detection.gitlab-ci.yml
+variables:
+  # Container Registry TimeWeb
+  REGISTRY_URL: "${CI_REGISTRY_URL:-registry.timeweb.cloud}"
+  REGISTRY_IMAGE_PREFIX: "${CI_REGISTRY_IMAGE_PREFIX:-archpad}"
+  
+  # Docker build settings
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
 
-secret_detection:
+# Получаем короткий SHA коммита для тегирования образов
+.get_commit_sha: &get_commit_sha
+  - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+  - echo "Building for commit: $COMMIT_SHA"
+
+# Шаблон для сборки Docker образа
+.build_docker_image: &build_docker_image
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  before_script:
+    - *get_commit_sha
+    - |
+      # Получаем секреты из Vault для Container Registry
+      # В реальном CI/CD эти секреты должны быть в GitLab CI/CD Variables
+      # или загружаться из Vault через API
+      if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
+        echo "ERROR: REGISTRY_USERNAME and REGISTRY_PASSWORD must be set in GitLab CI/CD Variables"
+        echo "Or configure Vault integration to load them automatically"
+        exit 1
+      fi
+    - docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" "$REGISTRY_URL"
+  script:
+    - |
+      IMAGE_TAG="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${CI_JOB_NAME}:${COMMIT_SHA}"
+      IMAGE_TAG_LATEST="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${CI_JOB_NAME}:latest"
+      
+      echo "Building Docker image: $IMAGE_TAG"
+      docker build -t "$IMAGE_TAG" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+      
+      echo "Pushing Docker image: $IMAGE_TAG"
+      docker push "$IMAGE_TAG"
+      docker push "$IMAGE_TAG_LATEST"
+      
+      echo "Image pushed successfully: $IMAGE_TAG"
+  after_script:
+    - docker logout "$REGISTRY_URL"
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# ============================================
+# Backend Services
+# ============================================
+
+build:arch-repo-service:
+  <<: *build_docker_image
   variables:
-    SECRETS_ANALYZER_VERSION: "4.5"
+    DOCKERFILE_PATH: "packages/backend/apps/arch-repo-service/Dockerfile"
+    BUILD_CONTEXT: "."
+  tags:
+    - docker
+
+build:tenant-service:
+  <<: *build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/tenant-service/Dockerfile"
+    BUILD_CONTEXT: "."
+  tags:
+    - docker
+
+build:hasura-sync-service:
+  <<: *build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
+    BUILD_CONTEXT: "."
+  tags:
+    - docker
+
+# ============================================
+# Frontend
+# ============================================
+
+build:portal:
+  <<: *build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/portal/Dockerfile"
+    BUILD_CONTEXT: "."
+  tags:
+    - docker
+
+# ============================================
+# Deploy (опционально, для автоматического обновления образов в Kubernetes)
+# ============================================
+
+# Примечание: Для автоматического обновления образов в Kubernetes можно использовать:
+# 1. ArgoCD Image Updater (рекомендуется)
+# 2. Или обновлять манифесты через kubectl в этом stage
+
+deploy:update-images:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - |
+      echo "Images built successfully:"
+      echo "- arch-repo-service:${COMMIT_SHA}"
+      echo "- tenant-service:${COMMIT_SHA}"
+      echo "- hasura-sync-service:${COMMIT_SHA}"
+      echo "- portal:${COMMIT_SHA}"
+      echo ""
+      echo "To update images in Kubernetes, use ArgoCD Image Updater or update manifests manually"
+      echo "Example: kubectl set image deployment/arch-repo-service arch-repo-service=${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/arch-repo-service:${COMMIT_SHA} -n platform"
+  only:
+    - main
+  when: manual

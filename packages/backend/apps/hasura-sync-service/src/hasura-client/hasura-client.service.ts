@@ -36,7 +36,7 @@ export class HasuraClientService {
     }
 
     this.endpoint = normalizeHasuraEndpoint(rawEndpoint);
-    this.secret = this.config.get<string>('HASURA_ADMIN_SECRET')!;
+    this.secret = this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET')!;
     this.source = this.config.get<string>('HASURA_SOURCE')!;
     this.schema = this.config.get<string>('HASURA_SCHEMA')!;
 
