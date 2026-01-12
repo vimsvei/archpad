@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import type { Edge, Node } from "@xyflow/react"
+import type { Dispatch, SetStateAction } from "react"
 
 type ElkModule = {
   default: new (opts?: any) => {
@@ -58,10 +59,10 @@ function getNodeSize(node: any): { width: number; height: number } {
  * - Runs on client only (dynamic import)
  * - Uses measured node sizes when available
  */
-export function useElkLayout(
-  nodes: Node[],
+export function useElkLayout<T extends Node = Node>(
+  nodes: T[],
   edges: Edge[],
-  setNodes: (updater: (prev: Node[]) => Node[]) => void,
+  setNodes: Dispatch<SetStateAction<T[]>>,
   options?: ElkLayoutOptions,
 ) {
   const [isLayingOut, setIsLayingOut] = React.useState(false)

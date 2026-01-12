@@ -128,6 +128,10 @@ export function ListPage() {
               ...(code ? { code } : {}),
               name: values.name,
               description: values.description.trim() ? values.description.trim() : undefined,
+              context: "",
+              decision: "",
+              consequences: "",
+              alternatives: "",
             },
           }).unwrap()
         },

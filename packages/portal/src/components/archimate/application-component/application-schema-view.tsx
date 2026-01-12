@@ -224,14 +224,14 @@ export function ApplicationSchemaView({
   })
 
   // ReactFlow instance для экспорта
-  const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
+  const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance<ReactFlowNode<ApplicationComponentNodeData>, Edge> | null>(null)
   const { exportToPNG, exportToPDF } = useSchemaExport(
-    reactFlowInstance,
+    reactFlowInstance as ReactFlowInstance | null,
     componentName || componentData?.name
   )
 
-  const onInit = React.useCallback((instance: ReactFlowInstance) => {
-    setReactFlowInstance(instance)
+  const onInit = React.useCallback((instance: ReactFlowInstance<ReactFlowNode<ApplicationComponentNodeData>, Edge>) => {
+    setReactFlowInstance(instance as ReactFlowInstance<ReactFlowNode<ApplicationComponentNodeData>, Edge> | null)
   }, [])
 
   // Обновляем узлы и связи при изменении данных
