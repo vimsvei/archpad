@@ -46,8 +46,11 @@
 2. Перейдите в раздел **Container Registry**
 3. Создайте API токен или используйте существующие учетные данные
 4. Используйте:
-   - **REGISTRY_USERNAME**: Ваш username или email
-   - **REGISTRY_PASSWORD**: API токен или пароль
+   - **REGISTRY_URL**: `archpad-cr.registry.twcstorage.ru` (уже установлен по умолчанию)
+   - **REGISTRY_USERNAME**: Ваш username или email для Container Registry
+   - **REGISTRY_PASSWORD**: API токен или пароль для Container Registry
+
+**Примечание:** URL registry по умолчанию установлен в `.gitlab-ci.yml` как `archpad-cr.registry.twcstorage.ru`. Если нужно использовать другой URL, установите переменную `REGISTRY_URL` в GitLab CI/CD Variables.
 
 ### Альтернатива: GitLab Container Registry
 
