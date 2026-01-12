@@ -6,9 +6,15 @@ import { loadVaultSecrets } from '@archpad/vault-config';
 
 async function bootstrap() {
   // Load secrets from Vault before creating the application
-  await loadVaultSecrets({
-    nodeEnv: process.env.NODE_ENV,
-  });
+  // В Kubernetes секреты уже загружены через Vault Agent Injector в переменные окружения
+  // В local development загружаем из Vault API
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  if (nodeEnv === 'local') {
+    await loadVaultSecrets({
+      nodeEnv,
+      secretsPath: 'kv/data/archpad/demo/backend/hasura-sync-service',
+    });
+  }
 
   const app = await NestFactory.createApplicationContext(
     HasuraSyncServiceModule,

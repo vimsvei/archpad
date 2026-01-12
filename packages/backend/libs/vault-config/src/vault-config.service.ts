@@ -46,7 +46,15 @@ export class VaultConfigService implements OnModuleInit {
 
   async onModuleInit() {
     if (!this.options.enabled) {
-      this.logger.warn('Vault integration is disabled');
+      this.logger.log('Vault integration is disabled (using environment variables from Vault Agent Injector)');
+      return;
+    }
+
+    // В Kubernetes секреты уже загружены через Vault Agent Injector в переменные окружения
+    // Проверяем, есть ли уже секреты в переменных окружения
+    const hasEnvSecrets = process.env.PROJECT_DB || process.env.TENANT_DB || process.env.HASURA_ENDPOINT;
+    if (hasEnvSecrets && this.options.nodeEnv !== 'local') {
+      this.logger.log('Secrets already loaded from Vault Agent Injector (using environment variables)');
       return;
     }
 
@@ -57,7 +65,7 @@ export class VaultConfigService implements OnModuleInit {
 
     try {
       await this.loadSecrets();
-      this.logger.log('Successfully loaded secrets from Vault');
+      this.logger.log('Successfully loaded secrets from Vault API');
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             const errorStack = error instanceof Error ? error.stack : undefined;

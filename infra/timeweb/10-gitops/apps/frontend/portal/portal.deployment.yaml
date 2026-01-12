@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+  labels:
+    app: portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portal
+  template:
+    metadata:
+      labels:
+        app: portal
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-portal: "kv/data/archpad/demo/frontend/portal"
+        vault.hashicorp.com/agent-inject-template-portal: |
+          {{- $portal := secret "kv/data/archpad/demo/frontend/portal" }}
+          # Экспортируем переменные окружения для Portal
+          export NEXT_PUBLIC_ORY_SDK_URL="{{ $portal.Data.data.NEXT_PUBLIC_ORY_SDK_URL }}"
+          export ORY_KRATOS_PUBLIC_URL="{{ $portal.Data.data.ORY_KRATOS_PUBLIC_URL }}"
+          export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="{{ $portal.Data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT }}"
+          export HASURA_ENDPOINT="{{ $portal.Data.data.HASURA_ENDPOINT }}"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $portal.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          export NEXT_PUBLIC_TOLGEE_API_URL="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
+          export NEXT_PUBLIC_TOLGEE_API_KEY="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_KEY }}"
+          export NEXT_PUBLIC_URL="{{ $portal.Data.data.NEXT_PUBLIC_URL }}"
+          {{- if $portal.Data.data.API_GATEWAY_INTERNAL_URL }}
+          export API_GATEWAY_INTERNAL_URL="{{ $portal.Data.data.API_GATEWAY_INTERNAL_URL }}"
+          {{- end }}
+          {{- if $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT }}
+          export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="{{ $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT }}"
+          {{- end }}
+        vault.hashicorp.com/role: "platform"
+    spec:
+      serviceAccountName: portal
+      containers:
+        - name: portal
+          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
+          # image: registry.timeweb.cloud/archpad/portal:latest
+          image: node:20-bookworm-slim
+          command: ["sh", "-c"]
+          args:
+            - |
+              # Загружаем секреты из Vault Agent Injector
+              set -a
+              . /vault/secrets/portal
+              set +a
+              # Проверяем, что основные переменные установлены
+              if [ -z "$NEXT_PUBLIC_URL" ]; then
+                echo "ERROR: NEXT_PUBLIC_URL is not set"
+                exit 1
+              fi
+              if [ -z "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" ]; then
+                echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set"
+                exit 1
+              fi
+              echo "Portal URL: $NEXT_PUBLIC_URL"
+              echo "Hasura endpoint: $NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT"
+              # Запускаем Next.js приложение
+              # TODO: После сборки образа использовать правильный путь к server.js
+              # exec node server.js
+              # Временная заглушка для проверки конфигурации
+              echo "Portal starting..."
+              sleep infinity
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "1"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi

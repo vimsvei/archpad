@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-service
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "60"
+  labels:
+    app: tenant-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tenant-service
+  template:
+    metadata:
+      labels:
+        app: tenant-service
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-tenant-service: "kv/data/archpad/demo/backend/tenant-service"
+        vault.hashicorp.com/agent-inject-secret-common: "kv/data/archpad/demo/backend/common"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-template-tenant-service: |
+          {{- $tenantService := secret "kv/data/archpad/demo/backend/tenant-service" }}
+          {{- $common := secret "kv/data/archpad/demo/backend/common" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          # Экспортируем переменные окружения для tenant-service
+          export TENANT_DB="{{ $tenantService.Data.data.TENANT_DB }}"
+          export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
+          export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
+          export POSTGRES_ENDPOINT="{{ $postgres.Data.data.POSTGRES_ENDPOINT }}"
+          export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
+        vault.hashicorp.com/role: "platform"
+    spec:
+      serviceAccountName: tenant-service
+      containers:
+        - name: tenant-service
+          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
+          # image: registry.timeweb.cloud/archpad/tenant-service:latest
+          image: node:20-alpine
+          command: ["sh", "-c"]
+          args:
+            - |
+              # Загружаем секреты из Vault Agent Injector
+              set -a
+              . /vault/secrets/tenant-service
+              set +a
+              # Проверяем, что переменные установлены
+              if [ -z "$TENANT_DB" ]; then
+                echo "ERROR: TENANT_DB is not set"
+                exit 1
+              fi
+              if [ -z "$PROJECT_DB_USER" ]; then
+                echo "ERROR: PROJECT_DB_USER is not set"
+                exit 1
+              fi
+              if [ -z "$PROJECT_DB_PASSWORD" ]; then
+                echo "ERROR: PROJECT_DB_PASSWORD is not set"
+                exit 1
+              fi
+              echo "Using PostgreSQL: $POSTGRES_ENDPOINT:$POSTGRES_PORT"
+              echo "Database: $TENANT_DB"
+              echo "User: $PROJECT_DB_USER"
+              # Запускаем приложение
+              # TODO: После сборки образа использовать правильный путь к main.js
+              # exec node dist/apps/tenant-service/apps/tenant-service/src/main.js
+              # Временная заглушка для проверки конфигурации
+              echo "Tenant Service starting..."
+              sleep infinity
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

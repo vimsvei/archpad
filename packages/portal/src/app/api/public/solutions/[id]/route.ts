@@ -64,7 +64,7 @@ export async function GET(
                      "http://hasura:8080/v1/graphql"
     
     // For public access, we may need admin secret or configure Hasura to allow public role
-    const hasuraAdminSecret = process.env.HASURA_ADMIN_SECRET
+    const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       "X-Hasura-Role": "public",
