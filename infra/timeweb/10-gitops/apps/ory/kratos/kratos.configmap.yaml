@@ -19,6 +19,8 @@ data:
             - https://portal.archpad.pro
             - https://auth.archpad.pro
             - https://authz.archpad.pro
+            - http://localhost:3000
+            - http://127.0.0.1:3000
           allowed_methods:
             - GET
             - POST
@@ -42,6 +44,8 @@ data:
       default_browser_return_url: https://portal.archpad.pro/
       allowed_return_urls:
         - https://portal.archpad.pro/
+        - http://localhost:3000/
+        - http://127.0.0.1:3000/
       methods:
         password:
           enabled: true
