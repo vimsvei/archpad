@@ -19,10 +19,7 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
-        # Генерируем полный конфиг Kratos из шаблона
-        # Используем отдельный секрет для конфига (можно использовать тот же секрет, но с другим шаблоном)
-        vault.hashicorp.com/agent-inject-secret-kratos-config: "kv/data/archpad/demo/ory/kratos"
-        vault.hashicorp.com/agent-inject-secret-kratos-config-postgres: "kv/data/archpad/demo/postgres"
+        # Генерируем полный конфиг Kratos из шаблона в файл /vault/secrets/kratos-config
         vault.hashicorp.com/agent-inject-template-kratos-config: |
           {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
@@ -124,6 +121,7 @@ spec:
             smtp:
               connection_uri: {{ $kratos.Data.data.SMTP_CONNECTION_URI }}
               from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
+        vault.hashicorp.com/agent-inject-file-kratos-config: "/vault/secrets/kratos-config"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: kratos
