@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasura
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hasura
+  template:
+    metadata:
+      labels:
+        app: hasura
+      annotations:
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-hasura: "kv/data/archpad/demo/hasura"
+        vault.hashicorp.com/agent-inject-template-hasura: |
+          {{- with secret "kv/data/archpad/demo/hasura" }}
+          # Формируем строки подключения из компонентов
+          export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ .Data.data.HASURA_USER }}:{{ .Data.data.HASURA_DB_PASSWORD }}@{{ .Data.data.POSTGRES_HOST }}:{{ .Data.data.POSTGRES_PORT | default "5432" }}/{{ .Data.data.HASURA_DB }}?sslmode=disable"
+          export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ .Data.data.HASURA_USER }}:{{ .Data.data.HASURA_DB_PASSWORD }}@{{ .Data.data.POSTGRES_HOST }}:{{ .Data.data.POSTGRES_PORT | default "5432" }}/{{ .Data.data.HASURA_DB }}?sslmode=disable"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ .Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          {{- end }}
+        vault.hashicorp.com/role: "platform"
+    spec:
+      containers:
+        - name: hasura
+          image: hasura/graphql-engine:v2.48.6
+          command: ["sh", "-c"]
+          args:
+            - |
+              source /vault/secrets/hasura
+              exec graphql-engine serve
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: HASURA_GRAPHQL_UNAUTHORIZED_ROLE
+              value: "public"
+            - name: HASURA_GRAPHQL_CORS_DOMAIN
+              value: "*"
+            - name: HASURA_GRAPHQL_ENABLED_APIS
+              value: "graphql,metadata,config,pgdump,metrics"
+            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+              value: "true"
+            - name: HASURA_GRAPHQL_ENABLE_ALLOWLIST
+              value: "false"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

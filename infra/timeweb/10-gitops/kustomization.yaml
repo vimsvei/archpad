@@ -15,6 +15,7 @@ resources:
   - apps/ory/hydra.app.yaml
   - apps/ory/oathkeeper.app.yaml
   - apps/pgadmin/pgadmin.app.yaml
+  - apps/hasura/hasura.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
