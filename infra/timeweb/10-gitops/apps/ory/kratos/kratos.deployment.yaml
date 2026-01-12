@@ -146,6 +146,9 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/config
+            - name: shared-vault-secrets
+              mountPath: /shared-vault-secrets
+              readOnly: true
             - name: identity-schema
               mountPath: /etc/config/kratos/identities/default.schema.json
               subPath: default.schema.json
@@ -164,6 +167,8 @@ spec:
             periodSeconds: 5
       volumes:
         - name: config
+          emptyDir: {}
+        - name: shared-vault-secrets
           emptyDir: {}
         - name: identity-schema
           configMap:
