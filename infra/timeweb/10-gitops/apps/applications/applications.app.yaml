@@ -13,8 +13,12 @@ spec:
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: HEAD
-    path: infra/timeweb/10-gitops/apps/applications
-    kustomize: {}
+    path: infra/timeweb/10-gitops/apps
+    # Используем directory с recurse для поиска всех .app.yaml файлов
+    # Это обходит ограничение Kustomize на использование ../ путей
+    directory:
+      recurse: true
+      include: "*.app.yaml"
   syncPolicy:
     automated:
       prune: true
