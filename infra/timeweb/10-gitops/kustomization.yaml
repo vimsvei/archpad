@@ -42,4 +42,8 @@ resources:
   - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml
 
+  # Vault role для Ory компонентов (до Ory Applications)
+  - apps/ory/secure-vault-role.configmap.yaml
+  - apps/ory/secure-vault-role.job.yaml
+
 
