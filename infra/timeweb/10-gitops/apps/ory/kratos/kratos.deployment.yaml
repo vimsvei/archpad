@@ -40,7 +40,13 @@ spec:
           args:
             - |
               . /vault/secrets/kratos
-              exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
+              # Подставляем переменные окружения в конфиг используя sed
+              sed -e "s|\${DSN}|${DSN}|g" \
+                  -e "s|\${KRATOS_SECRET}|${KRATOS_SECRET}|g" \
+                  -e "s|\${SMTP_CONNECTION_URI}|${SMTP_CONNECTION_URI}|g" \
+                  -e "s|\${SMTP_FROM_ADDRESS}|${SMTP_FROM_ADDRESS}|g" \
+                  /etc/config/kratos.yml > /tmp/kratos.yml
+              exec kratos serve -c /tmp/kratos.yml --dev --watch-courier
           ports:
             - name: public
               containerPort: 4433
