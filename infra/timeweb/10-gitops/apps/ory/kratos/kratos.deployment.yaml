@@ -132,12 +132,11 @@ spec:
             - |
               # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos
               # Проверяем формат файла и преобразуем если нужно
-              mkdir -p /etc/config
               if grep -q "^export " /vault/secrets/kratos; then
                 # Файл содержит export команды - преобразуем в YAML
                 . /vault/secrets/kratos
                 . /vault/secrets/postgres
-                cat > /etc/config/kratos.yml <<EOF
+                cat > /tmp/kratos.yml <<EOF
               dsn: ${DSN}
               
               serve:
@@ -236,10 +235,16 @@ spec:
               EOF
               else
                 # Файл уже в формате YAML - просто копируем
-                cp /vault/secrets/kratos /etc/config/kratos.yml
+                cp /vault/secrets/kratos /tmp/kratos.yml
+              fi
+              # Проверяем, что файл создан
+              if [ ! -f /tmp/kratos.yml ]; then
+                echo "ERROR: Failed to create config file"
+                ls -la /tmp/
+                exit 1
               fi
               # Запускаем Kratos
-              exec kratos serve -c /etc/config/kratos.yml --dev --watch-courier
+              exec kratos serve -c /tmp/kratos.yml --dev --watch-courier
           ports:
             - name: public
               containerPort: 4433
@@ -248,8 +253,6 @@ spec:
               containerPort: 4434
               protocol: TCP
           volumeMounts:
-            - name: config
-              mountPath: /etc/config
             - name: identity-schema
               mountPath: /etc/config/kratos/identities/default.schema.json
               subPath: default.schema.json
@@ -267,8 +270,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
-        - name: config
-          emptyDir: {}
         - name: identity-schema
           configMap:
             name: kratos-identity-schema
