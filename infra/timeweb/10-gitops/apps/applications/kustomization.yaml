@@ -5,12 +5,13 @@ resources:
   # ArgoCD Applications для всех компонентов платформы
   # Эти Applications управляются отдельно от platform-root,
   # чтобы избежать конфликтов SharedResourceWarning
-  - ../traefik/traefik.app.yaml
-  - ../vault/vault.app.yaml
-  - ../hasura/hasura.app.yaml
-  - ../mailpit/mailpit.app.yaml
-  - ../pgadmin/pgadmin.app.yaml
-  - ../tolgee/tolgee.app.yaml
-  - ../ory/kratos.app.yaml
-  - ../ory/hydra.app.yaml
-  - ../ory/oathkeeper.app.yaml
+  # Используем полные пути от корня репозитория
+  - ../../../traefik/traefik.app.yaml
+  - ../../../vault/vault.app.yaml
+  - ../../../hasura/hasura.app.yaml
+  - ../../../mailpit/mailpit.app.yaml
+  - ../../../pgadmin/pgadmin.app.yaml
+  - ../../../tolgee/tolgee.app.yaml
+  - ../../../ory/kratos.app.yaml
+  - ../../../ory/hydra.app.yaml
+  - ../../../ory/oathkeeper.app.yaml
