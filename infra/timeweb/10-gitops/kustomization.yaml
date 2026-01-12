@@ -8,16 +8,9 @@ resources:
   # Проект Argo
   - projects/platform.project.yaml
 
-  # Apps (дочерние ArgoCD Applications)
-  - apps/traefik/traefik.app.yaml
-  - apps/vault/vault.app.yaml
-  - apps/ory/kratos.app.yaml
-  - apps/ory/hydra.app.yaml
-  - apps/ory/oathkeeper.app.yaml
-  - apps/pgadmin/pgadmin.app.yaml
-  - apps/hasura/hasura.app.yaml
-  - apps/mailpit/mailpit.app.yaml
-  - apps/tolgee/tolgee.app.yaml
+  # Примечание: ArgoCD Applications (traefik.app.yaml, vault.app.yaml, etc.)
+  # управляются отдельными Applications, а не через этот kustomization.yaml
+  # Это предотвращает конфликты SharedResourceWarning
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
