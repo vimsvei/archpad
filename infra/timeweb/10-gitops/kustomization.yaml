@@ -8,9 +8,9 @@ resources:
   # Проект Argo
   - projects/platform.project.yaml
 
-  # Примечание: ArgoCD Applications (traefik.app.yaml, vault.app.yaml, etc.)
-  # управляются отдельными Applications, а не через этот kustomization.yaml
-  # Это предотвращает конфликты SharedResourceWarning
+  # ArgoCD Application для управления всеми другими Applications
+  # Используется App of Apps pattern для избежания конфликтов SharedResourceWarning
+  - apps/applications/applications.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
