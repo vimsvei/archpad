@@ -42,10 +42,16 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              # Загружаем секреты из Vault Agent
+              # Загружаем секреты из Vault Agent Injector
               . /vault/secrets/tolgee
-              # Запускаем Tolgee (Spring Boot приложение)
-              exec java -jar /app/tolgee.jar
+              # Находим и запускаем jar файл Tolgee
+              JAR_FILE=$(find /app -name "*.jar" 2>/dev/null | head -1)
+              if [ -z "$JAR_FILE" ]; then
+                echo "ERROR: Tolgee jar file not found in /app"
+                exit 1
+              fi
+              echo "Starting Tolgee with jar: $JAR_FILE"
+              exec java ${JAVA_OPTS:-} -jar "$JAR_FILE"
           ports:
             - name: http
               containerPort: 8080
