@@ -39,32 +39,16 @@ spec:
       containers:
         - name: tolgee
           image: tolgee/tolgee:latest
-          # Используем дефолтный entrypoint образа Tolgee
-          # Секреты загружаются через Vault Agent Injector в /vault/secrets/tolgee
-          # Загружаем их через source перед запуском дефолтной команды
+          # Используем cmd.sh из образа Tolgee для запуска
+          # cmd.sh запускает: java -cp "app:app/lib/*" io.tolgee.Application
+          # Загружаем секреты из Vault Agent Injector перед запуском
           command: ["/bin/sh", "-c"]
           args:
             - |
               # Загружаем секреты из Vault Agent Injector
               . /vault/secrets/tolgee
-              # Запускаем дефолтный entrypoint образа Tolgee
-              # Tolgee образ использует стандартный Spring Boot запуск через java -jar
-              # Ищем основной jar файл (обычно это самый большой файл с именем содержащим "app" или "tolgee")
-              # Или используем стандартный путь для Spring Boot приложений
-              if [ -f /app/app.jar ]; then
-                exec java ${JAVA_OPTS:-} -jar /app/app.jar
-              elif [ -f /app/tolgee.jar ]; then
-                exec java ${JAVA_OPTS:-} -jar /app/tolgee.jar
-              else
-                # Ищем jar файл в /app (исключая /app/lib)
-                JAR_FILE=$(find /app -maxdepth 1 -type f -name "*.jar" 2>/dev/null | head -1)
-                if [ -n "$JAR_FILE" ] && [ -f "$JAR_FILE" ]; then
-                  exec java ${JAVA_OPTS:-} -jar "$JAR_FILE"
-                else
-                  # Если не нашли, используем Spring Boot classpath запуск
-                  exec java ${JAVA_OPTS:-} -cp "/app/lib/*:/app/*" org.springframework.boot.loader.JarLauncher
-                fi
-              fi
+              # Используем cmd.sh из образа Tolgee
+              exec /app/cmd.sh
           ports:
             - name: http
               containerPort: 8080
