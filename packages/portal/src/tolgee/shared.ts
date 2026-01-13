@@ -69,6 +69,7 @@ export function TolgeeBase() {
       apiKey: !!apiKey,
       apiUrl: !!apiUrl
     });
+    console.warn('[Tolgee] Translations will not work without API key and URL!');
   }
   
   const tolgee = Tolgee()

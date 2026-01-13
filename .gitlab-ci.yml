@@ -152,7 +152,23 @@ variables:
       if [ "$SERVICE_NAME" = "portal" ]; then
         echo "Building portal - fetching secrets from Vault..."
         get_vault_secrets_for_portal
+        
+        # Проверяем, что переменные не пустые
+        if [ -z "$NEXT_PUBLIC_TOLGEE_API_KEY" ] || [ -z "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
+          echo "ERROR: Required NEXT_PUBLIC_* variables are empty after fetching from Vault"
+          echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+SET}${NEXT_PUBLIC_TOLGEE_API_KEY:-NOT SET}"
+          echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+SET}${NEXT_PUBLIC_TOLGEE_API_URL:-NOT SET}"
+          exit 1
+        fi
+        
         echo "Building portal with NEXT_PUBLIC_* build arguments from Vault..."
+        echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
+        echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}"
+        echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
+        
         docker build \
           -t "$IMAGE_TAG_VERSION" \
           -t "$IMAGE_TAG_LATEST" \
@@ -302,7 +318,23 @@ variables:
       if [ "$SERVICE_NAME" = "portal" ]; then
         echo "Building portal - fetching secrets from Vault..."
         get_vault_secrets_for_portal
+        
+        # Проверяем, что переменные не пустые
+        if [ -z "$NEXT_PUBLIC_TOLGEE_API_KEY" ] || [ -z "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
+          echo "ERROR: Required NEXT_PUBLIC_* variables are empty after fetching from Vault"
+          echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+SET}${NEXT_PUBLIC_TOLGEE_API_KEY:-NOT SET}"
+          echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+SET}${NEXT_PUBLIC_TOLGEE_API_URL:-NOT SET}"
+          exit 1
+        fi
+        
         echo "Building portal with NEXT_PUBLIC_* build arguments from Vault..."
+        echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
+        echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}"
+        echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
+        
         docker build \
           -t "$IMAGE_TAG_MAIN" \
           -t "$IMAGE_TAG_LATEST" \

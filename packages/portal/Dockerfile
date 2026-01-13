@@ -55,6 +55,14 @@ COPY packages/contract ./packages/contract
 RUN pnpm --filter @archpad/contract build
 # Then build portal
 # NEXT_PUBLIC_* variables are now available and will be embedded in the client bundle
+# Логируем переменные для отладки (только ключи, не значения)
+RUN echo "Building portal with NEXT_PUBLIC_* variables:" && \
+    echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}" && \
+    echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}" && \
+    echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}" && \
+    echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}" && \
+    echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}" && \
+    echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
 RUN pnpm --filter @archpad/portal build
 
 
