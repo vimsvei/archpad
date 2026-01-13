@@ -1,5 +1,6 @@
 {
   "name": "@archpad/backend",
+  "version": "0.0.0",
   "private": true,
   "author": {
     "name": "Aleksandr Zelentsov",

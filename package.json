@@ -1,6 +1,7 @@
 {
   "name": "archpad",
   "private": true,
+  "version": "0.0.0",
   "scripts": {
     "install:all": "pnpm install",
     "bootstrap": "pnpm -w install",
