@@ -148,7 +148,49 @@ update:versions:
     # Настраиваем git для коммита
     - git config --global user.name "GitLab CI"
     - git config --global user.email "ci@archpad.pro"
-    - git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    # Используем Personal Access Token или Project Access Token для push
+    # CI_JOB_TOKEN не имеет прав на push, Deploy Token не поддерживает write_repository
+    - echo "Checking GIT_PUSH_TOKEN..."
+    - |
+      if [ -z "$GIT_PUSH_TOKEN" ]; then
+        echo "=========================================="
+        echo "ERROR: GIT_PUSH_TOKEN is not set"
+        echo "=========================================="
+        echo "Please create a Personal Access Token or Project Access Token:"
+        echo ""
+        echo "Option 1: Personal Access Token (recommended, works immediately)"
+        echo "  1. Go to: User Settings → Access Tokens"
+        echo "     (Click on your avatar → Preferences → Access Tokens)"
+        echo "  2. Token name: git-push-token"
+        echo "  3. Expiration date: set as needed"
+        echo "  4. Scopes: select 'write_repository'"
+        echo "  5. Click 'Create personal access token'"
+        echo "  6. Copy the token (shown only once!)"
+        echo "  7. Go to project: Settings → CI/CD → Variables"
+        echo "  8. Add variable:"
+        echo "     - Key: GIT_PUSH_TOKEN"
+        echo "     - Value: <paste token>"
+        echo "     - Type: Variable"
+        echo "     - Flags: Masked (recommended)"
+        echo ""
+        echo "Option 2: Project Access Token (requires group settings)"
+        echo "  NOTE: If disabled in group, enable it first:"
+        echo "  - Group Settings → General → Permissions"
+        echo "  - Enable 'Project access token creation'"
+        echo ""
+        echo "  Then create token:"
+        echo "  1. Go to: Settings → Access Tokens"
+        echo "  2. Token name: git-push-token"
+        echo "  3. Role: Maintainer or Owner"
+        echo "  4. Scopes: select 'write_repository'"
+        echo "  5. Create and copy token"
+        echo "  6. Add as CI/CD variable: GIT_PUSH_TOKEN"
+        echo "=========================================="
+        exit 1
+      fi
+    - echo "GIT_PUSH_TOKEN is set (length: ${#GIT_PUSH_TOKEN} characters)"
+    - git remote set-url origin "https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - echo "Git remote URL configured with GIT_PUSH_TOKEN"
     - git fetch origin "$CI_COMMIT_REF_NAME" || git fetch origin "$CI_DEFAULT_BRANCH"
     - |
       # В GitLab CI мы уже в нужном коммите, но нужно переключиться на ветку для коммита
