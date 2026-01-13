@@ -55,12 +55,12 @@ spec:
               . /vault/secrets/portal
               set +a
               # Проверяем, что основные переменные установлены
-              if [ -z "$NEXT_PUBLIC_URL" ]; then
-                echo "ERROR: NEXT_PUBLIC_URL is not set"
+              if [ -z "$NEXT_PUBLIC_URL" ] || [ "$NEXT_PUBLIC_URL" = "<no value>" ]; then
+                echo "ERROR: NEXT_PUBLIC_URL is not set or has invalid value"
                 exit 1
               fi
-              if [ -z "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" ]; then
-                echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set"
+              if [ -z "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" ] || [ "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" = "<no value>" ]; then
+                echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set or has invalid value"
                 exit 1
               fi
               echo "Portal URL: $NEXT_PUBLIC_URL"
