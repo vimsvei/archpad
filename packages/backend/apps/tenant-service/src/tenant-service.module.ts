@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { TenantServiceController } from './tenant-service.controller';
-import { TenantServiceService } from './tenant-service.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -17,7 +15,7 @@ import { BootstrapModule } from './bootstrap.module';
       nodeEnv: process.env.NODE_ENV,
       // В Kubernetes секреты уже загружены через Vault Agent Injector
       // В local development загружаем из Vault API
-      secretsPath: process.env.NODE_ENV === 'local' 
+      secretsPath: process.env.NODE_ENV === 'local'
         ? 'kv/data/archpad/demo/backend/tenant-service'
         : undefined, // В production не загружаем из Vault API, используем переменные окружения
       enabled: process.env.NODE_ENV === 'local', // Включаем только для local
@@ -35,8 +33,8 @@ import { BootstrapModule } from './bootstrap.module';
         const dbUser = vaultConfigService.get('PROJECT_DB_USER') || configService.get<string>('PROJECT_DB_USER') || process.env.PROJECT_DB_USER;
         const dbPass = vaultConfigService.get('PROJECT_DB_PASSWORD') || configService.get<string>('PROJECT_DB_PASSWORD') || process.env.PROJECT_DB_PASSWORD;
         const pgHost = nodeEnv === 'local'
-          ? (vaultConfigService.get('PG_HOST') || configService.get<string>('PG_HOST') || process.env.PG_HOST || 'postgres')
-          : (vaultConfigService.get('POSTGRES_ENDPOINT') || configService.get<string>('POSTGRES_ENDPOINT') || process.env.POSTGRES_ENDPOINT || 'postgres');
+          ? (vaultConfigService.get('POSTGRES_ENDPOINT') || configService.get<string>('POSTGRES_ENDPOINT') || process.env.POSTGRES_ENDPOINT || 'postgres')
+          : (vaultConfigService.get('POSTGRES_HOST') || configService.get<string>('POSTGRES_HOST') || process.env.POSTGRES_HOST || 'postgres');
         const pgPort = +(vaultConfigService.get('POSTGRES_PORT') || configService.get<string>('POSTGRES_PORT') || process.env.POSTGRES_PORT || '5432');
 
         console.log(`[TenantService MikroORM Config] dbName: "${dbName}"`);
@@ -88,7 +86,5 @@ import { BootstrapModule } from './bootstrap.module';
     }),
     BootstrapModule,
   ],
-  controllers: [TenantServiceController],
-  providers: [TenantServiceService],
 })
 export class TenantServiceModule {}

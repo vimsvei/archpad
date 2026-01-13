@@ -47,8 +47,8 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
         const dbUser = vaultConfigService.get('PROJECT_DB_USER') || configService.get<string>('PROJECT_DB_USER') || process.env.PROJECT_DB_USER;
         const dbPass = vaultConfigService.get('PROJECT_DB_PASSWORD') || configService.get<string>('PROJECT_DB_PASSWORD') || process.env.PROJECT_DB_PASSWORD;
         const pgHost = nodeEnv === 'local'
-          ? (vaultConfigService.get('PG_HOST') || configService.get<string>('PG_HOST') || process.env.PG_HOST || 'postgres')
-          : (vaultConfigService.get('POSTGRES_ENDPOINT') || configService.get<string>('POSTGRES_ENDPOINT') || process.env.POSTGRES_ENDPOINT || 'postgres');
+          ? (vaultConfigService.get('POSTGRES_ENDPOINT') || configService.get<string>('POSTGRES_ENDPOINT') || process.env.POSTGRES_ENDPOINT || 'postgres')
+          : (vaultConfigService.get('POSTGRES_HOST') || configService.get<string>('POSTGRES_HOST') || process.env.POSTGRES_HOST || 'postgres');
         const pgPort = +(vaultConfigService.get('POSTGRES_PORT') || configService.get<string>('POSTGRES_PORT') || process.env.POSTGRES_PORT || '5432');
 
         console.log(`[MikroORM Config] dbName: "${dbName}"`);

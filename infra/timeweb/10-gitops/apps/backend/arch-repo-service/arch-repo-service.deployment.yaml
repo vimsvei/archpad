@@ -34,7 +34,7 @@ spec:
           export PROJECT_DB="{{ $archRepo.Data.data.PROJECT_DB }}"
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
-          export POSTGRES_ENDPOINT="{{ $postgres.Data.data.POSTGRES_ENDPOINT }}"
+          export POSTGRES_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
           export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
     spec:
