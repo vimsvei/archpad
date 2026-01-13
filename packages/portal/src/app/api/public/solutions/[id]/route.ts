@@ -29,10 +29,10 @@ async function loadGqlServer(pathFromApiGraphql: string): Promise<string> {
 }
 
 function getGraphqlGatewayBaseUrl(): string {
+  // Для серверных компонентов приоритет у внутренних адресов
   return (
-    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT ??
     process.env.API_GATEWAY_INTERNAL_URL ??
-    "http://oathkeeper:4455"
+    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
   )
 }
 
@@ -59,9 +59,9 @@ export async function GET(
     
     // Make request to Hasura directly with public role
     // Bypass Oathkeeper for public access
-    const hasuraUrl = process.env.HASURA_ENDPOINT || 
-                     process.env.NEXT_PUBLIC_HASURA_ENDPOINT ||
-                     "http://hasura:8080/v1/graphql"
+    // Для серверных компонентов приоритет у внутренних адресов
+    const hasuraUrl = process.env.HASURA_INTERNAL_URL || 
+                     process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
     
     // For public access, we may need admin secret or configure Hasura to allow public role
     const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET

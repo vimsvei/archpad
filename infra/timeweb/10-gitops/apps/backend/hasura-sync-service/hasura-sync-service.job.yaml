@@ -27,16 +27,18 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-hasura-sync-service: "kv/data/archpad/demo/backend/hasura-sync-service"
-        vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura-secret"
+        vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
+        vault.hashicorp.com/agent-inject-secret-hasura-endpoint: "kv/data/archpad/demo/hasura/endpoint"
         vault.hashicorp.com/agent-inject-secret-common: "kv/data/archpad/demo/backend/common"
         vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-hasura-sync-service: |
           {{- $hasuraSync := secret "kv/data/archpad/demo/backend/hasura-sync-service" }}
-          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura-secret" }}
+          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
+          {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $common := secret "kv/data/archpad/demo/backend/common" }}
           {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
           # Экспортируем переменные окружения для hasura-sync-service
-          export HASURA_ENDPOINT="{{ $hasuraSync.Data.data.HASURA_ENDPOINT }}"
+          export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
           export HASURA_SOURCE="{{ $hasuraSync.Data.data.HASURA_SOURCE }}"
           export HASURA_SCHEMA="{{ $hasuraSync.Data.data.HASURA_SCHEMA }}"
@@ -70,8 +72,8 @@ spec:
               . /vault/secrets/hasura-sync-service
               set +a
               # Проверяем, что переменные установлены
-              if [ -z "$HASURA_ENDPOINT" ]; then
-                echo "ERROR: HASURA_ENDPOINT is not set"
+              if [ -z "$HASURA_INTERNAL_URL" ]; then
+                echo "ERROR: HASURA_INTERNAL_URL is not set"
                 exit 1
               fi
               if [ -z "$HASURA_GRAPHQL_ADMIN_SECRET" ]; then
@@ -86,7 +88,7 @@ spec:
                 echo "ERROR: HASURA_SCHEMA is not set"
                 exit 1
               fi
-              echo "Hasura endpoint: $HASURA_ENDPOINT"
+              echo "Hasura endpoint: $HASURA_INTERNAL_URL"
               echo "Hasura source: $HASURA_SOURCE"
               echo "Hasura schema: $HASURA_SCHEMA"
               # Запускаем синхронизацию

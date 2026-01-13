@@ -13,11 +13,13 @@ Portal - это Next.js приложение, которое используе�
 
 ### Ory Kratos (Аутентификация)
 - **`NEXT_PUBLIC_ORY_SDK_URL`** - публичный URL Kratos SDK (например, `https://auth.archpad.pro`)
-- **`ORY_KRATOS_PUBLIC_URL`** - внутренний URL Kratos для серверных запросов (например, `http://kratos.secure.svc:4433`)
+- **`ORY_KRATOS_INTERNAL_URL`** - внутренний URL Kratos для серверных запросов (например, `http://kratos.secure.svc:4433`)
+  - **Путь в Vault:** `/v1/kv/data/archpad/demo/ory/kratos/endpoint`
 
 ### Hasura GraphQL
 - **`NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT`** - публичный URL Hasura GraphQL endpoint (например, `https://apim.archpad.pro/v1/graphql`)
-- **`HASURA_ENDPOINT`** - внутренний URL Hasura для серверных запросов (например, `http://hasura.platform.svc:8080`)
+- **`HASURA_INTERNAL_URL`** - внутренний URL Hasura для серверных запросов (рекомендуется FQDN: `http://hasura.platform.svc:8080/v1/graphql`)
+  - **Путь в Vault:** `/v1/kv/data/archpad/demo/hasura/endpoint`
 - **`HASURA_GRAPHQL_ADMIN_SECRET`** - секретный ключ администратора Hasura (для серверных запросов)
 
 ### Tolgee (i18n)
@@ -61,9 +63,8 @@ curl -X POST \
   -d '{
     "data": {
       "NEXT_PUBLIC_ORY_SDK_URL": "https://auth.archpad.pro",
-      "ORY_KRATOS_PUBLIC_URL": "http://kratos.secure.svc:4433",
+      "NEXT_PUBLIC_ORY_SDK_URL": "https://auth.archpad.pro",
       "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT": "https://apim.archpad.pro/v1/graphql",
-      "HASURA_ENDPOINT": "http://hasura.platform.svc:8080",
       "HASURA_GRAPHQL_ADMIN_SECRET": "your-hasura-admin-secret",
       "NEXT_PUBLIC_TOLGEE_API_URL": "https://i18n.archpad.pro",
       "NEXT_PUBLIC_TOLGEE_API_KEY": "your-tolgee-api-key",

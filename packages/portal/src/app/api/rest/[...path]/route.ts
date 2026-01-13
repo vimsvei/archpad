@@ -8,11 +8,9 @@ import {
 import { exchangeRefreshToken } from "@/lib/auth/hydra"
 
 function getApiGatewayBaseUrl(): string {
-  // Use public endpoint if available (for direct client access), 
-  // otherwise use internal Docker network URL
-  return process.env.NEXT_PUBLIC_API_REST_ENDPOINT 
-    ?? process.env.API_GATEWAY_INTERNAL_URL 
-    ?? "http://oathkeeper:4455"
+  // Для серверных компонентов приоритет у внутренних адресов
+  return process.env.API_GATEWAY_INTERNAL_URL 
+    ?? process.env.NEXT_PUBLIC_API_REST_ENDPOINT
 }
 
 function safeJsonParse(input: string): unknown {

@@ -26,11 +26,13 @@ spec:
         vault.hashicorp.com/agent-inject-secret-portal: "kv/data/archpad/demo/frontend/portal"
         vault.hashicorp.com/agent-inject-template-portal: |
           {{- $portal := secret "kv/data/archpad/demo/frontend/portal" }}
+          {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
+          {{- $oryKratosEndpoint := secret "kv/data/archpad/demo/ory/kratos/endpoint" }}
           # Экспортируем переменные окружения для Portal
           export NEXT_PUBLIC_ORY_SDK_URL="{{ $portal.Data.data.NEXT_PUBLIC_ORY_SDK_URL }}"
-          export ORY_KRATOS_PUBLIC_URL="{{ $portal.Data.data.ORY_KRATOS_PUBLIC_URL }}"
+          export ORY_KRATOS_INTERNAL_URL="{{ $oryKratosEndpoint.Data.data.ORY_KRATOS_INTERNAL_URL }}"
           export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="{{ $portal.Data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT }}"
-          export HASURA_ENDPOINT="{{ $portal.Data.data.HASURA_ENDPOINT }}"
+          export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $portal.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
           export NEXT_PUBLIC_TOLGEE_API_URL="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
           export NEXT_PUBLIC_TOLGEE_API_KEY="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_KEY }}"
@@ -50,10 +52,65 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
+              # Функция для маскирования секретов (первые 3 и последние 3 символа)
+              mask_secret() {
+                local value="$1"
+                if [ -z "$value" ] || [ "$value" = "<no value>" ]; then
+                  echo "<not set>"
+                  return
+                fi
+                local len=${#value}
+                if [ $len -le 6 ]; then
+                  echo "******"
+                else
+                  # Извлекаем первые 3 символа
+                  local prefix=$(echo "$value" | cut -c1-3)
+                  # Извлекаем последние 3 символа через sed
+                  local suffix=$(echo "$value" | sed 's/.*\(...\)$/\1/')
+                  # Создаем строку звездочек нужной длины
+                  local stars=$(printf '%*s' $((len - 6)) '' | tr ' ' '*')
+                  echo "${prefix}${stars}${suffix}"
+                fi
+              }
+              
               # Загружаем секреты из Vault Agent Injector
               set -a
               . /vault/secrets/portal
               set +a
+              
+              # Логируем все переменные окружения с маскированием
+              echo "=========================================="
+              echo "Portal Environment Variables (masked):"
+              echo "=========================================="
+              echo "# Portal Configuration"
+              echo "NEXT_PUBLIC_URL: $(mask_secret "$NEXT_PUBLIC_URL")"
+              echo ""
+              echo "# Ory Kratos (Authentication)"
+              echo "NEXT_PUBLIC_ORY_SDK_URL: $(mask_secret "$NEXT_PUBLIC_ORY_SDK_URL")"
+              echo "ORY_KRATOS_INTERNAL_URL: $(mask_secret "$ORY_KRATOS_INTERNAL_URL")"
+              echo ""
+              echo "# Hasura GraphQL"
+              echo "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: $(mask_secret "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT")"
+              echo "HASURA_INTERNAL_URL: $(mask_secret "$HASURA_INTERNAL_URL")"
+              echo "HASURA_GRAPHQL_ADMIN_SECRET: $(mask_secret "$HASURA_GRAPHQL_ADMIN_SECRET")"
+              echo ""
+              echo "# Tolgee (i18n)"
+              echo "NEXT_PUBLIC_TOLGEE_API_URL: $(mask_secret "$NEXT_PUBLIC_TOLGEE_API_URL")"
+              echo "NEXT_PUBLIC_TOLGEE_API_KEY: $(mask_secret "$NEXT_PUBLIC_TOLGEE_API_KEY")"
+              echo ""
+              echo "# API Gateway (Oathkeeper)"
+              if [ -n "$API_GATEWAY_INTERNAL_URL" ]; then
+                echo "API_GATEWAY_INTERNAL_URL: $(mask_secret "$API_GATEWAY_INTERNAL_URL")"
+              else
+                echo "API_GATEWAY_INTERNAL_URL: <not set>"
+              fi
+              if [ -n "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT" ]; then
+                echo "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: $(mask_secret "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT")"
+              else
+                echo "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: <not set>"
+              fi
+              echo "=========================================="
+              
               # Проверяем, что основные переменные установлены
               if [ -z "$NEXT_PUBLIC_URL" ] || [ "$NEXT_PUBLIC_URL" = "<no value>" ]; then
                 echo "ERROR: NEXT_PUBLIC_URL is not set or has invalid value"
@@ -63,24 +120,11 @@ spec:
                 echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set or has invalid value"
                 exit 1
               fi
-              echo "Portal URL: $NEXT_PUBLIC_URL"
-              echo "Hasura endpoint: $NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT"
-              # Проверяем Tolgee переменные
-              if [ -n "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
-                echo "Tolgee API URL: $NEXT_PUBLIC_TOLGEE_API_URL"
-              else
-                echo "WARNING: NEXT_PUBLIC_TOLGEE_API_URL is not set"
-              fi
-              if [ -n "$NEXT_PUBLIC_TOLGEE_API_KEY" ]; then
-                echo "Tolgee API Key: ***SET***"
-              else
-                echo "WARNING: NEXT_PUBLIC_TOLGEE_API_KEY is not set"
-              fi
               # Запускаем Next.js приложение с явной передачей переменных окружения
               echo "Portal starting..."
               cd /app/packages/portal
               # Экспортируем все переменные окружения для Next.js
-              export NEXT_PUBLIC_ORY_SDK_URL NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT HASURA_ENDPOINT HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY NEXT_PUBLIC_URL
+              export NEXT_PUBLIC_ORY_SDK_URL NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY NEXT_PUBLIC_URL ORY_KRATOS_INTERNAL_URL
               [ -n "$API_GATEWAY_INTERNAL_URL" ] && export API_GATEWAY_INTERNAL_URL
               [ -n "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT" ] && export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
               exec node server.js

@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 function getOryBaseUrl(): URL | null {
-  const raw = process.env.ORY_KRATOS_PUBLIC_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
+  // Для серверных компонентов приоритет у внутренних адресов
+  const raw = process.env.ORY_KRATOS_INTERNAL_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
   if (!raw) return null
   try {
     return new URL(raw)
@@ -88,7 +89,7 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
   const base = getOryBaseUrl()
   if (!base) {
     return NextResponse.json(
-      { error: 'ORY_KRATOS_PUBLIC_URL (or NEXT_PUBLIC_ORY_SDK_URL) is not configured' },
+      { error: 'ORY_KRATOS_INTERNAL_URL (or NEXT_PUBLIC_ORY_SDK_URL) is not configured' },
       { status: 500 }
     )
   }

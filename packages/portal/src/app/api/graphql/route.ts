@@ -9,12 +9,10 @@ type GraphQLRequestBody = {
 }
 
 function getGraphqlGatewayBaseUrl(): string {
-  // Prefer explicit public endpoint (if you want browser->gateway directly),
-  // otherwise use internal Docker network URL.
+  // Для серверных компонентов приоритет у внутренних адресов
   return (
-    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT ??
     process.env.API_GATEWAY_INTERNAL_URL ??
-    "http://oathkeeper:4455"
+    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
   )
 }
 
