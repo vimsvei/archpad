@@ -9,6 +9,7 @@ NAMESPACE="argocd"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ARGOCD_DIR="$PROJECT_ROOT/infra/timeweb/10-gitops/apps/argocd"
+ARGOCD_IMAGE_UPDATER_DIR="$PROJECT_ROOT/infra/timeweb/10-gitops/apps/argocd-image-updater"
 
 # Цвета для вывода
 RED='\033[0;31m'
@@ -53,8 +54,29 @@ check_image_updater() {
     echo ""
     echo "📦 Проверка ArgoCD Image Updater..."
     
+    # Проверка через ArgoCD Application (GitOps)
+    if kubectl get application argocd-image-updater -n "$NAMESPACE" &> /dev/null; then
+        APP_STATUS=$(kubectl get application argocd-image-updater -n "$NAMESPACE" -o jsonpath='{.status.sync.status}' 2>/dev/null || echo "Unknown")
+        APP_HEALTH=$(kubectl get application argocd-image-updater -n "$NAMESPACE" -o jsonpath='{.status.health.status}' 2>/dev/null || echo "Unknown")
+        echo -e "${GREEN}✅ ArgoCD Application 'argocd-image-updater' существует${NC}"
+        echo "   Sync Status: $APP_STATUS"
+        echo "   Health Status: $APP_HEALTH"
+        
+        if [ "$APP_STATUS" = "Synced" ] && [ "$APP_HEALTH" = "Healthy" ]; then
+            echo -e "${GREEN}✅ Application синхронизирован и здоров${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Application требует синхронизации${NC}"
+            echo "   Выполните: kubectl get application argocd-image-updater -n $NAMESPACE"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  ArgoCD Application 'argocd-image-updater' не найден${NC}"
+        echo "   Это означает, что Image Updater не управляется через GitOps"
+        echo "   Application должен быть в: infra/timeweb/10-gitops/apps/argocd-image-updater/argocd-image-updater.app.yaml"
+    fi
+    
+    # Проверка Deployment
     if kubectl get deployment argocd-image-updater -n "$NAMESPACE" &> /dev/null; then
-        echo -e "${GREEN}✅ ArgoCD Image Updater установлен${NC}"
+        echo -e "${GREEN}✅ Deployment 'argocd-image-updater' существует${NC}"
         
         # Проверка статуса подов
         READY=$(kubectl get deployment argocd-image-updater -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
@@ -64,13 +86,18 @@ check_image_updater() {
             echo -e "${GREEN}✅ Pods готовы ($READY/$DESIRED)${NC}"
         else
             echo -e "${YELLOW}⚠️  Pods не готовы ($READY/$DESIRED)${NC}"
+            echo "   Проверьте логи: kubectl logs -n $NAMESPACE -l app.kubernetes.io/name=argocd-image-updater"
         fi
     else
-        echo -e "${YELLOW}⚠️  ArgoCD Image Updater не установлен${NC}"
+        echo -e "${RED}❌ Deployment 'argocd-image-updater' не найден${NC}"
         echo ""
-        echo "Для установки выполните:"
+        echo "Для установки через GitOps:"
+        echo "  1. Убедитесь, что манифесты в Git: infra/timeweb/10-gitops/apps/argocd-image-updater/"
+        echo "  2. Синхронизируйте Application в ArgoCD UI или выполните:"
+        echo "     kubectl patch application argocd-image-updater -n $NAMESPACE --type merge -p '{\"operation\":{\"initiatedBy\":{\"username\":\"admin\"},\"sync\":{\"revision\":\"HEAD\"}}}'"
+        echo ""
+        echo "Или установите вручную через Helm:"
         echo "  helm repo add argo https://argoproj.github.io/argo-helm"
-        echo "  helm repo update"
         echo "  helm install argocd-image-updater argo/argocd-image-updater --namespace $NAMESPACE"
         echo ""
         read -p "Продолжить настройку без установки? (y/n) " -n 1 -r
@@ -88,17 +115,34 @@ check_configmap() {
     
     if kubectl get configmap argocd-image-updater-config -n "$NAMESPACE" &> /dev/null; then
         echo -e "${GREEN}✅ ConfigMap существует${NC}"
-        read -p "Обновить ConfigMap? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            kubectl apply -f "$ARGOCD_DIR/argocd-image-updater.configmap.yaml"
-            echo -e "${GREEN}✅ ConfigMap обновлен${NC}"
+        
+        # Проверяем, откуда он управляется (GitOps или вручную)
+        MANAGED_BY=$(kubectl get configmap argocd-image-updater-config -n "$NAMESPACE" -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}' 2>/dev/null || echo "")
+        if [ "$MANAGED_BY" = "argocd" ]; then
+            echo "   Управляется через ArgoCD (GitOps)"
+        else
+            echo "   Управляется вручную"
+            read -p "Обновить ConfigMap из Git? (y/n) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                if [ -f "$ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml" ]; then
+                    kubectl apply -f "$ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml"
+                    echo -e "${GREEN}✅ ConfigMap обновлен${NC}"
+                else
+                    echo -e "${RED}❌ Файл не найден: $ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml${NC}"
+                fi
+            fi
         fi
     else
         echo -e "${YELLOW}⚠️  ConfigMap не существует${NC}"
-        echo "Создаю ConfigMap..."
-        kubectl apply -f "$ARGOCD_DIR/argocd-image-updater.configmap.yaml"
-        echo -e "${GREEN}✅ ConfigMap создан${NC}"
+        echo "Создаю ConfigMap из Git..."
+        if [ -f "$ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml" ]; then
+            kubectl apply -f "$ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml"
+            echo -e "${GREEN}✅ ConfigMap создан${NC}"
+        else
+            echo -e "${RED}❌ Файл не найден: $ARGOCD_IMAGE_UPDATER_DIR/argocd-image-updater.configmap.yaml${NC}"
+            echo "   Убедитесь, что манифесты находятся в Git репозитории"
+        fi
     fi
 }
 
@@ -225,9 +269,27 @@ main() {
     echo -e "${GREEN}✅ Проверка завершена${NC}"
     echo "=========================================="
     echo ""
-    echo "Дополнительная информация:"
-    echo "  - README: $ARGOCD_DIR/README.md"
+    echo "=========================================="
+    echo "  Информация о компонентах"
+    echo "=========================================="
+    echo ""
+    echo "📁 Манифесты в Git:"
+    if [ -d "$ARGOCD_IMAGE_UPDATER_DIR" ]; then
+        echo -e "${GREEN}✅ $ARGOCD_IMAGE_UPDATER_DIR${NC}"
+        echo "   Содержит:"
+        ls -1 "$ARGOCD_IMAGE_UPDATER_DIR"/*.yaml 2>/dev/null | sed 's/^/     - /' || echo "     (файлы не найдены)"
+    else
+        echo -e "${RED}❌ $ARGOCD_IMAGE_UPDATER_DIR не существует${NC}"
+    fi
+    echo ""
+    echo "📚 Документация:"
+    echo "  - README: $ARGOCD_IMAGE_UPDATER_DIR/README.md"
     echo "  - Документация: docs/ARGOCD_IMAGE_UPDATER_SETUP.md"
+    echo "  - Быстрый старт: docs/ARGOCD_IMAGE_UPDATER_QUICKSTART.md"
+    echo ""
+    echo "💡 Для управления через GitOps:"
+    echo "  - Убедитесь, что манифесты в Git: infra/timeweb/10-gitops/apps/argocd-image-updater/"
+    echo "  - ArgoCD Application автоматически подхватит их через platform-applications"
     echo ""
 }
 

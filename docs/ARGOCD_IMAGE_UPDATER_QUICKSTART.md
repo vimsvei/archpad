@@ -2,11 +2,19 @@
 
 ## Что было сделано
 
-✅ Созданы манифесты для настройки ArgoCD Image Updater:
-- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.configmap.yaml` - ConfigMap с конфигурацией
-- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater-registry-secret.yaml.example` - Шаблон Secret для registry
-- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater-git-secret.yaml.example` - Шаблон Secret для Git
-- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.app.yaml` - ArgoCD Application (опционально)
+✅ Создана полная структура манифестов для ArgoCD Image Updater в Git:
+- `infra/timeweb/10-gitops/apps/argocd-image-updater/` - директория с манифестами
+  - `argocd-image-updater.app.yaml` - ArgoCD Application для управления через GitOps
+  - `argocd-image-updater.deployment.yaml` - Deployment
+  - `argocd-image-updater.serviceaccount.yaml` - ServiceAccount
+  - `argocd-image-updater.service.yaml` - Service
+  - `argocd-image-updater.rbac.yaml` - RBAC (ClusterRole и ClusterRoleBinding)
+  - `argocd-image-updater.configmap.yaml` - ConfigMap с конфигурацией
+  - `argocd-image-updater-registry-secret.yaml.example` - Шаблон Secret для registry
+  - `argocd-image-updater-git-secret.yaml.example` - Шаблон Secret для Git
+  - `README.md` - Документация
+
+**Теперь все компоненты видны в Git и управляются через GitOps!**
 
 ✅ Создан скрипт для автоматической проверки и настройки:
 - `scripts/setup-argocd-image-updater.sh`
@@ -32,7 +40,17 @@
 
 ### Вариант 2: Ручная настройка
 
-#### Шаг 1: Установка ArgoCD Image Updater (если не установлен)
+#### Шаг 1: Установка ArgoCD Image Updater через GitOps
+
+**Вариант A: Автоматическая установка через ArgoCD**
+
+Если настроен корневой Application `platform-applications`, Image Updater будет установлен автоматически:
+
+1. Убедитесь, что манифесты в Git: `infra/timeweb/10-gitops/apps/argocd-image-updater/`
+2. ArgoCD автоматически обнаружит Application и установит компоненты
+3. Проверьте статус: `kubectl get application argocd-image-updater -n argocd`
+
+**Вариант B: Ручная установка через Helm (если GitOps не используется)**
 
 ```bash
 helm repo add argo https://argoproj.github.io/argo-helm
@@ -74,8 +92,10 @@ kubectl create secret generic argocd-image-updater-git-ssh-key \
 #### Шаг 4: Применение ConfigMap
 
 ```bash
-kubectl apply -f infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.configmap.yaml
+kubectl apply -f infra/timeweb/10-gitops/apps/argocd-image-updater/argocd-image-updater.configmap.yaml
 ```
+
+**Или через GitOps:** ConfigMap будет применен автоматически при синхронизации Application.
 
 #### Шаг 5: Перезапуск Image Updater
 
@@ -85,7 +105,30 @@ kubectl rollout restart deployment/argocd-image-updater -n argocd
 
 ## Проверка работы
 
-### 1. Проверка логов
+### 1. Проверка статуса через GitOps
+
+```bash
+# Проверка ArgoCD Application
+kubectl get application argocd-image-updater -n argocd
+
+# Детальный статус
+kubectl get application argocd-image-updater -n argocd -o yaml
+```
+
+### 2. Проверка компонентов
+
+```bash
+# Проверка Deployment
+kubectl get deployment argocd-image-updater -n argocd
+
+# Проверка подов
+kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-image-updater
+
+# Проверка ConfigMap
+kubectl get configmap argocd-image-updater-config -n argocd
+```
+
+### 3. Проверка логов
 
 ```bash
 kubectl logs -n argocd -l app.kubernetes.io/name=argocd-image-updater --tail=100 -f
