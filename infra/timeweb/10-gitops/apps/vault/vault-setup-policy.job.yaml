@@ -21,9 +21,15 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              set -eu
+              set -e
               
-              apk add --no-cache jq >/dev/null 2>&1
+              echo "[vault-setup-policy] Starting..."
+              
+              # Устанавливаем jq
+              apk add --no-cache jq >/dev/null 2>&1 || {
+                echo "[vault-setup-policy] ERROR: Failed to install jq"
+                exit 1
+              }
               
               VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
               VAULT_TOKEN="${VAULT_ROOT_TOKEN:-}"
@@ -46,26 +52,44 @@ spec:
               done
               echo "[vault-setup-policy] Vault is ready"
               
+              # Проверяем, что файл политики доступен
+              echo "[vault-setup-policy] Checking policy file..."
+              if [ ! -f "/vault-policy/vault-setup-policy.hcl" ]; then
+                echo "[vault-setup-policy] ERROR: Policy file not found at /vault-policy/vault-setup-policy.hcl"
+                echo "[vault-setup-policy] Listing /vault-policy contents:"
+                ls -la /vault-policy/ || true
+                exit 1
+              fi
+              
               # Применяем политику vault-setup через HTTP API
               echo "[vault-setup-policy] Applying vault-setup policy..."
-              POLICY_CONTENT=$(cat /vault-policy/vault-setup-policy.hcl | jq -Rs .)
+              POLICY_CONTENT=$(cat /vault-policy/vault-setup-policy.hcl | jq -Rs .) || {
+                echo "[vault-setup-policy] ERROR: Failed to read or encode policy file"
+                exit 1
+              }
               
               CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
                 -X PUT \
                 -H "X-Vault-Token: ${VAULT_TOKEN}" \
                 -H "Content-Type: application/json" \
                 --data "{\"policy\":${POLICY_CONTENT}}" \
-                "${VAULT_ADDR}/v1/sys/policies/acl/vault-setup")
+                "${VAULT_ADDR}/v1/sys/policies/acl/vault-setup") || {
+                echo "[vault-setup-policy] ERROR: Failed to send request to Vault"
+                exit 1
+              }
               
               if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
                 echo "[vault-setup-policy] ✓ Policy 'vault-setup' applied"
               else
                 echo "[vault-setup-policy] ✗ Failed to apply policy (HTTP ${CODE})"
+                # Попробуем получить детали ошибки
+                curl -sS -X PUT \
+                  -H "X-Vault-Token: ${VAULT_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  --data "{\"policy\":${POLICY_CONTENT}}" \
+                  "${VAULT_ADDR}/v1/sys/policies/acl/vault-setup" || true
                 exit 1
               fi
-              
-              # Проверяем, существует ли уже ограниченный токен
-              echo "[vault-setup-policy] Checking for existing setup token..."
               
               # Создаем токен с политикой vault-setup через HTTP API
               echo "[vault-setup-policy] Creating limited setup token..."
@@ -83,9 +107,16 @@ spec:
                 -H "X-Vault-Token: ${VAULT_TOKEN}" \
                 -H "Content-Type: application/json" \
                 --data "${TOKEN_PAYLOAD}" \
-                "${VAULT_ADDR}/v1/auth/token/create")
+                "${VAULT_ADDR}/v1/auth/token/create") || {
+                echo "[vault-setup-policy] ERROR: Failed to create token"
+                exit 1
+              }
               
-              SETUP_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.auth.client_token // empty')
+              SETUP_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.auth.client_token // empty') || {
+                echo "[vault-setup-policy] ERROR: Failed to parse token response"
+                echo "[vault-setup-policy] Response: ${TOKEN_RESPONSE}"
+                exit 1
+              }
               
               if [ -z "$SETUP_TOKEN" ] || [ "$SETUP_TOKEN" = "null" ]; then
                 echo "[vault-setup-policy] ✗ Failed to create setup token"
@@ -120,7 +151,6 @@ spec:
             - name: vault-policy
               mountPath: /vault-policy
               readOnly: true
-              subPath: vault-setup-policy.hcl
       volumes:
         - name: vault-policy
           configMap:
