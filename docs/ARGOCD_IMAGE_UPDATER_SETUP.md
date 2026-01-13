@@ -36,6 +36,20 @@ annotations:
 
 **Примечание:** Аннотации также добавлены в Application манифесты для удобства, но основными являются аннотации в Deployment/Job манифестах.
 
+## Быстрый старт
+
+Для автоматической проверки и настройки используйте скрипт:
+
+```bash
+./scripts/setup-argocd-image-updater.sh
+```
+
+Скрипт проверит:
+- ✅ Установлен ли ArgoCD Image Updater
+- ✅ Существует ли ConfigMap
+- ✅ Созданы ли Secrets для registry и Git
+- ✅ Предложит создать недостающие ресурсы
+
 ## Что нужно настроить в кластере
 
 ### 1. Установка ArgoCD Image Updater
@@ -46,15 +60,24 @@ annotations:
 # Проверка, установлен ли Image Updater
 kubectl get pods -n argocd | grep image-updater
 
-# Если не установлен, установите его:
-# См. официальную документацию: https://argocd-image-updater.readthedocs.io/
+# Если не установлен, установите его через Helm:
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+helm install argocd-image-updater argo/argocd-image-updater --namespace argocd
 ```
+
+**Или используйте готовые манифесты:**
+- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.app.yaml` - ArgoCD Application для установки
+- `infra/timeweb/10-gitops/apps/argocd/README.md` - Подробные инструкции
 
 ### 2. Настройка доступа к Container Registry
 
 ArgoCD Image Updater должен иметь доступ к Container Registry TimeWeb для проверки новых образов.
 
-#### Вариант A: Использование ImagePullSecrets (рекомендуется)
+**Используйте готовый шаблон:**
+- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater-registry-secret.yaml.example`
+
+#### Вариант A: Использование kubectl (рекомендуется)
 
 1. Создайте Secret с credentials для registry:
 
@@ -65,6 +88,8 @@ kubectl create secret docker-registry archpad-registry-secret \
   --docker-password=<REGISTRY_PASSWORD> \
   --namespace=argocd
 ```
+
+**Или используйте скрипт:** `./scripts/setup-argocd-image-updater.sh` (предложит создать Secret интерактивно)
 
 2. Настройте ArgoCD Image Updater для использования этого Secret:
 
@@ -103,15 +128,28 @@ imagePullSecrets:
 
 ArgoCD Image Updater должен иметь доступ к Git репозиторию для записи обновлений образов.
 
+**Используйте готовый шаблон:**
+- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater-git-secret.yaml.example`
+
 #### Если используется SSH ключ:
 
-1. Создайте Secret с SSH ключом:
+1. Создайте SSH ключ для ArgoCD Image Updater:
 
 ```bash
-kubectl create secret generic git-ssh-key \
-  --from-file=ssh-privatekey=<path-to-private-key> \
+ssh-keygen -t ed25519 -C "argocd-image-updater@archpad.pro" -f argocd-image-updater-key
+```
+
+2. Добавьте публичный ключ в GitLab (Settings → SSH Keys)
+
+3. Создайте Secret с SSH ключом:
+
+```bash
+kubectl create secret generic argocd-image-updater-git-ssh-key \
+  --from-file=ssh-privatekey=argocd-image-updater-key \
   --namespace=argocd
 ```
+
+**Или используйте скрипт:** `./scripts/setup-argocd-image-updater.sh` (предложит создать Secret интерактивно)
 
 2. Настройте ArgoCD Image Updater:
 
@@ -154,29 +192,22 @@ data:
 
 ### 4. Настройка ConfigMap для ArgoCD Image Updater
 
-Создайте или обновите ConfigMap с полной конфигурацией:
+**Используйте готовый манифест:**
+- `infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.configmap.yaml`
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-image-updater-config
-  namespace: argocd
-data:
-  registries.conf: |
-    registries:
-    - name: TimeWeb Container Registry
-      prefix: archpad-cr.registry.twcstorage.ru
-      api_url: https://archpad-cr.registry.twcstorage.ru
-      credentials: ext:/scripts/archpad-registry-secret
-      default: true
-  git.user: <gitlab-username>
-  git.email: argocd-image-updater@archpad.pro
-  git.ssh_secret: git-ssh-key  # или git.credentials_secret: git-creds
-  log.level: info
-  # Интервал проверки новых образов (по умолчанию 2 минуты)
-  check.interval: 2m
+Примените ConfigMap:
+
+```bash
+kubectl apply -f infra/timeweb/10-gitops/apps/argocd/argocd-image-updater.configmap.yaml
 ```
+
+**Или используйте скрипт:** `./scripts/setup-argocd-image-updater.sh` (автоматически применит ConfigMap)
+
+ConfigMap уже настроен для:
+- ✅ TimeWeb Container Registry
+- ✅ Git SSH ключ
+- ✅ Интервал проверки: 2 минуты
+- ✅ Логирование: info level
 
 ## Как это работает
 
