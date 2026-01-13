@@ -39,12 +39,23 @@
 
 Подробнее см. [SECRETS.md](./SECRETS.md)
 
+## Container Registry Secret
+
+Секрет `archpad-registry-secret` для доступа к Container Registry автоматически синхронизируется из Vault через Job `registry-secret-sync`.
+
+- **Vault путь:** `/v1/kv/data/container-register`
+- **Kubernetes Secret:** `archpad-registry-secret` в namespace `platform`
+- **Синхронизация:** автоматическая при каждой синхронизации ArgoCD
+
+Подробнее см. [REGISTRY_SECRET_SYNC.md](./REGISTRY_SECRET_SYNC.md)
+
 ## Vault Kubernetes Auth
 
 Все ServiceAccount'ы добавлены в Vault роль `platform`:
 - `arch-repo-service`
 - `tenant-service`
 - `hasura-sync-service`
+- `registry-secret-sync`
 
 Роль обновляется автоматически через Job `hasura-vault-role` (см. `apps/hasura/hasura-vault-role.job.yaml`).
 
