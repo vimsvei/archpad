@@ -203,18 +203,66 @@ build:main:arch-repo-service:
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/arch-repo-service/Dockerfile"
     BUILD_CONTEXT: "."
+  rules:
+    # Собираем только если изменены файлы в arch-repo-service
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
 
 build:main:tenant-service:
   extends: .build_docker_image_main
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/tenant-service/Dockerfile"
     BUILD_CONTEXT: "."
+  rules:
+    # Собираем только если изменены файлы в tenant-service
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/tenant-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/backend/apps/tenant-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
 
 build:main:hasura-sync-service:
   extends: .build_docker_image_main
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
     BUILD_CONTEXT: "."
+  rules:
+    # Собираем только если изменены файлы в hasura-sync-service
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/**/*.ts
+        - packages/backend/**/*.tsx
+        - packages/backend/package.json
+        - packages/contract/**/*
 
 # ============================================
 # Frontend (main ветка)
@@ -225,6 +273,16 @@ build:main:portal:
   variables:
     DOCKERFILE_PATH: "packages/portal/Dockerfile"
     BUILD_CONTEXT: "."
+  rules:
+    # Собираем только если изменены файлы в portal
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/portal/**/*
+        - packages/contract/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/portal/**/*
+        - packages/contract/**/*
 
 # ============================================
 # Version Update (обновление версий в package.json)

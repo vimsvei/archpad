@@ -1,23 +1,35 @@
 import { DevTools, Tolgee } from '@tolgee/web';
 import {FormatIcu} from "@tolgee/format-icu";
 
-// В Next.js переменные NEXT_PUBLIC_* должны быть доступны во время сборки
-// Они встраиваются в бандл на этапе next build
-// Если они не доступны во время сборки, они будут undefined в runtime
-const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
-const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
+// В Next.js переменные NEXT_PUBLIC_* встраиваются в бандл во время сборки
+// Но они также могут быть доступны в runtime через environment variables
+// Используем функции для чтения в runtime, чтобы они читались каждый раз, а не замораживались при импорте
+function getTolgeeApiKey(): string | undefined {
+  // В Next.js переменные NEXT_PUBLIC_* доступны через process.env
+  // Они могут быть встроены в бандл (build time) или доступны в runtime
+  return process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
+}
 
-// Логирование для отладки
-if (typeof window === 'undefined') {
-  // Серверная часть
-  console.log('[Tolgee Config Server] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
-  console.log('[Tolgee Config Server] apiUrl:', apiUrl || 'NOT SET');
-  console.log('[Tolgee Config Server] NODE_ENV:', process.env.NODE_ENV);
-} else {
-  // Клиентская часть (только для отладки в dev режиме)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[Tolgee Config Client] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
-    console.log('[Tolgee Config Client] apiUrl:', apiUrl || 'NOT SET');
+function getTolgeeApiUrl(): string | undefined {
+  return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
+}
+
+// Логирование для отладки (выполняется при каждом вызове функции)
+function logTolgeeConfig() {
+  const apiKey = getTolgeeApiKey();
+  const apiUrl = getTolgeeApiUrl();
+  
+  if (typeof window === 'undefined') {
+    // Серверная часть
+    console.log('[Tolgee Config Server] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
+    console.log('[Tolgee Config Server] apiUrl:', apiUrl || 'NOT SET');
+    console.log('[Tolgee Config Server] NODE_ENV:', process.env.NODE_ENV);
+  } else {
+    // Клиентская часть (только для отладки в dev режиме)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Tolgee Config Client] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
+      console.log('[Tolgee Config Client] apiUrl:', apiUrl || 'NOT SET');
+    }
   }
 }
 
@@ -39,6 +51,13 @@ export const LOCALES: Locale[] = [
 export const DEFAULT_LANGUAGE = 'ru-RU';
 
 export function TolgeeBase() {
+  // Читаем переменные в runtime, а не во время импорта модуля
+  const apiKey = getTolgeeApiKey();
+  const apiUrl = getTolgeeApiUrl();
+  
+  // Логируем конфигурацию при инициализации
+  logTolgeeConfig();
+  
   if (!apiKey || !apiUrl) {
     console.warn('[Tolgee] Missing configuration:', {
       apiKey: !!apiKey,
