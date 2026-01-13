@@ -5,6 +5,10 @@ metadata:
   namespace: platform
   annotations:
     argocd.argoproj.io/sync-wave: "60"
+    # ArgoCD Image Updater: отслеживание обновлений образа
+    argocd-image-updater.argoproj.io/image-list: tenant-service=archpad-cr.registry.twcstorage.ru/archpad/tenant-service
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
   labels:
     app: tenant-service
 spec:
@@ -37,9 +41,7 @@ spec:
       serviceAccountName: tenant-service
       containers:
         - name: tenant-service
-          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
-          # image: registry.timeweb.cloud/archpad/tenant-service:latest
-          image: node:20-alpine
+          image: archpad-cr.registry.twcstorage.ru/archpad/tenant-service:latest
           command: ["sh", "-c"]
           args:
             - |

@@ -5,6 +5,12 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+    # ArgoCD Image Updater: настройка отслеживания образов
+    argocd-image-updater.argoproj.io/image-list: portal=archpad-cr.registry.twcstorage.ru/archpad/portal
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
+    # Стратегия обновления: использовать latest тег
+    argocd-image-updater.argoproj.io/portal.update-strategy: latest
 spec:
   project: platform
   destination:

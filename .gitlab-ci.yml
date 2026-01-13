@@ -107,27 +107,31 @@ build:portal:
     BUILD_CONTEXT: "."
 
 # ============================================
-# Deploy (опционально, для автоматического обновления образов в Kubernetes)
+# Deploy (информационный stage)
 # ============================================
 
-# Примечание: Для автоматического обновления образов в Kubernetes можно использовать:
-# 1. ArgoCD Image Updater (рекомендуется)
-# 2. Или обновлять манифесты через kubectl в этом stage
+# Примечание: Автоматическое обновление образов в Kubernetes выполняется через ArgoCD Image Updater.
+# ArgoCD Image Updater отслеживает новые образы в Container Registry и автоматически обновляет
+# манифесты в Git репозитории. ArgoCD затем автоматически синхронизирует изменения.
+# 
+# См. документацию: docs/ARGOCD_IMAGE_UPDATER_SETUP.md
 
 deploy:update-images:
   stage: deploy
-  image: bitnami/kubectl:latest
+  image: alpine:latest
   script:
     - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
     - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
-    - 'echo "Images built successfully"'
-    - 'echo "- arch-repo-service ${COMMIT_SHA}"'
-    - 'echo "- tenant-service ${COMMIT_SHA}"'
-    - 'echo "- hasura-sync-service ${COMMIT_SHA}"'
-    - 'echo "- portal ${COMMIT_SHA}"'
+    - 'echo "✅ Images built and pushed successfully"'
+    - 'echo ""'
+    - 'echo "Built images:"'
+    - 'echo "  - arch-repo-service:${COMMIT_SHA} (latest)"'
+    - 'echo "  - tenant-service:${COMMIT_SHA} (latest)"'
+    - 'echo "  - hasura-sync-service:${COMMIT_SHA} (latest)"'
+    - 'echo "  - portal:${COMMIT_SHA} (latest)"'
     - echo ""
-    - 'echo "To update images in Kubernetes, use ArgoCD Image Updater or update manifests manually"'
-    - 'echo "Example: kubectl set image deployment/arch-repo-service arch-repo-service=${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/arch-repo-service:${COMMIT_SHA} -n platform"'
+    - 'echo "📦 ArgoCD Image Updater will automatically detect new images and update Kubernetes manifests"'
+    - 'echo "   See: docs/ARGOCD_IMAGE_UPDATER_SETUP.md for details"'
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
