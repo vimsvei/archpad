@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: vault-setup-policy
-          image: curlimages/curl:latest
+          image: alpine:latest
           command: ["sh", "-c"]
           args:
             - |
@@ -25,9 +25,9 @@ spec:
               
               echo "[vault-setup-policy] Starting..."
               
-              # Устанавливаем jq
-              apk add --no-cache jq >/dev/null 2>&1 || {
-                echo "[vault-setup-policy] ERROR: Failed to install jq"
+              # Устанавливаем curl и jq
+              apk add --no-cache curl jq >/dev/null 2>&1 || {
+                echo "[vault-setup-policy] ERROR: Failed to install curl/jq"
                 exit 1
               }
               
