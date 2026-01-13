@@ -65,9 +65,9 @@ spec:
               echo "Using PostgreSQL: $POSTGRES_HOST:$POSTGRES_PORT"
               echo "Database: $TENANT_DB"
               echo "User: $PROJECT_DB_USER"
-              # Запускаем приложение
+              # Запускаем приложение с явной передачей переменных окружения
               echo "Tenant Service starting..."
-              exec node dist/apps/tenant-service/apps/tenant-service/src/main.js
+              exec env TENANT_DB="$TENANT_DB" PROJECT_DB_USER="$PROJECT_DB_USER" PROJECT_DB_PASSWORD="$PROJECT_DB_PASSWORD" POSTGRES_HOST="$POSTGRES_HOST" POSTGRES_PORT="$POSTGRES_PORT" NODE_ENV="$NODE_ENV" node dist/apps/tenant-service/apps/tenant-service/src/main.js
           ports:
             - name: http
               containerPort: 3000
