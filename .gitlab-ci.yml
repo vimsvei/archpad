@@ -150,8 +150,8 @@ update:versions:
     - git config --global user.email "ci@archpad.pro"
     # Используем Personal Access Token или Project Access Token для push
     # CI_JOB_TOKEN не имеет прав на push, Deploy Token не поддерживает write_repository
-    - echo "Checking GIT_PUSH_TOKEN..."
     - |
+      echo "Checking GIT_PUSH_TOKEN..."
       if [ -z "$GIT_PUSH_TOKEN" ]; then
         echo "=========================================="
         echo "ERROR: GIT_PUSH_TOKEN is not set"
@@ -188,9 +188,9 @@ update:versions:
         echo "=========================================="
         exit 1
       fi
-    - echo "GIT_PUSH_TOKEN is set (length: ${#GIT_PUSH_TOKEN} characters)"
-    - git remote set-url origin "https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
-    - echo "Git remote URL configured with GIT_PUSH_TOKEN"
+      echo "GIT_PUSH_TOKEN is set (length: ${#GIT_PUSH_TOKEN} characters)"
+      git remote set-url origin "https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+      echo "Git remote URL configured with GIT_PUSH_TOKEN"
     - git fetch origin "$CI_COMMIT_REF_NAME" || git fetch origin "$CI_DEFAULT_BRANCH"
     - |
       # В GitLab CI мы уже в нужном коммите, но нужно переключиться на ветку для коммита
