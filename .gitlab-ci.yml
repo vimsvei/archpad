@@ -93,6 +93,75 @@ variables:
     # Собираем только для веток вида r/X.Y.Z или r-x.y.z
     - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
+# Шаблон для сборки Docker образа из main ветки
+.build_docker_image_main:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  before_script:
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
+    - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
+    - 'echo "Building for main branch (commit $COMMIT_SHA)"'
+    - 'echo "Branch: $CI_COMMIT_REF_NAME"'
+    - 'echo "Registry URL: $REGISTRY_URL"'
+    - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
+    - |
+      if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
+        echo "=========================================="
+        echo "ERROR: Missing required CI/CD Variables"
+        echo "=========================================="
+        echo "Please set the following variables in GitLab:"
+        echo "  Settings → CI/CD → Variables → Expand"
+        echo ""
+        echo "Required variables:"
+        [ -z "$REGISTRY_USERNAME" ] && echo "  ❌ REGISTRY_USERNAME (not set)" || echo "  ✅ REGISTRY_USERNAME (set)"
+        [ -z "$REGISTRY_PASSWORD" ] && echo "  ❌ REGISTRY_PASSWORD (not set)" || echo "  ✅ REGISTRY_PASSWORD (set)"
+        echo ""
+        echo "How to set:"
+        echo "  1. Go to: Settings → CI/CD → Variables"
+        echo "  2. Click 'Add variable'"
+        echo "  3. Set Key: REGISTRY_USERNAME, Value: your-registry-username"
+        echo "  4. Set Key: REGISTRY_PASSWORD, Value: your-registry-password (masked)"
+        echo "  5. Save and retry the pipeline"
+        echo "=========================================="
+        exit 1
+      fi
+    - 'echo "Logging in to registry: $REGISTRY_URL"'
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL"
+  script:
+    - export SERVICE_NAME="${CI_JOB_NAME#build:main:}"
+    - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
+    - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
+    # Формируем теги образов: main-<commit-sha> и latest
+    - export IMAGE_TAG_MAIN="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}:main-${COMMIT_SHA}"
+    - export IMAGE_TAG_LATEST="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}:latest"
+    - 'echo "Building $SERVICE_NAME for main branch (commit $COMMIT_SHA)"'
+    - |
+      echo "Image tags:"
+      echo "  - ${IMAGE_TAG_MAIN}"
+      echo "  - ${IMAGE_TAG_LATEST}"
+    - 'echo "Dockerfile: $DOCKERFILE_PATH"'
+    - 'echo "Build context: $BUILD_CONTEXT"'
+    - docker build -t "$IMAGE_TAG_MAIN" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+    - docker push "$IMAGE_TAG_MAIN"
+    - docker push "$IMAGE_TAG_LATEST"
+    - |
+      echo "✅ Images pushed:"
+      echo "  - $IMAGE_TAG_MAIN"
+      echo "  - $IMAGE_TAG_LATEST"
+  after_script:
+    - docker logout "$REGISTRY_URL" || true
+  rules:
+    # Собираем для main ветки и MR в main, только если изменены файлы в packages/
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/**/*
+
 # ============================================
 # Backend Services
 # ============================================
@@ -121,6 +190,38 @@ build:hasura-sync-service:
 
 build:portal:
   extends: .build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/portal/Dockerfile"
+    BUILD_CONTEXT: "."
+
+# ============================================
+# Backend Services (main ветка)
+# ============================================
+
+build:main:arch-repo-service:
+  extends: .build_docker_image_main
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/arch-repo-service/Dockerfile"
+    BUILD_CONTEXT: "."
+
+build:main:tenant-service:
+  extends: .build_docker_image_main
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/tenant-service/Dockerfile"
+    BUILD_CONTEXT: "."
+
+build:main:hasura-sync-service:
+  extends: .build_docker_image_main
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
+    BUILD_CONTEXT: "."
+
+# ============================================
+# Frontend (main ветка)
+# ============================================
+
+build:main:portal:
+  extends: .build_docker_image_main
   variables:
     DOCKERFILE_PATH: "packages/portal/Dockerfile"
     BUILD_CONTEXT: "."
