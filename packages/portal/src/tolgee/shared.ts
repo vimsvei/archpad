@@ -27,13 +27,23 @@ function logTolgeeConfigOnce() {
   
   if (typeof window === 'undefined') {
     // Серверная часть - логируем только один раз
-    console.log('[Tolgee Config Server] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
+    const apiKeyMasked = apiKey 
+      ? (apiKey.length > 20 
+          ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 10)}` 
+          : `${apiKey.substring(0, 10)}...`)
+      : 'NOT SET';
+    console.log('[Tolgee Config Server] apiKey:', apiKeyMasked);
     console.log('[Tolgee Config Server] apiUrl:', apiUrl || 'NOT SET');
     console.log('[Tolgee Config Server] NODE_ENV:', process.env.NODE_ENV);
   } else {
     // Клиентская часть (только для отладки в dev режиме)
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Tolgee Config Client] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
+      const apiKeyMasked = apiKey 
+        ? (apiKey.length > 20 
+            ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 10)}` 
+            : `${apiKey.substring(0, 10)}...`)
+        : 'NOT SET';
+      console.log('[Tolgee Config Client] apiKey:', apiKeyMasked);
       console.log('[Tolgee Config Client] apiUrl:', apiUrl || 'NOT SET');
     }
   }
