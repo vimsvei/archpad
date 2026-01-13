@@ -9,8 +9,11 @@ import { exchangeRefreshToken } from "@/lib/auth/hydra"
 
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов
-  return process.env.API_GATEWAY_INTERNAL_URL 
-    ?? process.env.NEXT_PUBLIC_API_REST_ENDPOINT
+  const url = process.env.API_GATEWAY_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_REST_ENDPOINT
+  if (!url) {
+    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_REST_ENDPOINT must be set')
+  }
+  return url
 }
 
 function safeJsonParse(input: string): unknown {

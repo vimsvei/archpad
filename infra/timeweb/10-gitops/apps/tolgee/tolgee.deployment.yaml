@@ -35,6 +35,27 @@ spec:
           export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgee.Data.data.TOLGEE_ADMIN_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
     spec:
+      # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - arch-repo-service
+                        - tenant-service
+                        - portal
+                        - hasura
+                        - tolgee
+                        - mailpit
+                        - kratos
+                        - hydra
+                        - oathkeeper
+                topologyKey: kubernetes.io/hostname
       serviceAccountName: tolgee
       containers:
         - name: tolgee

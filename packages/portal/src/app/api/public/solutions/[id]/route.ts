@@ -30,10 +30,11 @@ async function loadGqlServer(pathFromApiGraphql: string): Promise<string> {
 
 function getGraphqlGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов
-  return (
-    process.env.API_GATEWAY_INTERNAL_URL ??
-    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
-  )
+  const url = process.env.API_GATEWAY_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
+  if (!url) {
+    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_ENDPOINT must be set')
+  }
+  return url
 }
 
 export async function GET(
@@ -62,6 +63,12 @@ export async function GET(
     // Для серверных компонентов приоритет у внутренних адресов
     const hasuraUrl = process.env.HASURA_INTERNAL_URL || 
                      process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
+    if (!hasuraUrl) {
+      return NextResponse.json(
+        { error: 'HASURA_INTERNAL_URL or NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT must be set' },
+        { status: 500 }
+      )
+    }
     
     // For public access, we may need admin secret or configure Hasura to allow public role
     const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET

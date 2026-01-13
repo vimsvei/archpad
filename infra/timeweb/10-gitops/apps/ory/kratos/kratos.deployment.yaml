@@ -123,6 +123,27 @@ spec:
               from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
         vault.hashicorp.com/role: "secure"
     spec:
+      # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - arch-repo-service
+                        - tenant-service
+                        - portal
+                        - hasura
+                        - tolgee
+                        - mailpit
+                        - kratos
+                        - hydra
+                        - oathkeeper
+                topologyKey: kubernetes.io/hostname
       serviceAccountName: kratos
       containers:
         - name: kratos

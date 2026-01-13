@@ -10,10 +10,11 @@ type GraphQLRequestBody = {
 
 function getGraphqlGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов
-  return (
-    process.env.API_GATEWAY_INTERNAL_URL ??
-    process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
-  )
+  const url = process.env.API_GATEWAY_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
+  if (!url) {
+    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_ENDPOINT must be set')
+  }
+  return url
 }
 
 export async function POST(request: Request) {
