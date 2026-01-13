@@ -231,10 +231,28 @@ update:versions:
       
       echo ""
       echo "📋 Checking for changes..."
+      echo "Current git status:"
       git status --short || true
       
+      echo ""
+      echo "Checking file contents after update:"
+      echo "  packages/portal/package.json version: $(jq -r '.version // "not set"' packages/portal/package.json)"
+      echo "  packages/contract/package.json version: $(jq -r '.version // "not set"' packages/contract/package.json)"
+      echo "  packages/backend/package.json version: $(jq -r '.version // "not set"' packages/backend/package.json)"
+      echo "  Expected version: $VERSION"
+      
       # Добавляем измененные файлы
+      echo ""
+      echo "Staging package.json files..."
       git add packages/*/package.json || true
+      
+      echo ""
+      echo "Checking staged changes:"
+      git diff --cached --stat || echo "No staged changes"
+      
+      echo ""
+      echo "Checking unstaged changes:"
+      git diff --stat || echo "No unstaged changes"
       
       # Проверяем наличие тега
       TAG_EXISTS_LOCAL=false
@@ -250,7 +268,9 @@ update:versions:
       
       # Проверяем, есть ли изменения для коммита
       if git diff --cached --quiet && git diff --quiet; then
-        echo "✅ No changes detected. Versions are already up to date."
+        echo ""
+        echo "⚠️  No changes detected. Versions are already up to date."
+        echo "This might mean versions were already updated in a previous run."
         
         # Но проверяем, нужно ли создать тег
         if [ "$TAG_EXISTS_LOCAL" = false ] && [ "$TAG_EXISTS_REMOTE" = false ]; then
