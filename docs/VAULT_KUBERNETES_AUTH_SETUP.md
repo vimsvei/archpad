@@ -226,10 +226,10 @@ kubectl wait --for=condition=complete job/vault-setup-policy -n vault --timeout=
 kubectl logs job/vault-setup-policy -n vault | grep -A 5 "Token:"
 ```
 
-### Шаг 2: Создать Secret с ограниченным токеном
+#### Шаг 4: Создать Secret с ограниченным токеном
 
 ```bash
-# Получить токен из логов (скопировать из вывода выше)
+# Получить токен из логов Job (скопировать из вывода выше)
 SETUP_TOKEN="<token-from-job-logs>"
 
 # Создать Secret в namespace platform
@@ -243,7 +243,11 @@ kubectl create secret generic vault-setup-token \
   --namespace=secure
 ```
 
-### Шаг 3: Проверить работу
+**После этого все Job'ы будут использовать ограниченный токен автоматически!**
+
+#### Шаг 5: Проверить работу
+
+После следующего синхронизации ArgoCD (или вручную запустите синхронизацию):
 
 ```bash
 # Проверить, что Job'ы используют ограниченный токен
@@ -251,18 +255,32 @@ kubectl logs job/hasura-vault-role -n platform | grep "Using limited setup token
 kubectl logs job/secure-vault-role -n secure | grep "Using limited setup token"
 ```
 
-### Шаг 4: (Опционально) Удалить root токен из Secret
+#### Шаг 6: (Опционально) Удалить root токен из Secret
 
 После проверки, что все работает с ограниченным токеном:
 
 ```bash
-# НЕ удаляйте Secret полностью, просто очистите значение
-# Это позволит Job'ам использовать только ограниченный токен
-kubectl delete secret vault-root-token -n platform
-kubectl delete secret vault-root-token -n secure
+# Удалить Secret с root токеном (он больше не нужен)
+kubectl delete secret vault-root-token -n vault
 ```
 
 **Важно:** Сохраните root токен в безопасном месте (например, в password manager) на случай экстренного доступа.
+
+## Резюме: Что автоматически, что вручную
+
+### ✅ Автоматически через GitOps (после push в Git):
+
+- ConfigMap с политикой Vault
+- Job для создания политики и ограниченного токена
+- Обновленные Job'ы для использования ограниченного токена
+- Все манифесты Kubernetes
+
+### ⚠️ Вручную (только один раз):
+
+- Secret с root токеном (`vault-root-token`) - для первоначальной настройки
+- Secret с ограниченным токеном (`vault-setup-token`) - после получения токена из Job
+
+**После первоначальной настройки все работает автоматически через GitOps!**
 
 ## Проверка безопасности
 
