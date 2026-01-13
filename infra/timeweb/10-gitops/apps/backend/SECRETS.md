@@ -42,8 +42,14 @@
 - **`PROJECT_DB_PASSWORD`** - пароль пользователя PostgreSQL
 
 #### `/v1/kv/data/archpad/demo/postgres`
-- **`POSTGRES_ENDPOINT`** - хост PostgreSQL (для production: IP адрес или имя сервиса, например `192.168.0.4` или `archpad-db-cluster`)
+- **`POSTGRES_ENDPOINT`** - хост PostgreSQL для local development (может быть доменное имя, например `pg.archpad.pro`)
+- **`POSTGRES_HOST`** - хост PostgreSQL для production/Kubernetes (IP адрес PostgreSQL кластера, например `192.168.0.4`)
+  - **Важно:** Внутри Kubernetes кластера нужно использовать IP адрес, а не доменное имя
 - **`POSTGRES_PORT`** - порт PostgreSQL (по умолчанию `5432`)
+
+**Логика использования:**
+- **Local development (`NODE_ENV=local`):** используется `POSTGRES_ENDPOINT`
+- **Production/Kubernetes:** используется `POSTGRES_HOST`
 
 ### Переменные окружения (не секреты)
 - **`NODE_ENV`** - окружение (`production`, `development`, `local`)
@@ -208,6 +214,37 @@ curl -X POST \
 ```
 
 **Примечание:** Секреты для PostgreSQL (`POSTGRES_ENDPOINT`, `POSTGRES_PORT`) должны быть уже созданы в `/v1/kv/data/archpad/demo/postgres` (используются также Hasura и Tolgee).
+
+**Важно для Kubernetes:** В секрете `/v1/kv/data/archpad/demo/postgres` должны быть оба значения:
+- `POSTGRES_ENDPOINT` - для local development (может быть доменное имя, например `pg.archpad.pro`)
+- `POSTGRES_HOST` - для production/Kubernetes (IP адрес PostgreSQL кластера, например `192.168.0.4`)
+
+**Обновление секрета PostgreSQL в Vault:**
+
+```bash
+VAULT_ADDR="https://vault.archpad.pro"
+VAULT_TOKEN="<your-token>"
+
+curl -X POST \
+  -H "X-Vault-Token: ${VAULT_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "POSTGRES_ENDPOINT": "pg.archpad.pro",
+      "POSTGRES_HOST": "192.168.0.4",
+      "POSTGRES_PORT": "5432"
+    }
+  }' \
+  "${VAULT_ADDR}/v1/kv/data/archpad/demo/postgres"
+```
+
+После обновления секрета в Vault, перезапустите поды сервисов для применения изменений:
+
+```bash
+kubectl delete pod -n platform -l app=arch-repo-service
+kubectl delete pod -n platform -l app=tenant-service
+kubectl delete pod -n platform -l app=hasura-sync-service
+```
 
 ---
 
