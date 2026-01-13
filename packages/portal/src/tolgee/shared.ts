@@ -14,13 +14,19 @@ function getTolgeeApiUrl(): string | undefined {
   return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 }
 
-// Логирование для отладки (выполняется при каждом вызове функции)
-function logTolgeeConfig() {
+// Флаг для логирования конфигурации только один раз
+let configLogged = false;
+
+// Логирование для отладки (выполняется только один раз при первом вызове)
+function logTolgeeConfigOnce() {
+  if (configLogged) return;
+  configLogged = true;
+  
   const apiKey = getTolgeeApiKey();
   const apiUrl = getTolgeeApiUrl();
   
   if (typeof window === 'undefined') {
-    // Серверная часть
+    // Серверная часть - логируем только один раз
     console.log('[Tolgee Config Server] apiKey:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT SET');
     console.log('[Tolgee Config Server] apiUrl:', apiUrl || 'NOT SET');
     console.log('[Tolgee Config Server] NODE_ENV:', process.env.NODE_ENV);
@@ -55,8 +61,8 @@ export function TolgeeBase() {
   const apiKey = getTolgeeApiKey();
   const apiUrl = getTolgeeApiUrl();
   
-  // Логируем конфигурацию при инициализации
-  logTolgeeConfig();
+  // Логируем конфигурацию только один раз при первом вызове
+  logTolgeeConfigOnce();
   
   if (!apiKey || !apiUrl) {
     console.warn('[Tolgee] Missing configuration:', {
@@ -65,11 +71,18 @@ export function TolgeeBase() {
     });
   }
   
-  return Tolgee()
-  .use(FormatIcu())
-  .use(DevTools())
-  .updateDefaults({
-    apiKey: apiKey || undefined,
-    apiUrl: apiUrl || undefined,
-  });
+  const tolgee = Tolgee()
+    .use(FormatIcu())
+    .updateDefaults({
+      apiKey: apiKey || undefined,
+      apiUrl: apiUrl || undefined,
+    });
+  
+  // DevTools включаем только в development режиме
+  // В production он создает избыточные логи (heartbeat/ping)
+  if (process.env.NODE_ENV === 'development') {
+    tolgee.use(DevTools());
+  }
+  
+  return tolgee;
 }

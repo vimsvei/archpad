@@ -42,6 +42,23 @@ variables:
     - 'echo "Branch: $CI_COMMIT_REF_NAME"'
     - 'echo "Registry URL: $REGISTRY_URL"'
     - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
+    # Проверяем VAULT_TOKEN для portal (нужен для получения секретов во время сборки)
+    - |
+      export SERVICE_NAME_CHECK="${CI_JOB_NAME#build:}"
+      if [ "$SERVICE_NAME_CHECK" = "portal" ] && [ -z "$VAULT_TOKEN" ]; then
+        echo "=========================================="
+        echo "WARNING: VAULT_TOKEN is not set"
+        echo "=========================================="
+        echo "For portal builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
+        echo "Please set VAULT_TOKEN in GitLab CI/CD Variables:"
+        echo "  Settings → CI/CD → Variables → Add variable"
+        echo "  Key: VAULT_TOKEN"
+        echo "  Value: your-vault-token"
+        echo "  Type: Variable"
+        echo "  Flags: Masked (recommended)"
+        echo "=========================================="
+        echo "Build will continue, but NEXT_PUBLIC_* variables may be missing."
+      fi
     - |
       if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
         echo "=========================================="
@@ -65,6 +82,55 @@ variables:
       fi
     - 'echo "Logging in to registry: $REGISTRY_URL"'
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL"
+    # Определяем функцию для получения секретов из Vault для portal
+    # Функция должна быть определена в before_script, чтобы быть доступной в script
+    - |
+      get_vault_secrets_for_portal() {
+        local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
+        local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        
+        if [ -z "$VAULT_TOKEN" ]; then
+          echo "ERROR: VAULT_TOKEN is not set"
+          echo "Please set VAULT_TOKEN in GitLab CI/CD Variables"
+          return 1
+        fi
+        
+        # Устанавливаем curl и jq если их нет (для alpine образа)
+        if ! command -v curl >/dev/null 2>&1; then
+          apk add --no-cache curl >/dev/null 2>&1 || true
+        fi
+        if ! command -v jq >/dev/null 2>&1; then
+          apk add --no-cache jq >/dev/null 2>&1 || true
+        fi
+        
+        echo "Fetching secrets from Vault: ${VAULT_ADDR}/${VAULT_SECRET_PATH}"
+        
+        # Получаем секреты из Vault
+        local response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_SECRET_PATH}" 2>&1)
+        
+        if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch secrets from Vault"
+          echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response"
+          return 1
+        fi
+        
+        # Извлекаем переменные из ответа Vault
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
+        export NEXT_PUBLIC_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_URL // empty')
+        export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT // empty')
+        export NEXT_PUBLIC_ORY_SDK_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_ORY_SDK_URL // empty')
+        export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT // empty')
+        
+        echo "✅ Successfully fetched secrets from Vault"
+        echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
+        echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}"
+        echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
+      }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:}"
     # Убеждаемся, что переменные установлены (из GitLab Variables или fallback)
@@ -80,7 +146,27 @@ variables:
       echo "  - ${IMAGE_TAG_LATEST}"
     - 'echo "Dockerfile: $DOCKERFILE_PATH"'
     - 'echo "Build context: $BUILD_CONTEXT"'
-    - docker build -t "$IMAGE_TAG_VERSION" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+    # Для portal получаем секреты из Vault и передаем NEXT_PUBLIC_* переменные как build-args
+    # Эти переменные должны быть доступны во время сборки Next.js
+    - |
+      if [ "$SERVICE_NAME" = "portal" ]; then
+        echo "Building portal - fetching secrets from Vault..."
+        get_vault_secrets_for_portal
+        echo "Building portal with NEXT_PUBLIC_* build arguments from Vault..."
+        docker build \
+          -t "$IMAGE_TAG_VERSION" \
+          -t "$IMAGE_TAG_LATEST" \
+          -f "$DOCKERFILE_PATH" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
+          --build-arg NEXT_PUBLIC_URL="${NEXT_PUBLIC_URL}" \
+          --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT}" \
+          --build-arg NEXT_PUBLIC_ORY_SDK_URL="${NEXT_PUBLIC_ORY_SDK_URL}" \
+          --build-arg NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT}" \
+          "$BUILD_CONTEXT"
+      else
+        docker build -t "$IMAGE_TAG_VERSION" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+      fi
     - docker push "$IMAGE_TAG_VERSION"
     - docker push "$IMAGE_TAG_LATEST"
     - |
@@ -107,6 +193,23 @@ variables:
     - 'echo "Branch: $CI_COMMIT_REF_NAME"'
     - 'echo "Registry URL: $REGISTRY_URL"'
     - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
+    # Проверяем VAULT_TOKEN для portal (нужен для получения секретов во время сборки)
+    - |
+      export SERVICE_NAME_CHECK="${CI_JOB_NAME#build:main:}"
+      if [ "$SERVICE_NAME_CHECK" = "portal" ] && [ -z "$VAULT_TOKEN" ]; then
+        echo "=========================================="
+        echo "WARNING: VAULT_TOKEN is not set"
+        echo "=========================================="
+        echo "For portal builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
+        echo "Please set VAULT_TOKEN in GitLab CI/CD Variables:"
+        echo "  Settings → CI/CD → Variables → Add variable"
+        echo "  Key: VAULT_TOKEN"
+        echo "  Value: your-vault-token"
+        echo "  Type: Variable"
+        echo "  Flags: Masked (recommended)"
+        echo "=========================================="
+        echo "Build will continue, but NEXT_PUBLIC_* variables may be missing."
+      fi
     - |
       if [ -z "$REGISTRY_USERNAME" ] || [ -z "$REGISTRY_PASSWORD" ]; then
         echo "=========================================="
@@ -130,6 +233,55 @@ variables:
       fi
     - 'echo "Logging in to registry: $REGISTRY_URL"'
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL"
+    # Определяем функцию для получения секретов из Vault для portal
+    # Функция должна быть определена в before_script, чтобы быть доступной в script
+    - |
+      get_vault_secrets_for_portal() {
+        local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
+        local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        
+        if [ -z "$VAULT_TOKEN" ]; then
+          echo "ERROR: VAULT_TOKEN is not set"
+          echo "Please set VAULT_TOKEN in GitLab CI/CD Variables"
+          return 1
+        fi
+        
+        # Устанавливаем curl и jq если их нет (для alpine образа)
+        if ! command -v curl >/dev/null 2>&1; then
+          apk add --no-cache curl >/dev/null 2>&1 || true
+        fi
+        if ! command -v jq >/dev/null 2>&1; then
+          apk add --no-cache jq >/dev/null 2>&1 || true
+        fi
+        
+        echo "Fetching secrets from Vault: ${VAULT_ADDR}/${VAULT_SECRET_PATH}"
+        
+        # Получаем секреты из Vault
+        local response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_SECRET_PATH}" 2>&1)
+        
+        if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch secrets from Vault"
+          echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response"
+          return 1
+        fi
+        
+        # Извлекаем переменные из ответа Vault
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
+        export NEXT_PUBLIC_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_URL // empty')
+        export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT // empty')
+        export NEXT_PUBLIC_ORY_SDK_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_ORY_SDK_URL // empty')
+        export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT // empty')
+        
+        echo "✅ Successfully fetched secrets from Vault"
+        echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
+        echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}"
+        echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}"
+        echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
+      }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:main:}"
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
@@ -144,7 +296,27 @@ variables:
       echo "  - ${IMAGE_TAG_LATEST}"
     - 'echo "Dockerfile: $DOCKERFILE_PATH"'
     - 'echo "Build context: $BUILD_CONTEXT"'
-    - docker build -t "$IMAGE_TAG_MAIN" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+    # Для portal получаем секреты из Vault и передаем NEXT_PUBLIC_* переменные как build-args
+    # Эти переменные должны быть доступны во время сборки Next.js
+    - |
+      if [ "$SERVICE_NAME" = "portal" ]; then
+        echo "Building portal - fetching secrets from Vault..."
+        get_vault_secrets_for_portal
+        echo "Building portal with NEXT_PUBLIC_* build arguments from Vault..."
+        docker build \
+          -t "$IMAGE_TAG_MAIN" \
+          -t "$IMAGE_TAG_LATEST" \
+          -f "$DOCKERFILE_PATH" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
+          --build-arg NEXT_PUBLIC_URL="${NEXT_PUBLIC_URL}" \
+          --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT}" \
+          --build-arg NEXT_PUBLIC_ORY_SDK_URL="${NEXT_PUBLIC_ORY_SDK_URL}" \
+          --build-arg NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT}" \
+          "$BUILD_CONTEXT"
+      else
+        docker build -t "$IMAGE_TAG_MAIN" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+      fi
     - docker push "$IMAGE_TAG_MAIN"
     - docker push "$IMAGE_TAG_LATEST"
     - |

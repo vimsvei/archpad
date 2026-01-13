@@ -27,6 +27,24 @@ RUN pnpm install --frozen-lockfile --filter @archpad/portal...
 FROM deps AS builder
 WORKDIR /app
 
+# Build arguments for Next.js public environment variables
+# These must be available during build time to be embedded in the client bundle
+ARG NEXT_PUBLIC_TOLGEE_API_KEY
+ARG NEXT_PUBLIC_TOLGEE_API_URL
+ARG NEXT_PUBLIC_URL
+ARG NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
+ARG NEXT_PUBLIC_ORY_SDK_URL
+ARG NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
+
+# Set as environment variables for Next.js build process
+# Next.js will embed NEXT_PUBLIC_* variables into the client bundle during build
+ENV NEXT_PUBLIC_TOLGEE_API_KEY=$NEXT_PUBLIC_TOLGEE_API_KEY
+ENV NEXT_PUBLIC_TOLGEE_API_URL=$NEXT_PUBLIC_TOLGEE_API_URL
+ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
+ENV NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
+ENV NEXT_PUBLIC_ORY_SDK_URL=$NEXT_PUBLIC_ORY_SDK_URL
+ENV NEXT_PUBLIC_API_GRAPHQL_ENDPOINT=$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
+
 # Copy source code (same approach as backend Dockerfiles)
 # This ensures all workspace packages are available with their node_modules
 COPY packages/portal ./packages/portal
@@ -36,6 +54,7 @@ COPY packages/contract ./packages/contract
 # pnpm will find tsc in node_modules/.bin when running the build script
 RUN pnpm --filter @archpad/contract build
 # Then build portal
+# NEXT_PUBLIC_* variables are now available and will be embedded in the client bundle
 RUN pnpm --filter @archpad/portal build
 
 

@@ -20,7 +20,12 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   try {
     const tolgee = await getTolgee();
     records = await tolgee.loadRequired();
-    console.log(`[Tolgee] Loaded ${records.length} translation records for locale: ${locale}`);
+    // Логируем только если количество записей подозрительно мало (меньше 10)
+    if (records.length < 10) {
+      console.warn(`[Tolgee] Loaded only ${records.length} translation records for locale: ${locale}. This might indicate a configuration issue.`);
+    } else {
+      console.log(`[Tolgee] Loaded ${records.length} translation records for locale: ${locale}`);
+    }
   } catch (error) {
     console.error('[Tolgee] Failed to load translations, continuing without SSR records', error);
     if (error instanceof Error) {

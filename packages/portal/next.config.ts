@@ -18,47 +18,9 @@ const nextConfig: NextConfig = {
     "192.168.1.119",
     "portal.192-168-1-119.sslip.io",
     "*.192-168-1-119.sslip.io",
+    "portal.archpad.pro",
+    "*.archpad.pro",
   ],
-  
-  // webpack(config) {
-  //   const fileLoaderRule = config.module.rules.find(
-  //     (rule: any) =>
-  //       typeof rule === "object" &&
-  //       rule !== null &&
-  //       rule.test instanceof RegExp &&
-  //       rule.test.test(".svg")
-  //   ) as any;
-  //
-  //   if (fileLoaderRule) {
-  //     config.module.rules.push(
-  //       {
-  //         ...fileLoaderRule,
-  //         test: /\.svg$/i,
-  //         resourceQuery: /url/,
-  //       },
-  //       {
-  //         test: /\.svg$/i,
-  //         issuer: /\.[jt]sx?$/,             // импорт только из ts/tsx/js/jsx
-  //         resourceQuery: { not: [/url/] },  // без ?url
-  //         use: [
-  //           {
-  //             loader: "@svgr/webpack",
-  //             options: {
-  //               icon: true,
-  //               ref: true,
-  //               svgo: true,
-  //               svgoConfig: {
-  //                 plugins: [{ name: "removeViewBox", active: false }],
-  //               },
-  //             },
-  //           },
-  //         ],
-  //       }
-  //     );
-  //     fileLoaderRule.exclude = /\.svg$/i;
-  //   }
-  //   return config;
-  // }
 };
 
 export default withNextIntl(nextConfig);
