@@ -1,5 +1,6 @@
 stages:
   - build
+  - version
   - deploy
 
 variables:
@@ -21,11 +22,24 @@ variables:
     - docker:24-dind
   before_script:
     - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    # Извлекаем версию из имени ветки (r/X.Y.Z или r-x.y.z)
+    - |
+      if echo "$CI_COMMIT_REF_NAME" | grep -qE '^r[/-][0-9]+\.[0-9]+\.[0-9]+$'; then
+        # Извлекаем версию из ветки (r/X.Y.Z -> X.Y.Z или r-x.y.z -> x.y.z)
+        VERSION=$(echo "$CI_COMMIT_REF_NAME" | sed -E 's/^r[\/-]([0-9]+\.[0-9]+\.[0-9]+)$/\1/')
+        export VERSION
+        echo "Version extracted from branch: $VERSION"
+      else
+        echo "ERROR: Branch name must match pattern r/X.Y.Z or r-x.y.z"
+        echo "Current branch: $CI_COMMIT_REF_NAME"
+        exit 1
+      fi
     # Переменные REGISTRY_URL и REGISTRY_IMAGE_PREFIX должны быть установлены в GitLab CI/CD Variables
     # Они автоматически доступны, но убедимся, что они установлены
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
     - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
-    - 'echo "Building for commit $COMMIT_SHA"'
+    - 'echo "Building for version $VERSION (commit $COMMIT_SHA)"'
+    - 'echo "Branch: $CI_COMMIT_REF_NAME"'
     - 'echo "Registry URL: $REGISTRY_URL"'
     - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
     - |
@@ -56,23 +70,28 @@ variables:
     # Убеждаемся, что переменные установлены (из GitLab Variables или fallback)
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
     - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
-    # Формируем теги образов
-    - export IMAGE_TAG="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}:${COMMIT_SHA}"
+    # Формируем теги образов: x.y.z-<commit-sha> и latest
+    - export IMAGE_TAG_VERSION="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}:${VERSION}-${COMMIT_SHA}"
     - export IMAGE_TAG_LATEST="${REGISTRY_URL}/${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}:latest"
-    - 'echo "Building $SERVICE_NAME (commit $COMMIT_SHA)"'
-    - 'echo "Image tag: $IMAGE_TAG"'
+    - 'echo "Building $SERVICE_NAME version $VERSION (commit $COMMIT_SHA)"'
+    - |
+      echo "Image tags:"
+      echo "  - ${IMAGE_TAG_VERSION}"
+      echo "  - ${IMAGE_TAG_LATEST}"
     - 'echo "Dockerfile: $DOCKERFILE_PATH"'
     - 'echo "Build context: $BUILD_CONTEXT"'
-    - docker build -t "$IMAGE_TAG" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
-    - docker push "$IMAGE_TAG"
+    - docker build -t "$IMAGE_TAG_VERSION" -t "$IMAGE_TAG_LATEST" -f "$DOCKERFILE_PATH" "$BUILD_CONTEXT"
+    - docker push "$IMAGE_TAG_VERSION"
     - docker push "$IMAGE_TAG_LATEST"
-    - 'echo "✅ Image pushed: $IMAGE_TAG"'
+    - |
+      echo "✅ Images pushed:"
+      echo "  - $IMAGE_TAG_VERSION"
+      echo "  - $IMAGE_TAG_LATEST"
   after_script:
     - docker logout "$REGISTRY_URL" || true
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
-    - if: $CI_COMMIT_BRANCH == "develop"
+    # Собираем только для веток вида r/X.Y.Z или r-x.y.z
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 # ============================================
 # Backend Services
@@ -107,6 +126,152 @@ build:portal:
     BUILD_CONTEXT: "."
 
 # ============================================
+# Version Update (обновление версий в package.json)
+# ============================================
+
+update:versions:
+  stage: version
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git jq curl
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    # Извлекаем версию из имени ветки (r/X.Y.Z или r-x.y.z)
+    - |
+      if echo "$CI_COMMIT_REF_NAME" | grep -qE '^r[/-][0-9]+\.[0-9]+\.[0-9]+$'; then
+        VERSION=$(echo "$CI_COMMIT_REF_NAME" | sed -E 's/^r[\/-]([0-9]+\.[0-9]+\.[0-9]+)$/\1/')
+        export VERSION
+        echo "Version extracted from branch: $VERSION"
+      else
+        echo "ERROR: Branch name must match pattern r/X.Y.Z or r-x.y.z"
+        exit 1
+      fi
+    # Настраиваем git для коммита
+    - git config --global user.name "GitLab CI"
+    - git config --global user.email "ci@archpad.pro"
+    - git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git fetch origin "$CI_COMMIT_REF_NAME" || git fetch origin "$CI_DEFAULT_BRANCH"
+    - |
+      # В GitLab CI мы уже в нужном коммите, но нужно переключиться на ветку для коммита
+      if git show-ref --verify --quiet "refs/remotes/origin/$CI_COMMIT_REF_NAME"; then
+        # Ветка существует, переключаемся на неё
+        git checkout -B "$CI_COMMIT_REF_NAME" "origin/$CI_COMMIT_REF_NAME"
+      else
+        # Ветка не существует, создаём её из текущего коммита
+        echo "Branch $CI_COMMIT_REF_NAME does not exist, creating from current commit"
+        git checkout -b "$CI_COMMIT_REF_NAME"
+      fi
+  script:
+    - |
+      echo "📦 Updating package.json versions to $VERSION"
+      echo ""
+      
+      # Функция для обновления version в package.json
+      update_version() {
+        local file=$1
+        if [ -f "$file" ]; then
+          local current_version=$(jq -r '.version // empty' "$file")
+          if [ -n "$current_version" ]; then
+            echo "  Updating $file: $current_version → $VERSION"
+            jq --arg version "$VERSION" '.version = $version' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
+          else
+            echo "  Adding version to $file: $VERSION"
+            jq --arg version "$VERSION" '. + {version: $version}' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
+          fi
+        else
+          echo "  ⚠️  File not found: $file"
+        fi
+      }
+      
+      # Обновляем версии в package.json файлах
+      update_version "packages/portal/package.json"
+      update_version "packages/contract/package.json"
+      update_version "packages/backend/package.json"
+      
+      echo ""
+      echo "📋 Checking for changes..."
+      git status --short || true
+      
+      # Добавляем измененные файлы
+      git add packages/*/package.json || true
+      
+      # Проверяем наличие тега
+      TAG_EXISTS_LOCAL=false
+      TAG_EXISTS_REMOTE=false
+      
+      if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+        TAG_EXISTS_LOCAL=true
+      fi
+      
+      if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+        TAG_EXISTS_REMOTE=true
+      fi
+      
+      # Проверяем, есть ли изменения для коммита
+      if git diff --cached --quiet && git diff --quiet; then
+        echo "✅ No changes detected. Versions are already up to date."
+        
+        # Но проверяем, нужно ли создать тег
+        if [ "$TAG_EXISTS_LOCAL" = false ] && [ "$TAG_EXISTS_REMOTE" = false ]; then
+          echo ""
+          echo "🏷️  Creating git tag v$VERSION (versions are up to date, but tag is missing)..."
+          git tag -a "v$VERSION" -m "Release version $VERSION"
+          echo "🚀 Pushing tag v$VERSION..."
+          git push origin "v$VERSION"
+          echo "  ✅ Tag v$VERSION created and pushed"
+        elif [ "$TAG_EXISTS_LOCAL" = false ] && [ "$TAG_EXISTS_REMOTE" = true ]; then
+          echo ""
+          echo "🏷️  Fetching tag v$VERSION from remote..."
+          git fetch origin "refs/tags/v$VERSION:refs/tags/v$VERSION"
+        fi
+      else
+        echo ""
+        echo "📝 Committing version updates..."
+        git commit -m "chore: bump version to $VERSION [ci skip]"
+        
+        echo ""
+        echo "🏷️  Checking for git tag v$VERSION..."
+        
+        # Создаем тег, если его нет ни локально, ни на remote
+        if [ "$TAG_EXISTS_LOCAL" = false ] && [ "$TAG_EXISTS_REMOTE" = false ]; then
+          echo "  Creating git tag v$VERSION..."
+          git tag -a "v$VERSION" -m "Release version $VERSION"
+          echo "  ✅ Tag v$VERSION created"
+        elif [ "$TAG_EXISTS_LOCAL" = false ] && [ "$TAG_EXISTS_REMOTE" = true ]; then
+          # Тег есть на remote, но не локально - получаем его
+          echo "  Tag v$VERSION exists on remote, fetching..."
+          git fetch origin "refs/tags/v$VERSION:refs/tags/v$VERSION"
+        else
+          echo "  Tag v$VERSION already exists, skipping tag creation"
+        fi
+        
+        echo ""
+        echo "🚀 Pushing changes to $CI_COMMIT_REF_NAME..."
+        git push origin "$CI_COMMIT_REF_NAME"
+        
+        # Push тега, если он был создан или обновлен локально
+        if [ "$TAG_EXISTS_REMOTE" = false ]; then
+          echo "🚀 Pushing tag v$VERSION..."
+          git push origin "v$VERSION"
+          echo "  ✅ Tag v$VERSION pushed to remote"
+        fi
+        
+        echo ""
+        echo "✅ Version $VERSION successfully updated in package.json files, committed, and tagged"
+      fi
+  rules:
+    # Запускаем только для веток вида r/X.Y.Z или r-x.y.z
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
+  needs:
+    - job: build:arch-repo-service
+      artifacts: false
+    - job: build:tenant-service
+      artifacts: false
+    - job: build:hasura-sync-service
+      artifacts: false
+    - job: build:portal
+      artifacts: false
+
+# ============================================
 # Deploy (информационный stage)
 # ============================================
 
@@ -119,19 +284,33 @@ build:portal:
 deploy:update-images:
   stage: deploy
   image: alpine:latest
-  script:
+  before_script:
     - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    # Извлекаем версию из имени ветки (r/X.Y.Z или r-x.y.z)
+    - |
+      if echo "$CI_COMMIT_REF_NAME" | grep -qE '^r[/-][0-9]+\.[0-9]+\.[0-9]+$'; then
+        VERSION=$(echo "$CI_COMMIT_REF_NAME" | sed -E 's/^r[\/-]([0-9]+\.[0-9]+\.[0-9]+)$/\1/')
+        export VERSION
+      else
+        echo "ERROR: Branch name must match pattern r/X.Y.Z or r-x.y.z"
+        exit 1
+      fi
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
     - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
+  script:
     - 'echo "✅ Images built and pushed successfully"'
     - 'echo ""'
-    - 'echo "Built images:"'
-    - 'echo "  - arch-repo-service:${COMMIT_SHA} (latest)"'
-    - 'echo "  - tenant-service:${COMMIT_SHA} (latest)"'
-    - 'echo "  - hasura-sync-service:${COMMIT_SHA} (latest)"'
-    - 'echo "  - portal:${COMMIT_SHA} (latest)"'
+    - 'echo "Built images (version $VERSION, commit $COMMIT_SHA):"'
+    - 'echo "  - arch-repo-service:${VERSION}-${COMMIT_SHA} (latest)"'
+    - 'echo "  - tenant-service:${VERSION}-${COMMIT_SHA} (latest)"'
+    - 'echo "  - hasura-sync-service:${VERSION}-${COMMIT_SHA} (latest)"'
+    - 'echo "  - portal:${VERSION}-${COMMIT_SHA} (latest)"'
     - echo ""
     - 'echo "📦 ArgoCD Image Updater will automatically detect new images and update Kubernetes manifests"'
     - 'echo "   See: docs/ARGOCD_IMAGE_UPDATER_SETUP.md for details"'
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    # Запускаем только для веток вида r/X.Y.Z или r-x.y.z
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
+  needs:
+    - job: update:versions
+      artifacts: false

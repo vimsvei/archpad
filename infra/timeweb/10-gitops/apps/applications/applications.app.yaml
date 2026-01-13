@@ -14,8 +14,8 @@ spec:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: HEAD
     path: infra/timeweb/10-gitops/apps
-    # Используем directory с recurse для поиска всех .app.yaml файлов
-    # Это обходит ограничение Kustomize на использование ../ путей
+    # Применяем все Kubernetes ресурсы (Deployment, Service, IngressRoute и т.д.)
+    # Application'ы создаются отдельно (см. README.md)
     directory:
       recurse: true
   syncPolicy:
