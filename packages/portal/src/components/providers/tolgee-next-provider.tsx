@@ -17,12 +17,18 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
   const router = useRouter();
   
   useEffect(() => {
+    // Логирование для отладки (только на клиенте)
+    if (typeof window !== 'undefined') {
+      console.log('[Tolgee Client] Initialized with language:', language);
+      console.log('[Tolgee Client] Static data records:', staticData?.length || 0);
+    }
+    
     // this ensures server components refresh, after translation change
     const { unsubscribe } = tolgee.on('permanentChange', () => {
       router.refresh();
     });
     return () => unsubscribe();
-  }, [tolgee, router]);
+  }, [tolgee, router, language, staticData]);
   
   return (
     <TolgeeProvider

@@ -20,8 +20,15 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   try {
     const tolgee = await getTolgee();
     records = await tolgee.loadRequired();
+    console.log(`[Tolgee] Loaded ${records.length} translation records for locale: ${locale}`);
   } catch (error) {
-    console.error('Tolgee: failed to load translations, continuing without SSR records', error);
+    console.error('[Tolgee] Failed to load translations, continuing without SSR records', error);
+    if (error instanceof Error) {
+      console.error('[Tolgee] Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
     records = [];
   }
   
