@@ -88,6 +88,7 @@ variables:
       get_vault_secrets_for_portal() {
         local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -115,8 +116,19 @@ variables:
           return 1
         fi
         
+        # Получаем NEXT_PUBLIC_TOLGEE_API_KEY из отдельного пути
+        echo "Fetching NEXT_PUBLIC_TOLGEE_API_KEY from Vault: ${VAULT_ADDR}/${VAULT_TOLGEE_API_KEY_PATH}"
+        local tolgee_api_key_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_TOLGEE_API_KEY_PATH}" 2>&1)
+        
+        if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"
+          echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response"
+          return 1
+        fi
+        
         # Извлекаем переменные из ответа Vault
-        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$tolgee_api_key_response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
         export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
         export NEXT_PUBLIC_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_URL // empty')
         export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT // empty')
@@ -255,6 +267,7 @@ variables:
       get_vault_secrets_for_portal() {
         local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -282,8 +295,19 @@ variables:
           return 1
         fi
         
+        # Получаем NEXT_PUBLIC_TOLGEE_API_KEY из отдельного пути
+        echo "Fetching NEXT_PUBLIC_TOLGEE_API_KEY from Vault: ${VAULT_ADDR}/${VAULT_TOLGEE_API_KEY_PATH}"
+        local tolgee_api_key_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_TOLGEE_API_KEY_PATH}" 2>&1)
+        
+        if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"
+          echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response"
+          return 1
+        fi
+        
         # Извлекаем переменные из ответа Vault
-        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$tolgee_api_key_response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
         export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
         export NEXT_PUBLIC_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_URL // empty')
         export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT // empty')
