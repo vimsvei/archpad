@@ -164,7 +164,7 @@ spec:
               value: "1"
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /manifest.webmanifest
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -172,7 +172,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /manifest.webmanifest
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 5
