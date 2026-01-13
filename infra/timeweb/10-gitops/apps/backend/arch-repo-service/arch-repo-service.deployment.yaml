@@ -66,11 +66,8 @@ spec:
               echo "Database: $PROJECT_DB"
               echo "User: $PROJECT_DB_USER"
               # Запускаем приложение
-              # TODO: После сборки образа использовать правильный путь к main.js
-              # exec node dist/apps/arch-repo-service/apps/arch-repo-service/src/main.js
-              # Временная заглушка для проверки конфигурации
               echo "Arch Repo Service starting..."
-              sleep infinity
+              exec node dist/apps/arch-repo-service/apps/arch-repo-service/src/main.js
           ports:
             - name: http
               containerPort: 3000
@@ -80,24 +77,22 @@ spec:
               value: "production"
             - name: PORT
               value: "3000"
-          # Health checks временно отключены, так как приложение использует sleep infinity
-          # TODO: Включить после запуска реального приложения
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 3000
-          #   initialDelaySeconds: 30
-          #   periodSeconds: 10
-          #   timeoutSeconds: 5
-          #   failureThreshold: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 3000
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 5
-          #   timeoutSeconds: 3
-          #   failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
           resources:
             requests:
               cpu: 50m
