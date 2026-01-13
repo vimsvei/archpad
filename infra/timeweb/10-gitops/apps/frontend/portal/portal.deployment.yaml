@@ -65,6 +65,17 @@ spec:
               fi
               echo "Portal URL: $NEXT_PUBLIC_URL"
               echo "Hasura endpoint: $NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT"
+              # Проверяем Tolgee переменные
+              if [ -n "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
+                echo "Tolgee API URL: $NEXT_PUBLIC_TOLGEE_API_URL"
+              else
+                echo "WARNING: NEXT_PUBLIC_TOLGEE_API_URL is not set"
+              fi
+              if [ -n "$NEXT_PUBLIC_TOLGEE_API_KEY" ]; then
+                echo "Tolgee API Key: ***SET***"
+              else
+                echo "WARNING: NEXT_PUBLIC_TOLGEE_API_KEY is not set"
+              fi
               # Запускаем Next.js приложение с явной передачей переменных окружения
               echo "Portal starting..."
               cd /app/packages/portal
