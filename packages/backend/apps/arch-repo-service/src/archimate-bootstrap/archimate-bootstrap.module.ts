@@ -124,15 +124,28 @@ async function migrateTenantIdColumns(conn: any) {
   ];
 
   // Get or use a default tenant ID
-  // First, try to get an existing tenant
-  let defaultTenantId: string;
-  const tenants = await conn.execute(`SELECT id FROM tenants LIMIT 1`);
-  if (tenants.length > 0) {
-    defaultTenantId = tenants[0].id;
-  } else {
-    // If no tenant exists, use a hardcoded UUID for migration
-    // This will be replaced when a real tenant is created
-    defaultTenantId = '00000000-0000-0000-0000-000000000000';
+  // Note: tenants table is in tenant_db, not in archpad database
+  // So we use a hardcoded UUID for migration
+  // This will be replaced when a real tenant is created
+  let defaultTenantId: string = '00000000-0000-0000-0000-000000000000';
+  
+  // Try to get an existing tenant from tenant_db (if cross-database query is possible)
+  // In production, tenants are in a separate database, so we skip this
+  try {
+    const tenants = await conn.execute(`SELECT id FROM tenants LIMIT 1`);
+    if (tenants.length > 0) {
+      defaultTenantId = tenants[0].id;
+    }
+  } catch (error: any) {
+    // Table "tenants" does not exist in archpad database (it's in tenant_db)
+    // This is expected - use hardcoded UUID
+    if (error.code === '42P01' || error.message?.includes('does not exist')) {
+      // Expected error - tenants table is in tenant_db, not archpad
+      // Use hardcoded UUID as fallback
+    } else {
+      // Unexpected error - rethrow
+      throw error;
+    }
   }
 
   for (const table of tables) {
