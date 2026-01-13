@@ -55,6 +55,30 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
           );
           console.log('[Tolgee Client] Static data keys (sample):', sampleKeys);
           console.log('[Tolgee Client] Total static data records:', staticData.length);
+          
+          // Логируем значения переводов из staticData
+          const translations: Record<string, any> = {};
+          staticData.slice(0, 5).forEach((record: any) => {
+            if (record && typeof record === 'object') {
+              const key = record.key || record.namespace?.key || 'unknown';
+              const value = record.translation || record.value || record.text || JSON.stringify(record).substring(0, 100);
+              translations[key] = value;
+            }
+          });
+          console.log('[Tolgee Client] Static data translation values (sample):', translations);
+          
+          // Тестируем получение переводов через Tolgee API
+          try {
+            sampleKeys.slice(0, 3).forEach((key: string) => {
+              if (key !== 'unknown') {
+                // Пробуем разные способы получить перевод
+                const translation = (tolgee as any).translate?.(key) || (tolgee as any).t?.(key) || key;
+                console.log(`[Tolgee Client] Translation test for "${key}":`, translation);
+              }
+            });
+          } catch (e) {
+            console.warn('[Tolgee Client] Could not test translations:', e);
+          }
         } else {
           console.warn('[Tolgee Client] No static data provided from SSR');
         }

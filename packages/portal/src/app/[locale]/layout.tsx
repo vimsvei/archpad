@@ -33,16 +33,11 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     }
     
     // loadRequired() загружает только переводы, которые используются в коде
-    // Если нужно загрузить все переводы, используем load() без параметров
-    // Это загрузит все переводы для текущего языка
-    try {
-      records = await tolgee.load();
-      console.log(`[Tolgee SSR] Using load() to fetch all translations for locale: ${locale}`);
-    } catch (loadError) {
-      // Если load() не работает, пробуем loadRequired()
-      console.warn(`[Tolgee SSR] load() failed, trying loadRequired()...`, loadError);
-      records = await tolgee.loadRequired();
-    }
+    // Если загружается меньше переводов, чем ожидается, это может означать:
+    // 1. Не все переводы используются в коде
+    // 2. Переводы используются динамически и не определяются статическим анализом
+    // 3. Переводы не правильно помечены как "required"
+    records = await tolgee.loadRequired();
     
     // Логируем только один раз при первом запросе (используем статическую переменную)
     // Это предотвращает избыточное логирование при каждом рендере
@@ -50,22 +45,58 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       (globalThis as any).__tolgee_logged = true;
       console.log(`[Tolgee SSR] Loaded ${records.length} translation record(s) for locale: ${locale}`);
       
-      // Детальное логирование структуры записей
+      // Детальное логирование структуры записей и значений
       if (records.length > 0) {
         console.log(`[Tolgee SSR] First record structure:`, JSON.stringify(records[0], null, 2).substring(0, 500));
+        
+        // Логируем ключи переводов
         const sampleKeys = records.slice(0, 10).map((r: any) => {
           if (typeof r === 'string') return r;
           return r.key || r.namespace?.key || r.namespace || JSON.stringify(r).substring(0, 50);
         });
         console.log(`[Tolgee SSR] Sample translation keys (first 10):`, sampleKeys);
+        
+        // Логируем фактические значения переводов (ключ -> значение)
+        // Пробуем извлечь значения из записей
+        const translations: Record<string, any> = {};
+        records.slice(0, 10).forEach((record: any) => {
+          if (record && typeof record === 'object') {
+            // Пробуем разные форматы записей Tolgee
+            const key = record.key || record.namespace?.key || record.name || 'unknown';
+            const value = record.translation || record.value || record.text || record;
+            translations[key] = typeof value === 'string' ? value : JSON.stringify(value).substring(0, 100);
+          }
+        });
+        console.log(`[Tolgee SSR] Sample translation values (first 10):`, translations);
+        
+        // Пробуем получить переводы через Tolgee API используя getTranslate
+        try {
+          const { getTranslate } = require('@/tolgee/server');
+          const t = await getTranslate();
+          const testKeys = sampleKeys.filter((k: any) => typeof k === 'string' && k !== 'unknown').slice(0, 5);
+          if (testKeys.length > 0) {
+            console.log(`[Tolgee SSR] Testing translation retrieval for keys:`, testKeys);
+            testKeys.forEach((key: string) => {
+              try {
+                const translation = t(key);
+                console.log(`[Tolgee SSR] Translation for "${key}":`, translation);
+              } catch (e) {
+                console.warn(`[Tolgee SSR] Could not get translation for "${key}":`, e);
+              }
+            });
+          }
+        } catch (e) {
+          console.warn(`[Tolgee SSR] Could not test translation retrieval:`, e);
+        }
       }
       
       if (records.length < 4) {
         console.warn(`[Tolgee SSR] WARNING: Only ${records.length} translation record(s) loaded, but 4 translations exist in Tolgee project.`);
         console.warn(`[Tolgee SSR] This might indicate:`);
-        console.warn(`  - loadRequired() only loads translations that are used in the code`);
-        console.warn(`  - Some translations are not marked as "required" in the code`);
-        console.warn(`  - Try using load() instead of loadRequired() to load all translations`);
+        console.warn(`  - loadRequired() only loads translations that are statically analyzed in the code`);
+        console.warn(`  - Some translations are used dynamically and not detected as "required"`);
+        console.warn(`  - Translations might be used in client components, not server components`);
+        console.warn(`[Tolgee SSR] Note: loadRequired() uses static analysis to find translations in the code`);
         console.warn(`[Tolgee SSR] Check Tolgee project: ${process.env.NEXT_PUBLIC_TOLGEE_API_URL}`);
       } else {
         console.log(`[Tolgee SSR] Successfully loaded ${records.length} translation records`);
