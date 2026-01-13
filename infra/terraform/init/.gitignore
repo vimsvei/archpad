@@ -1,7 +1,0 @@
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-kubeconfig.yaml
-*.tfvars
-!terraform.tfvars.example
