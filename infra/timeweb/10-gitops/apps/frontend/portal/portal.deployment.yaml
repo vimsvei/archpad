@@ -5,6 +5,10 @@ metadata:
   namespace: platform
   annotations:
     argocd.argoproj.io/sync-wave: "60"
+    # ArgoCD Image Updater: отслеживание обновлений образа
+    argocd-image-updater.argoproj.io/image-list: portal=archpad-cr.registry.twcstorage.ru/archpad/portal
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
   labels:
     app: portal
 spec:
@@ -42,9 +46,7 @@ spec:
       serviceAccountName: portal
       containers:
         - name: portal
-          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
-          # image: registry.timeweb.cloud/archpad/portal:latest
-          image: node:20-bookworm-slim
+          image: archpad-cr.registry.twcstorage.ru/archpad/portal:latest
           command: ["sh", "-c"]
           args:
             - |

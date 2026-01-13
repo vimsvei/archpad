@@ -8,6 +8,10 @@ metadata:
     # ArgoCD будет пересоздавать Job при каждом синхронизации
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    # ArgoCD Image Updater: отслеживание обновлений образа
+    argocd-image-updater.argoproj.io/image-list: hasura-sync-service=archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
   labels:
     app: hasura-sync-service
 spec:
@@ -57,9 +61,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: hasura-sync-service
-          # TODO: Заменить на образ из Container Registry TimeWeb после настройки CI/CD
-          # image: registry.timeweb.cloud/archpad/hasura-sync-service:latest
-          image: node:20-alpine
+          image: archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service:latest
           command: ["sh", "-c"]
           args:
             - |

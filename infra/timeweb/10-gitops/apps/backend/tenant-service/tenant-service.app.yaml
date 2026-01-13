@@ -5,6 +5,12 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+    # ArgoCD Image Updater: настройка отслеживания образов
+    argocd-image-updater.argoproj.io/image-list: tenant-service=archpad-cr.registry.twcstorage.ru/archpad/tenant-service
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
+    # Стратегия обновления: использовать latest тег
+    argocd-image-updater.argoproj.io/tenant-service.update-strategy: latest
 spec:
   project: platform
   destination:
