@@ -20,19 +20,28 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   try {
     const tolgee = await getTolgee();
     records = await tolgee.loadRequired();
-    // Логируем только если количество записей подозрительно мало (меньше 10)
-    if (records.length < 10) {
-      console.warn(`[Tolgee] Loaded only ${records.length} translation records for locale: ${locale}. This might indicate a configuration issue.`);
-    } else {
-      console.log(`[Tolgee] Loaded ${records.length} translation records for locale: ${locale}`);
+    // Логируем только один раз при первом запросе (используем статическую переменную)
+    // Это предотвращает избыточное логирование при каждом рендере
+    if (typeof (globalThis as any).__tolgee_logged === 'undefined') {
+      (globalThis as any).__tolgee_logged = true;
+      if (records.length < 10) {
+        console.warn(`[Tolgee] Loaded only ${records.length} translation record(s) for locale: ${locale}. This might indicate a configuration issue or that translations are not yet added to Tolgee.`);
+        console.warn(`[Tolgee] If you expect more translations, check Tolgee project: ${process.env.NEXT_PUBLIC_TOLGEE_API_URL}`);
+      } else {
+        console.log(`[Tolgee] Loaded ${records.length} translation records for locale: ${locale}`);
+      }
     }
   } catch (error) {
-    console.error('[Tolgee] Failed to load translations, continuing without SSR records', error);
-    if (error instanceof Error) {
-      console.error('[Tolgee] Error details:', {
-        message: error.message,
-        stack: error.stack
-      });
+    // Логируем ошибки только один раз
+    if (typeof (globalThis as any).__tolgee_error_logged === 'undefined') {
+      (globalThis as any).__tolgee_error_logged = true;
+      console.error('[Tolgee] Failed to load translations, continuing without SSR records', error);
+      if (error instanceof Error) {
+        console.error('[Tolgee] Error details:', {
+          message: error.message,
+          stack: error.stack
+        });
+      }
     }
     records = [];
   }
