@@ -106,15 +106,21 @@
 
 Для сборки и пуша Docker образов нужны:
 
-- **`REGISTRY_URL`** - URL Container Registry TimeWeb (например, `registry.timeweb.cloud` или другой)
+- **`REGISTRY_URL`** - URL Container Registry TimeWeb (например, `archpad-cr.registry.twcstorage.ru`)
 - **`REGISTRY_USERNAME`** - имя пользователя для Registry
 - **`REGISTRY_PASSWORD`** - API токен для Registry
 
-**Рекомендация:** Создать отдельный секрет в Vault:
-- Путь: `/v1/kv/data/archpad/demo/registry`
+**Секрет в Vault:**
+- Путь: `/v1/kv/data/container-register`
 - Ключи: `REGISTRY_URL`, `REGISTRY_USERNAME`, `REGISTRY_PASSWORD`
 
-Эти секреты будут использоваться в GitLab CI/CD для `docker login` и `docker push`.
+**Автоматическая синхронизация:**
+Секрет автоматически синхронизируется из Vault в Kubernetes через Job `registry-secret-sync`.
+Job запускается автоматически при каждой синхронизации ArgoCD (PreSync hook).
+
+Эти секреты используются:
+- В GitLab CI/CD для `docker login` и `docker push`
+- В Kubernetes для загрузки образов (через `imagePullSecrets` в ServiceAccounts)
 
 ---
 
@@ -193,12 +199,12 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -d '{
     "data": {
-      "REGISTRY_URL": "registry.timeweb.cloud",
+      "REGISTRY_URL": "archpad-cr.registry.twcstorage.ru",
       "REGISTRY_USERNAME": "your-username",
       "REGISTRY_PASSWORD": "your-api-token"
     }
   }' \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/registry"
+  "${VAULT_ADDR}/v1/kv/data/container-register"
 ```
 
 **Примечание:** Секреты для PostgreSQL (`POSTGRES_ENDPOINT`, `POSTGRES_PORT`) должны быть уже созданы в `/v1/kv/data/archpad/demo/postgres` (используются также Hasura и Tolgee).
