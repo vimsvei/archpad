@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-setup-policy
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+data:
+  vault-setup-policy.hcl: |
+    # Политика для настройки Vault (только для управления auth и roles)
+    # НЕ дает доступ к секретам
+    
+    # Управление Kubernetes Auth Method
+    path "sys/auth/kubernetes" {
+      capabilities = ["create", "read", "update", "delete", "sudo"]
+    }
+    
+    path "sys/auth/kubernetes/*" {
+      capabilities = ["create", "read", "update", "delete"]
+    }
+    
+    # Конфигурация Kubernetes Auth
+    path "auth/kubernetes/config" {
+      capabilities = ["create", "read", "update", "delete", "sudo"]
+    }
+    
+    # Управление ролями Kubernetes Auth
+    path "auth/kubernetes/role/*" {
+      capabilities = ["create", "read", "update", "delete", "list"]
+    }
+    
+    # Просмотр списка ролей
+    path "auth/kubernetes/role" {
+      capabilities = ["list"]
+    }
+    
+    # Управление политиками (для создания политики archpad)
+    path "sys/policies/acl/vault-setup" {
+      capabilities = ["create", "read", "update", "delete"]
+    }
+    
+    path "sys/policies/acl/archpad" {
+      capabilities = ["create", "read", "update", "delete"]
+    }
+    
+    # Просмотр списка политик
+    path "sys/policies/acl" {
+      capabilities = ["list"]
+    }
+    
+    # Явно запрещаем доступ к секретам
+    path "kv/*" {
+      capabilities = ["deny"]
+    }
+    
+    # Запрещаем доступ к другим секретам
+    path "secret/*" {
+      capabilities = ["deny"]
+    }
+    
+    # Запрещаем доступ к токенам
+    path "auth/token/*" {
+      capabilities = ["deny"]
+    }
+    
+    # Запрещаем доступ к root функциям
+    path "sys/init" {
+      capabilities = ["deny"]
+    }
+    
+    path "sys/seal" {
+      capabilities = ["deny"]
+    }
+    
+    path "sys/unseal" {
+      capabilities = ["deny"]
+    }

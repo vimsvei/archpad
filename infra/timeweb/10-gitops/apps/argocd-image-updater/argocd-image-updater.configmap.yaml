@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-image-updater
+    app.kubernetes.io/part-of: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+data:
+  argocd-image-updater-config.yaml: |
+    # Конфигурация registry для TimeWeb Container Registry
+    registries:
+    - name: TimeWeb Container Registry
+      prefix: archpad-cr.registry.twcstorage.ru
+      api_url: https://archpad-cr.registry.twcstorage.ru
+      # Используем credentials из Secret (см. argocd-image-updater-registry-secret.yaml.example)
+      credentials: ext:/scripts/archpad-registry-secret
+      default: true
+      ping: true
+      # Для Docker Registry API v2
+      credentials_ext:
+        path: /scripts/archpad-registry-secret
+        key: .dockerconfigjson
+    
+    # Настройки Git для записи обновлений обратно в репозиторий
+    git:
+      user: argocd-image-updater
+      email: argocd-image-updater@archpad.pro
+      # Используем SSH ключ из Secret (см. argocd-image-updater-git-secret.yaml.example)
+      ssh_secret: argocd-image-updater-git-ssh-key
+    
+    # Настройки логирования
+    log:
+      level: info
+    
+    # Интервал проверки новых образов (по умолчанию 2 минуты)
+    check:
+      interval: 2m
+    
+    # Настройки для обработки обновлений
+    applications_api: true
+    
+    # Настройки для работы с Git
+    git_commit_message_template: |
+      build: update image {{.AppName}} to {{.NewTag}}
+      
+      Automated image update by ArgoCD Image Updater
+      - Application: {{.AppName}}
+      - Image: {{.ImageName}}
+      - Old Tag: {{.OldTag}}
+      - New Tag: {{.NewTag}}
+      - Registry: {{.RegistryURL}}

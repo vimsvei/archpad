@@ -1,0 +1,106 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-setup-policy
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      annotations:
+        argocd.argoproj.io/hook-weight: "0"
+    spec:
+      serviceAccountName: default
+      restartPolicy: Never
+      containers:
+        - name: vault-setup-policy
+          image: vault:1.15.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              
+              VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+              VAULT_TOKEN="${VAULT_ROOT_TOKEN:-}"
+              
+              if [ -z "$VAULT_TOKEN" ]; then
+                echo "[vault-setup-policy] ERROR: VAULT_ROOT_TOKEN secret is required"
+                echo "[vault-setup-policy] This job should run only once during initial Vault setup"
+                exit 1
+              fi
+              
+              echo "[vault-setup-policy] Waiting for Vault at ${VAULT_ADDR}..."
+              tries=0
+              until vault status >/dev/null 2>&1; do
+                tries=$((tries+1))
+                if [ "$tries" -ge 60 ]; then
+                  echo "[vault-setup-policy] Vault not ready after ${tries} tries"
+                  exit 1
+                fi
+                sleep 2
+              done
+              echo "[vault-setup-policy] Vault is ready"
+              
+              # Применяем политику vault-setup
+              echo "[vault-setup-policy] Applying vault-setup policy..."
+              vault policy write vault-setup /vault-policy/vault-setup-policy.hcl
+              echo "[vault-setup-policy] ✓ Policy 'vault-setup' applied"
+              
+              # Проверяем, существует ли уже ограниченный токен
+              echo "[vault-setup-policy] Checking for existing setup token..."
+              if vault token lookup -format=json 2>/dev/null | grep -q "vault-setup"; then
+                echo "[vault-setup-policy] Setup token already exists"
+              else
+                echo "[vault-setup-policy] Creating limited setup token..."
+                # Создаем токен с политикой vault-setup
+                # TTL: 1 год, renewable
+                TOKEN_OUTPUT=$(vault token create \
+                  -policy=vault-setup \
+                  -ttl=8760h \
+                  -renewable=true \
+                  -format=json)
+                
+                SETUP_TOKEN=$(echo "$TOKEN_OUTPUT" | jq -r '.auth.client_token')
+                
+                if [ -z "$SETUP_TOKEN" ] || [ "$SETUP_TOKEN" = "null" ]; then
+                  echo "[vault-setup-policy] ✗ Failed to create setup token"
+                  exit 1
+                fi
+                
+                echo "[vault-setup-policy] ✓ Setup token created"
+                echo "[vault-setup-policy] IMPORTANT: Save this token securely!"
+                echo "[vault-setup-policy] Token: ${SETUP_TOKEN:0:20}..."
+                echo ""
+                echo "[vault-setup-policy] To use this token, create a secret:"
+                echo "  kubectl create secret generic vault-setup-token \\"
+                echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
+                echo "    --namespace=platform"
+                echo ""
+                echo "  kubectl create secret generic vault-setup-token \\"
+                echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
+                echo "    --namespace=secure"
+              fi
+              
+              echo "[vault-setup-policy] Done"
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc:8200"
+            - name: VAULT_ROOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-root-token
+                  key: VAULT_ROOT_TOKEN
+                  optional: false
+          volumeMounts:
+            - name: vault-policy
+              mountPath: /vault-policy
+              readOnly: true
+      volumes:
+        - name: vault-policy
+          configMap:
+            name: vault-setup-policy
+            defaultMode: 0644
+  backoffLimit: 3
