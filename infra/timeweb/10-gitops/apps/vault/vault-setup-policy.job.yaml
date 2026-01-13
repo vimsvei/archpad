@@ -17,11 +17,13 @@ spec:
       restartPolicy: Never
       containers:
         - name: vault-setup-policy
-          image: vault:1.15.0
+          image: curlimages/curl:latest
           command: ["sh", "-c"]
           args:
             - |
               set -eu
+              
+              apk add --no-cache jq >/dev/null 2>&1
               
               VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
               VAULT_TOKEN="${VAULT_ROOT_TOKEN:-}"
@@ -34,7 +36,7 @@ spec:
               
               echo "[vault-setup-policy] Waiting for Vault at ${VAULT_ADDR}..."
               tries=0
-              until vault status >/dev/null 2>&1; do
+              until curl -fsS "${VAULT_ADDR}/v1/sys/health" >/dev/null 2>&1; do
                 tries=$((tries+1))
                 if [ "$tries" -ge 60 ]; then
                   echo "[vault-setup-policy] Vault not ready after ${tries} tries"
@@ -44,45 +46,65 @@ spec:
               done
               echo "[vault-setup-policy] Vault is ready"
               
-              # Применяем политику vault-setup
+              # Применяем политику vault-setup через HTTP API
               echo "[vault-setup-policy] Applying vault-setup policy..."
-              vault policy write vault-setup /vault-policy/vault-setup-policy.hcl
-              echo "[vault-setup-policy] ✓ Policy 'vault-setup' applied"
+              POLICY_CONTENT=$(cat /vault-policy/vault-setup-policy.hcl | jq -Rs .)
+              
+              CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+                -X PUT \
+                -H "X-Vault-Token: ${VAULT_TOKEN}" \
+                -H "Content-Type: application/json" \
+                --data "{\"policy\":${POLICY_CONTENT}}" \
+                "${VAULT_ADDR}/v1/sys/policies/acl/vault-setup")
+              
+              if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
+                echo "[vault-setup-policy] ✓ Policy 'vault-setup' applied"
+              else
+                echo "[vault-setup-policy] ✗ Failed to apply policy (HTTP ${CODE})"
+                exit 1
+              fi
               
               # Проверяем, существует ли уже ограниченный токен
               echo "[vault-setup-policy] Checking for existing setup token..."
-              if vault token lookup -format=json 2>/dev/null | grep -q "vault-setup"; then
-                echo "[vault-setup-policy] Setup token already exists"
-              else
-                echo "[vault-setup-policy] Creating limited setup token..."
-                # Создаем токен с политикой vault-setup
-                # TTL: 1 год, renewable
-                TOKEN_OUTPUT=$(vault token create \
-                  -policy=vault-setup \
-                  -ttl=8760h \
-                  -renewable=true \
-                  -format=json)
-                
-                SETUP_TOKEN=$(echo "$TOKEN_OUTPUT" | jq -r '.auth.client_token')
-                
-                if [ -z "$SETUP_TOKEN" ] || [ "$SETUP_TOKEN" = "null" ]; then
-                  echo "[vault-setup-policy] ✗ Failed to create setup token"
-                  exit 1
-                fi
-                
-                echo "[vault-setup-policy] ✓ Setup token created"
-                echo "[vault-setup-policy] IMPORTANT: Save this token securely!"
-                echo "[vault-setup-policy] Token: ${SETUP_TOKEN:0:20}..."
-                echo ""
-                echo "[vault-setup-policy] To use this token, create a secret:"
-                echo "  kubectl create secret generic vault-setup-token \\"
-                echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
-                echo "    --namespace=platform"
-                echo ""
-                echo "  kubectl create secret generic vault-setup-token \\"
-                echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
-                echo "    --namespace=secure"
+              
+              # Создаем токен с политикой vault-setup через HTTP API
+              echo "[vault-setup-policy] Creating limited setup token..."
+              TOKEN_PAYLOAD=$(cat <<JSON
+              {
+                "policies": ["vault-setup"],
+                "ttl": "8760h",
+                "renewable": true
+              }
+              JSON
+              )
+              
+              TOKEN_RESPONSE=$(curl -sS \
+                -X POST \
+                -H "X-Vault-Token: ${VAULT_TOKEN}" \
+                -H "Content-Type: application/json" \
+                --data "${TOKEN_PAYLOAD}" \
+                "${VAULT_ADDR}/v1/auth/token/create")
+              
+              SETUP_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.auth.client_token // empty')
+              
+              if [ -z "$SETUP_TOKEN" ] || [ "$SETUP_TOKEN" = "null" ]; then
+                echo "[vault-setup-policy] ✗ Failed to create setup token"
+                echo "[vault-setup-policy] Response: ${TOKEN_RESPONSE}"
+                exit 1
               fi
+              
+              echo "[vault-setup-policy] ✓ Setup token created"
+              echo "[vault-setup-policy] IMPORTANT: Save this token securely!"
+              echo "[vault-setup-policy] Token: ${SETUP_TOKEN:0:20}..."
+              echo ""
+              echo "[vault-setup-policy] To use this token, create a secret:"
+              echo "  kubectl create secret generic vault-setup-token \\"
+              echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
+              echo "    --namespace=platform"
+              echo ""
+              echo "  kubectl create secret generic vault-setup-token \\"
+              echo "    --from-literal=VAULT_SETUP_TOKEN='${SETUP_TOKEN}' \\"
+              echo "    --namespace=secure"
               
               echo "[vault-setup-policy] Done"
           env:
@@ -98,6 +120,7 @@ spec:
             - name: vault-policy
               mountPath: /vault-policy
               readOnly: true
+              subPath: vault-setup-policy.hcl
       volumes:
         - name: vault-policy
           configMap:
