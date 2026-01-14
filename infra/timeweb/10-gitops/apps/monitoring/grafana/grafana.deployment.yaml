@@ -46,7 +46,7 @@ spec:
         - name: grafana
           image: grafana/grafana:latest
           command: ["sh", "-c"]
-            args:
+          args:
             - |
               # Временно используем дефолтные значения
               # После настройки Vault можно будет использовать секреты из Vault Agent Injector
