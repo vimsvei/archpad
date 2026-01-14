@@ -20,9 +20,24 @@ spec:
         app.kubernetes.io/part-of: argocd
     spec:
       serviceAccountName: argocd-image-updater
+      # Используем imagePullSecrets для доступа к TimeWeb Container Registry
+      imagePullSecrets:
+        - name: archpad-registry-secret
       containers:
         - name: argocd-image-updater
-          image: quay.io/argoproj/argocd-image-updater:v0.14.0
+          # Используем последнюю версию v0.x (v0.18.0) с annotation-based конфигурацией
+          # v1.x использует CRD-based конфигурацию и требует миграции
+          # Источник: https://github.com/argoproj-labs/argocd-image-updater/releases
+          # Проблема: quay.io и ghcr.io требуют аутентификацию (401/403 ошибки)
+          # Решение: использовать образ из локального TimeWeb Container Registry
+          # Инструкция по загрузке образа:
+          # 1. docker pull quay.io/argoproj/argocd-image-updater:v0.18.0  (если доступен)
+          #    или скачать из GitHub Releases и загрузить вручную
+          # 2. docker tag quay.io/argoproj/argocd-image-updater:v0.18.0 \
+          #      archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
+          # 3. docker login archpad-cr.registry.twcstorage.ru
+          # 4. docker push archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
+          image: archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
           imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/argocd-image-updater

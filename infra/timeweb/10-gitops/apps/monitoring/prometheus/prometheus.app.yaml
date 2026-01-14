@@ -97,6 +97,12 @@ spec:
             limits:
               cpu: 40m
               memory: 100Mi
+          # Настройка для устранения предупреждений о deprecated Endpoints
+          # В Kubernetes 1.33+ Endpoints устарел, используется EndpointSlice
+          # Примечание: kube-state-metrics v2.17.0+ поддерживает EndpointSlice по умолчанию
+          # Предупреждения в логах не критичны, но можно обновить версию chart для их устранения
+          # Текущая версия chart 66.2.0 использует kube-state-metrics, который все еще собирает Endpoints
+          # Это предупреждение не влияет на функциональность, но можно игнорировать или обновить chart
         
         # Prometheus Operator
         # Оптимизировано для демо-стенда
