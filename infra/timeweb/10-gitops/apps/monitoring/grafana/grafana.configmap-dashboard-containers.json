@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-containers
+  namespace: monitoring
+data:
+  archpad-metrics-containers.json: |
+{
+  "uid": "archpad-containers",
+  "title": "Archpad / Containers (CPU & Memory)",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "tags": ["archpad", "metrics", "containers", "kubernetes"],
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "type": "text",
+      "title": "Kubernetes Pod Metrics",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+      "options": {
+        "content": "**✅ Kubernetes**: This dashboard shows individual container/pod metrics via kubelet (which includes cAdvisor).\n\n**💡 For detailed host metrics**: See the **Archpad / Node Metrics** dashboard.",
+        "mode": "markdown"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pod CPU Usage",
+      "gridPos": { "x": 0, "y": 3, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m])) by (pod, namespace)",
+          "legendFormat": "{{pod}} ({{namespace}})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pod Memory Usage",
+      "gridPos": { "x": 12, "y": 3, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\"}) by (pod, namespace)",
+          "legendFormat": "{{pod}} ({{namespace}})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Breakdown by Pod",
+      "gridPos": { "x": 0, "y": 11, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\"}) by (pod, namespace)",
+          "legendFormat": "{{pod}} ({{namespace}})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage by Pod",
+      "gridPos": { "x": 12, "y": 11, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m])) by (pod, namespace)",
+          "legendFormat": "{{pod}} ({{namespace}})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right" } }
+    }
+  ]
+}

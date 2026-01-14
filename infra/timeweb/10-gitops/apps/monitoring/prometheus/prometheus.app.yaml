@@ -1,0 +1,111 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "21"
+spec:
+  project: platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 66.2.0
+    helm:
+      releaseName: prometheus
+      values: |
+        # Отключаем Grafana, развертываем отдельно
+        grafana:
+          enabled: false
+        
+        # Отключаем Alertmanager для экономии ресурсов
+        alertmanager:
+          enabled: false
+        
+        # Prometheus конфигурация
+        prometheus:
+          enabled: true
+          
+          # Оптимизированные ресурсы для демо-стенда (4 CPU / 8GB RAM)
+          prometheusSpec:
+            resources:
+              requests:
+                cpu: 300m
+                memory: 1.5Gi
+              limits:
+                cpu: 500m
+                memory: 2Gi
+            
+            # Retention: 15 дней для демо-стенда
+            retention: 15d
+            
+            # Storage
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 20Gi
+            
+            # Service Discovery для Kubernetes
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            
+            # Дополнительные scrape configs для БД кластера
+            additionalScrapeConfigs:
+              - job_name: 'node-exporter-db'
+                static_configs:
+                  - targets: ['192.168.0.4:9100']
+                    labels:
+                      instance: 'db-cluster'
+                      role: 'database'
+              
+              - job_name: 'postgres-exporter-db'
+                static_configs:
+                  - targets: ['192.168.0.4:9308']
+                    labels:
+                      instance: 'db-cluster'
+                      role: 'database'
+        
+        # Node Exporter (DaemonSet для метрик нод)
+        nodeExporter:
+          enabled: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        
+        # kube-state-metrics (метрики состояния Kubernetes объектов)
+        kubeStateMetrics:
+          enabled: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
+        
+        # Prometheus Operator
+        prometheusOperator:
+          enabled: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
