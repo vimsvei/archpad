@@ -35,6 +35,9 @@ resources:
   - apps/vault/vault.middleware.yaml
   - apps/vault/vault-http.ingressroute.yaml
   - apps/vault/vault.ingressroute.yaml
+  # Vault политики (должны быть применены до настройки ролей)
+  - apps/vault/vault-setup-policy.configmap.yaml
+  - apps/vault/vault-setup-policy.job.yaml
 
   # Vault role для Ory компонентов (до Ory Applications)
   - apps/ory/secure-vault-role.configmap.yaml
