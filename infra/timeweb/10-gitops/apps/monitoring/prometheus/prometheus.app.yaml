@@ -136,9 +136,3 @@ spec:
         kind: CustomResourceDefinition
         jsonPointers:
           - /metadata/annotations
-      - SkipDryRunOnMissingResource=true
-    ignoreDifferences:
-      - group: apiextensions.k8s.io
-        kind: CustomResourceDefinition
-        jsonPointers:
-          - /metadata/annotations
