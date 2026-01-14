@@ -18,6 +18,9 @@ spec:
     # Application'ы создаются отдельно (см. README.md)
     directory:
       recurse: true
+      # Исключаем .app.yaml файлы и Application ресурсы - они управляются отдельными Applications
+      # ArgoCD directory source не поддерживает exclude напрямую, поэтому используем другой подход
+      # Ресурсы Application будут игнорироваться автоматически, так как они не являются обычными Kubernetes ресурсами
   syncPolicy:
     automated:
       prune: true
