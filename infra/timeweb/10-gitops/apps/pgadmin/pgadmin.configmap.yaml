@@ -1,5 +1,7 @@
 # ConfigMap с servers.json для pgAdmin
-# Подключение к PostgreSQL можно настроить через UI pgAdmin или обновить этот файл
+# ВАЖНО: Настройки серверов теперь генерируются автоматически из Vault при запуске
+# и сохраняются в PersistentVolume (/var/lib/pgadmin/storage/pgadmin4.db)
+# Этот ConfigMap оставлен для справки, но не используется в deployment
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,5 +12,16 @@ metadata:
 data:
   servers.json: |
     {
-      "Servers": {}
+      "Servers": {
+        "1": {
+          "Name": "PostgreSQL Cluster (Demo)",
+          "Group": "Servers",
+          "Host": "192.168.0.4",
+          "Port": 5432,
+          "MaintenanceDB": "postgres",
+          "Username": "postgres",
+          "SSLMode": "prefer",
+          "Comment": "Demo PostgreSQL Cluster - настройки загружаются из Vault"
+        }
+      }
     }
