@@ -4,7 +4,7 @@ metadata:
   name: grafana-dashboards-node
   namespace: monitoring
 data:
-  archpad-metrics-node.json: |
+  archpad-metrics-node.json: |-
 {
   "uid": "archpad-node",
   "title": "Archpad / Node Metrics (CPU, Memory, Disk)",

@@ -4,7 +4,7 @@ metadata:
   name: grafana-dashboards-containers
   namespace: monitoring
 data:
-  archpad-metrics-containers.json: |
+  archpad-metrics-containers.json: |-
 {
   "uid": "archpad-containers",
   "title": "Archpad / Containers (CPU & Memory)",
