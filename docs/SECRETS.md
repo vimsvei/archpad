@@ -61,10 +61,40 @@ Vault Agent Injector автоматически:
 **Ключи:**
 - `POSTGRES_HOST` - IP адрес PostgreSQL кластера (например, `192.168.0.4`)
 - `POSTGRES_PORT` - Порт PostgreSQL (например, `5432`)
+- `POSTGRES_ENDPOINT` - Доменное имя PostgreSQL (для локальной разработки, например, `pg.archpad.pro`)
 
 **Используется:** Hasura, Kratos, Hydra, Tolgee, Backend сервисы
 
-**Примечание:** В Kubernetes используется `POSTGRES_HOST` (IP адрес), для локальной разработки может использоваться `POSTGRES_ENDPOINT` (доменное имя).
+**Важно:** 
+- В Kubernetes используется `POSTGRES_HOST` (IP адрес), так как доменные имена могут не резолвиться внутри кластера
+- Для локальной разработки (`NODE_ENV=local`) используется `POSTGRES_ENDPOINT` (может быть доменное имя)
+
+**Обновление POSTGRES_HOST:**
+
+Если сервисы подключаются к PostgreSQL по доменному имени вместо IP адреса, обновите секрет в Vault:
+
+```bash
+VAULT_ADDR="https://vault.archpad.pro"
+VAULT_TOKEN="<your-token>"
+
+curl -X POST \
+  -H "X-Vault-Token: ${VAULT_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "POSTGRES_ENDPOINT": "pg.archpad.pro",
+      "POSTGRES_HOST": "192.168.0.4",
+      "POSTGRES_PORT": "5432"
+    }
+  }' \
+  "${VAULT_ADDR}/v1/kv/data/archpad/demo/postgres"
+```
+
+После обновления перезапустите поды сервисов:
+```bash
+kubectl delete pod -n platform -l app=arch-repo-service
+kubectl delete pod -n platform -l app=tenant-service
+```
 
 ### Backend Services
 

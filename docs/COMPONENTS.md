@@ -80,40 +80,74 @@ SMTP сервер для разработки (email testing).
 
 ## Безопасность (Ory)
 
+### Развертывание Ory компонентов
+
+Ory компоненты развертываются в Kubernetes через ArgoCD с использованием секретов из Vault.
+
+**Требования:**
+1. Vault развернут и доступен через `vault.archpad.pro`
+2. Vault Agent Injector установлен в кластере
+3. PostgreSQL доступен (для Kratos и Hydra)
+4. TLS сертификат `wildcard-archpad-pro-tls` должен быть скопирован в namespace `secure`
+
+**Секреты:** См. [SECRETS.md](./SECRETS.md#ory-kratos-hydra-oathkeeper)
+
 ### Kratos
 
 Identity Management (аутентификация).
-
-**Секреты:** См. [SECRETS.md](./SECRETS.md#ory-kratos-hydra-oathkeeper)
 
 **Особенности:**
 - Использует PostgreSQL для хранения пользователей
 - Доступен через `https://auth.archpad.pro`
 - Внутренний доступ: `http://kratos.secure.svc:4433` (Public), `http://kratos.secure.svc:4434` (Admin)
+- Миграции БД выполняются автоматически через Job `kratos-migrate` (PreSync hook)
+
+**Секреты в Vault:**
+- Путь: `/v1/kv/data/archpad/demo/ory/kratos`
+- DSN формируется автоматически из компонентов
 
 ### Hydra
 
 OAuth2/OIDC Provider (авторизация).
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#ory-kratos-hydra-oathkeeper)
-
 **Особенности:**
 - Использует PostgreSQL для хранения OAuth2 клиентов и токенов
 - Доступен через `https://authz.archpad.pro`
 - Внутренний доступ: `http://hydra.secure.svc:4444` (Public), `http://hydra.secure.svc:4445` (Admin)
-- OAuth2 клиенты создаются автоматически через Job `hydra-init-client`
+- Миграции БД выполняются автоматически через Job `hydra-migrate` (PreSync hook)
+- OAuth2 клиенты создаются автоматически через Job `hydra-init-client` (PostSync hook)
+
+**Секреты в Vault:**
+- Путь: `/v1/kv/data/archpad/demo/ory/hydra`
+- DSN формируется автоматически из компонентов
 
 ### Oathkeeper
 
 API Gateway / Authorization Proxy.
-
-**Секреты:** См. [SECRETS.md](./SECRETS.md#ory-kratos-hydra-oathkeeper)
 
 **Особенности:**
 - Использует OAuth2 introspection для проверки токенов
 - Проксирует запросы к backend сервисам
 - Доступен через `https://api.archpad.pro`
 - Внутренний доступ: `http://oathkeeper.secure.svc:4455`
+- Не использует БД напрямую, только OAuth2 клиент для подключения к Hydra
+
+**Секреты в Vault:**
+- Путь: `/v1/kv/data/archpad/demo/ory/oauthkeeper`
+- Требует только OAuth2 клиент credentials для introspection
+
+### Копирование TLS Secret
+
+TLS secret для wildcard сертификата должен быть скопирован в namespace `secure`:
+
+```bash
+kubectl get secret wildcard-archpad-pro-tls -n argocd -o yaml | \
+  sed 's/namespace: argocd/namespace: secure/' | \
+  sed '/resourceVersion:/d' | \
+  sed '/uid:/d' | \
+  sed '/creationTimestamp:/d' | \
+  kubectl apply -f -
+```
 
 ## Управление секретами
 

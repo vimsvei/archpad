@@ -17,6 +17,7 @@
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание компонентов в Kubernetes
 - [COMPONENTS.md](./COMPONENTS.md) - Описание всех компонентов системы
 - [RESOURCE_MANAGEMENT.md](./RESOURCE_MANAGEMENT.md) - Управление ресурсами кластера
+- [RESOURCE_CALCULATION.md](./RESOURCE_CALCULATION.md) - Расчет ресурсов для различных конфигураций нод
 
 ### Управление секретами
 
@@ -32,6 +33,10 @@
 
 - [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Локальная разработка с удаленными сервисами
 - [SERVICES_SETUP.md](./SERVICES_SETUP.md) - Настройка backend и frontend сервисов
+
+### Мониторинг
+
+- [MONITORING.md](./MONITORING.md) - Обзор решений для мониторинга Kubernetes кластера
 
 ## Структура документации
 
