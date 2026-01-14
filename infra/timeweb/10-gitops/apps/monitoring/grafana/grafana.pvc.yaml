@@ -12,4 +12,5 @@ spec:
     requests:
       storage: 2Gi
   # Используем hostpath StorageClass (как для Vault)
-  storageClassName: hostpath
+  # Не указываем storageClassName, чтобы использовать PV напрямую
+  # storageClassName: hostpath

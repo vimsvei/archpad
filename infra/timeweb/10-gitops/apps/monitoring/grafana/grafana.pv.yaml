@@ -10,9 +10,12 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: hostpath
+  # Не указываем storageClassName, чтобы PV привязался напрямую к PVC
+  # storageClassName: hostpath
   hostPath:
     path: /var/lib/k8s-data/grafana
     type: DirectoryOrCreate
-  # nodeAffinity не требуется для hostpath StorageClass
-  # PV будет привязан к любой ноде, где запущен под
+  # Привязываем PV к PVC вручную
+  claimRef:
+    name: grafana-storage
+    namespace: monitoring
