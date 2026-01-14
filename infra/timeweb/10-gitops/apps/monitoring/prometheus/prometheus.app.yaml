@@ -15,7 +15,7 @@ spec:
     chart: kube-prometheus-stack
     targetRevision: 66.2.0
     helm:
-      skipCrds: false
+      skipCrds: true
       releaseName: prometheus
       values: |
         # Отключаем Grafana, развертываем отдельно
@@ -131,8 +131,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
-    ignoreDifferences:
-      - group: apiextensions.k8s.io
-        kind: CustomResourceDefinition
-        jsonPointers:
-          - /metadata/annotations
+      - ServerSideApply=true  # Используем Server-Side Apply для избежания проблемы с большими аннотациями в CRD
