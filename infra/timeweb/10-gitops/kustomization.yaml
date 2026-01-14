@@ -9,8 +9,8 @@ resources:
   - projects/platform.project.yaml
 
   # ArgoCD Application для управления всеми другими Applications
-  # Используется App of Apps pattern для избежания конфликтов SharedResourceWarning
-  - apps/applications/applications.app.yaml
+  # Отключено - используем только отдельные Applications для каждого сервиса
+  # - apps/applications/applications.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
