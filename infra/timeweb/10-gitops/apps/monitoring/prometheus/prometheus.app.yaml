@@ -50,6 +50,7 @@ spec:
               volumeClaimTemplate:
                 spec:
                   accessModes: ["ReadWriteOnce"]
+                  storageClassName: hostpath  # Используем hostpath StorageClass для локального хранилища
                   resources:
                     requests:
                       storage: 20Gi
