@@ -11,5 +11,5 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  # Используем default StorageClass
-  # storageClassName: ""
+  # Используем hostpath StorageClass (как для Vault)
+  storageClassName: hostpath
