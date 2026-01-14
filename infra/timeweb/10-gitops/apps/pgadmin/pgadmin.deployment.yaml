@@ -30,6 +30,7 @@ spec:
         vault.hashicorp.com/agent-inject-template-pgadmin: |
           {{- $pgadmin := secret "kv/data/archpad/demo/pgadmin" }}
           export PGADMIN_DEFAULT_EMAIL="{{ $pgadmin.Data.data.PGADMIN_ADMIN_USER }}"
+          export PGADMIN_DEFAULT_PASSWORD="{{ $pgadmin.Data.data.PGADMIN_DEFAULT_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: pgadmin
@@ -74,11 +75,6 @@ spec:
               # Запускаем pgAdmin
               exec /entrypoint.sh
           env:
-            - name: PGADMIN_DEFAULT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgadmin-credentials
-                  key: PGADMIN_DEFAULT_PASSWORD
             - name: PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION
               value: "False"
             - name: PGADMIN_CONFIG_CONSOLE_LOG_LEVEL
