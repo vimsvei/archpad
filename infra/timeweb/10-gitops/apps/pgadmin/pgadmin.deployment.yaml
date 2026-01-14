@@ -91,12 +91,12 @@ spec:
             failureThreshold: 3
           resources:
             # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
-            # pgAdmin требует больше памяти для инициализации
+            # pgAdmin требует больше ресурсов для инициализации
             requests:
               cpu: 100m
               memory: 256Mi
             limits:
-              cpu: 300m
+              cpu: 400m  # Увеличено для стабильной работы при инициализации
               memory: 512Mi
       volumes:
         - name: pgadmin-data
