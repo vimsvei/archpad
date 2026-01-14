@@ -20,24 +20,16 @@ spec:
         app.kubernetes.io/part-of: argocd
     spec:
       serviceAccountName: argocd-image-updater
-      # Используем imagePullSecrets для доступа к TimeWeb Container Registry
-      imagePullSecrets:
-        - name: archpad-registry-secret
+      # imagePullSecrets не требуется для публичного образа quay.io/argoprojlabs/argocd-image-updater
       containers:
         - name: argocd-image-updater
-          # Используем последнюю версию v0.x (v0.18.0) с annotation-based конфигурацией
-          # v1.x использует CRD-based конфигурацию и требует миграции
+          # Используем образ из официального install.yaml:
+          # https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/config/install.yaml
+          # Официальный путь: quay.io/argoprojlabs/argocd-image-updater (обратите внимание на "argoprojlabs")
+          # Используем v0.18.0 (последняя версия v0.x с annotation-based конфигурацией)
+          # v1.0.2 использует CRD-based конфигурацию и требует миграции
           # Источник: https://github.com/argoproj-labs/argocd-image-updater/releases
-          # Проблема: quay.io и ghcr.io требуют аутентификацию (401/403 ошибки)
-          # Решение: использовать образ из локального TimeWeb Container Registry
-          # Инструкция по загрузке образа:
-          # 1. docker pull quay.io/argoproj/argocd-image-updater:v0.18.0  (если доступен)
-          #    или скачать из GitHub Releases и загрузить вручную
-          # 2. docker tag quay.io/argoproj/argocd-image-updater:v0.18.0 \
-          #      archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
-          # 3. docker login archpad-cr.registry.twcstorage.ru
-          # 4. docker push archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
-          image: archpad-cr.registry.twcstorage.ru/archpad/argocd-image-updater:v0.18.0
+          image: quay.io/argoprojlabs/argocd-image-updater:v0.18.0
           imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/argocd-image-updater

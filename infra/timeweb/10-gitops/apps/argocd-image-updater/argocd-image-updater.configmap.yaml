@@ -9,6 +9,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 data:
+  # Для v0.x argocd-image-updater использует YAML конфигурацию
   argocd-image-updater-config.yaml: |
     # Конфигурация registry для TimeWeb Container Registry
     registries:
