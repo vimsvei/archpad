@@ -50,60 +50,6 @@ spec:
           volumeMounts:
             - name: pgadmin-data
               mountPath: /var/lib/pgadmin
-        - name: init-pgadmin-servers
-          image: busybox:1.36
-          command: ["sh", "-c"]
-          args:
-            - |
-              # Ждем, пока Vault Agent init загрузит секреты
-              # Vault Agent Injector создает initContainer vault-agent-init, который загружает секреты
-              # Наш initContainer должен запускаться после vault-agent-init
-              echo "Waiting for Vault secrets..."
-              max_wait=60
-              waited=0
-              while [ ! -f /vault/secrets/postgres ] && [ $waited -lt $max_wait ]; do
-                sleep 1
-                waited=$((waited+1))
-              done
-              if [ ! -f /vault/secrets/postgres ]; then
-                echo "ERROR: Vault secrets not found after ${max_wait}s"
-                exit 1
-              fi
-              # Загружаем переменные из Vault
-              source /vault/secrets/postgres
-              # Генерируем servers.json с параметрами из Vault
-              # pgAdmin читает предопределенные серверы из /pgadmin4/servers.json при первом запуске
-              mkdir -p /pgadmin4
-              cat > /pgadmin4/servers.json <<EOF
-              {
-                "Servers": {
-                  "1": {
-                    "Name": "PostgreSQL Cluster (Demo)",
-                    "Group": "Servers",
-                    "Host": "${POSTGRES_HOST:-192.168.0.4}",
-                    "Port": ${POSTGRES_PORT:-5432},
-                    "MaintenanceDB": "postgres",
-                    "Username": "${POSTGRES_USER:-postgres}",
-                    "SSLMode": "prefer",
-                    "Comment": "Demo PostgreSQL Cluster - настройки из Vault"
-                  }
-                }
-              }
-              EOF
-              chown 5050:5050 /pgadmin4/servers.json
-              chmod 644 /pgadmin4/servers.json
-              # Копируем в PersistentVolume для сохранения
-              cp /pgadmin4/servers.json /var/lib/pgadmin/storage/servers.json.initial
-              chown 5050:5050 /var/lib/pgadmin/storage/servers.json.initial
-              echo "servers.json created successfully with Host=${POSTGRES_HOST} Port=${POSTGRES_PORT} User=${POSTGRES_USER}"
-          volumeMounts:
-            - name: pgadmin-data
-              mountPath: /var/lib/pgadmin
-            - name: pgadmin-servers
-              mountPath: /pgadmin4
-            - name: vault-secrets
-              mountPath: /vault/secrets
-              readOnly: true
       containers:
         - name: pgadmin
           image: dpage/pgadmin4:latest
@@ -146,8 +92,6 @@ spec:
           volumeMounts:
             - name: pgadmin-data
               mountPath: /var/lib/pgadmin
-            - name: pgadmin-servers
-              mountPath: /pgadmin4
             - name: vault-secrets
               mountPath: /vault/secrets
               readOnly: true
@@ -181,7 +125,5 @@ spec:
         - name: pgadmin-data
           persistentVolumeClaim:
             claimName: pgadmin-data-pvc
-        - name: pgadmin-servers
-          emptyDir: {}  # Временный volume для servers.json, который будет прочитан при первом запуске
         - name: vault-secrets
           emptyDir: {}
