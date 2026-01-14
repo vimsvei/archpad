@@ -92,9 +92,6 @@ spec:
           volumeMounts:
             - name: pgadmin-data
               mountPath: /var/lib/pgadmin
-            - name: vault-secrets
-              mountPath: /vault/secrets
-              readOnly: true
           readinessProbe:
             httpGet:
               path: /misc/ping
@@ -125,5 +122,3 @@ spec:
         - name: pgadmin-data
           persistentVolumeClaim:
             claimName: pgadmin-data-pvc
-        - name: vault-secrets
-          emptyDir: {}
