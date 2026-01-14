@@ -179,10 +179,10 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 5
           resources:
-            # Оптимизировано для размещения на 4 нодах (1 CPU, 2GB RAM каждая)
+            # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
             requests:
               cpu: 50m
               memory: 128Mi
             limits:
-              cpu: 300m
+              cpu: 150m
               memory: 256Mi

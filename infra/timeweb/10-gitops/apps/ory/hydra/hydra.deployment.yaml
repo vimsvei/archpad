@@ -83,6 +83,14 @@ spec:
               port: 4445
             initialDelaySeconds: 5
             periodSeconds: 5
+          resources:
+            # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
+            requests:
+              cpu: 30m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
       volumes:
         - name: config
           configMap:
