@@ -37,7 +37,7 @@
 - `/v1/kv/data/archpad/demo/backend/common`
 - `/v1/kv/data/archpad/demo/postgres`
 
-Подробнее см. [SECRETS.md](./SECRETS.md)
+Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
 ## Container Registry Secret
 
@@ -47,7 +47,7 @@
 - **Kubernetes Secret:** `archpad-registry-secret` в namespace `platform`
 - **Синхронизация:** автоматическая при каждой синхронизации ArgoCD
 
-Подробнее см. [REGISTRY_SECRET_SYNC.md](./REGISTRY_SECRET_SYNC.md)
+Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
 ## Vault Kubernetes Auth
 

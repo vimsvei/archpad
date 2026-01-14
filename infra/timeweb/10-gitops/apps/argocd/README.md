@@ -168,4 +168,4 @@ kubectl exec -n argocd -it deployment/argocd-image-updater -- \
 ## Дополнительные ресурсы
 
 - [Официальная документация ArgoCD Image Updater](https://argocd-image-updater.readthedocs.io/)
-- [Документация по настройке в проекте](../docs/ARGOCD_IMAGE_UPDATER_SETUP.md)
+- [Документация по настройке в проекте](../../../../docs/ARGOCD_IMAGE_UPDATER.md)

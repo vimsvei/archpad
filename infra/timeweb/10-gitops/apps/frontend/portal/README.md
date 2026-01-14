@@ -17,7 +17,7 @@ Portal - это Next.js приложение, доступное через `por
 Секреты загружаются через Vault Agent Injector из:
 - `/v1/kv/data/archpad/demo/frontend/portal`
 
-Подробнее см. [SECRETS.md](./SECRETS.md)
+Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
 ## Vault Kubernetes Auth
 

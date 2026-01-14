@@ -24,7 +24,7 @@
    - Pipeline автоматически запустится
    - Проверьте логи сборки в GitLab CI/CD
 
-Подробнее: [.gitlab-ci-setup.md](../.gitlab-ci-setup.md)
+Подробнее: [GITLAB_CI.md](./GITLAB_CI.md)
 
 ### 2. Обновление манифестов Kubernetes
 
@@ -163,6 +163,8 @@
 
 ## 📚 Дополнительная документация
 
-- [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Подробная инструкция по локальной разработке (включает быстрый старт)
-- [.gitlab-ci-setup.md](../.gitlab-ci-setup.md) - Настройка GitLab CI/CD
-- [SECRETS.md](../infra/timeweb/10-gitops/apps/backend/SECRETS.md) - Структура секретов
+- [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Подробная инструкция по локальной разработке
+- [GITLAB_CI.md](./GITLAB_CI.md) - Настройка GitLab CI/CD
+- [SECRETS.md](./SECRETS.md) - Управление секретами
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание в Kubernetes
+- [VAULT_SETUP.md](./VAULT_SETUP.md) - Настройка Vault
