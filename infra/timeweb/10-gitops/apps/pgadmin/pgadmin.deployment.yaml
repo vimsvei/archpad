@@ -76,27 +76,28 @@ spec:
             httpGet:
               path: /misc/ping
               port: 80
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5
+            initialDelaySeconds: 120  # pgAdmin требует больше времени для инициализации
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 6
             successThreshold: 1
           livenessProbe:
             httpGet:
               path: /misc/ping
               port: 80
-            initialDelaySeconds: 120
+            initialDelaySeconds: 180  # Даем больше времени перед первой проверкой
             periodSeconds: 30
-            timeoutSeconds: 5
+            timeoutSeconds: 10
             failureThreshold: 3
           resources:
             # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
+            # pgAdmin требует больше памяти для инициализации
             requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 200m
+              cpu: 100m
               memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
       volumes:
         - name: pgadmin-data
           persistentVolumeClaim:
