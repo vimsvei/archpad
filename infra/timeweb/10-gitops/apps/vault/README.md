@@ -87,5 +87,5 @@ kubectl logs job/hasura-vault-role -n platform | grep "Using limited setup token
 
 ## Дополнительная документация
 
-- [Полная документация по настройке](../../../../docs/VAULT_KUBERNETES_AUTH_SETUP.md)
+- [Полная документация по настройке](../../../../docs/VAULT_SETUP.md)
 - [Официальная документация Vault](https://www.vaultproject.io/docs)

@@ -13,7 +13,7 @@
 5. **Читает секреты** и записывает их в файлы `/vault/secrets/...`
 6. **Приложение читает секреты** из этих файлов
 
-**Подробнее:** См. `docs/VAULT_SERVICES_AUTH.md`
+**Подробнее:** См. `docs/VAULT_SETUP.md`
 
 ## Вопрос 2: Почему portal.archpad.pro возвращает 404 и сервисы не видны в ArgoCD?
 
@@ -156,5 +156,4 @@ kubectl get ingressroute -n platform
 
 ## Дополнительная информация
 
-- [Документация по Vault Auth для сервисов](VAULT_SERVICES_AUTH.md)
-- [Документация по настройке Vault](VAULT_KUBERNETES_AUTH_SETUP.md)
+- [Документация по настройке Vault](VAULT_SETUP.md)
