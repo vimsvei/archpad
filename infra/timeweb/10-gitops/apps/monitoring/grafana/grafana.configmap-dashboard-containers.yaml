@@ -4,10 +4,10 @@ metadata:
   name: grafana-dashboards-containers
   namespace: monitoring
 data:
-  archpad-metrics-containers.json: |-
-{
-  "uid": "archpad-containers",
-  "title": "Archpad / Containers (CPU & Memory)",
+  archpad-metrics-containers.json: |
+    {
+      "uid": "archpad-containers",
+      "title": "Archpad / Containers (CPU & Memory)",
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
@@ -85,4 +85,4 @@ data:
       "options": { "legend": { "displayMode": "table", "placement": "right" } }
     }
   ]
-}
+    }
