@@ -52,10 +52,16 @@ spec:
               done
               echo "[vault-setup-policy] Vault is ready"
               
-              # Проверяем, что файл политики доступен
-              echo "[vault-setup-policy] Checking policy file..."
+              # Проверяем, что файлы политик доступны
+              echo "[vault-setup-policy] Checking policy files..."
               if [ ! -f "/vault-policy/vault-setup-policy.hcl" ]; then
                 echo "[vault-setup-policy] ERROR: Policy file not found at /vault-policy/vault-setup-policy.hcl"
+                echo "[vault-setup-policy] Listing /vault-policy contents:"
+                ls -la /vault-policy/ || true
+                exit 1
+              fi
+              if [ ! -f "/vault-policy/archpad-policy.hcl" ]; then
+                echo "[vault-setup-policy] ERROR: Policy file not found at /vault-policy/archpad-policy.hcl"
                 echo "[vault-setup-policy] Listing /vault-policy contents:"
                 ls -la /vault-policy/ || true
                 exit 1
@@ -88,6 +94,36 @@ spec:
                   -H "Content-Type: application/json" \
                   --data "{\"policy\":${POLICY_CONTENT}}" \
                   "${VAULT_ADDR}/v1/sys/policies/acl/vault-setup" || true
+                exit 1
+              fi
+              
+              # Применяем политику archpad через HTTP API
+              echo "[vault-setup-policy] Applying archpad policy..."
+              ARCHPAD_POLICY_CONTENT=$(cat /vault-policy/archpad-policy.hcl | jq -Rs .) || {
+                echo "[vault-setup-policy] ERROR: Failed to read or encode archpad policy file"
+                exit 1
+              }
+              
+              CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+                -X PUT \
+                -H "X-Vault-Token: ${VAULT_TOKEN}" \
+                -H "Content-Type: application/json" \
+                --data "{\"policy\":${ARCHPAD_POLICY_CONTENT}}" \
+                "${VAULT_ADDR}/v1/sys/policies/acl/archpad") || {
+                echo "[vault-setup-policy] ERROR: Failed to send request to Vault for archpad policy"
+                exit 1
+              }
+              
+              if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
+                echo "[vault-setup-policy] ✓ Policy 'archpad' applied"
+              else
+                echo "[vault-setup-policy] ✗ Failed to apply archpad policy (HTTP ${CODE})"
+                # Попробуем получить детали ошибки
+                curl -sS -X PUT \
+                  -H "X-Vault-Token: ${VAULT_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  --data "{\"policy\":${ARCHPAD_POLICY_CONTENT}}" \
+                  "${VAULT_ADDR}/v1/sys/policies/acl/archpad" || true
                 exit 1
               fi
               
