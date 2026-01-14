@@ -23,3 +23,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
+  ignoreDifferences:
+    # Игнорируем отсутствие PVC grafana-storage (используем PostgreSQL вместо локального хранилища)
+    - group: ""
+      kind: PersistentVolumeClaim
+      name: grafana-storage
+      namespace: monitoring
