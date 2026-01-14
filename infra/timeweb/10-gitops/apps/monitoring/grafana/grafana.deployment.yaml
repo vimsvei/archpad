@@ -18,11 +18,20 @@ spec:
         # Vault Agent Injector для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
+        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
         vault.hashicorp.com/agent-inject-template-grafana-admin: |
-          {{- with secret "kv/data/archpad/monitoring/grafana/admin" }}
-          export GRAFANA_ADMIN_USER="{{ .Data.data.GRAFANA_ADMIN_USER }}"
-          export GRAFANA_ADMIN_PASSWORD="{{ .Data.data.GRAFANA_ADMIN_PASSWORD }}"
-          {{- end }}
+          {{- $admin := secret "kv/data/archpad/monitoring/grafana/admin" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          export GRAFANA_ADMIN_USER="{{ $admin.Data.data.GRAFANA_ADMIN_USER }}"
+          export GRAFANA_ADMIN_PASSWORD="{{ $admin.Data.data.GRAFANA_ADMIN_PASSWORD }}"
+          # Настройка подключения к PostgreSQL
+          export GF_DATABASE_TYPE="postgres"
+          export GF_DATABASE_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
+          export GF_DATABASE_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
+          export GF_DATABASE_NAME="grafana"
+          export GF_DATABASE_USER="grafana"
+          export GF_DATABASE_PASSWORD="{{ $postgres.Data.data.POSTGRES_PASSWORD }}"
+          export GF_DATABASE_SSL_MODE="disable"
         vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: grafana
@@ -61,6 +70,7 @@ spec:
                 # Fallback на дефолтные значения, если Vault не доступен
                 export GF_SECURITY_ADMIN_USER="admin"
                 export GF_SECURITY_ADMIN_PASSWORD="admin"
+                export GF_DATABASE_TYPE="sqlite3"
               fi
               # Запускаем Grafana с переменными окружения
               exec /run.sh
