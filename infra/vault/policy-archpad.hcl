@@ -1,10 +1,15 @@
 # читать секреты в kv/data/archpad и всех подпутях
 path "kv/data/archpad" {
-  capabilities = ["read"]
+  capabilities = ["read", "list"]
 }
 
 path "kv/data/archpad/*" {
-  capabilities = ["read"]
+  capabilities = ["read", "list"]
+}
+
+# Явно разрешаем доступ к monitoring секретам
+path "kv/data/archpad/monitoring/*" {
+  capabilities = ["read", "list"]
 }
 
 # читать метаданные (нужно для KV v2)
