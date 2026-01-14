@@ -6,7 +6,7 @@
 - **Traefik Dashboard** (`proxy.archpad.pro`)
 - **Vault UI** (`vault.archpad.pro`)
 - **Grafana** (`monitoring.archpad.pro`)
-- **ArgoCD** (`argocd.archpad.pro`)
+- **ArgoCD** (`argo.archpad.pro`)
 - **Другие административные ресурсы**
 
 ## Цели
@@ -138,7 +138,7 @@
 
 ### 4. ArgoCD
 
-**URL:** `https://argocd.archpad.pro`
+**URL:** `https://argo.archpad.pro`
 
 **Текущая аутентификация:**
 - Локальные пользователи (admin/password)

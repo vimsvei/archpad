@@ -34,5 +34,5 @@ spec:
           namespace: traefik
   tls:
     secretName: wildcard-archpad-pro-tls
-    # TLS secret должен быть в namespace traefik
-    # Скопируйте из namespace argocd: kubectl get secret wildcard-archpad-pro-tls -n argocd -o yaml | sed 's/namespace: argocd/namespace: traefik/' | sed '/resourceVersion:/d' | sed '/uid:/d' | sed '/creationTimestamp:/d' | kubectl apply -f -
+    # TLS secret автоматически копируется в namespace traefik через Job traefik-dashboard-copy-tls-secret
+    # Job выполняется автоматически при синхронизации ArgoCD (PreSync hook)

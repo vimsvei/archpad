@@ -12,7 +12,7 @@ spec:
     namespace: platform
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
-    targetRevision: HEAD
+    targetRevision: main
     path: infra/timeweb/10-gitops/apps/tolgee
     directory:
       recurse: false

@@ -7,8 +7,8 @@
     - cert-manager Webhook (addon)  <-- required for DNS-01 wildcard
 3) Domain is delegated to Timeweb NS (required by webhook).
 4) Decide:
-    - base domain: archpad.dev
-    - argocd host: argocd.archpad.dev
+    - base domain: archpad.pro
+    - argocd host: argo.archpad.pro
 
 ## Step 1: Create namespaces
 kubectl apply -f infra/timeweb/00-bootstrap/namespaces.yaml
@@ -56,12 +56,12 @@ After Traefik app is synced, get external IP:
 kubectl -n traefik get svc traefik -o wide
 
 In Timeweb DNS:
-- Create A record: *.archpad.dev -> <EXTERNAL_IP>
-- (optional) Create A record: argocd.archpad.dev -> <EXTERNAL_IP>
+- Create A record: *.archpad.pro -> <EXTERNAL_IP>
+- (optional) Create A record: argo.archpad.pro -> <EXTERNAL_IP>
 
 ## Step 7: Verify wildcard cert issuance
 kubectl -n platform describe certificate archpad-wildcard
 kubectl -n platform get secret archpad-wildcard-tls
 
 ## Step 8: Open Argo CD via HTTPS
-https://argocd.archpad.dev
+https://argo.archpad.pro

@@ -10,7 +10,7 @@ spec:
     namespace: argocd
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
-    targetRevision: HEAD
+    targetRevision: main
     path: infra/timeweb/10-gitops
     kustomize: {}
   syncPolicy:

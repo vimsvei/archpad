@@ -12,7 +12,7 @@ spec:
     namespace: argocd
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
-    targetRevision: HEAD
+    targetRevision: main
     path: infra/timeweb/10-gitops/apps
     # Применяем все Kubernetes ресурсы (Deployment, Service, IngressRoute и т.д.)
     # Application'ы создаются отдельно (см. README.md)

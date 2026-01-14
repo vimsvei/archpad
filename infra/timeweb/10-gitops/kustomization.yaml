@@ -14,6 +14,7 @@ resources:
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml
+  - apps/traefik/traefik-dashboard-tls-secret.job.yaml
   - apps/traefik/traefik-dashboard-basicauth-secret.yaml
   - apps/traefik/traefik-dashboard-basicauth.middleware.yaml
   - apps/traefik/traefik-dashboard-root-redirect.middleware.yaml

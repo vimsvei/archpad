@@ -1,6 +1,6 @@
 global:
   # purely cosmetic; can stay
-  domain: argocd.archpad.dev
+  domain: argo.archpad.pro
 
 configs:
   params:

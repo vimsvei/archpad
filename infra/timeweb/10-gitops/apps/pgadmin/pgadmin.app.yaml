@@ -12,7 +12,7 @@ spec:
     namespace: pgadmin
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
-    targetRevision: HEAD
+    targetRevision: main
     path: infra/timeweb/10-gitops/apps/pgadmin
     directory:
       recurse: false
