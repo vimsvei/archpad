@@ -27,6 +27,5 @@ yarn-error.log*
 **/build
 **/public/uploads
 */pnpm-lock.yaml
-*/infra/terraform/vault-keys.json
-*/infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml
-*/infra/timeweb/.env
+
+/infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml

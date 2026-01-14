@@ -1,2 +1,2 @@
 **/.env
-**/k8s_config/twc-archpad-k8s-cluster-config.yaml
+k8s_config/
