@@ -4,7 +4,7 @@ metadata:
   name: grafana-dashboards-node
   namespace: monitoring
 data:
-  archpad-metrics-node.json: |-
+  archpad-metrics-node.json: |
     {
       "uid": "archpad-node",
       "title": "Archpad / Node Metrics (CPU, Memory, Disk)",
@@ -12,44 +12,103 @@ data:
       "schemaVersion": 39,
       "version": 1,
       "refresh": "10s",
-      "tags": ["archpad", "metrics", "node", "kubernetes"],
-      "time": { "from": "now-15m", "to": "now" },
+      "tags": [
+        "archpad",
+        "metrics",
+        "node",
+        "kubernetes"
+      ],
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
       "panels": [
         {
           "type": "timeseries",
           "title": "CPU Usage (all cores)",
-          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
               "legendFormat": "CPU Usage %"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
-          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
         },
         {
           "type": "timeseries",
           "title": "Memory Usage",
-          "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 12,
+            "y": 0,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
               "legendFormat": "Memory Usage %"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
-          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
         },
         {
           "type": "timeseries",
           "title": "Memory Breakdown",
-          "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 0,
+            "y": 8,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
@@ -60,16 +119,35 @@ data:
               "refId": "B",
               "expr": "node_memory_MemAvailable_bytes",
               "legendFormat": "Available"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
         },
         {
           "type": "timeseries",
           "title": "Disk Breakdown (/var/lib)",
-          "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 0,
+            "y": 20,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
@@ -80,16 +158,35 @@ data:
               "refId": "B",
               "expr": "node_filesystem_avail_bytes{mountpoint=\"/var/lib\",fstype=\"ext4\"}",
               "legendFormat": "Available"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
         },
         {
           "type": "timeseries",
           "title": "Disk Usage",
-          "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 12,
+            "y": 8,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
@@ -100,101 +197,214 @@ data:
               "refId": "B",
               "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"rootfs\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})) * 100",
               "legendFormat": "Disk Usage % (root, if available)"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] },
-          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right"
+            }
+          }
         },
         {
           "type": "stat",
           "title": "CPU Cores",
-          "gridPos": { "x": 0, "y": 16, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 0,
+            "y": 16,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "count(node_cpu_seconds_total{mode=\"idle\"})",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
-          "options": { "graphMode": "none", "colorMode": "value" }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value"
+          }
         },
         {
           "type": "stat",
           "title": "Total Memory",
-          "gridPos": { "x": 6, "y": 16, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 6,
+            "y": 16,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "node_memory_MemTotal_bytes",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "graphMode": "none", "colorMode": "value" }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value"
+          }
         },
         {
           "type": "stat",
           "title": "Available Memory",
-          "gridPos": { "x": 12, "y": 16, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 12,
+            "y": 16,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "node_memory_MemAvailable_bytes",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "graphMode": "none", "colorMode": "value" }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value"
+          }
         },
         {
           "type": "stat",
           "title": "Disk Used",
-          "gridPos": { "x": 18, "y": 16, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 18,
+            "y": 16,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "node_filesystem_size_bytes{mountpoint=\"/var/lib\",fstype=\"ext4\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib\",fstype=\"ext4\"}",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "graphMode": "area", "colorMode": "value" }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          }
         },
         {
           "type": "stat",
           "title": "Disk Total",
-          "gridPos": { "x": 12, "y": 20, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 12,
+            "y": 20,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "node_filesystem_size_bytes{mountpoint=\"/var/lib\",fstype=\"ext4\"}",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "graphMode": "area", "colorMode": "value" }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          }
         },
         {
           "type": "stat",
           "title": "Disk Available",
-          "gridPos": { "x": 18, "y": 20, "w": 6, "h": 4 },
-          "datasource": { "type": "prometheus", "uid": "prometheus", "name": "Prometheus" },
+          "gridPos": {
+            "x": 18,
+            "y": 20,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus",
+            "name": "Prometheus"
+          },
           "targets": [
             {
               "refId": "A",
               "expr": "node_filesystem_avail_bytes{mountpoint=\"/var/lib\",fstype=\"ext4\"}",
               "format": "table"
-    }
+            }
           ],
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
-          "options": { "graphMode": "area", "colorMode": "value" }
-    }
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "area",
+            "colorMode": "value"
+          }
+        }
       ]
     }
-    
