@@ -113,9 +113,6 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
               readOnly: true
-            - name: vault-secrets
-              mountPath: /vault/secrets
-              readOnly: true
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -144,5 +141,3 @@ spec:
         - name: config
           configMap:
             name: tolgee
-        - name: vault-secrets
-          emptyDir: {}
