@@ -15,15 +15,15 @@ spec:
       labels:
         app: grafana
       annotations:
-        # Vault Agent Injector аннотации для чтения секретов из Vault
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
-        vault.hashicorp.com/agent-inject-template-grafana-admin: |
-          {{- with secret "kv/data/archpad/monitoring/grafana/admin" }}
-          export GRAFANA_ADMIN_USER="{{ .Data.data.GRAFANA_ADMIN_USER }}"
-          export GRAFANA_ADMIN_PASSWORD="{{ .Data.data.GRAFANA_ADMIN_PASSWORD }}"
-          {{- end }}
-        vault.hashicorp.com/role: "platform"
+        # Vault Agent Injector временно отключен - нужно настроить роль platform для namespace monitoring
+        # vault.hashicorp.com/agent-inject: "true"
+        # vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
+        # vault.hashicorp.com/agent-inject-template-grafana-admin: |
+        #   {{- with secret "kv/data/archpad/monitoring/grafana/admin" }}
+        #   export GRAFANA_ADMIN_USER="{{ .Data.data.GRAFANA_ADMIN_USER }}"
+        #   export GRAFANA_ADMIN_PASSWORD="{{ .Data.data.GRAFANA_ADMIN_PASSWORD }}"
+        #   {{- end }}
+        # vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: grafana
       securityContext:
@@ -46,12 +46,13 @@ spec:
         - name: grafana
           image: grafana/grafana:latest
           command: ["sh", "-c"]
-          args:
+            args:
             - |
-              # Загружаем секреты из Vault Agent Injector
-              if [ -f /vault/secrets/grafana-admin ]; then
-                . /vault/secrets/grafana-admin
-              fi
+              # Временно используем дефолтные значения
+              # После настройки Vault можно будет использовать секреты из Vault Agent Injector
+              # if [ -f /vault/secrets/grafana-admin ]; then
+              #   . /vault/secrets/grafana-admin
+              # fi
               # Запускаем Grafana
               exec /run.sh
           ports:
