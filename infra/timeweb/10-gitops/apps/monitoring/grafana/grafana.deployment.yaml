@@ -15,15 +15,15 @@ spec:
       labels:
         app: grafana
       annotations:
-        # Vault Agent Injector временно отключен - нужно настроить роль platform для namespace monitoring
-        # vault.hashicorp.com/agent-inject: "true"
-        # vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
-        # vault.hashicorp.com/agent-inject-template-grafana-admin: |
-        #   {{- with secret "kv/data/archpad/monitoring/grafana/admin" }}
-        #   export GRAFANA_ADMIN_USER="{{ .Data.data.GRAFANA_ADMIN_USER }}"
-        #   export GRAFANA_ADMIN_PASSWORD="{{ .Data.data.GRAFANA_ADMIN_PASSWORD }}"
-        #   {{- end }}
-        # vault.hashicorp.com/role: "platform"
+        # Vault Agent Injector для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
+        vault.hashicorp.com/agent-inject-template-grafana-admin: |
+          {{- with secret "kv/data/archpad/monitoring/grafana/admin" }}
+          export GRAFANA_ADMIN_USER="{{ .Data.data.GRAFANA_ADMIN_USER }}"
+          export GRAFANA_ADMIN_PASSWORD="{{ .Data.data.GRAFANA_ADMIN_PASSWORD }}"
+          {{- end }}
+        vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: grafana
       securityContext:
@@ -48,22 +48,27 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              # Временно используем дефолтные значения
-              # После настройки Vault можно будет использовать секреты из Vault Agent Injector
-              # if [ -f /vault/secrets/grafana-admin ]; then
-              #   . /vault/secrets/grafana-admin
-              # fi
-              # Запускаем Grafana
+              # Загружаем секреты из Vault Agent Injector
+              if [ -f /vault/secrets/grafana-admin ]; then
+                # Загружаем переменные из файла (Vault создает файл с export командами)
+                set -a
+                . /vault/secrets/grafana-admin
+                set +a
+                # Экспортируем переменные для Grafana
+                export GF_SECURITY_ADMIN_USER="${GRAFANA_ADMIN_USER:-admin}"
+                export GF_SECURITY_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-admin}"
+              else
+                # Fallback на дефолтные значения, если Vault не доступен
+                export GF_SECURITY_ADMIN_USER="admin"
+                export GF_SECURITY_ADMIN_PASSWORD="admin"
+              fi
+              # Запускаем Grafana с переменными окружения
               exec /run.sh
           ports:
             - name: http
               containerPort: 3000
               protocol: TCP
           env:
-            - name: GF_SECURITY_ADMIN_USER
-              value: "${GRAFANA_ADMIN_USER:-admin}"
-            - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "${GRAFANA_ADMIN_PASSWORD:-admin}"
             - name: GF_SERVER_ROOT_URL
               value: "https://monitoring.archpad.pro"
             - name: GF_SERVER_DOMAIN
