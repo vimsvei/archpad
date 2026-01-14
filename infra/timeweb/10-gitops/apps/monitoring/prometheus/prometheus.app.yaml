@@ -29,18 +29,20 @@ spec:
         prometheus:
           enabled: true
           
-          # Оптимизированные ресурсы для демо-стенда (4 CPU / 8GB RAM)
+          # Оптимизированные ресурсы для демо-стенда (4 CPU / 8GB RAM на весь кластер)
+          # Учитываем, что уже используется ~500m CPU / ~1152Mi RAM приложениями
+          # Доступно: ~3000m CPU / ~1944Mi RAM (из 4 CPU / 8GB RAM)
           prometheusSpec:
             resources:
               requests:
-                cpu: 300m
-                memory: 1.5Gi
+                cpu: 200m
+                memory: 1Gi
               limits:
-                cpu: 500m
-                memory: 2Gi
+                cpu: 300m
+                memory: 1Gi
             
-            # Retention: 15 дней для демо-стенда
-            retention: 15d
+            # Retention: 7 дней для демо-стенда (оптимизация под ограничение RAM)
+            retention: 7d
             
             # Storage
             storageSpec:
@@ -72,37 +74,40 @@ spec:
                       role: 'database'
         
         # Node Exporter (DaemonSet для метрик нод)
+        # Оптимизировано для демо-стенда
         nodeExporter:
           enabled: true
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 30m
+              memory: 32Mi
             limits:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 40m
+              memory: 50Mi
         
         # kube-state-metrics (метрики состояния Kubernetes объектов)
+        # Оптимизировано для демо-стенда
         kubeStateMetrics:
           enabled: true
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 30m
+              memory: 64Mi
             limits:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 40m
+              memory: 100Mi
         
         # Prometheus Operator
+        # Оптимизировано для демо-стенда
         prometheusOperator:
           enabled: true
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 30m
+              memory: 64Mi
             limits:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 40m
+              memory: 100Mi
   syncPolicy:
     automated:
       prune: true

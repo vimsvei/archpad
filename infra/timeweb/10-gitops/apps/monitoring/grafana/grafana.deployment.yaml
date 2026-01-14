@@ -91,13 +91,13 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 5
           resources:
-            # Оптимизировано для демо-стенда (4 CPU / 8GB RAM)
+            # Оптимизировано для демо-стенда (4 CPU / 8GB RAM на весь кластер)
             requests:
-              cpu: 50m
-              memory: 128Mi
+              cpu: 30m
+              memory: 64Mi
             limits:
-              cpu: 200m
-              memory: 256Mi
+              cpu: 80m
+              memory: 100Mi
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
