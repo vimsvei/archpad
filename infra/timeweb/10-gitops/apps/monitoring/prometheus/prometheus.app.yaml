@@ -15,6 +15,7 @@ spec:
     chart: kube-prometheus-stack
     targetRevision: 66.2.0
     helm:
+      skipCrds: false
       releaseName: prometheus
       values: |
         # Отключаем Grafana, развертываем отдельно
