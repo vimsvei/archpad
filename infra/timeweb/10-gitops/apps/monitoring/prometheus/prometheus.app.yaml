@@ -108,6 +108,21 @@ spec:
             limits:
               cpu: 40m
               memory: 100Mi
+        
+        # Отключаем мониторинг системных компонентов Kubernetes (kube-system)
+        # чтобы избежать ошибок с правами доступа к namespace kube-system
+        kubeApiServer:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        coreDns:
+          enabled: false
   syncPolicy:
     automated:
       prune: true
