@@ -135,6 +135,17 @@ spec:
             - name: vault-secrets
               mountPath: /vault/secrets
               readOnly: true
+          startupProbe:
+            # Startup probe используется только при старте контейнера
+            # После успешного ответа отключается, используются liveness/readiness probes
+            # Дает больше времени для инициализации Spring Boot приложения
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30  # Начинаем проверку через 30 секунд
+            periodSeconds: 10       # Проверяем каждые 10 секунд
+            timeoutSeconds: 5       # Таймаут 5 секунд
+            failureThreshold: 30    # До 30 попыток = до 5 минут на старт (30s + 30*10s = 330s)
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -147,19 +158,24 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 90  # Tolgee требует больше времени для запуска (Vault секреты + PostgreSQL подключение + Spring Boot старт)
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
+            initialDelaySeconds: 10  # После успешного startup probe можно проверять чаще
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
-            # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
-            # Tolgee (Spring Boot) требует больше памяти для запуска
+            # Ресурсы для Tolgee (Spring Boot приложение)
+            # При старте Spring Boot требует значительно больше ресурсов:
+            # - CPU: до 2 ядер для загрузки классов и инициализации
+            # - Memory: до 3GB для JVM heap + метаданные классов
+            # После инициализации потребление падает до нормального уровня
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 200m      # Минимальные гарантированные ресурсы для планирования
+              memory: 512Mi   # Минимальная память для планирования
             limits:
-              cpu: 500m  # Увеличено для стабильной работы Spring Boot
-              memory: 1Gi  # Увеличено до 1GB для предотвращения OOMKilled
+              cpu: 2000m     # До 2 ядер для возможности старта (как на локальной машине)
+              memory: 3Gi    # До 3GB для возможности старта (как на локальной машине)
+              # После инициализации фактическое потребление будет ниже limits
+              # Kubernetes будет использовать только необходимое количество ресурсов
       volumes:
         - name: config
           configMap:
