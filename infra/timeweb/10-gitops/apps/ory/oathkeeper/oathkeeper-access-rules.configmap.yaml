@@ -41,7 +41,9 @@ data:
         - handler: anonymous
       authorizer:
         handler: allow
-      mutators: []
+      mutators:
+        - handler: header
+          config: {}
 
     - id: arch-repo-api-json
       match:
@@ -55,7 +57,9 @@ data:
         - handler: anonymous
       authorizer:
         handler: allow
-      mutators: []
+      mutators:
+        - handler: header
+          config: {}
 
     # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
     # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
