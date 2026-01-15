@@ -51,9 +51,11 @@
   mutators: []
 
 # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
+# Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
+# Используем паттерн, который требует наличия пути, но не начинающегося с api-docs или api-json
 - id: arch-repo-api
   match:
-    url: <https|http>://api.192-168-1-119.sslip.io/rest/arch-repo-service<(/.*)>
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/arch-repo-service/.+
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   upstream:
     url: http://arch-repo:3000
