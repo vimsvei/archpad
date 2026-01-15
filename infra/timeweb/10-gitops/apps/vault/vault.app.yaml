@@ -105,11 +105,16 @@ spec:
               memory: 128Mi
           # Переопределяем переменные окружения для уменьшения requests
           # Эти переменные контролируют ресурсы для init контейнеров vault-agent-init
-          extraEnvironmentVars:
-            AGENT_INJECT_CPU_REQUEST: "50m"
-            AGENT_INJECT_CPU_LIMIT: "100m"
-            AGENT_INJECT_MEM_REQUEST: "64Mi"
-            AGENT_INJECT_MEM_LIMIT: "128Mi"
+          # Используем env вместо extraEnvironmentVars для совместимости с Helm chart
+          env:
+            - name: AGENT_INJECT_CPU_REQUEST
+              value: "50m"
+            - name: AGENT_INJECT_CPU_LIMIT
+              value: "100m"
+            - name: AGENT_INJECT_MEM_REQUEST
+              value: "64Mi"
+            - name: AGENT_INJECT_MEM_LIMIT
+              value: "128Mi"
 
   syncPolicy:
     automated:
