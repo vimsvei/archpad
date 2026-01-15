@@ -10,6 +10,15 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: vault
+  # Игнорируем различия в переменных окружения vault-agent-injector
+  # Эти переменные управляются вручную через kubectl patch для уменьшения CPU requests
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: vault-agent-injector
+      namespace: vault
+      jsonPointers:
+        - /spec/template/spec/containers/0/env
   source:
     # Используем Git репозиторий напрямую, так как Helm репозиторий HashiCorp недоступен (403)
     # ArgoCD может работать с Helm чартами из Git репозиториев
