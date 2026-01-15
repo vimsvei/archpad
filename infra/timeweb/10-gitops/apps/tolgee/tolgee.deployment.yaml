@@ -147,20 +147,22 @@ spec:
             # После успешного ответа отключается, используются liveness/readiness probes
             # Дает больше времени для инициализации Spring Boot приложения
             # На локальной машине Tolgee стартует за ~29 секунд, но может быть дольше в Kubernetes
+            # После инициализации HikariCP приложение выполняет миграции БД и другие операции
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 20  # Начинаем проверку через 20 секунд (HikariCP инициализируется раньше)
+            initialDelaySeconds: 60  # Увеличен до 60 секунд (HikariCP инициализируется ~82 секунды после старта)
             periodSeconds: 10        # Проверяем каждые 10 секунд
             timeoutSeconds: 5        # Таймаут 5 секунд
-            failureThreshold: 40     # До 40 попыток = до 6.8 минут на старт (20s + 40*10s = 420s)
+            failureThreshold: 60     # До 60 попыток = до 10.5 минут на старт (60s + 60*10s = 660s)
           livenessProbe:
             # Liveness probe НЕ должен срабатывать до успешного startup probe
             # Kubernetes автоматически откладывает liveness probe до успешного startup probe
+            # Убираем initialDelaySeconds, чтобы гарантировать, что он не сработает до startup probe
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 120  # Увеличен до 2 минут, чтобы не убить контейнер во время инициализации
+            initialDelaySeconds: 0   # Убрано, чтобы гарантировать откладывание до startup probe
             periodSeconds: 30        # Проверяем каждые 30 секунд (реже, чтобы не нагружать)
             timeoutSeconds: 10       # Увеличен таймаут
             failureThreshold: 3      # После 3 неудачных попыток контейнер будет перезапущен
