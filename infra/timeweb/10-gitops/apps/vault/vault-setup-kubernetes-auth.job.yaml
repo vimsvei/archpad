@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-setup-kubernetes-auth
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      annotations:
+        argocd.argoproj.io/hook-weight: "0"
+    spec:
+      serviceAccountName: default
+      restartPolicy: Never
+      containers:
+        - name: vault-setup-kubernetes-auth
+          image: alpine:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              sh /vault-kubernetes-auth/entrypoint.sh
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc:8200"
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-root-token
+                  key: VAULT_ROOT_TOKEN
+                  optional: false
+          volumeMounts:
+            - name: vault-kubernetes-auth
+              mountPath: /vault-kubernetes-auth
+              readOnly: true
+      volumes:
+        - name: vault-kubernetes-auth
+          configMap:
+            name: vault-setup-kubernetes-auth
+            defaultMode: 0755
+  backoffLimit: 3

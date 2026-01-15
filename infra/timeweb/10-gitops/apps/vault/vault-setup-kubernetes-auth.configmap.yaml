@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-setup-kubernetes-auth
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+data:
+  entrypoint.sh: |
+    #!/usr/bin/env sh
+    set -eu
+
+    VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+    VAULT_TOKEN="${VAULT_TOKEN:-}"
+
+    if [ -z "$VAULT_TOKEN" ]; then
+      echo "[vault-setup-kubernetes-auth] ERROR: VAULT_TOKEN is not set"
+      echo "[vault-setup-kubernetes-auth] This job requires VAULT_ROOT_TOKEN secret"
+      exit 1
+    fi
+
+    echo "[vault-setup-kubernetes-auth] Starting..."
+    echo "[vault-setup-kubernetes-auth] Vault address: ${VAULT_ADDR}"
+
+    # Устанавливаем curl и jq
+    apk add --no-cache curl jq >/dev/null 2>&1 || {
+      echo "[vault-setup-kubernetes-auth] ERROR: Failed to install curl/jq"
+      exit 1
+    }
+
+    # Ждем, пока Vault будет готов
+    echo "[vault-setup-kubernetes-auth] Waiting for Vault at ${VAULT_ADDR}..."
+    tries=0
+    until curl -fsS "${VAULT_ADDR}/v1/sys/health" >/dev/null 2>&1; do
+      tries=$((tries+1))
+      if [ "$tries" -ge 60 ]; then
+        echo "[vault-setup-kubernetes-auth] ERROR: Vault not ready after ${tries} tries"
+        exit 1
+      fi
+      sleep 2
+    done
+    echo "[vault-setup-kubernetes-auth] ✓ Vault is ready"
+
+    # Проверяем, включен ли Kubernetes Auth
+    echo "[vault-setup-kubernetes-auth] Checking if Kubernetes Auth is enabled..."
+    K8S_AUTH_ENABLED=$(curl -sS -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      "${VAULT_ADDR}/v1/sys/auth" 2>/dev/null | \
+      jq -r '.["kubernetes/"] // empty' 2>/dev/null || echo "")
+
+    if [ -z "$K8S_AUTH_ENABLED" ]; then
+      echo "[vault-setup-kubernetes-auth] Enabling Kubernetes Auth Method..."
+      CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+        -X POST \
+        -H "X-Vault-Token: ${VAULT_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"type":"kubernetes"}' \
+        "${VAULT_ADDR}/v1/sys/auth/kubernetes" 2>/dev/null || echo "000")
+
+      if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
+        echo "[vault-setup-kubernetes-auth] ✓ Kubernetes Auth Method enabled"
+      else
+        echo "[vault-setup-kubernetes-auth] ✗ Failed to enable Kubernetes Auth (HTTP ${CODE})"
+        # Попробуем получить детали ошибки
+        curl -sS -X POST \
+          -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          -H "Content-Type: application/json" \
+          -d '{"type":"kubernetes"}' \
+          "${VAULT_ADDR}/v1/sys/auth/kubernetes" 2>&1 || true
+        exit 1
+      fi
+    else
+      echo "[vault-setup-kubernetes-auth] ✓ Kubernetes Auth Method already enabled"
+    fi
+
+    # Настраиваем Kubernetes Auth config
+    echo "[vault-setup-kubernetes-auth] Configuring Kubernetes Auth..."
+    
+    # Получаем Kubernetes CA cert
+    K8S_CA_CERT_PATH="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    if [ ! -f "$K8S_CA_CERT_PATH" ]; then
+      echo "[vault-setup-kubernetes-auth] ERROR: Kubernetes CA cert not found at ${K8S_CA_CERT_PATH}"
+      exit 1
+    fi
+
+    # Кодируем CA cert в JSON
+    K8S_CA_CERT_JSON=$(cat "$K8S_CA_CERT_PATH" | jq -Rs .) || {
+      echo "[vault-setup-kubernetes-auth] ERROR: Failed to encode CA cert"
+      exit 1
+    }
+
+    # Получаем ServiceAccount токен для token_reviewer_jwt
+    K8S_TOKEN_PATH="/var/run/secrets/kubernetes.io/serviceaccount/token"
+    if [ ! -f "$K8S_TOKEN_PATH" ]; then
+      echo "[vault-setup-kubernetes-auth] ERROR: ServiceAccount token not found at ${K8S_TOKEN_PATH}"
+      exit 1
+    fi
+
+    K8S_TOKEN=$(cat "$K8S_TOKEN_PATH")
+
+    # Получаем Kubernetes API host из переменных окружения (автоматически устанавливаются Kubernetes)
+    # Если переменные не установлены, используем дефолтные значения
+    if [ -n "${KUBERNETES_SERVICE_HOST:-}" ] && [ -n "${KUBERNETES_SERVICE_PORT:-}" ]; then
+      K8S_HOST="${KUBERNETES_SERVICE_HOST}"
+      K8S_PORT="${KUBERNETES_SERVICE_PORT}"
+      K8S_HOST_FULL="https://${K8S_HOST}:${K8S_PORT}"
+    else
+      # Fallback на дефолтные значения
+      K8S_HOST_FULL="https://kubernetes.default.svc:443"
+      echo "[vault-setup-kubernetes-auth] Warning: Using default Kubernetes API host"
+    fi
+
+    echo "[vault-setup-kubernetes-auth] Kubernetes API: ${K8S_HOST_FULL}"
+
+    # Настраиваем конфигурацию
+    CONFIG_PAYLOAD=$(cat <<JSON
+    {
+      "kubernetes_host": "${K8S_HOST_FULL}",
+      "kubernetes_ca_cert": ${K8S_CA_CERT_JSON},
+      "token_reviewer_jwt": "${K8S_TOKEN}"
+    }
+    JSON
+    )
+
+    CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+      -X POST \
+      -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      -H "Content-Type: application/json" \
+      --data "${CONFIG_PAYLOAD}" \
+      "${VAULT_ADDR}/v1/auth/kubernetes/config" 2>/dev/null || echo "000")
+
+    if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
+      echo "[vault-setup-kubernetes-auth] ✓ Kubernetes Auth configured successfully"
+    else
+      echo "[vault-setup-kubernetes-auth] ✗ Failed to configure Kubernetes Auth (HTTP ${CODE})"
+      # Попробуем получить детали ошибки
+      RESPONSE=$(curl -sS -X POST \
+        -H "X-Vault-Token: ${VAULT_TOKEN}" \
+        -H "Content-Type: application/json" \
+        --data "${CONFIG_PAYLOAD}" \
+        "${VAULT_ADDR}/v1/auth/kubernetes/config" 2>&1 || echo "")
+      echo "[vault-setup-kubernetes-auth] Response: ${RESPONSE}"
+      
+      # Если это ошибка "already configured", это нормально
+      if echo "$RESPONSE" | grep -q "already configured" 2>/dev/null; then
+        echo "[vault-setup-kubernetes-auth] ✓ Kubernetes Auth already configured (ignoring)"
+      else
+        exit 1
+      fi
+    fi
+
+    # Проверяем конфигурацию
+    echo "[vault-setup-kubernetes-auth] Verifying Kubernetes Auth configuration..."
+    CONFIG_RESPONSE=$(curl -sS -H "X-Vault-Token: ${VAULT_TOKEN}" \
+      "${VAULT_ADDR}/v1/auth/kubernetes/config" 2>/dev/null || echo "")
+
+    if [ -n "$CONFIG_RESPONSE" ] && echo "$CONFIG_RESPONSE" | jq -e '.data.kubernetes_host' >/dev/null 2>&1; then
+      K8S_HOST_CONFIGURED=$(echo "$CONFIG_RESPONSE" | jq -r '.data.kubernetes_host // empty')
+      echo "[vault-setup-kubernetes-auth] ✓ Kubernetes Auth is configured"
+      echo "[vault-setup-kubernetes-auth]   Kubernetes Host: ${K8S_HOST_CONFIGURED}"
+    else
+      echo "[vault-setup-kubernetes-auth] ⚠️  Warning: Could not verify configuration"
+    fi
+
+    echo "[vault-setup-kubernetes-auth] Done"

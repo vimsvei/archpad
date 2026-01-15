@@ -212,12 +212,22 @@ kubectl create secret generic vault-root-token \
 
 #### Шаг 2: Применить манифесты через GitOps
 
-После push в Git ArgoCD автоматически:
-1. Применит ConfigMap с политикой `vault-setup`
-2. Запустит Job `vault-setup-policy`, который:
-   - Применит политику в Vault
-   - Создаст ограниченный токен
-   - Выведет токен в логи
+После push в Git ArgoCD автоматически выполнит настройку в следующем порядке:
+
+1. **Настройка Kubernetes Auth Method** (`vault-setup-kubernetes-auth`):
+   - Включает Kubernetes Auth Method
+   - Настраивает конфигурацию (kubernetes_host, kubernetes_ca_cert, token_reviewer_jwt)
+   - **Критично:** Без этого все поды с Vault Agent не смогут аутентифицироваться!
+
+2. **Создание политик** (`vault-setup-policy`):
+   - Применяет политику `vault-setup` в Vault
+   - Применяет политику `archpad` в Vault
+   - Создает ограниченный токен с политикой `vault-setup`
+   - Выводит токен в логи
+
+3. **Создание ролей** (`secure-vault-role`, `hasura-vault-role`):
+   - Создает роль `secure` для namespace `secure`
+   - Создает роль `platform` для namespace `platform`
 
 #### Шаг 3: Получить ограниченный токен из логов Job
 
@@ -253,22 +263,45 @@ kubectl create secret generic vault-setup-token \
 Если манифесты еще не применены через GitOps:
 
 ```bash
-# 1. Применить ConfigMap с политикой
+# 1. Настроить Kubernetes Auth Method (ВАЖНО: должно быть первым!)
+kubectl apply -f infra/timeweb/10-gitops/apps/vault/vault-setup-kubernetes-auth.configmap.yaml
+kubectl apply -f infra/timeweb/10-gitops/apps/vault/vault-setup-kubernetes-auth.job.yaml
+kubectl wait --for=condition=complete job/vault-setup-kubernetes-auth -n vault --timeout=300s
+
+# 2. Применить ConfigMap с политикой
 kubectl apply -f infra/timeweb/10-gitops/apps/vault/vault-setup-policy.configmap.yaml
 
-# 2. Применить Job для создания политики и токена
+# 3. Применить Job для создания политики и токена
 kubectl apply -f infra/timeweb/10-gitops/apps/vault/vault-setup-policy.job.yaml
 
-# 3. Дождаться завершения Job
+# 4. Дождаться завершения Job
 kubectl wait --for=condition=complete job/vault-setup-policy -n vault --timeout=300s
 
-# 4. Получить токен из логов
+# 5. Получить токен из логов
 kubectl logs job/vault-setup-policy -n vault | grep -A 5 "Token:"
 ```
 
 ## Настройка Kubernetes Auth Method
 
-### Проблема
+### Автоматическая настройка
+
+Kubernetes Auth Method настраивается автоматически через Job `vault-setup-kubernetes-auth`, который:
+
+1. **Включает Kubernetes Auth Method** (если еще не включен)
+2. **Настраивает конфигурацию** Kubernetes Auth:
+   - `kubernetes_host` - адрес Kubernetes API
+   - `kubernetes_ca_cert` - CA сертификат Kubernetes
+   - `token_reviewer_jwt` - ServiceAccount токен для проверки других токенов
+
+**Порядок выполнения:**
+1. `vault-setup-kubernetes-auth` (sync-wave: 5) - настраивает Kubernetes Auth Method
+2. `vault-setup-policy` (sync-wave: 6) - создает политики и ограниченный токен
+3. `secure-vault-role` (sync-wave: 41) - создает роль для namespace `secure`
+4. `hasura-vault-role` (sync-wave: 46) - создает роль для namespace `platform`
+
+**Важно:** Job `vault-setup-kubernetes-auth` должен выполниться успешно до того, как другие Job'ы попытаются создать роли. Если Kubernetes Auth Method не настроен, все поды с Vault Agent не смогут аутентифицироваться.
+
+### Проблема (устарело)
 
 Job'ы для настройки Vault roles (`hasura-vault-role.job.yaml`, `secure-vault-role.job.yaml`) изначально использовали root токен из Secret `vault-root-token`. Это небезопасно, так как:
 - Root токен имеет полный доступ ко всем секретам
