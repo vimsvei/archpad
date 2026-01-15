@@ -17,11 +17,11 @@ spec:
       restartPolicy: Never
       containers:
         - name: secure-vault-role
-          image: curlimages/curl:latest
+          image: alpine:latest
           command: ["sh", "-c"]
           args:
             - |
-              apk add --no-cache jq
+              apk add --no-cache curl jq >/dev/null 2>&1
               # Используем ограниченный токен, если доступен, иначе root (для обратной совместимости)
               export VAULT_TOKEN="${VAULT_SETUP_TOKEN:-${VAULT_ROOT_TOKEN:-}}"
               if [ -z "$VAULT_TOKEN" ]; then

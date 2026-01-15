@@ -8,7 +8,8 @@ metadata:
 data:
   entrypoint.sh: |
     #!/usr/bin/env sh
-    set -eu
+    set -u
+    # Не используем set -e, чтобы скрипт продолжал работу при ошибках включения auth method
 
     VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
     VAULT_TOKEN="${VAULT_TOKEN:-}"
@@ -32,14 +33,26 @@ data:
 
     # Проверяем, включен ли Kubernetes Auth
     echo "[hasura-vault-role] Checking if Kubernetes Auth is enabled..."
-    if ! curl -fsS -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null 2>&1; then
-      echo "[hasura-vault-role] Enabling Kubernetes Auth..."
-      curl -fsS -X POST \
+    AUTH_LIST=$(curl -sS -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/sys/auth" 2>/dev/null || echo "{}")
+    K8S_AUTH_CHECK=$(echo "$AUTH_LIST" | jq -r '.["kubernetes/"] // empty' 2>/dev/null || echo "")
+    
+    if [ -z "$K8S_AUTH_CHECK" ] || [ "$K8S_AUTH_CHECK" = "null" ]; then
+      echo "[hasura-vault-role] Kubernetes Auth not found, attempting to enable..."
+      CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+        -X POST \
         -H "X-Vault-Token: ${VAULT_TOKEN}" \
         -H "Content-Type: application/json" \
         -d '{"type":"kubernetes"}' \
-        "${VAULT_ADDR}/v1/sys/auth/kubernetes" >/dev/null
-      echo "[hasura-vault-role] Kubernetes Auth enabled"
+        "${VAULT_ADDR}/v1/sys/auth/kubernetes" 2>/dev/null || echo "000")
+      if [ "$CODE" = "200" ] || [ "$CODE" = "204" ]; then
+        echo "[hasura-vault-role] Kubernetes Auth enabled"
+      elif [ "$CODE" = "403" ]; then
+        echo "[hasura-vault-role] Kubernetes Auth may already be enabled (403 - permission denied)"
+        echo "[hasura-vault-role] This is expected if Kubernetes Auth was set up by vault-setup-kubernetes-auth job"
+        echo "[hasura-vault-role] Continuing with role creation..."
+      else
+        echo "[hasura-vault-role] Warning: Failed to enable Kubernetes Auth (HTTP ${CODE}), but continuing..."
+      fi
     else
       echo "[hasura-vault-role] Kubernetes Auth already enabled"
     fi
