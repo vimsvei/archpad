@@ -68,9 +68,28 @@ spec:
             - |
               # Загружаем секреты из Vault Agent Injector
               # Используем source для загрузки переменных окружения
-              set -a
-              . /vault/secrets/tolgee
-              set +a
+              if [ -f /vault/secrets/tolgee ]; then
+                set -a
+                . /vault/secrets/tolgee
+                set +a
+              else
+                echo "WARNING: /vault/secrets/tolgee not found, waiting..."
+                # Ждем, пока Vault Agent Injector создаст файл
+                max_wait=30
+                waited=0
+                while [ ! -f /vault/secrets/tolgee ] && [ $waited -lt $max_wait ]; do
+                  sleep 1
+                  waited=$((waited+1))
+                done
+                if [ -f /vault/secrets/tolgee ]; then
+                  set -a
+                  . /vault/secrets/tolgee
+                  set +a
+                else
+                  echo "ERROR: /vault/secrets/tolgee not found after ${max_wait}s"
+                  exit 1
+                fi
+              fi
               # Проверяем, что переменные загружены
               echo "DB URL: $SPRING_DATASOURCE_URL"
               echo "DB User: $SPRING_DATASOURCE_USERNAME"
@@ -112,6 +131,9 @@ spec:
             - name: config
               mountPath: /config/config.yaml
               subPath: config.yaml
+              readOnly: true
+            - name: vault-secrets
+              mountPath: /vault/secrets
               readOnly: true
           livenessProbe:
             httpGet:
