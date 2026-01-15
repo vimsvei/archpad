@@ -242,7 +242,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_pod_info) by (app)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app)",
               "refId": "A"
             }
           ],
@@ -299,7 +299,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_pod_info{phase=\"Running\"}) by (app)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app)",
               "refId": "A"
             }
           ],
@@ -356,7 +356,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_node_info) by (app)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (node, app)) by (app)",
               "refId": "A"
             }
           ],
@@ -437,7 +437,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_pod_info) by (app, namespace)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app, namespace)",
               "format": "table",
               "instant": true,
               "refId": "C"

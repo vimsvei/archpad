@@ -240,7 +240,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_node_info)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (node))",
               "refId": "A"
             }
           ],
@@ -297,7 +297,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_pod_info)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace))",
               "refId": "A"
             }
           ],
@@ -354,7 +354,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_pod_info{phase=\"Running\"})",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace))",
               "refId": "A"
             }
           ],
@@ -411,7 +411,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(kube_deployment_metadata_generation)",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (namespace))",
               "refId": "A"
             }
           ],
@@ -640,7 +640,7 @@ data:
               "type": "prometheus",
               "uid": "prometheus"
             },
-            "definition": "label_values(kube_namespace_labels, namespace)",
+            "definition": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}, namespace)",
             "hide": 0,
             "includeAll": true,
             "label": "Namespace",
@@ -648,7 +648,7 @@ data:
             "name": "namespace",
             "options": [],
             "query": {
-              "query": "label_values(kube_namespace_labels, namespace)",
+              "query": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}, namespace)",
               "refId": "StandardVariableQuery"
             },
             "refresh": 1,
