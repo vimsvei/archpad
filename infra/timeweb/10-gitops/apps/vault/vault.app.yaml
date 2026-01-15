@@ -89,6 +89,28 @@ spec:
           # Отключаем webhooks для упрощения развертывания
           disableWebhooks: true
 
+        # Настройка Vault Agent Injector для уменьшения CPU requests
+        # Фактическое использование очень низкое (~5-10m), но дефолтные requests 250m
+        # Уменьшаем до 50m, чтобы освободить ресурсы для других подов
+        injector:
+          enabled: true
+          # Уменьшаем CPU requests для Vault Agent init контейнеров
+          # Это освободит ~200m CPU на каждый под с Vault Agent
+          resources:
+            requests:
+              cpu: 50m  # Было 250m по умолчанию
+              memory: 64Mi
+            limits:
+              cpu: 100m  # Было 500m по умолчанию
+              memory: 128Mi
+          # Переопределяем переменные окружения для уменьшения requests
+          # Эти переменные контролируют ресурсы для init контейнеров vault-agent-init
+          extraEnvironmentVars:
+            AGENT_INJECT_CPU_REQUEST: "50m"
+            AGENT_INJECT_CPU_LIMIT: "100m"
+            AGENT_INJECT_MEM_REQUEST: "64Mi"
+            AGENT_INJECT_MEM_LIMIT: "128Mi"
+
   syncPolicy:
     automated:
       prune: true
