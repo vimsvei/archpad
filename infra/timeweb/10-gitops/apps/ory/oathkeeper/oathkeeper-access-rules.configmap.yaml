@@ -31,7 +31,7 @@ data:
     # ==== Swagger API документация для arch-repo-service (публичный доступ) ====
     - id: arch-repo-api-docs
       match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-docs
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-docs<(/.*)?>
         methods: ["GET", "OPTIONS"]
       upstream:
         url: http://arch-repo-service.platform:3000
@@ -48,7 +48,7 @@ data:
 
     - id: arch-repo-api-json
       match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-json
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-json<(/.*)?>
         methods: ["GET", "OPTIONS"]
       upstream:
         url: http://arch-repo-service.platform:3000
