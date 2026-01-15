@@ -27,6 +27,20 @@ function getLocaleFromRequest(request: NextRequest): string {
 }
 
 export default function proxy(request: NextRequest) {
+  // Логируем информацию о сборке образа при первом запросе (только один раз)
+  if (typeof (globalThis as any).__build_info_logged === 'undefined') {
+    (globalThis as any).__build_info_logged = true;
+    const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
+    const buildVersion = process.env.BUILD_VERSION || 'unknown';
+    const buildBranch = process.env.BUILD_BRANCH || 'unknown';
+    console.log('========================================');
+    console.log('🚀 Portal Starting');
+    console.log(`📦 Build Commit: ${buildCommitSha}`);
+    console.log(`🏷️  Build Version: ${buildVersion}`);
+    console.log(`🌿 Build Branch: ${buildBranch}`);
+    console.log('========================================');
+  }
+
   const { pathname } = request.nextUrl
 
   // Skip Next internals, API, and files (handled by matcher too, but keep safe).

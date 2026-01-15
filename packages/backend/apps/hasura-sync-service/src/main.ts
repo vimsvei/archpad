@@ -5,6 +5,7 @@ import { LoggerService } from '@archpad/logger';
 import { loadVaultSecrets } from '@archpad/vault-config';
 
 async function bootstrap() {
+
   // Load secrets from Vault before creating the application
   // В Kubernetes секреты уже загружены через Vault Agent Injector в переменные окружения
   // В local development загружаем из Vault API
@@ -31,6 +32,7 @@ async function bootstrap() {
   process.exit(0);
 }
 bootstrap().catch((err) => {
+  // Используем console.error только для критических ошибок при bootstrap, так как logger может быть недоступен
   console.error('Fatal error in hasura-repo-sync:', err);
   process.exit(1);
 });

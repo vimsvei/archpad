@@ -34,7 +34,15 @@ RUN pnpm install --frozen-lockfile --prod --filter @archpad/backend...
 FROM node:20-alpine AS runtime
 WORKDIR /app/packages/backend
 
+# Build metadata
+ARG BUILD_COMMIT_SHA
+ARG BUILD_VERSION
+ARG BUILD_BRANCH
+
 ENV NODE_ENV=production
+ENV BUILD_COMMIT_SHA=${BUILD_COMMIT_SHA}
+ENV BUILD_VERSION=${BUILD_VERSION}
+ENV BUILD_BRANCH=${BUILD_BRANCH}
 
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=prod-deps /app/packages/backend/node_modules ./node_modules

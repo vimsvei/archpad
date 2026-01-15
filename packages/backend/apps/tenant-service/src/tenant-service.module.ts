@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
-import { LoggerModule } from '@archpad/logger';
+import { LoggerModule, LoggerService } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from "node:path";
@@ -89,4 +89,23 @@ import { BootstrapModule } from './bootstrap.module';
     BootstrapModule,
   ],
 })
-export class TenantServiceModule {}
+export class TenantServiceModule implements OnModuleInit {
+  private readonly loggerContext = TenantServiceModule.name;
+
+  constructor(private readonly logger: LoggerService) {}
+
+  async onModuleInit() {
+    const mode = process.env.NODE_ENV;
+    const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
+    const buildVersion = process.env.BUILD_VERSION || 'unknown';
+    const buildBranch = process.env.BUILD_BRANCH || 'unknown';
+
+    this.logger.log('========================================', this.loggerContext);
+    this.logger.log('🚀 Tenant Service Starting', this.loggerContext);
+    this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
+    this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
+    this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
+    this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
+    this.logger.log('========================================', this.loggerContext);
+  }
+}

@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnModuleInit } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import * as process from 'node:process';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
@@ -119,14 +119,23 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     },
   ],
 })
-export class ArchRepoServiceModule {
+export class ArchRepoServiceModule implements OnModuleInit {
   private readonly loggerContext = ArchRepoServiceModule.name;
 
   constructor(private readonly logger: LoggerService) {}
 
   async onModuleInit() {
     const mode = process.env.NODE_ENV;
+    const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
+    const buildVersion = process.env.BUILD_VERSION || 'unknown';
+    const buildBranch = process.env.BUILD_BRANCH || 'unknown';
 
-    this.logger.log(`NODE_ENV=${mode}`, this.loggerContext);
+    this.logger.log('========================================', this.loggerContext);
+    this.logger.log('🚀 Arch Repo Service Starting', this.loggerContext);
+    this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
+    this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
+    this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
+    this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
+    this.logger.log('========================================', this.loggerContext);
   }
 }

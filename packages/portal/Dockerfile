@@ -94,10 +94,18 @@ CMD ["pnpm", "--filter", "@archpad/portal", "dev", "--port", "3000", "--hostname
 
 FROM node:20-bookworm-slim AS runner
 
+# Build metadata
+ARG BUILD_COMMIT_SHA
+ARG BUILD_VERSION
+ARG BUILD_BRANCH
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV BUILD_COMMIT_SHA=${BUILD_COMMIT_SHA}
+ENV BUILD_VERSION=${BUILD_VERSION}
+ENV BUILD_BRANCH=${BUILD_BRANCH}
 
 WORKDIR /app
 
