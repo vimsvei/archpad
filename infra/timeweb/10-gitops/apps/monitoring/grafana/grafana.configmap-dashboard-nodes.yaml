@@ -9,14 +9,26 @@ data:
   nodes.json: |
     {
       "annotations": {
-        "list": []
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
       },
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": null,
+      "id": 8,
       "links": [],
-      "liveNow": false,
       "panels": [
         {
           "datasource": {
@@ -29,19 +41,22 @@ data:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
                 "hideFrom": {
+                  "legend": false,
                   "tooltip": false,
-                  "viz": false,
-                  "legend": false
+                  "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -49,6 +64,7 @@ data:
                   "type": "linear"
                 },
                 "showPoints": "never",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -64,7 +80,7 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   }
                 ]
               },
@@ -81,23 +97,29 @@ data:
           "id": 1,
           "options": {
             "legend": {
-              "calcs": ["lastNotNull", "max", "mean"],
+              "calcs": [
+                "lastNotNull",
+                "max",
+                "mean"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.3.1",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) or sum by (node) (rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m]))",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\",node=~\"$node\"}[5m])) by (node) + on(node) sum by (node) (rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\",node=~\"$node\"}[5m]))",
               "legendFormat": "{{node}}",
               "refId": "A"
             }
@@ -116,19 +138,22 @@ data:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
                 "hideFrom": {
+                  "legend": false,
                   "tooltip": false,
-                  "viz": false,
-                  "legend": false
+                  "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -136,6 +161,7 @@ data:
                   "type": "linear"
                 },
                 "showPoints": "never",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -151,7 +177,7 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   }
                 ]
               },
@@ -168,23 +194,29 @@ data:
           "id": 2,
           "options": {
             "legend": {
-              "calcs": ["lastNotNull", "max", "mean"],
+              "calcs": [
+                "lastNotNull",
+                "max",
+                "mean"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.3.1",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\"})",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\",node=~\"$node\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\",node=~\"$node\"})",
               "legendFormat": "{{node}}",
               "refId": "A"
             }
@@ -203,19 +235,22 @@ data:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
                 "hideFrom": {
+                  "legend": false,
                   "tooltip": false,
-                  "viz": false,
-                  "legend": false
+                  "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -223,6 +258,7 @@ data:
                   "type": "linear"
                 },
                 "showPoints": "never",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -238,7 +274,7 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   }
                 ]
               },
@@ -255,16 +291,22 @@ data:
           "id": 3,
           "options": {
             "legend": {
-              "calcs": ["lastNotNull", "max", "mean"],
+              "calcs": [
+                "lastNotNull",
+                "max",
+                "mean"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.3.1",
           "targets": [
             {
               "datasource": {
@@ -303,6 +345,9 @@ data:
                 "cellOptions": {
                   "type": "auto"
                 },
+                "footer": {
+                  "reducers": []
+                },
                 "inspect": false
               },
               "mappings": [],
@@ -311,7 +356,7 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   }
                 ]
               }
@@ -420,12 +465,6 @@ data:
           "id": 4,
           "options": {
             "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": ["sum"],
-              "show": false
-            },
             "showHeader": true,
             "sortBy": [
               {
@@ -434,14 +473,14 @@ data:
               }
             ]
           },
-          "pluginVersion": "10.0.0",
+          "pluginVersion": "12.3.1",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) or sum by (node) (rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m]))",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\",node=~\"$node\"}[5m])) by (node) + on(node) sum by (node) (rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\",node=~\"$node\"}[5m]))",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -451,7 +490,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\"})",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\",node=~\"$node\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\",node=~\"$node\"})",
               "format": "table",
               "instant": true,
               "refId": "B"
@@ -491,7 +530,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, node)) by (node) or on(node) vector(0) * sum by (node) (container_cpu_usage_seconds_total{id=\"/\",node!=\"\"})",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",node=~\"$node\"}) by (pod, node)) by (node)",
               "format": "table",
               "instant": true,
               "refId": "F"
@@ -507,8 +546,15 @@ data:
               "id": "organize",
               "options": {
                 "excludeByName": {
-                  "Time": true
+                  "Time": true,
+                  "device": true,
+                  "fstype": true,
+                  "instance": true,
+                  "job": true,
+                  "mountpoint": true,
+                  "role": true
                 },
+                "includeByName": {},
                 "indexByName": {},
                 "renameByName": {
                   "Value #A": "CPU Usage (cores)",
@@ -517,8 +563,8 @@ data:
                   "Value #D": "Disk Available",
                   "Value #E": "Disk Total",
                   "Value #F": "Pod Count",
-                  "node": "Node",
-                  "instance": "Node (from disk)"
+                  "instance": "Node (from disk)",
+                  "node": "Node"
                 }
               }
             },
@@ -538,15 +584,18 @@ data:
           "type": "table"
         }
       ],
+      "preload": false,
       "refresh": "30s",
-      "schemaVersion": 38,
-      "style": "dark",
-      "tags": ["nodes", "kubernetes", "infrastructure"],
+      "schemaVersion": 42,
+      "tags": [
+        "nodes",
+        "kubernetes",
+        "infrastructure"
+      ],
       "templating": {
         "list": [
           {
             "current": {
-              "selected": false,
               "text": "All",
               "value": "$__all"
             },
@@ -555,7 +604,6 @@ data:
               "uid": "prometheus"
             },
             "definition": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}, node) or label_values(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}, node)",
-            "hide": 0,
             "includeAll": true,
             "label": "Node",
             "multi": true,
@@ -567,8 +615,6 @@ data:
             },
             "refresh": 1,
             "regex": "",
-            "skipUrlSync": false,
-            "sort": 0,
             "type": "query"
           }
         ]
@@ -581,6 +627,5 @@ data:
       "timezone": "",
       "title": "Nodes Resources",
       "uid": "nodes-resources",
-      "version": 1,
-      "weekStart": ""
+      "version": 11
     }
