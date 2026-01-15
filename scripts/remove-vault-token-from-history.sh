@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-VAULT_TOKEN_PATTERN="hvs\.R67CyXngkL6JNmeeqEQYIkuc"
+VAULT_TOKEN_PATTERN="<your-vault-root-token>"
 REPLACEMENT="<your-vault-root-token>"
 
 RED='\033[0;31m'
