@@ -154,4 +154,10 @@ spec:
         - name: grafana-dashboards-resources
           configMap:
             name: grafana-dashboards-resources
+        - name: grafana-dashboards-kubernetes-cluster
+          configMap:
+            name: grafana-dashboard-kubernetes-cluster
+        - name: grafana-dashboards-applications
+          configMap:
+            name: grafana-dashboard-applications
             optional: true
