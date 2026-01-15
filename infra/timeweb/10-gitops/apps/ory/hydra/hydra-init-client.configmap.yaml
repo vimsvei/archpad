@@ -40,12 +40,13 @@ data:
 
     # Добавляем redirect URI для локальной разработки
     REDIRECT_URI_LOCAL="http://localhost:3000/oauth/callback"
+    REDIRECT_URI_LOCAL_ALT="http://localhost:3001/oauth/callback"
 
     payload="$(cat <<JSON
     {
       "client_id": "${CLIENT_ID}",
       "client_name": "Archpad Portal (PKCE)",
-      "redirect_uris": ["${REDIRECT_URI}", "${REDIRECT_URI_LOCAL}"],
+      "redirect_uris": ["${REDIRECT_URI}", "${REDIRECT_URI_LOCAL}", "${REDIRECT_URI_LOCAL_ALT}"],
       "grant_types": ["authorization_code", "refresh_token"],
       "response_types": ["code"],
       "scope": "${SCOPE}",
