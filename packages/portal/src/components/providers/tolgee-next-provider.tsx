@@ -50,14 +50,6 @@ export const TolgeeNextProvider = ({ language, children }: TolgeeNextProviderPro
       tolgee.run().then(() => {
         console.log('[Tolgee Client] Translations loaded, current language:', tolgee.getLanguage());
         console.log('[Tolgee Client] Is loaded:', tolgee.isLoaded());
-        
-        // Логируем загруженные переводы
-        const translations = tolgee.getTranslations();
-        if (translations && typeof translations === 'object') {
-          const keys = Object.keys(translations).slice(0, 5);
-          console.log('[Tolgee Client] Loaded translation keys (sample):', keys);
-          console.log('[Tolgee Client] Total translations loaded:', Object.keys(translations).length);
-        }
       }).catch((error) => {
         console.error('[Tolgee Client] Failed to load translations:', error);
       });
