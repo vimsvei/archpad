@@ -1,6 +1,6 @@
-# NOTE: Dashboard JSON is stored separately in dashboards/nodes.json
-# To update the dashboard, edit dashboards/nodes.json and copy its content here
-# or use a script to merge it automatically
+# NOTE: Dashboard JSON is stored separately in ../../dashboards/nodes.json
+# (outside the ArgoCD-synced directory to avoid parsing errors)
+# To update the dashboard, edit ../../dashboards/nodes.json and copy its content here
 apiVersion: v1
 kind: ConfigMap
 metadata:
