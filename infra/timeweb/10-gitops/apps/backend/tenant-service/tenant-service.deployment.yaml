@@ -55,9 +55,6 @@ spec:
                         - hasura
                         - tolgee
                         - mailpit
-                        - kratos
-                        - hydra
-                        - oathkeeper
                 topologyKey: kubernetes.io/hostname
       serviceAccountName: tenant-service
       containers:
@@ -67,9 +64,13 @@ spec:
           args:
             - |
               # Загружаем секреты из Vault Agent Injector
-              set -a
-              . /vault/secrets/tenant-service
-              set +a
+              if [ -f /vault/secrets/tenant-service ]; then
+                set -a
+                . /vault/secrets/tenant-service
+                set +a
+              else
+                echo "WARNING: /vault/secrets/tenant-service not found, using environment variables"
+              fi
               # Проверяем, что переменные установлены
               if [ -z "$TENANT_DB" ]; then
                 echo "ERROR: TENANT_DB is not set"
@@ -100,10 +101,6 @@ spec:
               value: "production"
             - name: PORT
               value: "3000"
-          volumeMounts:
-            - name: vault-secrets
-              mountPath: /vault/secrets
-              readOnly: true
           livenessProbe:
             httpGet:
               path: /healthz
@@ -128,6 +125,3 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
-      volumes:
-        - name: vault-secrets
-          emptyDir: {}

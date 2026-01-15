@@ -63,6 +63,41 @@ data:
           config:
             headers: {}
 
+    # ==== Swagger API документация для tenant-service (публичный доступ) ====
+    - id: tenant-service-api-docs
+      match:
+        url: <https|http>://api.archpad.pro/rest/tenant-service/api-docs.*
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://tenant-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/tenant-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
+    - id: tenant-service-api-json
+      match:
+        url: <https|http>://api.archpad.pro/rest/tenant-service/api-json.*
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://tenant-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/tenant-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
     # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
     # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
     # Используем negative lookahead, чтобы не матчить api-docs/api-json
@@ -74,6 +109,26 @@ data:
         url: http://arch-repo-service.platform:3000
         preserve_host: true
         strip_path: /rest/arch-repo-service
+      authenticators:
+        - handler: oauth2_introspection
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers:
+              X-Archpad-User-Id: "{{ .Subject }}"
+
+    # ==== Tenant-service через Oathkeeper (требует авторизации) ====
+    # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
+    - id: tenant-service-api
+      match:
+        url: <https|http>://api.archpad.pro/rest/tenant-service/(?!api-docs|api-json).+
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+      upstream:
+        url: http://tenant-service.platform:3000
+        preserve_host: true
+        strip_path: /rest/tenant-service
       authenticators:
         - handler: oauth2_introspection
       authorizer:

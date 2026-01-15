@@ -4,6 +4,7 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
 import { LoggerModule } from '@archpad/logger';
+import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from "node:path";
 import { BootstrapModule } from './bootstrap.module';
@@ -11,6 +12,7 @@ import { BootstrapModule } from './bootstrap.module';
 @Module({
   imports: [
     LoggerModule.forRoot({ format: 'text' }),
+    HealthCheckerModule,
     VaultConfigModule.forRoot({
       nodeEnv: process.env.NODE_ENV,
       // В Kubernetes секреты уже загружены через Vault Agent Injector

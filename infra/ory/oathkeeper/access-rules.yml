@@ -56,6 +56,41 @@
       config:
         headers: {}
 
+# ==== Swagger API документация для tenant-service (публичный доступ) ====
+- id: tenant-service-api-docs
+  match:
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/tenant-service/api-docs<(/.*)?>
+    methods: ["GET", "OPTIONS"]
+  upstream:
+    url: http://tenant-service:3000
+    preserve_host: true
+    strip_path: /rest/tenant-service
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+      config:
+        headers: {}
+
+- id: tenant-service-api-json
+  match:
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/tenant-service/api-json<(/.*)?>
+    methods: ["GET", "OPTIONS"]
+  upstream:
+    url: http://tenant-service:3000
+    preserve_host: true
+    strip_path: /rest/tenant-service
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+      config:
+        headers: {}
+
 # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
 # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
 # Используем паттерн, который требует наличия пути, но не начинающегося с api-docs или api-json
@@ -78,3 +113,23 @@
           X-Archpad-User-Id: "{{ .Subject }}"
 #          X-Archpad-Tenant-Ids: "{{ index .Extra \"tenant_id\" }}"
 #          X-Archpad-Roles: "{{ index .Extra \"roles\" }}"
+
+# ==== Tenant-service через Oathkeeper (требует авторизации) ====
+# Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
+- id: tenant-service-api
+  match:
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/tenant-service/.+
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  upstream:
+    url: http://tenant-service:3000
+    preserve_host: true
+    strip_path: /rest/tenant-service
+  authenticators:
+    - handler: oauth2_introspection
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: header
+      config:
+        headers:
+          X-Archpad-User-Id: "{{ .Subject }}"
