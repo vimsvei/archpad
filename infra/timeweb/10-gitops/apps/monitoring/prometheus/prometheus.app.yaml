@@ -11,131 +11,14 @@ spec:
     server: https://kubernetes.default.svc
     namespace: monitoring
   source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 66.2.0
-    helm:
-      skipCrds: false  # Устанавливаем CRD через Helm, используя ServerSideApply для избежания проблемы с большими аннотациями
-      releaseName: prometheus
-      values: |
-        # Отключаем Grafana, развертываем отдельно
-        grafana:
-          enabled: false
-        
-        # Отключаем Alertmanager для экономии ресурсов
-        alertmanager:
-          enabled: false
-        
-        # Prometheus конфигурация
-        prometheus:
-          enabled: true
-          
-          # Оптимизированные ресурсы для демо-стенда (4 CPU / 8GB RAM на весь кластер)
-          # Учитываем, что уже используется ~500m CPU / ~1152Mi RAM приложениями
-          # Доступно: ~3000m CPU / ~1944Mi RAM (из 4 CPU / 8GB RAM)
-          prometheusSpec:
-            resources:
-              requests:
-                cpu: 200m
-                memory: 1Gi
-              limits:
-                cpu: 300m
-                memory: 1Gi
-            
-            # Retention: 7 дней для демо-стенда (оптимизация под ограничение RAM)
-            retention: 7d
-            
-            # Storage
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  storageClassName: hostpath  # Используем hostpath StorageClass для локального хранилища
-                  resources:
-                    requests:
-                      storage: 20Gi
-            
-            # Service Discovery для Kubernetes
-            serviceMonitorSelectorNilUsesHelmValues: false
-            podMonitorSelectorNilUsesHelmValues: false
-            
-            # Дополнительные scrape configs для БД кластера
-            additionalScrapeConfigs:
-              - job_name: 'node-exporter-db'
-                static_configs:
-                  - targets: ['192.168.0.4:9100']
-                    labels:
-                      instance: 'db-cluster'
-                      role: 'database'
-              
-              - job_name: 'postgres-exporter-db'
-                static_configs:
-                  - targets: ['192.168.0.4:9308']
-                    labels:
-                      instance: 'db-cluster'
-                      role: 'database'
-        
-        # Node Exporter (DaemonSet для метрик нод)
-        # Оптимизировано для демо-стенда
-        nodeExporter:
-          enabled: true
-          resources:
-            requests:
-              cpu: 30m
-              memory: 32Mi
-            limits:
-              cpu: 40m
-              memory: 50Mi
-        
-        # kube-state-metrics (метрики состояния Kubernetes объектов)
-        # Оптимизировано для демо-стенда
-        kubeStateMetrics:
-          enabled: true
-          resources:
-            requests:
-              cpu: 30m
-              memory: 64Mi
-            limits:
-              cpu: 40m
-              memory: 100Mi
-          # Настройка для устранения предупреждений о deprecated Endpoints
-          # В Kubernetes 1.33+ Endpoints устарел, используется EndpointSlice
-          # Примечание: kube-state-metrics v2.17.0+ поддерживает EndpointSlice по умолчанию
-          # Предупреждения в логах не критичны, но можно обновить версию chart для их устранения
-          # Текущая версия chart 66.2.0 использует kube-state-metrics, который все еще собирает Endpoints
-          # Это предупреждение не влияет на функциональность, но можно игнорировать или обновить chart
-        
-        # Prometheus Operator
-        # Оптимизировано для демо-стенда
-        prometheusOperator:
-          enabled: true
-          resources:
-            requests:
-              cpu: 30m
-              memory: 64Mi
-            limits:
-              cpu: 40m
-              memory: 100Mi
-        
-        # Отключаем мониторинг системных компонентов Kubernetes (kube-system)
-        # чтобы избежать ошибок с правами доступа к namespace kube-system
-        kubeApiServer:
-          enabled: false
-        kubeControllerManager:
-          enabled: false
-        kubeScheduler:
-          enabled: false
-        kubeProxy:
-          enabled: false
-        kubeEtcd:
-          enabled: false
-        coreDns:
-          enabled: false
+    repoURL: https://gitlab.com/zs-archipad/archpad.git
+    targetRevision: main
+    path: infra/timeweb/10-gitops/apps/monitoring/prometheus
+    directory:
+      recurse: false
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - SkipDryRunOnMissingResource=true
-      - ServerSideApply=true  # Используем Server-Side Apply для избежания проблемы с большими аннотациями в CRD
