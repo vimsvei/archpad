@@ -21,15 +21,44 @@
           X-Hasura-Role: "public"
           X-Hasura-Allowed-Roles: "public"
 
-# ==== Arch-repo-service через Oathkeeper ====
+# ==== Swagger API документация для arch-repo-service (публичный доступ) ====
+- id: arch-repo-api-docs
+  match:
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/arch-repo-service/api-docs<(/.*)?>
+    methods: ["GET", "OPTIONS"]
+  upstream:
+    url: http://arch-repo:3000
+    preserve_host: true
+    strip_path: /rest/arch-repo-service
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators: []
+
+- id: arch-repo-api-json
+  match:
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/arch-repo-service/api-json<(/.*)?>
+    methods: ["GET", "OPTIONS"]
+  upstream:
+    url: http://arch-repo:3000
+    preserve_host: true
+    strip_path: /rest/arch-repo-service
+  authenticators:
+    - handler: anonymous
+  authorizer:
+    handler: allow
+  mutators: []
+
+# ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
 - id: arch-repo-api
   match:
-    url: <https|http>://api.192-168-1-119.sslip.io/rest<(/.*)>
+    url: <https|http>://api.192-168-1-119.sslip.io/rest/arch-repo-service<(/.*)>
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   upstream:
     url: http://arch-repo:3000
     preserve_host: true
-    strip_path: /rest
+    strip_path: /rest/arch-repo-service
   authenticators:
     - handler: oauth2_introspection
   authorizer:
@@ -39,5 +68,5 @@
       config:
         headers:
           X-Archpad-User-Id: "{{ .Subject }}"
-#          X-Archpad-Tenant-Ids: "{{ join \",\" .Extra.identity.metadata_public.tenants }}"
-#          X-Archpad-Roles: "{{ join \",\" .Extra.identity.metadata_public.roles }}"
+#          X-Archpad-Tenant-Ids: "{{ index .Extra \"tenant_id\" }}"
+#          X-Archpad-Roles: "{{ index .Extra \"roles\" }}"

@@ -23,6 +23,10 @@ data:
 
     # Аутентификаторы, которые мы включаем
     authenticators:
+      anonymous:
+        enabled: true
+        config:
+          subject: guest
       oauth2_introspection:
         enabled: true
         config:

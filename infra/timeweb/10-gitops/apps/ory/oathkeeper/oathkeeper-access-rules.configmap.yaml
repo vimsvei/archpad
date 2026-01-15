@@ -13,7 +13,7 @@ data:
         url: <https|http>://api.archpad.pro/graphql<(/.*)?>
         methods: ["GET", "POST", "OPTIONS"]
       upstream:
-        url: http://hasura:8080
+        url: http://hasura.platform:8080
         preserve_host: true
         strip_path: /graphql
       authenticators:
@@ -28,15 +28,44 @@ data:
               X-Hasura-Role: "public"
               X-Hasura-Allowed-Roles: "public"
 
-    # ==== Arch-repo-service через Oathkeeper ====
+    # ==== Swagger API документация для arch-repo-service (публичный доступ) ====
+    - id: arch-repo-api-docs
+      match:
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-docs<(/.*)?>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://arch-repo-service.platform:3000
+        preserve_host: true
+        strip_path: /rest/arch-repo-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators: []
+
+    - id: arch-repo-api-json
+      match:
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service/api-json<(/.*)?>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://arch-repo-service.platform:3000
+        preserve_host: true
+        strip_path: /rest/arch-repo-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators: []
+
+    # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
     - id: arch-repo-api
       match:
-        url: <https|http>://api.archpad.pro/rest<(/.*)>
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service<(/.*)>
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
       upstream:
-        url: http://arch-repo:3000
+        url: http://arch-repo-service.platform:3000
         preserve_host: true
-        strip_path: /rest
+        strip_path: /rest/arch-repo-service
       authenticators:
         - handler: oauth2_introspection
       authorizer:
