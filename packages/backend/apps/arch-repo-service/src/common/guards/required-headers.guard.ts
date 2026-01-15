@@ -32,6 +32,11 @@ export class RequiredHeadersGuard implements CanActivate {
     if (url.startsWith('/health') || url.startsWith('/healthz')) {
       return true;
     }
+    
+    // Публичный доступ к Swagger документации
+    if (url.startsWith('/api-docs') || url.startsWith('/api-json') || url.startsWith('/swagger')) {
+      return true;
+    }
 
     for (const headerName of this.requiredHeaders) {
       const key = headerName.toLowerCase(); // на всякий
