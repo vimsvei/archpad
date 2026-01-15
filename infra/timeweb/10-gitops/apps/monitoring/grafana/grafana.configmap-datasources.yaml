@@ -13,7 +13,7 @@ data:
         access: proxy
         # Для kube-prometheus-stack с releaseName "prometheus" имя сервиса: prometheus-kube-prometheus-prometheus
         # Если сервис еще не готов, можно использовать короткое имя после создания сервиса
-        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090
         isDefault: true
         editable: true
         jsonData:
