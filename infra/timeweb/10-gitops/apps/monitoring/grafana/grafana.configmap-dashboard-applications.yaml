@@ -97,7 +97,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by (namespace, application) (label_replace(sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "expr": "sum by (namespace, application) (label_replace(sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\",namespace=~\"$namespace\"}[5m])) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "legendFormat": "{{namespace}}/{{application}}",
               "refId": "A"
             }
@@ -184,7 +184,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by (namespace, application) (label_replace(sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "expr": "sum by (namespace, application) (label_replace(sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\",namespace=~\"$namespace\"}) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "legendFormat": "{{namespace}}/{{application}}",
               "refId": "A"
             }
@@ -242,7 +242,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",namespace=~\"$namespace\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
@@ -299,7 +299,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",namespace=~\"$namespace\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
@@ -356,7 +356,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (node, namespace, pod)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",namespace=~\"$namespace\"}) by (node, namespace, pod)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
