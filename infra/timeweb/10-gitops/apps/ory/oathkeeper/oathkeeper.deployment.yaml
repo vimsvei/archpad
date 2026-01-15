@@ -16,12 +16,10 @@ spec:
         app: oathkeeper
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
-        # ВАЖНО: Пользователь указал путь "/v1/kv/data/archpad/demo/ory/oauthkeeper"
-        # Если путь должен быть "oathkeeper" вместо "oauthkeeper", измените здесь
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-oathkeeper: "kv/data/archpad/demo/ory/oauthkeeper"
+        vault.hashicorp.com/agent-inject-secret-oathkeeper: "kv/data/archpad/demo/ory/oathkeeper"
         vault.hashicorp.com/agent-inject-template-oathkeeper: |
-          {{- with secret "kv/data/archpad/demo/ory/oauthkeeper" }}
+          {{- with secret "kv/data/archpad/demo/ory/oathkeeper" }}
           {{- range $k, $v := .Data.data }}
           export {{ $k }}="{{ $v }}"
           {{- end }}
