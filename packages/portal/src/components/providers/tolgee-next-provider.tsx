@@ -3,25 +3,26 @@
 import React from "react";
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
-import {CachePublicRecord, TolgeeProvider, TolgeeStaticData} from "@tolgee/react";
+import {TolgeeProvider} from "@tolgee/react";
 import {TolgeeBase} from "@/tolgee/shared";
 
 type TolgeeNextProviderProps = {
   language: string;
-  staticData: TolgeeStaticData | CachePublicRecord[];
   children: React.ReactNode;
 };
 
-export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNextProviderProps) => {
+export const TolgeeNextProvider = ({ language, children }: TolgeeNextProviderProps) => {
   const router = useRouter();
   
-  // Инициализируем Tolgee с правильным языком и статическими данными
+  // Инициализируем Tolgee с правильным языком
+  // Tolgee загружает переводы динамически через API на клиенте
   const tolgee = React.useMemo(() => {
-    return TolgeeBase().init({
+    const instance = TolgeeBase().init({
       language,
-      staticData: staticData || [],
+      // Не передаем staticData - переводы загружаются динамически через API
     });
-  }, [language, staticData]);
+    return instance;
+  }, [language]);
   
   useEffect(() => {
     // Устанавливаем язык при изменении
@@ -32,7 +33,6 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
     // Логирование для отладки (только на клиенте)
     if (typeof window !== 'undefined') {
       console.log('[Tolgee Client] Initialized with language:', language);
-      console.log('[Tolgee Client] Static data records:', staticData?.length || 0);
       
       // Проверяем конфигурацию Tolgee
       const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
@@ -44,43 +44,19 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
         isInitialized: tolgee.isLoaded(),
       });
       
-      // Проверяем, загружены ли переводы
+      // Загружаем переводы динамически через Tolgee API
+      // Это позволяет получать актуальные переводы без пересборки приложения
+      console.log('[Tolgee Client] Loading translations dynamically from API...');
       tolgee.run().then(() => {
         console.log('[Tolgee Client] Translations loaded, current language:', tolgee.getLanguage());
         console.log('[Tolgee Client] Is loaded:', tolgee.isLoaded());
-        // Логируем информацию о статических данных (SSR)
-        if (staticData && Array.isArray(staticData) && staticData.length > 0) {
-          const sampleKeys = staticData.slice(0, 5).map((record: any) => 
-            record.key || record.namespace?.key || 'unknown'
-          );
-          console.log('[Tolgee Client] Static data keys (sample):', sampleKeys);
-          console.log('[Tolgee Client] Total static data records:', staticData.length);
-          
-          // Логируем значения переводов из staticData
-          const translations: Record<string, any> = {};
-          staticData.slice(0, 5).forEach((record: any) => {
-            if (record && typeof record === 'object') {
-              const key = record.key || record.namespace?.key || 'unknown';
-              const value = record.translation || record.value || record.text || JSON.stringify(record).substring(0, 100);
-              translations[key] = value;
-            }
-          });
-          console.log('[Tolgee Client] Static data translation values (sample):', translations);
-          
-          // Тестируем получение переводов через Tolgee API
-          try {
-            sampleKeys.slice(0, 3).forEach((key: string) => {
-              if (key !== 'unknown') {
-                // Пробуем разные способы получить перевод
-                const translation = (tolgee as any).translate?.(key) || (tolgee as any).t?.(key) || key;
-                console.log(`[Tolgee Client] Translation test for "${key}":`, translation);
-              }
-            });
-          } catch (e) {
-            console.warn('[Tolgee Client] Could not test translations:', e);
-          }
-        } else {
-          console.warn('[Tolgee Client] No static data provided from SSR');
+        
+        // Логируем загруженные переводы
+        const translations = tolgee.getTranslations();
+        if (translations && typeof translations === 'object') {
+          const keys = Object.keys(translations).slice(0, 5);
+          console.log('[Tolgee Client] Loaded translation keys (sample):', keys);
+          console.log('[Tolgee Client] Total translations loaded:', Object.keys(translations).length);
         }
       }).catch((error) => {
         console.error('[Tolgee Client] Failed to load translations:', error);
@@ -92,13 +68,12 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
       router.refresh();
     });
     return () => unsubscribe();
-  }, [tolgee, router, language, staticData]);
+  }, [tolgee, router, language]);
   
   return (
     <TolgeeProvider
       tolgee={tolgee}
       fallback="Loading"
-      ssr={{ language, staticData }}
     >
       {children}
     </TolgeeProvider>

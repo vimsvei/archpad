@@ -29,8 +29,10 @@ WORKDIR /app
 
 # Build arguments for Next.js public environment variables
 # These must be available during build time to be embedded in the client bundle
-# NOTE: NEXT_PUBLIC_TOLGEE_API_KEY and NEXT_PUBLIC_TOLGEE_API_URL are NOT set here
-# to avoid embedding old values in the bundle. They will be provided at runtime.
+# NOTE: For Tolgee, we need these in build-time for client-side dynamic loading,
+# but they will also be available at runtime for server-side rendering
+ARG NEXT_PUBLIC_TOLGEE_API_KEY
+ARG NEXT_PUBLIC_TOLGEE_API_URL
 ARG NEXT_PUBLIC_URL
 ARG NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
 ARG NEXT_PUBLIC_ORY_SDK_URL
@@ -38,7 +40,9 @@ ARG NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
 
 # Set as environment variables for Next.js build process
 # Next.js will embed NEXT_PUBLIC_* variables into the client bundle during build
-# Tolgee variables are NOT set here - they will be provided at runtime only
+# These are needed for client-side dynamic translation loading via Tolgee API
+ENV NEXT_PUBLIC_TOLGEE_API_KEY=$NEXT_PUBLIC_TOLGEE_API_KEY
+ENV NEXT_PUBLIC_TOLGEE_API_URL=$NEXT_PUBLIC_TOLGEE_API_URL
 ENV NEXT_PUBLIC_URL=$NEXT_PUBLIC_URL
 ENV NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
 ENV NEXT_PUBLIC_ORY_SDK_URL=$NEXT_PUBLIC_ORY_SDK_URL
@@ -55,14 +59,13 @@ RUN pnpm --filter @archpad/contract build
 # Then build portal
 # NEXT_PUBLIC_* variables are now available and will be embedded in the client bundle
 # Логируем переменные для отладки (только ключи, не значения)
-# NOTE: NEXT_PUBLIC_TOLGEE_API_KEY and NEXT_PUBLIC_TOLGEE_API_URL are NOT logged here
-# as they are not set during build - they will be provided at runtime only
 RUN echo "Building portal with NEXT_PUBLIC_* variables:" && \
+    echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}" && \
+    echo "  NEXT_PUBLIC_TOLGEE_API_URL: ${NEXT_PUBLIC_TOLGEE_API_URL:+***SET***}" && \
     echo "  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL:+***SET***}" && \
     echo "  NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT:+***SET***}" && \
     echo "  NEXT_PUBLIC_ORY_SDK_URL: ${NEXT_PUBLIC_ORY_SDK_URL:+***SET***}" && \
-    echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}" && \
-    echo "  NOTE: NEXT_PUBLIC_TOLGEE_API_KEY and NEXT_PUBLIC_TOLGEE_API_URL will be provided at runtime"
+    echo "  NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+***SET***}"
 RUN pnpm --filter @archpad/portal build
 
 
