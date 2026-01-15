@@ -127,6 +127,13 @@ spec:
             # Это ключевая переменная, которая предотвращает запуск PostgresEmbeddedRunner
             - name: TOLGEE_POSTGRES_AUTOSTART_ENABLED
               value: "false"
+            # JVM параметры для оптимизации памяти
+            # -Xms: начальный размер heap (равен минимальному для избежания ресайза)
+            # -Xmx: максимальный размер heap (оставляем запас для метаданных классов и off-heap)
+            # -XX:+UseContainerSupport: использовать лимиты контейнера для определения размера heap
+            # -XX:MaxRAMPercentage: использовать процент от доступной памяти для heap (75% от 3Gi = ~2.25Gi)
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx2048m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:+UseStringDeduplication"
           volumeMounts:
             - name: config
               mountPath: /config/config.yaml
@@ -139,22 +146,26 @@ spec:
             # Startup probe используется только при старте контейнера
             # После успешного ответа отключается, используются liveness/readiness probes
             # Дает больше времени для инициализации Spring Boot приложения
+            # На локальной машине Tolgee стартует за ~29 секунд, но может быть дольше в Kubernetes
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30  # Начинаем проверку через 30 секунд
-            periodSeconds: 10       # Проверяем каждые 10 секунд
-            timeoutSeconds: 5       # Таймаут 5 секунд
-            failureThreshold: 30    # До 30 попыток = до 5 минут на старт (30s + 30*10s = 330s)
+            initialDelaySeconds: 20  # Начинаем проверку через 20 секунд (HikariCP инициализируется раньше)
+            periodSeconds: 10        # Проверяем каждые 10 секунд
+            timeoutSeconds: 5        # Таймаут 5 секунд
+            failureThreshold: 40     # До 40 попыток = до 6.8 минут на старт (20s + 40*10s = 420s)
           livenessProbe:
+            # Liveness probe НЕ должен срабатывать до успешного startup probe
+            # Kubernetes автоматически откладывает liveness probe до успешного startup probe
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 120  # Увеличен до 2 минут, чтобы не убить контейнер во время инициализации
+            periodSeconds: 30        # Проверяем каждые 30 секунд (реже, чтобы не нагружать)
+            timeoutSeconds: 10       # Увеличен таймаут
+            failureThreshold: 3      # После 3 неудачных попыток контейнер будет перезапущен
           readinessProbe:
+            # Readiness probe также откладывается до успешного startup probe
             httpGet:
               path: /actuator/health
               port: 8080
