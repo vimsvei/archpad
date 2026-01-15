@@ -123,8 +123,17 @@ spec:
           # Email delivery (verification / recovery codes, etc.)
           courier:
             smtp:
+              {{- if $kratosOther.Data.data.SMTP_CONNECTION_URI }}
               connection_uri: {{ $kratosOther.Data.data.SMTP_CONNECTION_URI }}
+              {{- else }}
+              # Используем дефолтное значение для mailpit если не задано в Vault
+              connection_uri: smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true
+              {{- end }}
+              {{- if $kratosOther.Data.data.SMTP_FROM_ADDRESS }}
               from_address: {{ $kratosOther.Data.data.SMTP_FROM_ADDRESS }}
+              {{- else }}
+              from_address: no-reply@archpad.pro
+              {{- end }}
         vault.hashicorp.com/role: "secure"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
@@ -265,8 +274,8 @@ spec:
               # Email delivery (verification / recovery codes, etc.)
               courier:
                 smtp:
-                  connection_uri: ${SMTP_CONNECTION_URI}
-                  from_address: ${SMTP_FROM_ADDRESS}
+                  connection_uri: ${SMTP_CONNECTION_URI:-smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true}
+                  from_address: ${SMTP_FROM_ADDRESS:-no-reply@archpad.pro}
               EOF
               else
                 # Файл уже в формате YAML - просто копируем
