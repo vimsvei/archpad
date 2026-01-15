@@ -103,6 +103,10 @@ spec:
               mountPath: /var/lib/grafana/dashboards/resources-summary.json
               subPath: resources-summary.json
               readOnly: true
+            - name: grafana-dashboards-nodes
+              mountPath: /var/lib/grafana/dashboards/nodes.json
+              subPath: nodes.json
+              readOnly: true
           startupProbe:
             # Startup probe используется только при старте контейнера
             # Grafana может долго запускаться из-за загрузки секретов из Vault, подключения к PostgreSQL и инициализации БД
@@ -163,3 +167,6 @@ spec:
         - name: grafana-dashboards-resources-summary
           configMap:
             name: grafana-dashboard-resources-summary
+        - name: grafana-dashboards-nodes
+          configMap:
+            name: grafana-dashboard-nodes
