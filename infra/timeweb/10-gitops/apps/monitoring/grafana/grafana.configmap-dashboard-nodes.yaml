@@ -184,7 +184,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on() container_memory_working_set_bytes{id=\"/\",node!=\"\"}",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\"})",
               "legendFormat": "{{node}}",
               "refId": "A"
             }
@@ -451,7 +451,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) or sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\"})",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) sum by (node) (container_memory_working_set_bytes{id=\"/\",node!=\"\"})",
               "format": "table",
               "instant": true,
               "refId": "B"
