@@ -97,8 +97,8 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (app)",
-              "legendFormat": "{{app}}",
+              "expr": "sum by (namespace, application) (label_replace(sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "legendFormat": "{{namespace}}/{{application}}",
               "refId": "A"
             }
           ],
@@ -184,8 +184,8 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (app)",
-              "legendFormat": "{{app}}",
+              "expr": "sum by (namespace, application) (label_replace(sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
+              "legendFormat": "{{namespace}}/{{application}}",
               "refId": "A"
             }
           ],
@@ -242,7 +242,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app)",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
@@ -299,7 +299,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app)",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
@@ -356,7 +356,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (node, app)) by (app)",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (node, namespace, pod)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "refId": "A"
             }
           ],
@@ -417,7 +417,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (app, namespace)",
+              "expr": "sum by (namespace, application) (label_replace(sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -427,7 +427,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (app, namespace)",
+              "expr": "sum by (namespace, application) (label_replace(sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (namespace, pod), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "format": "table",
               "instant": true,
               "refId": "B"
@@ -437,13 +437,13 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",app!=\"\"}) by (pod, namespace, app)) by (app, namespace)",
+              "expr": "sum by (namespace, application) (label_replace(count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, namespace)), \"application\", \"$1\", \"pod\", \"([a-z0-9-]+)-.*\"))",
               "format": "table",
               "instant": true,
               "refId": "C"
             }
           ],
-          "title": "Applications Resource Summary",
+          "title": "Resources Summary by Application",
           "transformations": [
             {
               "id": "merge",
@@ -460,8 +460,8 @@ data:
                   "Value #A": "CPU Usage (cores)",
                   "Value #B": "Memory Usage (bytes)",
                   "Value #C": "Pod Count",
-                  "app": "Application",
-                  "namespace": "Namespace"
+                  "namespace": "Namespace",
+                  "application": "Application"
                 }
               }
             }
@@ -485,15 +485,15 @@ data:
               "type": "prometheus",
               "uid": "prometheus"
             },
-            "definition": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}, app)",
+            "definition": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}, namespace)",
             "hide": 0,
             "includeAll": true,
-            "label": "Application",
+            "label": "Namespace",
             "multi": true,
-            "name": "app",
+            "name": "namespace",
             "options": [],
             "query": {
-              "query": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}, app)",
+              "query": "label_values(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}, namespace)",
               "refId": "StandardVariableQuery"
             },
             "refresh": 1,
@@ -510,7 +510,7 @@ data:
       },
       "timepicker": {},
       "timezone": "",
-      "title": "Applications Resource Usage",
+      "title": "Resources by Application",
       "uid": "applications-resources",
       "version": 1,
       "weekStart": ""

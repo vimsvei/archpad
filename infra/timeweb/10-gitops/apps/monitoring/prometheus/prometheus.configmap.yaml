@@ -25,13 +25,14 @@ data:
           - targets: ['localhost:9090']
 
       # Kubernetes nodes (kubelet metrics - cAdvisor)
-      - job_name: 'kubernetes-nodes'
-        kubernetes_sd_configs:
-          - role: node
+      # Собираем метрики контейнеров с kubelet, которые автоматически включают лейблы из pod metadata
+      - job_name: 'kubernetes-cadvisor'
         scheme: https
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
         relabel_configs:
           - action: labelmap
             regex: __meta_kubernetes_node_label_(.+)
@@ -40,7 +41,7 @@ data:
           - source_labels: [__meta_kubernetes_node_name]
             regex: (.+)
             target_label: __metrics_path__
-            replacement: /api/v1/nodes/${1}/proxy/metrics
+            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
 
       # Kubernetes pods через service discovery
       - job_name: 'kubernetes-pods'
