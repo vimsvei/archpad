@@ -68,7 +68,7 @@
 - `kv/data/archpad/demo/hasura/secret` - секреты Hasura
   - `HASURA_GRAPHQL_ADMIN_SECRET` - секретный ключ администратора Hasura
 - `kv/data/archpad/demo/hasura/endpoint` - endpoint Hasura
-  - `HASURA_INTERNAL_URL` - внутренний URL Hasura
+  - `HASURA_INTERNAL_URL` - внутренний URL Hasura (`http://hasura.platform.svc:8080`)
 - `kv/data/archpad/demo/backend/common` - общие секреты для backend сервисов
   - `PROJECT_DB_USER` - пользователь базы данных
   - `PROJECT_DB_PASSWORD` - пароль базы данных
@@ -96,14 +96,14 @@
 - `NEXT_PUBLIC_TOLGEE_API_URL` - URL API Tolgee для интернационализации
 - `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (хранится отдельно, см. ниже)
 - `NEXT_PUBLIC_URL` - публичный URL Portal
-- `API_GATEWAY_INTERNAL_URL` - опционально, внутренний URL API Gateway
+- `API_GATEWAY_INTERNAL_URL` - опционально, внутренний URL API Gateway (`http://oathkeeper.secure.svc:4455`)
 - `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - опционально, GraphQL endpoint API Gateway
 
 **Дополнительные секреты:**
 - `kv/data/archpad/demo/hasura/endpoint` - endpoint Hasura
-  - `HASURA_INTERNAL_URL` - внутренний URL Hasura
+  - `HASURA_INTERNAL_URL` - внутренний URL Hasura (`http://hasura.platform.svc:8080`)
 - `kv/data/archpad/demo/ory/kratos/endpoint` - endpoint Kratos
-  - `ORY_KRATOS_INTERNAL_URL` - внутренний URL Kratos
+  - `ORY_KRATOS_INTERNAL_URL` - внутренний URL Kratos (`http://kratos.secure.svc:4433`)
 
 **Отдельный путь для Tolgee API Key:**
 - `kv/data/archpad/demo/tolgee/api-key`
@@ -356,7 +356,8 @@
 | `kv/data/archpad/demo/postgres/credential` | `POSTGRES_USER`, `POSTGRES_PASSWORD` | pgAdmin |
 | `kv/data/archpad/demo/hasura/db` | `HASURA_DB`, `HASURA_DB_USER`, `HASURA_DB_PASSWORD` | hasura |
 | `kv/data/archpad/demo/hasura/secret` | `HASURA_GRAPHQL_ADMIN_SECRET` | hasura, portal, hasura-sync-service |
-| `kv/data/archpad/demo/hasura/endpoint` | `HASURA_INTERNAL_URL` | hasura, portal, hasura-sync-service |
+| `kv/data/archpad/demo/hasura/endpoint` | `HASURA_INTERNAL_URL` (значение: `http://hasura.platform.svc:8080`) | hasura, portal, hasura-sync-service |
+| `kv/data/archpad/demo/ory/kratos/endpoint` | `ORY_KRATOS_INTERNAL_URL` (значение: `http://kratos.secure.svc:4433`) | portal |
 | `kv/data/archpad/demo/tolgee` | `TOLGEE_DB`, `TOLGEE_DB_USER`, `TOLGEE_DB_PASSWORD`, `TOLGEE_ADMIN_USER`, `TOLGEE_ADMIN_PASSWORD` | tolgee |
 | `kv/data/archpad/demo/ory/kratos` | `KRATOS_DB`, `KRATOS_DB_USER`, `KRATOS_DB_PASSWORD`, `KRATOS_SECRET`, `SMTP_CONNECTION_URI`, `SMTP_FROM_ADDRESS` | kratos |
 | `kv/data/archpad/demo/ory/kratos/endpoint` | `ORY_KRATOS_INTERNAL_URL` | portal |
