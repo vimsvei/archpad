@@ -8,6 +8,11 @@ metadata:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
+  # Автоматически удалить Job через 5 минут после завершения (успешного или неуспешного)
+  ttlSecondsAfterFinished: 300
+  # Ограничить время выполнения миграции 10 минутами
+  activeDeadlineSeconds: 600
+  backoffLimit: 2  # Уменьшено с 3 до 2, чтобы быстрее выявить проблемы
   template:
     metadata:
       annotations:
@@ -41,10 +46,54 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              source /vault/secrets/kratos-db
-              source /vault/secrets/kratos-secret
-              source /vault/secrets/kratos-other
-              exec kratos migrate sql -e --yes -c /etc/config/kratos.yml
+              set -euo pipefail
+              
+              # Ждем, пока Vault Agent Injector создаст файлы секретов
+              echo "Waiting for Vault secrets..."
+              max_wait=60
+              waited=0
+              while [ ! -f /vault/secrets/kratos-db ] && [ $waited -lt $max_wait ]; do
+                echo "Waiting for /vault/secrets/kratos-db... (${waited}s/${max_wait}s)"
+                sleep 2
+                waited=$((waited+2))
+              done
+              
+              if [ ! -f /vault/secrets/kratos-db ]; then
+                echo "ERROR: /vault/secrets/kratos-db not found after ${max_wait}s"
+                exit 1
+              fi
+              
+              # Загружаем секреты
+              echo "Loading secrets from Vault..."
+              source /vault/secrets/kratos-db || { echo "ERROR: Failed to load kratos-db secrets"; exit 1; }
+              
+              if [ -f /vault/secrets/kratos-secret ]; then
+                source /vault/secrets/kratos-secret || echo "WARNING: Failed to load kratos-secret"
+              fi
+              
+              if [ -f /vault/secrets/kratos-other ]; then
+                source /vault/secrets/kratos-other || echo "WARNING: Failed to load kratos-other"
+              fi
+              
+              # Проверяем наличие обязательных переменных
+              if [ -z "${DSN:-}" ]; then
+                echo "ERROR: DSN is not set"
+                exit 1
+              fi
+              
+              echo "DSN configured: postgres://${DSN#postgres://}" | sed 's/:[^@]*@/:***@/g'
+              
+              # Проверяем доступность конфиг-файла
+              if [ ! -f /etc/config/kratos.yml ]; then
+                echo "ERROR: Config file /etc/config/kratos.yml not found"
+                exit 1
+              fi
+              
+              # Выполняем миграцию
+              echo "Running Kratos database migration..."
+              kratos migrate sql -e --yes -c /etc/config/kratos.yml
+              
+              echo "Migration completed successfully!"
           volumeMounts:
             - name: config
               mountPath: /etc/config/kratos.yml
@@ -60,4 +109,3 @@ spec:
         - name: identity-schema
           configMap:
             name: kratos-identity-schema
-  backoffLimit: 3
