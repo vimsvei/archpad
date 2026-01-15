@@ -36,6 +36,9 @@ spec:
           export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_USER }}"
           export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
+        # Оптимизация ресурсов для Vault Agent (уменьшаем requests, т.к. фактическое использование очень низкое)
+        vault.hashicorp.com/agent-limits-cpu: "100m"
+        vault.hashicorp.com/agent-requests-cpu: "50m"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
       affinity:

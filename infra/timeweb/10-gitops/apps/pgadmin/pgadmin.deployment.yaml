@@ -34,6 +34,9 @@ spec:
           export PGADMIN_DEFAULT_EMAIL="{{ $pgadmin.Data.data.PGADMIN_ADMIN_USER }}"
           export PGADMIN_DEFAULT_PASSWORD="{{ $pgadmin.Data.data.PGADMIN_DEFAULT_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
+        # Оптимизация ресурсов для Vault Agent (уменьшаем requests, т.к. фактическое использование очень низкое)
+        vault.hashicorp.com/agent-limits-cpu: "100m"
+        vault.hashicorp.com/agent-requests-cpu: "50m"
     spec:
       serviceAccountName: pgadmin
       # Настройка прав доступа для PersistentVolume
