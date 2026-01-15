@@ -188,8 +188,6 @@ variables:
           --build-arg BUILD_COMMIT_SHA="${CI_COMMIT_SHA}" \
           --build-arg BUILD_VERSION="${VERSION}" \
           --build-arg BUILD_BRANCH="${CI_COMMIT_REF_NAME}" \
-          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
-          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
           --build-arg NEXT_PUBLIC_URL="${NEXT_PUBLIC_URL}" \
           --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT}" \
           --build-arg NEXT_PUBLIC_ORY_SDK_URL="${NEXT_PUBLIC_ORY_SDK_URL}" \
@@ -376,8 +374,6 @@ variables:
           --build-arg BUILD_COMMIT_SHA="${CI_COMMIT_SHA}" \
           --build-arg BUILD_VERSION="main" \
           --build-arg BUILD_BRANCH="${CI_COMMIT_REF_NAME}" \
-          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
-          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
           --build-arg NEXT_PUBLIC_URL="${NEXT_PUBLIC_URL}" \
           --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="${NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT}" \
           --build-arg NEXT_PUBLIC_ORY_SDK_URL="${NEXT_PUBLIC_ORY_SDK_URL}" \
