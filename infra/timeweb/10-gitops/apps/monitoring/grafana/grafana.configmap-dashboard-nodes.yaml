@@ -97,7 +97,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) + on() sum(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) or sum without(instance, job, kubernetes_io_hostname)(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
               "legendFormat": "{{node}}",
               "refId": "A"
             }
@@ -441,7 +441,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) + on(node) sum(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) or sum without(instance, job, kubernetes_io_hostname)(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -451,7 +451,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) container_memory_working_set_bytes{id=\"/\",node!=\"\"}",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) or sum without(instance, job, kubernetes_io_hostname)(container_memory_working_set_bytes{id=\"/\",node!=\"\"}) by (node)",
               "format": "table",
               "instant": true,
               "refId": "B"
@@ -491,7 +491,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, node)) by (node) + on() vector(0) * group_left(node) container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}",
+              "expr": "count(count(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}) by (pod, node)) by (node) or on(node) vector(0) * sum without(instance, job, kubernetes_io_hostname)(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}) by (node)",
               "format": "table",
               "instant": true,
               "refId": "F"
