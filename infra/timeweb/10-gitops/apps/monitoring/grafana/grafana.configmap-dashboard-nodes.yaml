@@ -441,7 +441,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) + on() sum(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (node) + on(node) sum(rate(container_cpu_usage_seconds_total{id=\"/\",node!=\"\"}[5m])) by (node)",
               "format": "table",
               "instant": true,
               "refId": "A"
@@ -451,7 +451,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on() container_memory_working_set_bytes{id=\"/\",node!=\"\"}",
+              "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (node) + on(node) container_memory_working_set_bytes{id=\"/\",node!=\"\"}",
               "format": "table",
               "instant": true,
               "refId": "B"
