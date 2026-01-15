@@ -97,30 +97,44 @@ spec:
             - name: grafana-dashboards-resources
               mountPath: /var/lib/grafana/dashboards/archpad-resources-by-app.json
               subPath: archpad-resources-by-app.json
+          startupProbe:
+            # Startup probe используется только при старте контейнера
+            # Grafana может долго запускаться из-за загрузки секретов из Vault, подключения к PostgreSQL и инициализации БД
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10  # Начинаем проверку через 10 секунд
+            periodSeconds: 10        # Проверяем каждые 10 секунд
+            timeoutSeconds: 5        # Таймаут 5 секунд
+            failureThreshold: 30     # До 30 попыток = до 5 минут на старт (10s + 30*10s = 310s)
           livenessProbe:
+            # Liveness probe НЕ должен срабатывать до успешного startup probe
+            # Kubernetes автоматически откладывает liveness probe до успешного startup probe
             httpGet:
               path: /api/health
               port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 60  # Увеличен до 1 минуты
+            periodSeconds: 30        # Проверяем каждые 30 секунд (реже, чтобы не нагружать)
+            timeoutSeconds: 10       # Увеличен таймаут
+            failureThreshold: 3      # После 3 неудачных попыток контейнер будет перезапущен
           readinessProbe:
+            # Readiness probe также откладывается до успешного startup probe
             httpGet:
               path: /api/health
               port: 3000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10  # После успешного startup probe можно проверять
             periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 5
+            failureThreshold: 3
           resources:
             # Оптимизировано для демо-стенда (4 CPU / 8GB RAM на весь кластер)
+            # Grafana требует больше памяти при инициализации (подключение к PostgreSQL, загрузка дашбордов)
             requests:
-              cpu: 30m
-              memory: 64Mi
+              cpu: 50m
+              memory: 128Mi
             limits:
-              cpu: 80m
-              memory: 100Mi
+              cpu: 200m
+              memory: 512Mi  # Увеличено для стабильной работы Grafana
       volumes:
         - name: grafana-datasources
           configMap:
