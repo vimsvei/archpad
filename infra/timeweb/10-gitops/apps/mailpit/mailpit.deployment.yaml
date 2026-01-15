@@ -9,6 +9,7 @@ metadata:
     app: mailpit
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: mailpit

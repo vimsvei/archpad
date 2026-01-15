@@ -9,6 +9,7 @@ metadata:
     app: tolgee
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: tolgee

@@ -28,4 +28,11 @@ yarn-error.log*
 **/public/uploads
 */pnpm-lock.yaml
 
-/infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml
+# Kubernetes config - contains sensitive cluster credentials
+infra/timeweb/k8s_config/
+/infra/timeweb/k8s_config/
+
+# Vault backups - contains sensitive secrets
+infra/vault/backups/
+**/backups/
+*.tar.gz

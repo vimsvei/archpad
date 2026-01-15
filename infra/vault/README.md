@@ -302,6 +302,90 @@ environment:
 
 Приложения продолжат работать, используя только переменные окружения из docker-compose или `.env` файла.
 
+## Бэкап секретов
+
+Для создания бэкапа всех секретов из Vault используется скрипт `backup-secrets.sh`:
+
+### Использование
+
+**Вариант 1: Через kubectl (рекомендуется для Kubernetes)**
+```bash
+cd infra/vault
+./backup-secrets.sh http://vault.vault.svc:8200 hvs.xxxxxxxxxxxx ./backups/vault-$(date +%Y%m%d-%H%M%S)
+```
+
+**Вариант 2: Через Vault CLI (локально)**
+```bash
+export VAULT_ADDR=http://localhost:8200
+export VAULT_TOKEN=hvs.xxxxxxxxxxxx
+./backup-secrets.sh
+```
+
+### Параметры
+
+- `vault_addr` (опционально) - адрес Vault сервера (по умолчанию: `http://vault.vault.svc:8200` или `http://localhost:8200`)
+- `vault_token` - токен для доступа к Vault (можно указать через переменную окружения `VAULT_TOKEN`)
+- `output_dir` (опционально) - директория для сохранения бэкапа (по умолчанию: `./backups/vault-YYYYMMDD-HHMMSS`)
+
+### Результат
+
+Скрипт создает:
+- `metadata.json` - метаинформация о бэкапе (дата, адрес Vault, тип бэкапа)
+- `secrets-index.txt` - список всех зарезервированных секретов
+- `{path}/secret.json` - JSON файлы с содержимым каждого секрета, сохраняя структуру путей Vault
+- `failed-paths.txt` - список путей, которые не удалось зарезервировать (если есть)
+- `vault-YYYYMMDD-HHMMSS.tar.gz` - сжатый архив всего бэкапа (опционально)
+
+### Восстановление секретов
+
+Для восстановления секретов из бэкапа можно использовать Vault CLI:
+
+```bash
+# Распаковываем архив (если использовался)
+tar -xzf vault-20250115-123456.tar.gz
+
+# Восстанавливаем каждый секрет
+cd backups/vault-20250115-123456
+
+# Пример восстановления одного секрета
+vault kv put kv/data/archpad/demo/grafana/admin @grafana/admin.json
+
+# Или через скрипт (можно создать отдельный скрипт restore-secrets.sh)
+```
+
+### Автоматизация бэкапа
+
+Рекомендуется настроить автоматический бэкап секретов:
+
+1. **Cron job в Kubernetes:**
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-backup
+  namespace: vault
+spec:
+  schedule: "0 2 * * *"  # Каждый день в 2:00
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: vault:1.20.4
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                export VAULT_TOKEN="${VAULT_TOKEN}"
+                export VAULT_ADDR="http://localhost:8200"
+                # Скопировать скрипт в контейнер или использовать ConfigMap
+                /backup-secrets.sh
+          restartPolicy: OnFailure
+```
+
+2. **Архивирование в объектное хранилище:**
+После создания бэкапа можно автоматически загружать архив в S3, MinIO или другое хранилище.
+
 ## Устранение неполадок
 
 ### `Error parsing listener configuration` или `address already in use`
