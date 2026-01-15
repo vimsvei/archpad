@@ -156,10 +156,10 @@ Version         1.18.0
    ```bash
    kubectl get secret vault-root-token -n vault
    ```
-   Если нет, создайте:
+   Если нет, создайте (замените `<your-vault-root-token>` на реальный токен):
    ```bash
    kubectl create secret generic vault-root-token \
-     --from-literal=VAULT_ROOT_TOKEN='hvs.R67CyXngkL6JNmeeqEQYIkuc' \
+     --from-literal=VAULT_ROOT_TOKEN='<your-vault-root-token>' \
      --namespace=vault
    ```
 
