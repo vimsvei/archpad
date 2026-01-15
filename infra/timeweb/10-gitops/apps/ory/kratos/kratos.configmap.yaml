@@ -20,7 +20,9 @@ data:
             - https://auth.archpad.pro
             - https://authz.archpad.pro
             - http://localhost:3000
+            - http://localhost:3001
             - http://127.0.0.1:3000
+            - http://127.0.0.1:3001
           allowed_methods:
             - GET
             - POST
@@ -45,7 +47,9 @@ data:
       allowed_return_urls:
         - https://portal.archpad.pro/
         - http://localhost:3000/
+        - http://localhost:3001/
         - http://127.0.0.1:3000/
+        - http://127.0.0.1:3001/
       methods:
         password:
           enabled: true

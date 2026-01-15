@@ -55,13 +55,40 @@ echo ""
 # Проверяем доступность kubectl
 if ! command -v kubectl &> /dev/null; then
   echo "✗ kubectl is not installed or not in PATH"
+  echo "  Install kubectl: https://kubernetes.io/docs/tasks/tools/"
   exit 1
+fi
+
+# Проверяем наличие KUBECONFIG
+if [ -z "$KUBECONFIG" ] && [ ! -f "$HOME/.kube/config" ]; then
+  echo "⚠️  Warning: KUBECONFIG not set and ~/.kube/config not found"
+  echo "  Set KUBECONFIG environment variable or configure kubectl:"
+  echo "    export KUBECONFIG=/path/to/k8s-config.yaml"
+  echo ""
+  echo "  For this project, you might need:"
+  echo "    export KUBECONFIG=infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml"
+  echo ""
 fi
 
 # Проверяем подключение к кластеру
 if ! kubectl cluster-info &> /dev/null; then
   echo "✗ Cannot connect to Kubernetes cluster"
-  echo "  Make sure kubectl is configured correctly"
+  echo ""
+  echo "  Troubleshooting:"
+  echo "  1. Check KUBECONFIG is set correctly:"
+  echo "     echo \$KUBECONFIG"
+  echo ""
+  echo "  2. For this project, try:"
+  echo "     export KUBECONFIG=\$(pwd)/infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml"
+  echo ""
+  echo "  3. Test connection manually:"
+  echo "     kubectl cluster-info"
+  echo ""
+  echo "  4. If you don't have cluster access, you can still use:"
+  echo "     - Tolgee: https://i18n.archpad.pro (public URL)"
+  echo "     - Vault: https://vault.archpad.pro (public URL)"
+  echo "     But other services (Kratos, Hydra, Hasura) require port-forward"
+  echo ""
   exit 1
 fi
 
@@ -82,8 +109,11 @@ start_port_forward "hydra" "$NAMESPACE_SECURE" 4445 4445   # Hydra Admin
 # Hasura
 start_port_forward "hasura" "$NAMESPACE_PLATFORM" 8080 8080
 
-# Tolgee (используем другой порт, т.к. Hasura уже на 8080)
-start_port_forward "tolgee" "$NAMESPACE_PLATFORM" 8081 8080
+# Tolgee - используем публичный URL https://i18n.archpad.pro вместо port-forward
+# start_port_forward "tolgee" "$NAMESPACE_PLATFORM" 8081 8080
+
+# Vault - используем публичный URL https://vault.archpad.pro вместо port-forward
+# (Vault не требует port-forward, так как доступен через Ingress)
 
 # Mailpit (опционально)
 start_port_forward "mailpit" "$NAMESPACE_PLATFORM" 8025 8025
@@ -97,7 +127,8 @@ echo "  Kratos Admin:   http://localhost:4434"
 echo "  Hydra Public:   http://localhost:4444"
 echo "  Hydra Admin:    http://localhost:4445"
 echo "  Hasura:         http://localhost:8080"
-echo "  Tolgee:         http://localhost:8081"
+echo "  Tolgee:         https://i18n.archpad.pro (public URL)"
+echo "  Vault:          https://vault.archpad.pro (public URL)"
 echo "  Mailpit:        http://localhost:8025"
 echo ""
 echo "Press Ctrl+C to stop all port-forwards"

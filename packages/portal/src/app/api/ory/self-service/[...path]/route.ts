@@ -4,7 +4,7 @@ export const runtime = 'nodejs'
 
 function getOryBaseUrl(): URL | null {
   // Для серверных компонентов приоритет у внутренних адресов
-  const raw = process.env.ORY_KRATOS_INTERNAL_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
+  const raw = process.env.NEXT_PUBLIC_ORY_SDK_URL
   if (!raw) return null
   try {
     return new URL(raw)

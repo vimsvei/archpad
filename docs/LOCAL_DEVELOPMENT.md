@@ -23,7 +23,20 @@
 
 ### 1. Создание `.env.local`
 
-Создайте файл `.env.local` в корне проекта:
+Создайте файл `.env.local` в корне проекта (в директории, где находится этот README).
+
+**Важно:** Next.js ищет `.env.local` в директории, где находится `next.config.ts` (т.е. в `packages/portal/`). Скрипт `dev-local.sh` автоматически создаст симлинк из корневого `.env.local` в `packages/portal/.env.local`. Если вы запускаете `pnpm dev` вручную, создайте симлинк самостоятельно:
+
+```bash
+cd packages/portal
+ln -s ../../.env.local .env.local
+```
+
+Или скопируйте файл:
+
+```bash
+cp ../../.env.local packages/portal/.env.local
+```
 
 ```bash
 # ============================================
@@ -51,10 +64,13 @@ HASURA_ENDPOINT=http://localhost:8080
 HASURA_GRAPHQL_ADMIN_SECRET=your-hasura-admin-secret
 
 # ============================================
-# Tolgee (через port-forward, другой порт)
+# Tolgee (используем публичный URL)
 # ============================================
-NEXT_PUBLIC_TOLGEE_API_URL=http://localhost:8081
+NEXT_PUBLIC_TOLGEE_API_URL=https://i18n.archpad.pro
 NEXT_PUBLIC_TOLGEE_API_KEY=your-tolgee-api-key
+
+# Альтернатива: через port-forward (если публичный URL недоступен)
+# NEXT_PUBLIC_TOLGEE_API_URL=http://localhost:8081
 
 # ============================================
 # Portal
@@ -64,7 +80,7 @@ NEXT_PUBLIC_URL=http://localhost:3000
 # ============================================
 # Backend Services (для локальной разработки)
 # ============================================
-# Vault (для загрузки секретов в local development)
+# Vault (используем публичный URL, port-forward не требуется)
 VAULT_ADDR=https://vault.archpad.pro
 VAULT_TOKEN=your-vault-token
 
@@ -77,7 +93,11 @@ PROJECT_DB_PASSWORD=your-password
 TENANT_DB=tenant_db
 ```
 
-**Важно:** Файл `.env.local` должен быть в `.gitignore` и не коммититься в Git.
+**Важно:** 
+- Файл `.env.local` должен быть в `.gitignore` и не коммититься в Git
+- Файл создается в **корне проекта** (где находится `docs/` и `packages/`)
+- Скрипт `dev-local.sh` автоматически создаст симлинк `packages/portal/.env.local` → `../../.env.local`
+- Если запускаете `pnpm dev` вручную, создайте симлинк самостоятельно (см. выше)
 
 ### 2. Получение секретов
 
@@ -244,15 +264,16 @@ curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
 
 ### Сервисы и порты
 
-| Сервис | Namespace | Локальный порт | Удаленный порт |
-|--------|-----------|----------------|----------------|
-| Kratos Public | `secure` | 4433 | 4433 |
-| Kratos Admin | `secure` | 4434 | 4434 |
-| Hydra Public | `secure` | 4444 | 4444 |
-| Hydra Admin | `secure` | 4445 | 4445 |
-| Hasura | `platform` | 8080 | 8080 |
-| Tolgee | `platform` | 8081 | 8080 |
-| Mailpit | `platform` | 8025 | 8025 |
+| Сервис | Namespace | Локальный порт | Удаленный порт | Публичный URL |
+|--------|-----------|----------------|----------------|---------------|
+| Kratos Public | `secure` | 4433 | 4433 | - |
+| Kratos Admin | `secure` | 4434 | 4434 | - |
+| Hydra Public | `secure` | 4444 | 4444 | - |
+| Hydra Admin | `secure` | 4445 | 4445 | - |
+| Hasura | `platform` | 8080 | 8080 | - |
+| Tolgee | `platform` | - | - | https://i18n.archpad.pro |
+| Vault | `secure` | - | - | https://vault.archpad.pro |
+| Mailpit | `platform` | 8025 | 8025 | - |
 
 ## Решение проблем
 
@@ -361,26 +382,36 @@ curl -H "x-hasura-admin-secret: ${HASURA_GRAPHQL_ADMIN_SECRET}" \
 curl http://localhost:8081/actuator/health
 ```
 
-## Альтернатива: Использование внешних URL
+## Использование публичных URL
 
-Если у вас есть внешние URL для сервисов (через Ingress), можно использовать их напрямую:
+Некоторые сервисы доступны через публичные URL и не требуют port-forward:
 
-```bash
-# .env.local
-NEXT_PUBLIC_ORY_SDK_URL=https://auth.archpad.pro
-NEXT_PUBLIC_HYDRA_PUBLIC_URL=https://authz.archpad.pro
-NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=https://apim.archpad.pro/v1/graphql
-NEXT_PUBLIC_TOLGEE_API_URL=https://i18n.archpad.pro
-```
+### Tolgee и Vault
+
+**Рекомендуется использовать публичные URL:**
+- **Tolgee**: `https://i18n.archpad.pro` (уже настроено по умолчанию)
+- **Vault**: `https://vault.archpad.pro` (уже настроено по умолчанию)
 
 **Преимущества:**
-- Не нужно запускать port-forward
+- Не нужно запускать port-forward для этих сервисов
 - Работает из любой сети
+- Упрощает настройку локальной разработки
 
 **Недостатки:**
 - Требует доступ к интернету
-- Может быть медленнее
-- Нужны валидные TLS сертификаты
+- Может быть немного медленнее (но обычно незаметно)
+
+### Альтернатива: Использование port-forward для всех сервисов
+
+Если публичные URL недоступны, можно использовать port-forward для всех сервисов:
+
+```bash
+# .env.local
+NEXT_PUBLIC_TOLGEE_API_URL=http://localhost:8081
+VAULT_ADDR=http://localhost:8200  # если настроен port-forward для Vault
+```
+
+И раскомментировать соответствующие строки в `k8s-port-forward.sh`.
 
 ## Рекомендации
 
