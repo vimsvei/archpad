@@ -20,16 +20,20 @@ spec:
         vault.hashicorp.com/agent-inject-secret-hydra-db: "kv/data/archpad/demo/ory/hydra/db"
         vault.hashicorp.com/agent-inject-secret-hydra-secret: "kv/data/archpad/demo/ory/hydra/secret"
         vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
-        vault.hashicorp.com/agent-inject-template-hydra: |
-          {{- $hydraDb := secret "kv/data/archpad/demo/ory/hydra/db" }}
-          {{- $hydraSecret := secret "kv/data/archpad/demo/ory/hydra/secret" }}
+        vault.hashicorp.com/agent-inject-template-hydra-db: |
+          {{- with secret "kv/data/archpad/demo/ory/hydra/db" }}
+          {{- $hydraDb := . }}
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем DSN из компонентов
           {{- $password := $hydraDb.Data.data.HYDRA_DB_PASSWORD | urlquery }}
           {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export DSN="postgres://{{ $hydraDb.Data.data.HYDRA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hydraDb.Data.data.HYDRA_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
-          export SECRETS_SYSTEM="{{ $hydraSecret.Data.data.SECRETS_SYSTEM }}"
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-hydra-secret: |
+          {{- with secret "kv/data/archpad/demo/ory/hydra/secret" }}
+          export SECRETS_SYSTEM="{{ .Data.data.SECRETS_SYSTEM }}"
+          {{- end }}
         vault.hashicorp.com/role: "secure"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
