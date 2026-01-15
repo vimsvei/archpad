@@ -30,13 +30,15 @@ spec:
         vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
         vault.hashicorp.com/agent-inject-secret-hasura-endpoint: "kv/data/archpad/demo/hasura/endpoint"
         vault.hashicorp.com/agent-inject-secret-common: "kv/data/archpad/demo/backend/common"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        vault.hashicorp.com/agent-inject-secret-postgres-credential: "kv/data/archpad/demo/postgres/credential"
         vault.hashicorp.com/agent-inject-template-hasura-sync-service: |
           {{- $hasuraSync := secret "kv/data/archpad/demo/backend/hasura-sync-service" }}
           {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
           {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $common := secret "kv/data/archpad/demo/backend/common" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
+          {{- $postgresCredential := secret "kv/data/archpad/demo/postgres/credential" }}
           # Экспортируем переменные окружения для hasura-sync-service
           export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
@@ -53,8 +55,8 @@ spec:
           {{- end }}
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
-          export POSTGRES_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
-          export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
         # Vault Agent должен завершиться после загрузки секретов
         vault.hashicorp.com/agent-pre-populate-only: "true"

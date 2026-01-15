@@ -16,8 +16,13 @@ data:
       capabilities = ["read", "list"]
     }
     
-    # Явно разрешаем доступ к monitoring секретам
-    path "kv/data/archpad/monitoring/*" {
+    # Явно разрешаем доступ к demo секретам (включая grafana)
+    path "kv/data/archpad/demo/*" {
+      capabilities = ["read", "list"]
+    }
+    
+    # Разрешаем доступ к container-register
+    path "kv/data/archpad/container-register" {
       capabilities = ["read", "list"]
     }
     

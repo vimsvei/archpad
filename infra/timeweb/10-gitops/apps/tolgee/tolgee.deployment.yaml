@@ -19,20 +19,22 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-tolgee: "kv/data/archpad/demo/tolgee"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-tolgee-db: "kv/data/archpad/demo/tolgee/db"
+        vault.hashicorp.com/agent-inject-secret-tolgee-admin: "kv/data/archpad/demo/tolgee/admin"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-tolgee: |
-          {{- $tolgee := secret "kv/data/archpad/demo/tolgee" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $tolgeeDb := secret "kv/data/archpad/demo/tolgee/db" }}
+          {{- $tolgeeAdmin := secret "kv/data/archpad/demo/tolgee/admin" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем JDBC URL из компонентов
-          {{- $password := $tolgee.Data.data.TOLGEE_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
-          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
-          export SPRING_DATASOURCE_URL="jdbc:postgresql://{{ $pgHost }}:{{ $pgPort }}/{{ $tolgee.Data.data.TOLGEE_DB }}"
-          export SPRING_DATASOURCE_USERNAME="{{ $tolgee.Data.data.TOLGEE_DB_USER }}"
-          export SPRING_DATASOURCE_PASSWORD="{{ $tolgee.Data.data.TOLGEE_DB_PASSWORD }}"
-          export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ $tolgee.Data.data.TOLGEE_ADMIN_USER }}"
-          export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgee.Data.data.TOLGEE_ADMIN_PASSWORD }}"
+          {{- $password := $tolgeeDb.Data.data.TOLGEE_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
+          export SPRING_DATASOURCE_URL="jdbc:postgresql://{{ $pgHost }}:{{ $pgPort }}/{{ $tolgeeDb.Data.data.TOLGEE_DB }}"
+          export SPRING_DATASOURCE_USERNAME="{{ $tolgeeDb.Data.data.TOLGEE_DB_USER }}"
+          export SPRING_DATASOURCE_PASSWORD="{{ $tolgeeDb.Data.data.TOLGEE_DB_PASSWORD }}"
+          export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_USER }}"
+          export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
@@ -68,25 +70,27 @@ spec:
             - |
               # Загружаем секреты из Vault Agent Injector
               # Используем source для загрузки переменных окружения
-              if [ -f /vault/secrets/tolgee ]; then
+              if [ -f /vault/secrets/tolgee-db ] && [ -f /vault/secrets/tolgee-admin ]; then
                 set -a
-                . /vault/secrets/tolgee
+                . /vault/secrets/tolgee-db
+                . /vault/secrets/tolgee-admin
                 set +a
               else
-                echo "WARNING: /vault/secrets/tolgee not found, waiting..."
-                # Ждем, пока Vault Agent Injector создаст файл
+                echo "WARNING: /vault/secrets/tolgee-db or /vault/secrets/tolgee-admin not found, waiting..."
+                # Ждем, пока Vault Agent Injector создаст файлы
                 max_wait=30
                 waited=0
-                while [ ! -f /vault/secrets/tolgee ] && [ $waited -lt $max_wait ]; do
+                while ([ ! -f /vault/secrets/tolgee-db ] || [ ! -f /vault/secrets/tolgee-admin ]) && [ $waited -lt $max_wait ]; do
                   sleep 1
                   waited=$((waited+1))
                 done
-                if [ -f /vault/secrets/tolgee ]; then
-              set -a
-              . /vault/secrets/tolgee
-              set +a
+                if [ -f /vault/secrets/tolgee-db ] && [ -f /vault/secrets/tolgee-admin ]; then
+                  set -a
+                  . /vault/secrets/tolgee-db
+                  . /vault/secrets/tolgee-admin
+                  set +a
                 else
-                  echo "ERROR: /vault/secrets/tolgee not found after ${max_wait}s"
+                  echo "ERROR: /vault/secrets/tolgee-db or /vault/secrets/tolgee-admin not found after ${max_wait}s"
                   exit 1
                 fi
               fi

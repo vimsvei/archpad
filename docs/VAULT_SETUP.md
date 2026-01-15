@@ -7,10 +7,12 @@
 ## Развертывание Vault
 
 Vault развертывается через ArgoCD как Helm Application с использованием:
-- **Storage**: Raft (локальное хранилище на PersistentVolume)
+- **Storage**: S3 (хранилище в S3 bucket `9f328daa-archpad-s3-storage`, путь `vault-secret/`)
 - **Mode**: Standalone (без HA для простоты)
 - **UI**: Включен для веб-доступа
 - **Ingress**: Traefik IngressRoute на `vault.archpad.pro`
+
+**Важно**: Vault использует S3 storage backend. Если данные в S3 будут потеряны или очищены, Vault начнет новую инициализацию и все секреты будут потеряны!
 
 ### Требования
 
@@ -427,6 +429,111 @@ path "kv/data/archpad" {
 | **Job'ы** (hasura-vault-role, secure-vault-role) | Прямой токен из Secret | vault-setup-token (ограниченный) или vault-root-token (fallback) |
 
 ## Решение проблем
+
+### Проблема: Vault начал новую инициализацию (Vault is sealed)
+
+**Симптомы:**
+- Vault возвращает ошибку "Vault is sealed"
+- CI/CD пайплайны не могут получить секреты
+- Сервисы не могут получить секреты через Vault Agent Injector
+- Vault пишет данные в кластер (file storage), а не в S3
+
+**Причины:**
+Vault должен использовать S3 storage backend (`9f328daa-archpad-s3-storage`, путь `vault-secret/`), но может использовать file storage по умолчанию. Новая инициализация может начаться если:
+
+1. **Helm chart использует file storage вместо S3**
+   - Helm chart для Vault по умолчанию может создавать file storage
+   - `extraConfig` добавляется в конец конфигурации, но Vault использует первый найденный storage backend
+   - Если file storage определен первым, S3 из `extraConfig` игнорируется
+   - Решение: убедиться, что `dataStorage.enabled: false` и нет дефолтного file storage
+
+1. **S3 bucket был очищен или переинициализирован**
+   - Данные Vault были удалены из S3
+   - Путь в S3 изменился
+
+2. **Vault pod был пересоздан и не нашел данные в S3**
+   - Проблемы с доступом к S3
+   - Неправильные credentials для S3
+
+3. **Vault был переинициализирован вручную**
+   - Выполнена команда `vault operator init` вручную
+   - Это создает новые unseal keys и root token
+
+4. **Проблемы с доступом к S3**
+   - S3 credentials изменились
+   - S3 endpoint недоступен
+   - Проблемы с сетью
+
+**Диагностика:**
+
+```bash
+# 1. Проверить статус Vault
+kubectl exec -n vault vault-0 -- vault status
+
+# 2. Проверить логи Vault
+kubectl logs -n vault vault-0 --tail=100
+
+# 3. Проверить фактическую конфигурацию Vault (какой storage используется)
+kubectl exec -n vault vault-0 -- cat /vault/config/extraconfig-from-values.hcl
+kubectl exec -n vault vault-0 -- cat /vault/config/config.hcl
+
+# 4. Проверить, используется ли file storage (данные в кластере)
+kubectl exec -n vault vault-0 -- ls -la /vault/data 2>/dev/null || echo "File storage не используется (хорошо)"
+
+# 5. Проверить доступность S3
+# (требуется доступ к S3 bucket)
+aws s3 ls s3://9f328daa-archpad-s3-storage/vault-secret/ --endpoint-url=https://s3.twcstorage.ru
+
+# 6. Проверить конфигурацию Helm chart
+kubectl get configmap vault-config -n vault -o yaml
+```
+
+**Решение:**
+
+1. **Если Vault использует file storage вместо S3:**
+   - Проверьте конфигурацию в `vault.app.yaml`: `dataStorage.enabled: false`
+   - Убедитесь, что `extraVolumes: []` (пустой массив, не `emptyDir`)
+   - Проверьте фактическую конфигурацию Vault в кластере (см. диагностику выше)
+   - Если file storage используется, нужно:
+     - Остановить Vault
+     - Удалить данные из file storage (если они есть)
+     - Обновить конфигурацию Helm chart
+     - Перезапустить Vault
+     - Переинициализировать Vault (он будет использовать S3)
+
+2. **Если Vault был переинициализирован случайно:**
+   - Восстановите данные из бэкапа S3 (если есть)
+   - Или восстановите секреты вручную
+
+3. **Если S3 bucket был очищен:**
+   - Восстановите данные из бэкапа
+   - Или переинициализируйте Vault и восстановите все секреты
+
+4. **Если проблема с доступом к S3:**
+   - Проверьте S3 credentials в `vault.app.yaml`
+   - Проверьте доступность S3 endpoint
+   - Проверьте сетевую связность
+
+4. **Разпечатать Vault после переинициализации:**
+   ```bash
+   # Получить новые unseal keys (из логов или UI)
+   kubectl logs -n vault vault-0 | grep "Unseal Key"
+
+   # Разпечатать Vault
+   kubectl exec -n vault vault-0 -- vault operator unseal <unseal-key-1>
+   kubectl exec -n vault vault-0 -- vault operator unseal <unseal-key-2>
+   kubectl exec -n vault vault-0 -- vault operator unseal <unseal-key-3>
+   ```
+
+5. **Восстановить секреты:**
+   - После разпечатывания Vault нужно восстановить все секреты
+   - Используйте скрипты из `infra/vault/seed.sh` или восстановите вручную
+
+**Профилактика:**
+- Регулярно делайте бэкапы S3 bucket
+- Не выполняйте `vault operator init` вручную без необходимости
+- Храните unseal keys в безопасном месте
+- Настройте мониторинг статуса Vault
 
 ### Проблема: Job не может запуститься - ошибка pull образа
 

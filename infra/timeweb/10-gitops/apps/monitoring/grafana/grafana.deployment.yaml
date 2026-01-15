@@ -17,21 +17,21 @@ spec:
       annotations:
         # Vault Agent Injector для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/monitoring/grafana/admin"
-        vault.hashicorp.com/agent-inject-secret-grafana-database: "kv/data/archpad/monitoring/grafana/database"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-grafana-admin: "kv/data/archpad/demo/grafana/admin"
+        vault.hashicorp.com/agent-inject-secret-grafana-db: "kv/data/archpad/demo/grafana/db"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-grafana-admin: |
-          {{- $admin := secret "kv/data/archpad/monitoring/grafana/admin" }}
-          {{- $db := secret "kv/data/archpad/monitoring/grafana/database" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $admin := secret "kv/data/archpad/demo/grafana/admin" }}
+          {{- $db := secret "kv/data/archpad/demo/grafana/db" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Admin credentials
           export GRAFANA_ADMIN_USER="{{ $admin.Data.data.GRAFANA_ADMIN_USER }}"
           export GRAFANA_ADMIN_PASSWORD="{{ $admin.Data.data.GRAFANA_ADMIN_PASSWORD }}"
           # Database configuration
           export GF_DATABASE_TYPE="postgres"
-          export GF_DATABASE_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
-          export GF_DATABASE_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
-          export GF_DATABASE_NAME="{{ $db.Data.data.GRAFANA_DB_NAME }}"
+          export GF_DATABASE_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export GF_DATABASE_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
+          export GF_DATABASE_NAME="{{ $db.Data.data.GRAFANA_DB }}"
           export GF_DATABASE_USER="{{ $db.Data.data.GRAFANA_DB_USER }}"
           export GF_DATABASE_PASSWORD="{{ $db.Data.data.GRAFANA_DB_PASSWORD }}"
           export GF_DATABASE_SSL_MODE="disable"

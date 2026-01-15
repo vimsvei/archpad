@@ -24,18 +24,18 @@
 ### arch-repo-service
 - `/v1/kv/data/archpad/demo/backend/arch-repo-service`
 - `/v1/kv/data/archpad/demo/backend/common`
-- `/v1/kv/data/archpad/demo/postgres`
+- `/v1/kv/data/archpad/demo/postgres/connect`
 
 ### tenant-service
 - `/v1/kv/data/archpad/demo/backend/tenant-service`
 - `/v1/kv/data/archpad/demo/backend/common`
-- `/v1/kv/data/archpad/demo/postgres`
+- `/v1/kv/data/archpad/demo/postgres/connect`
 
 ### hasura-sync-service
 - `/v1/kv/data/archpad/demo/backend/hasura-sync-service`
-- `/v1/kv/data/archpad/demo/hasura-secret`
+- `/v1/kv/data/archpad/demo/hasura/secret`
 - `/v1/kv/data/archpad/demo/backend/common`
-- `/v1/kv/data/archpad/demo/postgres`
+- `/v1/kv/data/archpad/demo/postgres/connect`
 
 Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
@@ -43,7 +43,7 @@
 
 Секрет `archpad-registry-secret` для доступа к Container Registry автоматически синхронизируется из Vault через Job `registry-secret-sync`.
 
-- **Vault путь:** `/v1/kv/data/container-register`
+- **Vault путь:** `/v1/kv/data/archpad/container-register`
 - **Kubernetes Secret:** `archpad-registry-secret` в namespace `platform`
 - **Синхронизация:** автоматическая при каждой синхронизации ArgoCD
 

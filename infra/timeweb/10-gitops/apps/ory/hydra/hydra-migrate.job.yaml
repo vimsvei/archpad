@@ -14,17 +14,19 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-pre-populate-only: "true"
-        vault.hashicorp.com/agent-inject-secret-hydra: "kv/data/archpad/demo/ory/hydra"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-hydra-db: "kv/data/archpad/demo/ory/hydra/db"
+        vault.hashicorp.com/agent-inject-secret-hydra-secret: "kv/data/archpad/demo/ory/hydra/secret"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-hydra: |
-          {{- $hydra := secret "kv/data/archpad/demo/ory/hydra" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $hydraDb := secret "kv/data/archpad/demo/ory/hydra/db" }}
+          {{- $hydraSecret := secret "kv/data/archpad/demo/ory/hydra/secret" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем DSN из компонентов
-          {{- $password := $hydra.Data.data.HYDRA_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
-          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
-          export DSN="postgres://{{ $hydra.Data.data.HYDRA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hydra.Data.data.HYDRA_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
-          export SECRETS_SYSTEM="{{ $hydra.Data.data.SECRETS_SYSTEM }}"
+          {{- $password := $hydraDb.Data.data.HYDRA_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
+          export DSN="postgres://{{ $hydraDb.Data.data.HYDRA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hydraDb.Data.data.HYDRA_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
+          export SECRETS_SYSTEM="{{ $hydraSecret.Data.data.SECRETS_SYSTEM }}"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: hydra
@@ -35,7 +37,8 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              source /vault/secrets/hydra
+              source /vault/secrets/hydra-db
+              source /vault/secrets/hydra-secret
               exec hydra migrate sql -e --yes -c /etc/config/hydra.yml
           volumeMounts:
             - name: config

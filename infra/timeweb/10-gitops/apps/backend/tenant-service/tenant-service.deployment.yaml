@@ -25,17 +25,19 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-tenant-service: "kv/data/archpad/demo/backend/tenant-service"
         vault.hashicorp.com/agent-inject-secret-common: "kv/data/archpad/demo/backend/common"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        vault.hashicorp.com/agent-inject-secret-postgres-credential: "kv/data/archpad/demo/postgres/credential"
         vault.hashicorp.com/agent-inject-template-tenant-service: |
           {{- $tenantService := secret "kv/data/archpad/demo/backend/tenant-service" }}
           {{- $common := secret "kv/data/archpad/demo/backend/common" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
+          {{- $postgresCredential := secret "kv/data/archpad/demo/postgres/credential" }}
           # Экспортируем переменные окружения для tenant-service
           export TENANT_DB="{{ $tenantService.Data.data.TENANT_DB }}"
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
-          export POSTGRES_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
-          export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов

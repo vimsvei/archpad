@@ -49,18 +49,14 @@ spec:
             port: 8200
 
           # PersistentVolume не нужен при использовании S3 storage
-          # Но Vault все еще нужен доступ к /vault/data для временных файлов
+          # Отключаем file storage, чтобы Vault не использовал локальное хранилище
           dataStorage:
             enabled: false
 
-          # Используем extraVolumes для добавления emptyDir вместо PVC
-          # Это нужно для временных файлов, даже при использовании S3
-          extraVolumes:
-            - type: emptyDir
-              name: data
-              config:
-                medium: ""
-                sizeLimit: "1Gi"
+          # Отключаем file storage backend по умолчанию
+          # Это важно, чтобы Vault использовал только S3 из extraConfig
+          # Helm chart по умолчанию может использовать file storage, если не отключить явно
+          extraVolumes: []
 
           # Настройка securityContext для автоматической настройки прав доступа
           # fsGroup автоматически настроит права для volumes
@@ -71,8 +67,14 @@ spec:
             runAsNonRoot: true
 
           # Конфигурация S3 backend для Vault
-          # Vault будет использовать отдельную папку в S3 bucket для хранения данных
+          # ВАЖНО: extraConfig добавляется в конец конфигурации Vault
+          # Если Helm chart создает дефолтный storage "file", он будет использован первым
+          # Поэтому нужно явно отключить file storage через dataStorage.enabled: false
+          # и убедиться, что S3 storage определен в extraConfig
           extraConfig: |
+            # Отключаем file storage, если он был определен по умолчанию
+            # Vault использует первый найденный storage backend в конфигурации
+            # Поэтому важно, чтобы S3 был единственным storage backend
             storage "s3" {
               access_key = "1V87S1B2IPAWIR1K0SL8"
               secret_key = "LMWtBOQE4xAq4klbAaosjPuRHqRjKxBEZUkUZYhj"

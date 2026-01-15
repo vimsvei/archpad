@@ -7,8 +7,8 @@
 # Или получите credentials из Vault:
 #   VAULT_ADDR="https://vault.archpad.pro"
 #   VAULT_TOKEN="<your-token>"
-#   REGISTRY_USERNAME=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/kv/data/archpad/demo/registry" | jq -r '.data.data.REGISTRY_USERNAME')
-#   REGISTRY_PASSWORD=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/kv/data/archpad/demo/registry" | jq -r '.data.data.REGISTRY_PASSWORD')
+#   REGISTRY_USERNAME=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/kv/data/archpad/container-register" | jq -r '.data.data.REGISTRY_USERNAME')
+#   REGISTRY_PASSWORD=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/kv/data/archpad/container-register" | jq -r '.data.data.REGISTRY_PASSWORD')
 #   ./create-registry-secret.sh "${REGISTRY_USERNAME}" "${REGISTRY_PASSWORD}"
 
 set -e
@@ -27,8 +27,8 @@ if [ -z "${REGISTRY_USERNAME}" ] || [ -z "${REGISTRY_PASSWORD}" ]; then
   echo "Or get credentials from Vault:"
   echo "  VAULT_ADDR=\"https://vault.archpad.pro\""
   echo "  VAULT_TOKEN=\"<your-token>\""
-  echo "  REGISTRY_USERNAME=\$(curl -s -H \"X-Vault-Token: \${VAULT_TOKEN}\" \"\${VAULT_ADDR}/v1/kv/data/archpad/demo/registry\" | jq -r '.data.data.REGISTRY_USERNAME')"
-  echo "  REGISTRY_PASSWORD=\$(curl -s -H \"X-Vault-Token: \${VAULT_TOKEN}\" \"\${VAULT_ADDR}/v1/kv/data/archpad/demo/registry\" | jq -r '.data.data.REGISTRY_PASSWORD')"
+  echo "  REGISTRY_USERNAME=\$(curl -s -H \"X-Vault-Token: \${VAULT_TOKEN}\" \"\${VAULT_ADDR}/v1/kv/data/archpad/container-register\" | jq -r '.data.data.REGISTRY_USERNAME')"
+  echo "  REGISTRY_PASSWORD=\$(curl -s -H \"X-Vault-Token: \${VAULT_TOKEN}\" \"\${VAULT_ADDR}/v1/kv/data/archpad/container-register\" | jq -r '.data.data.REGISTRY_PASSWORD')"
   echo "  $0 \"\${REGISTRY_USERNAME}\" \"\${REGISTRY_PASSWORD}\""
   exit 1
 fi

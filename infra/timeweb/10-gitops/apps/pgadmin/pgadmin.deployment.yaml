@@ -19,13 +19,15 @@ spec:
       annotations:
         # Vault Agent Injector для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        vault.hashicorp.com/agent-inject-secret-postgres-credential: "kv/data/archpad/demo/postgres/credential"
         vault.hashicorp.com/agent-inject-template-postgres: |
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
-          export POSTGRES_HOST="{{ $postgres.Data.data.POSTGRES_HOST }}"
-          export POSTGRES_PORT="{{ $postgres.Data.data.POSTGRES_PORT }}"
-          export POSTGRES_USER="{{ $postgres.Data.data.POSTGRES_USER }}"
-          export POSTGRES_PASSWORD="{{ $postgres.Data.data.POSTGRES_PASSWORD }}"
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
+          {{- $postgresCredential := secret "kv/data/archpad/demo/postgres/credential" }}
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
+          export POSTGRES_USER="{{ $postgresCredential.Data.data.POSTGRES_USER }}"
+          export POSTGRES_PASSWORD="{{ $postgresCredential.Data.data.POSTGRES_PASSWORD }}"
         vault.hashicorp.com/agent-inject-secret-pgadmin: "kv/data/archpad/demo/pgadmin"
         vault.hashicorp.com/agent-inject-template-pgadmin: |
           {{- $pgadmin := secret "kv/data/archpad/demo/pgadmin" }}

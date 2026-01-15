@@ -112,7 +112,25 @@ variables:
         
         if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
           echo "ERROR: Failed to fetch secrets from Vault"
-          echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response"
+          local error_msg=$(echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response")
+          echo "$error_msg"
+          
+          # Проверяем, запечатан ли Vault
+          if echo "$error_msg" | grep -qi "sealed"; then
+            echo ""
+            echo "=========================================="
+            echo "Vault is SEALED"
+            echo "=========================================="
+            echo "Vault must be unsealed before building Portal."
+            echo ""
+            echo "To unseal Vault:"
+            echo "  1. Connect to your Vault server"
+            echo "  2. Run: vault operator unseal <unseal-key>"
+            echo "     (You may need multiple unseal keys)"
+            echo ""
+            echo "Or if using auto-unseal, check Vault logs for issues."
+            echo "=========================================="
+          fi
           return 1
         fi
         
@@ -123,7 +141,25 @@ variables:
         
         if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then
           echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"
-          echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response"
+          local error_msg=$(echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response")
+          echo "$error_msg"
+          
+          # Проверяем, запечатан ли Vault
+          if echo "$error_msg" | grep -qi "sealed"; then
+            echo ""
+            echo "=========================================="
+            echo "Vault is SEALED"
+            echo "=========================================="
+            echo "Vault must be unsealed before building Portal."
+            echo ""
+            echo "To unseal Vault:"
+            echo "  1. Connect to your Vault server"
+            echo "  2. Run: vault operator unseal <unseal-key>"
+            echo "     (You may need multiple unseal keys)"
+            echo ""
+            echo "Or if using auto-unseal, check Vault logs for issues."
+            echo "=========================================="
+          fi
           return 1
         fi
         
@@ -301,7 +337,25 @@ variables:
         
         if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
           echo "ERROR: Failed to fetch secrets from Vault"
-          echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response"
+          local error_msg=$(echo "$response" | jq -r '.errors[]?' 2>/dev/null || echo "$response")
+          echo "$error_msg"
+          
+          # Проверяем, запечатан ли Vault
+          if echo "$error_msg" | grep -qi "sealed"; then
+            echo ""
+            echo "=========================================="
+            echo "Vault is SEALED"
+            echo "=========================================="
+            echo "Vault must be unsealed before building Portal."
+            echo ""
+            echo "To unseal Vault:"
+            echo "  1. Connect to your Vault server"
+            echo "  2. Run: vault operator unseal <unseal-key>"
+            echo "     (You may need multiple unseal keys)"
+            echo ""
+            echo "Or if using auto-unseal, check Vault logs for issues."
+            echo "=========================================="
+          fi
           return 1
         fi
         
@@ -312,7 +366,25 @@ variables:
         
         if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then
           echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"
-          echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response"
+          local error_msg=$(echo "$tolgee_api_key_response" | jq -r '.errors[]?' 2>/dev/null || echo "$tolgee_api_key_response")
+          echo "$error_msg"
+          
+          # Проверяем, запечатан ли Vault
+          if echo "$error_msg" | grep -qi "sealed"; then
+            echo ""
+            echo "=========================================="
+            echo "Vault is SEALED"
+            echo "=========================================="
+            echo "Vault must be unsealed before building Portal."
+            echo ""
+            echo "To unseal Vault:"
+            echo "  1. Connect to your Vault server"
+            echo "  2. Run: vault operator unseal <unseal-key>"
+            echo "     (You may need multiple unseal keys)"
+            echo ""
+            echo "Or if using auto-unseal, check Vault logs for issues."
+            echo "=========================================="
+          fi
           return 1
         fi
         

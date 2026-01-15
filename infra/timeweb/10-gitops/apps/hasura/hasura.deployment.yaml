@@ -17,20 +17,20 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-hasura: "kv/data/archpad/demo/hasura"
+        vault.hashicorp.com/agent-inject-secret-hasura-db: "kv/data/archpad/demo/hasura/db"
         vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-hasura: |
-          {{- $hasura := secret "kv/data/archpad/demo/hasura" }}
-          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura-secret" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
+          {{- $hasuraDb := secret "kv/data/archpad/demo/hasura/db" }}
+          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем строки подключения из компонентов
           # URL-кодируем пароль для безопасной передачи в URI
-          {{- $password := $hasura.Data.data.HASURA_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
-          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
-          export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
-          export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasura.Data.data.HASURA_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasura.Data.data.HASURA_DB }}?sslmode=disable"
+          {{- $password := $hasuraDb.Data.data.HASURA_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
+          export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
+          export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
         vault.hashicorp.com/role: "platform"
     spec:
@@ -62,7 +62,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              . /vault/secrets/hasura
+              . /vault/secrets/hasura-db
               . /vault/secrets/hasura-secret
               exec graphql-engine serve
           ports:

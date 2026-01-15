@@ -17,16 +17,20 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для генерации конфига из шаблона
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-kratos: "kv/data/archpad/demo/ory/kratos"
-        vault.hashicorp.com/agent-inject-secret-postgres: "kv/data/archpad/demo/postgres"
+        vault.hashicorp.com/agent-inject-secret-kratos-db: "kv/data/archpad/demo/ory/kratos/db"
+        vault.hashicorp.com/agent-inject-secret-kratos-secret: "kv/data/archpad/demo/ory/kratos/secret"
+        vault.hashicorp.com/agent-inject-secret-kratos-other: "kv/data/archpad/demo/ory/kratos/other"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         # Переопределяем шаблон для секрета kratos - генерируем полный конфиг YAML вместо переменных окружения
-        vault.hashicorp.com/agent-inject-template-kratos: |
-          {{- $kratos := secret "kv/data/archpad/demo/ory/kratos" }}
-          {{- $postgres := secret "kv/data/archpad/demo/postgres" }}
-          {{- $password := $kratos.Data.data.KRATOS_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgres.Data.data.POSTGRES_HOST }}
-          {{- $pgPort := $postgres.Data.data.POSTGRES_PORT }}
-          dsn: postgres://{{ $kratos.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratos.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4
+        vault.hashicorp.com/agent-inject-template-kratos-db: |
+          {{- $kratosDb := secret "kv/data/archpad/demo/ory/kratos/db" }}
+          {{- $kratosSecret := secret "kv/data/archpad/demo/ory/kratos/secret" }}
+          {{- $kratosOther := secret "kv/data/archpad/demo/ory/kratos/other" }}
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
+          {{- $password := $kratosDb.Data.data.KRATOS_DB_PASSWORD | urlquery }}
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
+          dsn: postgres://{{ $kratosDb.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratosDb.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4
 
           serve:
             public:
@@ -111,7 +115,7 @@ spec:
 
           secrets:
             default:
-              - {{ $kratos.Data.data.KRATOS_SECRET }}
+              - {{ $kratosSecret.Data.data.KRATOS_SECRET }}
 
           session:
             lifespan: 720h
@@ -119,8 +123,8 @@ spec:
           # Email delivery (verification / recovery codes, etc.)
           courier:
             smtp:
-              connection_uri: {{ $kratos.Data.data.SMTP_CONNECTION_URI }}
-              from_address: {{ $kratos.Data.data.SMTP_FROM_ADDRESS }}
+              connection_uri: {{ $kratosOther.Data.data.SMTP_CONNECTION_URI }}
+              from_address: {{ $kratosOther.Data.data.SMTP_FROM_ADDRESS }}
         vault.hashicorp.com/role: "secure"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
@@ -151,12 +155,14 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos
+              # Конфиг сгенерирован Vault Agent Injector в /vault/secrets/kratos-db
               # Проверяем формат файла и преобразуем если нужно
-              if grep -q "^export " /vault/secrets/kratos; then
+              if grep -q "^export " /vault/secrets/kratos-db; then
                 # Файл содержит export команды - преобразуем в YAML
-                . /vault/secrets/kratos
-                . /vault/secrets/postgres
+                . /vault/secrets/kratos-db
+                . /vault/secrets/kratos-secret
+                . /vault/secrets/kratos-other
+                . /vault/secrets/postgres-connect
                 cat > /tmp/kratos.yml <<EOF
               dsn: ${DSN}
               
@@ -264,7 +270,7 @@ spec:
               EOF
               else
                 # Файл уже в формате YAML - просто копируем
-                cp /vault/secrets/kratos /tmp/kratos.yml
+                cp /vault/secrets/kratos-db /tmp/kratos.yml
               fi
               # Проверяем, что файл создан
               if [ ! -f /tmp/kratos.yml ]; then
