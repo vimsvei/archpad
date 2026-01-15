@@ -20,9 +20,9 @@ spec:
         vault.hashicorp.com/agent-inject-secret-hasura-db: "kv/data/archpad/demo/hasura/db"
         vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
         vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
-        vault.hashicorp.com/agent-inject-template-hasura: |
-          {{- $hasuraDb := secret "kv/data/archpad/demo/hasura/db" }}
-          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
+        vault.hashicorp.com/agent-inject-template-hasura-db: |
+          {{- with secret "kv/data/archpad/demo/hasura/db" }}
+          {{- $hasuraDb := . }}
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем строки подключения из компонентов
           # URL-кодируем пароль для безопасной передачи в URI
@@ -31,7 +31,11 @@ spec:
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
           export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
-          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-hasura-secret: |
+          {{- with secret "kv/data/archpad/demo/hasura/secret" }}
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ .Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          {{- end }}
         vault.hashicorp.com/role: "platform"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов
