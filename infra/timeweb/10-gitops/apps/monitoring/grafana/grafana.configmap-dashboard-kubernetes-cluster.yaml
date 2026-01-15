@@ -229,7 +229,8 @@ data:
             "reduceOptions": {
               "values": false,
               "calcs": ["lastNotNull"],
-              "fields": ""
+              "fields": "",
+              "includeAllFields": false
             },
             "textMode": "auto"
           },
@@ -286,7 +287,8 @@ data:
             "reduceOptions": {
               "values": false,
               "calcs": ["lastNotNull"],
-              "fields": ""
+              "fields": "",
+              "includeAllFields": false
             },
             "textMode": "auto"
           },
@@ -343,7 +345,8 @@ data:
             "reduceOptions": {
               "values": false,
               "calcs": ["lastNotNull"],
-              "fields": ""
+              "fields": "",
+              "includeAllFields": false
             },
             "textMode": "auto"
           },
@@ -400,7 +403,8 @@ data:
             "reduceOptions": {
               "values": false,
               "calcs": ["lastNotNull"],
-              "fields": ""
+              "fields": "",
+              "includeAllFields": false
             },
             "textMode": "auto"
           },
@@ -447,17 +451,23 @@ data:
           },
           "id": 7,
           "options": {
-            "displayLabels": ["name"],
+            "displayLabels": ["name", "value"],
             "legend": {
               "displayMode": "table",
               "placement": "right",
               "showLegend": true,
-              "values": ["value"]
+              "values": ["value", "percent"]
             },
             "pieType": "pie",
             "tooltip": {
               "mode": "single",
               "sort": "none"
+            },
+            "reduceOptions": {
+              "values": false,
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "includeAllFields": false
             }
           },
           "targets": [
@@ -467,8 +477,9 @@ data:
                 "uid": "prometheus"
               },
               "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\",pod!=\"\"}[5m])) by (namespace)",
-              "format": "table",
+              "format": "time_series",
               "instant": true,
+              "legendFormat": "{{namespace}}",
               "refId": "A"
             }
           ],
@@ -504,17 +515,23 @@ data:
           },
           "id": 8,
           "options": {
-            "displayLabels": ["name"],
+            "displayLabels": ["name", "value"],
             "legend": {
               "displayMode": "table",
               "placement": "right",
               "showLegend": true,
-              "values": ["value"]
+              "values": ["value", "percent"]
             },
             "pieType": "pie",
             "tooltip": {
               "mode": "single",
               "sort": "none"
+            },
+            "reduceOptions": {
+              "values": false,
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "includeAllFields": false
             }
           },
           "targets": [
@@ -524,8 +541,9 @@ data:
                 "uid": "prometheus"
               },
               "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\",pod!=\"\"}) by (namespace)",
-              "format": "table",
+              "format": "time_series",
               "instant": true,
+              "legendFormat": "{{namespace}}",
               "refId": "A"
             }
           ],

@@ -88,12 +88,6 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
             - name: grafana-dashboards-config
               mountPath: /etc/grafana/provisioning/dashboards
-            - name: grafana-dashboards-node
-              mountPath: /var/lib/grafana/dashboards/archpad-metrics-node.json
-              subPath: archpad-metrics-node.json
-            - name: grafana-dashboards-containers
-              mountPath: /var/lib/grafana/dashboards/archpad-metrics-containers.json
-              subPath: archpad-metrics-containers.json
             - name: grafana-dashboards-resources
               mountPath: /var/lib/grafana/dashboards/archpad-resources-by-app.json
               subPath: archpad-resources-by-app.json
@@ -104,6 +98,10 @@ spec:
             - name: grafana-dashboards-applications
               mountPath: /var/lib/grafana/dashboards/applications.json
               subPath: applications.json
+              readOnly: true
+            - name: grafana-dashboards-resources-summary
+              mountPath: /var/lib/grafana/dashboards/resources-summary.json
+              subPath: resources-summary.json
               readOnly: true
           startupProbe:
             # Startup probe используется только при старте контейнера
@@ -151,14 +149,6 @@ spec:
         - name: grafana-dashboards-config
           configMap:
             name: grafana-dashboards
-        - name: grafana-dashboards-node
-          configMap:
-            name: grafana-dashboards-node
-            optional: true
-        - name: grafana-dashboards-containers
-          configMap:
-            name: grafana-dashboards-containers
-            optional: true
         - name: grafana-dashboards-resources
           configMap:
             name: grafana-dashboards-resources
@@ -170,3 +160,6 @@ spec:
           configMap:
             name: grafana-dashboard-applications
             optional: true
+        - name: grafana-dashboards-resources-summary
+          configMap:
+            name: grafana-dashboard-resources-summary
