@@ -119,13 +119,14 @@ spec:
             failureThreshold: 3      # После 3 неудачных попыток контейнер будет перезапущен
           readinessProbe:
             # Readiness probe также откладывается до успешного startup probe
+            # Grafana может долго запускаться из-за установки плагинов и инициализации
             httpGet:
               path: /api/health
               port: 3000
-            initialDelaySeconds: 10  # После успешного startup probe можно проверять
+            initialDelaySeconds: 30  # Увеличено до 30 секунд для установки плагинов
             periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 3
+            timeoutSeconds: 5        # Увеличен таймаут
+            failureThreshold: 5       # Увеличено количество попыток
           resources:
             # Оптимизировано для демо-стенда (4 CPU / 8GB RAM на весь кластер)
             # Grafana требует больше памяти при инициализации (подключение к PostgreSQL, загрузка дашбордов)
