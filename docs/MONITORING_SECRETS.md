@@ -2,48 +2,55 @@
 
 ## Обзор
 
-Все секреты для мониторинга хранятся в Vault.
+Все секреты для мониторинга хранятся в HashiCorp Vault и автоматически загружаются в поды через Vault Agent Injector.
 
-## Секреты
+## Структура секретов
 
-### 1. Grafana Admin Credentials
+Полная структура секретов для мониторинга описана в основном документе:
 
-**Путь в Vault:** `kv/data/archpad/monitoring/grafana/admin` ✅ (создан)
+👉 **[VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md)** - Раздел "7. Monitoring"
 
-**Структура данных:**
-```json
-{
-  "GRAFANA_ADMIN_USER": "admin",
-  "GRAFANA_ADMIN_PASSWORD": "<secure-password>"
-}
-```
+### Grafana
 
-**Описание:**
-- `GRAFANA_ADMIN_USER` - имя администратора Grafana (обычно "admin")
-- `GRAFANA_ADMIN_PASSWORD` - пароль администратора Grafana (должен быть безопасным)
+Grafana использует следующие секреты:
+- `kv/data/archpad/demo/grafana/admin` - Учетные данные администратора
+- `kv/data/archpad/demo/grafana/db` - Конфигурация базы данных
+- `kv/data/archpad/demo/postgres/connect` - Подключение к PostgreSQL
 
-**Использование:**
-- Используется в Grafana Deployment для настройки администратора
-- Доступ через Vault Agent Injector с аннотациями
+Подробнее см. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#7-monitoring).
 
-**Статус:** ✅ Секрет создан в Vault
+## Создание и обновление секретов
 
-**Структура должна быть:**
-```json
-{
-  "GRAFANA_ADMIN_USER": "admin",
-  "GRAFANA_ADMIN_PASSWORD": "<secure-password>"
-}
-```
+### Grafana Admin Credentials
 
-**Проверка:**
 ```bash
 VAULT_ADDR="https://vault.archpad.pro"
 VAULT_TOKEN="<your-token>"
 
-curl -X GET \
-  -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  "${VAULT_ADDR}/v1/kv/data/archpad/monitoring/grafana/admin"
+vault kv put kv/data/archpad/demo/grafana/admin \
+  GRAFANA_ADMIN_USER="admin" \
+  GRAFANA_ADMIN_PASSWORD="<secure-password>"
+```
+
+### Grafana Database
+
+```bash
+vault kv put kv/data/archpad/demo/grafana/db \
+  GRAFANA_DB="grafana" \
+  GRAFANA_DB_USER="grafana" \
+  GRAFANA_DB_PASSWORD="<secure-password>"
+```
+
+## Проверка секретов
+
+```bash
+# Проверить секреты Grafana
+vault kv get kv/data/archpad/demo/grafana/admin
+vault kv get kv/data/archpad/demo/grafana/db
+
+# Или через API
+curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
+  "${VAULT_ADDR}/v1/kv/data/archpad/demo/grafana/admin" | jq
 ```
 
 ### 2. Hasura Metrics Secret (опционально)

@@ -10,7 +10,7 @@
 
 Next.js приложение, доступное через `https://portal.archpad.pro`.
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#frontend-portal)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#31-portal-configuration)
 
 **Особенности:**
 - Получает `NEXT_PUBLIC_*` секреты из Vault во время сборки (через GitLab CI/CD)
@@ -23,7 +23,7 @@ Next.js приложение, доступное через `https://portal.arch
 
 Основной сервис для работы с проектами.
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#backend-services)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#2-backend-services)
 
 **Особенности:**
 - Использует PostgreSQL для хранения данных
@@ -33,13 +33,13 @@ Next.js приложение, доступное через `https://portal.arch
 
 Сервис для работы с tenant'ами.
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#backend-services)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#2-backend-services)
 
 ### hasura-sync-service
 
 Job для синхронизации схемы БД с Hasura.
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#backend-services)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#2-backend-services)
 
 **Особенности:**
 - Запускается как Kubernetes Job
@@ -51,7 +51,7 @@ Job для синхронизации схемы БД с Hasura.
 
 GraphQL API и управление БД.
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#hasura)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#4-hasura)
 
 **Особенности:**
 - Использует PostgreSQL для метаданных и данных
@@ -62,7 +62,7 @@ GraphQL API и управление БД.
 
 Сервис интернационализации (i18n).
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#tolgee)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#5-tolgee-i18n)
 
 **Особенности:**
 - Использует PostgreSQL для хранения переводов
@@ -90,7 +90,7 @@ Ory компоненты развертываются в Kubernetes через A
 3. PostgreSQL доступен (для Kratos и Hydra)
 4. TLS сертификат `wildcard-archpad-pro-tls` должен быть скопирован в namespace `secure`
 
-**Секреты:** См. [SECRETS.md](./SECRETS.md#ory-kratos-hydra-oathkeeper)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#6-ory-services)
 
 ### Kratos
 
@@ -227,6 +227,7 @@ kubectl exec -n secure <hydra-pod> -- curl -fsS http://localhost:4445/health/rea
 ## Дополнительная документация
 
 - [Deployment](./DEPLOYMENT.md) - развертывание компонентов
-- [Secrets](./SECRETS.md) - управление секретами
+- [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) - структура секретов
+- [SECRETS.md](./SECRETS.md) - управление секретами
 - [Vault Setup](./VAULT_SETUP.md) - настройка Vault
 - [Local Development](./LOCAL_DEVELOPMENT.md) - локальная разработка

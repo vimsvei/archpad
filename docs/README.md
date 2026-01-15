@@ -22,6 +22,7 @@
 ### Управление секретами
 
 - [VAULT_SETUP.md](./VAULT_SETUP.md) - Полная настройка HashiCorp Vault
+- [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) - Структура всех секретов Vault (пути и переменные)
 - [SECRETS.md](./SECRETS.md) - Управление секретами в Vault
 
 ### CI/CD и автоматизация
@@ -54,7 +55,7 @@
 - **Локальная разработка**: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
 - **Развертывание**: [DEPLOYMENT.md](./DEPLOYMENT.md)
 - **Настройка CI/CD**: [GITLAB_CI.md](./GITLAB_CI.md)
-- **Управление секретами**: [SECRETS.md](./SECRETS.md)
+- **Управление секретами**: [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md), [SECRETS.md](./SECRETS.md)
 - **Оптимизация ресурсов**: [RESOURCE_MANAGEMENT.md](./RESOURCE_MANAGEMENT.md)
 
 ## Дополнительные ресурсы

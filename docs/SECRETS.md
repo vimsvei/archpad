@@ -52,187 +52,13 @@ Vault Agent Injector автоматически:
 
 Подробнее см. [VAULT_SETUP.md](./VAULT_SETUP.md).
 
-## Секреты по компонентам
+## Структура секретов
 
-### PostgreSQL (общие секреты)
+Полная структура всех секретов и переменных описана в отдельном документе:
 
-**Путь:** `/v1/kv/data/archpad/demo/postgres`
+👉 **[VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md)** - Полная структура всех секретов Vault
 
-**Ключи:**
-- `POSTGRES_HOST` - IP адрес PostgreSQL кластера (например, `192.168.0.4`)
-- `POSTGRES_PORT` - Порт PostgreSQL (например, `5432`)
-- `POSTGRES_ENDPOINT` - Доменное имя PostgreSQL (для локальной разработки, например, `pg.archpad.pro`)
-
-**Используется:** Hasura, Kratos, Hydra, Tolgee, Backend сервисы
-
-**Важно:** 
-- В Kubernetes используется `POSTGRES_HOST` (IP адрес), так как доменные имена могут не резолвиться внутри кластера
-- Для локальной разработки (`NODE_ENV=local`) используется `POSTGRES_ENDPOINT` (может быть доменное имя)
-
-**Обновление POSTGRES_HOST:**
-
-Если сервисы подключаются к PostgreSQL по доменному имени вместо IP адреса, обновите секрет в Vault:
-
-```bash
-VAULT_ADDR="https://vault.archpad.pro"
-VAULT_TOKEN="<your-token>"
-
-curl -X POST \
-  -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "POSTGRES_ENDPOINT": "pg.archpad.pro",
-      "POSTGRES_HOST": "192.168.0.4",
-      "POSTGRES_PORT": "5432"
-    }
-  }' \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/postgres"
-```
-
-После обновления перезапустите поды сервисов:
-```bash
-kubectl delete pod -n platform -l app=arch-repo-service
-kubectl delete pod -n platform -l app=tenant-service
-```
-
-### Backend Services
-
-#### arch-repo-service
-
-**Путь:** `/v1/kv/data/archpad/demo/backend/arch-repo-service`
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/backend/common` - общие секреты
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-#### tenant-service
-
-**Путь:** `/v1/kv/data/archpad/demo/backend/tenant-service`
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/backend/common` - общие секреты
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-#### hasura-sync-service
-
-**Путь:** `/v1/kv/data/archpad/demo/backend/hasura-sync-service`
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/hasura/secret` - Hasura admin secret
-- `/v1/kv/data/archpad/demo/backend/common` - общие секреты
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-### Frontend (Portal)
-
-**Путь:** `/v1/kv/data/archpad/demo/frontend/portal`
-
-**Ключи:**
-- `NEXT_PUBLIC_URL` - публичный URL Portal
-- `NEXT_PUBLIC_ORY_SDK_URL` - публичный URL Kratos SDK
-- `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - публичный URL Hasura GraphQL
-- `NEXT_PUBLIC_TOLGEE_API_URL` - публичный URL Tolgee API
-- `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (хранится отдельно, см. ниже)
-- `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - опционально, публичный URL API Gateway
-- `API_GATEWAY_INTERNAL_URL` - опционально, внутренний URL API Gateway
-
-**Дополнительные пути (используются Vault Agent Injector):**
-- `/v1/kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
-- `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET` (берется из Hasura секрета, не из Portal)
-- `/v1/kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
-- `/v1/kv/data/archpad/demo/tolgee/api-key` - `NEXT_PUBLIC_TOLGEE_API_KEY` (хранится отдельно)
-
-**Примечание:** 
-- Переменные с префиксом `NEXT_PUBLIC_*` доступны в браузере, остальные - только на сервере.
-- `HASURA_GRAPHQL_ADMIN_SECRET` теперь берется из `kv/data/archpad/demo/hasura/secret`, а не из секрета Portal.
-
-### Hasura
-
-**Путь:** `/v1/kv/data/archpad/demo/hasura`
-
-**Ключи:**
-- `HASURA_USER` - имя пользователя PostgreSQL
-- `HASURA_DB_PASSWORD` - пароль пользователя PostgreSQL
-- `HASURA_DB` - имя базы данных для метаданных Hasura
-- `PROJECT_DB` - имя базы данных для проектов
-- `TENANT_DB` - имя базы данных для tenant'ов
-
-**Дополнительный путь:**
-- `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET`
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-### Tolgee
-
-**Путь:** `/v1/kv/data/archpad/demo/tolgee`
-
-**Ключи:**
-- `TOLGEE_DB_USER` - имя пользователя PostgreSQL
-- `TOLGEE_DB_PASSWORD` - пароль пользователя PostgreSQL
-- `TOLGEE_DB` - имя базы данных
-- `TOLGEE_ADMIN_USER` - имя начального администратора
-- `TOLGEE_ADMIN_PASSWORD` - пароль начального администратора
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-**Примечание:** `TOLGEE_API_KEY` создается в интерфейсе Tolgee после первого входа администратора.
-
-### Ory (Kratos, Hydra, Oathkeeper)
-
-#### Kratos
-
-**Путь:** `/v1/kv/data/archpad/demo/ory/kratos`
-
-**Ключи:**
-- `KRATOS_DB_USER` - имя пользователя PostgreSQL
-- `KRATOS_DB_PASSWORD` - пароль пользователя PostgreSQL
-- `KRATOS_DB` - имя базы данных
-- `KRATOS_SECRET` - секрет для подписи сессий и токенов
-- `SMTP_CONNECTION_URI` - URI подключения к SMTP серверу
-- `SMTP_FROM_ADDRESS` - адрес отправителя email
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-**DSN формируется автоматически:** `postgres://{KRATOS_DB_USER}:{KRATOS_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
-
-#### Hydra
-
-**Путь:** `/v1/kv/data/archpad/demo/ory/hydra`
-
-**Ключи:**
-- `HYDRA_DB_USER` - имя пользователя PostgreSQL
-- `HYDRA_DB_PASSWORD` - пароль пользователя PostgreSQL
-- `HYDRA_DB` - имя базы данных
-- `SECRETS_SYSTEM` - системный секрет для Hydra
-
-**Дополнительные пути:**
-- `/v1/kv/data/archpad/demo/postgres` - PostgreSQL
-
-**DSN формируется автоматически:** `postgres://{HYDRA_DB_USER}:{HYDRA_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
-
-#### Oathkeeper
-
-**Путь:** `/v1/kv/data/archpad/demo/ory/oauthkeeper`
-
-**Ключи:**
-- `ORY_CLIENT_ID` - ID OAuth2 клиента для introspection
-- `ORY_CLIENT_SECRET` - секрет OAuth2 клиента для introspection
-
-**Примечание:** Oathkeeper не использует БД напрямую, только OAuth2 клиент для подключения к Hydra.
-
-### Container Registry
-
-**Путь:** `/v1/kv/data/container-register`
-
-**Ключи:**
-- `REGISTRY_URL` - URL Container Registry
-- `REGISTRY_USERNAME` - имя пользователя
-- `REGISTRY_PASSWORD` - пароль или токен доступа
-
-**Использование:** Секрет автоматически синхронизируется в Kubernetes Secret `archpad-registry-secret` через Job `registry-secret-sync`.
+В этом документе описаны все пути в Vault, названия переменных (без значений) и их использование в системе.
 
 ## Создание и обновление секретов
 
@@ -360,5 +186,6 @@ kubectl logs job/hasura-vault-role -n platform
 
 ## Дополнительная документация
 
-- [Vault Setup](./VAULT_SETUP.md) - полная настройка Vault
-- [Deployment](./DEPLOYMENT.md) - развертывание компонентов
+- **[VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md)** - Полная структура всех секретов и переменных
+- [VAULT_SETUP.md](./VAULT_SETUP.md) - Полная настройка Vault и Kubernetes Auth Method
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание компонентов
