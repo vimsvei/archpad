@@ -159,8 +159,10 @@ spec:
               memory: 512Mi
             limits:
               cpu: 500m  # Увеличено для стабильной работы Spring Boot
-              memory: 768Mi  # Увеличено для предотвращения OOMKilled
+              memory: 1Gi  # Увеличено до 1GB для предотвращения OOMKilled
       volumes:
         - name: config
           configMap:
             name: tolgee
+        - name: vault-secrets
+          emptyDir: {}
