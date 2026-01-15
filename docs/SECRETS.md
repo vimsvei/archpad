@@ -132,15 +132,19 @@ kubectl delete pod -n platform -l app=tenant-service
 - `NEXT_PUBLIC_ORY_SDK_URL` - публичный URL Kratos SDK
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - публичный URL Hasura GraphQL
 - `NEXT_PUBLIC_TOLGEE_API_URL` - публичный URL Tolgee API
-- `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (публичный)
-- `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - публичный URL API Gateway
+- `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (хранится отдельно, см. ниже)
+- `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - опционально, публичный URL API Gateway
+- `API_GATEWAY_INTERNAL_URL` - опционально, внутренний URL API Gateway
 
-**Дополнительные пути:**
+**Дополнительные пути (используются Vault Agent Injector):**
 - `/v1/kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
+- `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET` (берется из Hasura секрета, не из Portal)
 - `/v1/kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
-- `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET`
+- `/v1/kv/data/archpad/demo/tolgee/api-key` - `NEXT_PUBLIC_TOLGEE_API_KEY` (хранится отдельно)
 
-**Примечание:** Переменные с префиксом `NEXT_PUBLIC_*` доступны в браузере, остальные - только на сервере.
+**Примечание:** 
+- Переменные с префиксом `NEXT_PUBLIC_*` доступны в браузере, остальные - только на сервере.
+- `HASURA_GRAPHQL_ADMIN_SECRET` теперь берется из `kv/data/archpad/demo/hasura/secret`, а не из секрета Portal.
 
 ### Hasura
 

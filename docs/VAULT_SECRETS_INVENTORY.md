@@ -92,7 +92,6 @@
 **Используемые ключи:**
 - `NEXT_PUBLIC_ORY_SDK_URL` - URL Ory SDK для аутентификации
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - GraphQL endpoint Hasura
-- `HASURA_GRAPHQL_ADMIN_SECRET` - секретный ключ администратора Hasura
 - `NEXT_PUBLIC_TOLGEE_API_URL` - URL API Tolgee для интернационализации
 - `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (хранится отдельно, см. ниже)
 - `NEXT_PUBLIC_URL` - публичный URL Portal
@@ -102,6 +101,8 @@
 **Дополнительные секреты:**
 - `kv/data/archpad/demo/hasura/endpoint` - endpoint Hasura
   - `HASURA_INTERNAL_URL` - внутренний URL Hasura (`http://hasura.platform.svc:8080`)
+- `kv/data/archpad/demo/hasura/secret` - секреты Hasura
+  - `HASURA_GRAPHQL_ADMIN_SECRET` - секретный ключ администратора Hasura (используется Portal)
 - `kv/data/archpad/demo/ory/kratos/endpoint` - endpoint Kratos
   - `ORY_KRATOS_INTERNAL_URL` - внутренний URL Kratos (`http://kratos.secure.svc:4433`)
 

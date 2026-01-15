@@ -15,7 +15,10 @@ Portal - это Next.js приложение, доступное через `por
 ## Секреты
 
 Секреты загружаются через Vault Agent Injector из:
-- `/v1/kv/data/archpad/demo/frontend/portal`
+- `/v1/kv/data/archpad/demo/frontend/portal` - основные секреты Portal
+- `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET` (берется из Hasura секрета)
+- `/v1/kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
+- `/v1/kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
 
 Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
