@@ -94,6 +94,9 @@ spec:
             - name: grafana-dashboards-containers
               mountPath: /var/lib/grafana/dashboards/archpad-metrics-containers.json
               subPath: archpad-metrics-containers.json
+            - name: grafana-dashboards-resources
+              mountPath: /var/lib/grafana/dashboards/archpad-resources-by-app.json
+              subPath: archpad-resources-by-app.json
           livenessProbe:
             httpGet:
               path: /api/health
@@ -132,4 +135,8 @@ spec:
         - name: grafana-dashboards-containers
           configMap:
             name: grafana-dashboards-containers
+            optional: true
+        - name: grafana-dashboards-resources
+          configMap:
+            name: grafana-dashboards-resources
             optional: true
