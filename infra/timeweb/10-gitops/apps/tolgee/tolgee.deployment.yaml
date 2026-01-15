@@ -139,9 +139,8 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
               readOnly: true
-            - name: vault-secrets
-              mountPath: /vault/secrets
-              readOnly: true
+            # vault-secrets volumeMount создается автоматически Vault Agent Injector
+            # Не нужно определять его вручную
           startupProbe:
             # Startup probe используется только при старте контейнера
             # После успешного ответа отключается, используются liveness/readiness probes
@@ -194,5 +193,5 @@ spec:
         - name: config
           configMap:
             name: tolgee
-        - name: vault-secrets
-          emptyDir: {}
+        # vault-secrets volume создается автоматически Vault Agent Injector
+        # Не нужно определять его вручную, иначе будет ошибка "Duplicate value: vault-secrets"
