@@ -97,6 +97,14 @@ spec:
             - name: grafana-dashboards-resources
               mountPath: /var/lib/grafana/dashboards/archpad-resources-by-app.json
               subPath: archpad-resources-by-app.json
+            - name: grafana-dashboards-kubernetes-cluster
+              mountPath: /var/lib/grafana/dashboards/kubernetes-cluster.json
+              subPath: kubernetes-cluster.json
+              readOnly: true
+            - name: grafana-dashboards-applications
+              mountPath: /var/lib/grafana/dashboards/applications.json
+              subPath: applications.json
+              readOnly: true
           startupProbe:
             # Startup probe используется только при старте контейнера
             # Grafana может долго запускаться из-за загрузки секретов из Vault, подключения к PostgreSQL и инициализации БД
