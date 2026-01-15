@@ -147,18 +147,19 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 5
+            initialDelaySeconds: 90  # Tolgee требует больше времени для запуска (Vault секреты + PostgreSQL подключение + Spring Boot старт)
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
+            # Tolgee (Spring Boot) требует больше памяти для запуска
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 512Mi
             limits:
-              cpu: 200m
-              memory: 384Mi
+              cpu: 500m  # Увеличено для стабильной работы Spring Boot
+              memory: 768Mi  # Увеличено для предотвращения OOMKilled
       volumes:
         - name: config
           configMap:
