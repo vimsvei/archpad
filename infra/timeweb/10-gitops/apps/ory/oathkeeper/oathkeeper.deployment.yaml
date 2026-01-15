@@ -59,7 +59,12 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              source /vault/secrets/oathkeeper
+              # Загружаем секреты из Vault если они доступны (опционально)
+              if [ -f /vault/secrets/oathkeeper ]; then
+                source /vault/secrets/oathkeeper
+              else
+                echo "WARNING: /vault/secrets/oathkeeper not found, using default values from config"
+              fi
               exec oathkeeper serve --config=/etc/oathkeeper/config.yml
           env:
             - name: LOG_LEVEL

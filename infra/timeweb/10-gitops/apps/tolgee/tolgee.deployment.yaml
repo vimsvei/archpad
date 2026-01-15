@@ -23,8 +23,7 @@ spec:
         vault.hashicorp.com/agent-inject-secret-tolgee-admin: "kv/data/archpad/demo/tolgee/admin"
         vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-tolgee-db: |
-          {{- with secret "kv/data/archpad/demo/tolgee/db" }}
-          {{- $tolgeeDb := . }}
+          {{- $tolgeeDb := secret "kv/data/archpad/demo/tolgee/db" }}
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем JDBC URL из компонентов
           {{- $password := $tolgeeDb.Data.data.TOLGEE_DB_PASSWORD | urlquery }}
@@ -33,12 +32,10 @@ spec:
           export SPRING_DATASOURCE_URL="jdbc:postgresql://{{ $pgHost }}:{{ $pgPort }}/{{ $tolgeeDb.Data.data.TOLGEE_DB }}"
           export SPRING_DATASOURCE_USERNAME="{{ $tolgeeDb.Data.data.TOLGEE_DB_USER }}"
           export SPRING_DATASOURCE_PASSWORD="{{ $tolgeeDb.Data.data.TOLGEE_DB_PASSWORD }}"
-          {{- end }}
         vault.hashicorp.com/agent-inject-template-tolgee-admin: |
-          {{- with secret "kv/data/archpad/demo/tolgee/admin" }}
-          export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ .Data.data.TOLGEE_ADMIN_USER }}"
-          export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ .Data.data.TOLGEE_ADMIN_PASSWORD }}"
-          {{- end }}
+          {{- $tolgeeAdmin := secret "kv/data/archpad/demo/tolgee/admin" }}
+          export TOLGEE_AUTHENTICATION_INITIAL_USERNAME="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_USER }}"
+          export TOLGEE_AUTHENTICATION_INITIAL_PASSWORD="{{ $tolgeeAdmin.Data.data.TOLGEE_ADMIN_PASSWORD }}"
         vault.hashicorp.com/role: "platform"
         # Оптимизация ресурсов для Vault Agent (уменьшаем requests, т.к. фактическое использование очень низкое)
         vault.hashicorp.com/agent-limits-cpu: "100m"
