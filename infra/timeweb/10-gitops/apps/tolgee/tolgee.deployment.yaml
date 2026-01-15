@@ -82,9 +82,9 @@ spec:
                   waited=$((waited+1))
                 done
                 if [ -f /vault/secrets/tolgee ]; then
-                  set -a
-                  . /vault/secrets/tolgee
-                  set +a
+              set -a
+              . /vault/secrets/tolgee
+              set +a
                 else
                   echo "ERROR: /vault/secrets/tolgee not found after ${max_wait}s"
                   exit 1
