@@ -11,15 +11,18 @@ spec:
   template:
     metadata:
       annotations:
-        # NOTE:
-        # Раньше job читал общие переменные из `kv/data/archpad/demo/ory/hydra`.
-        # После пересоздания Vault этот путь может отсутствовать, из‑за чего Vault Agent "висит"
-        # на init этапе и ArgoCD остаётся в бесконечном Progressing.
-        #
-        # Для устойчивости job запускается без Vault и использует дефолты из скриптов
-        # (CLIENT_ID=archpad-portal, redirect=https://portal.archpad.pro/oauth/callback и т.д.).
-        #
-        # Если позже захочешь снова управлять клиентами через Vault — вернём инъекцию, но на корректный путь.
+        # Vault Agent Injector аннотации для чтения секретов из Vault
+        vault.hashicorp.com/agent-inject: "true"
+        # Ранее использовался путь `kv/data/archpad/demo/ory/hydra`, но после пересоздания Vault он может отсутствовать.
+        # Для инициализации клиентов достаточно секретов из `.../ory/hydra/secret` (ORY_CLIENT_SECRET, etc).
+        vault.hashicorp.com/agent-inject-secret-hydra-init: "kv/data/archpad/demo/ory/hydra/secret"
+        vault.hashicorp.com/agent-inject-template-hydra-init: |
+          {{- with secret "kv/data/archpad/demo/ory/hydra/secret" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: hydra
       restartPolicy: Never
@@ -42,6 +45,7 @@ spec:
           args:
             - |
               apk add --no-cache curl
+              source /vault/secrets/hydra-init
               export HYDRA_ADMIN_URL=http://hydra:4445
               sh /init-client/entrypoint.sh
           volumeMounts:
