@@ -23,104 +23,41 @@
 
 ### 1. Создание `.env.local`
 
-Создайте файл `.env.local` в корне проекта (в директории, где находится этот README).
+Мы используем два файла:
+- `packages/portal/.env.local`
+- `packages/backend/.env.local`
 
-**Важно:** Next.js ищет `.env.local` в директории, где находится `next.config.ts` (т.е. в `packages/portal/`). Скрипт `dev-local.sh` автоматически создаст симлинк из корневого `.env.local` в `packages/portal/.env.local`. Если вы запускаете `pnpm dev` вручную, создайте симлинк самостоятельно:
-
-```bash
-cd packages/portal
-ln -s ../../.env.local .env.local
-```
-
-Или скопируйте файл:
+Сгенерируйте/обновите их:
 
 ```bash
-cp ../../.env.local packages/portal/.env.local
+./scripts/update-env-portal.sh
+./scripts/update-env-backend.sh
 ```
 
-```bash
-# ============================================
-# Ory Kratos (через port-forward)
-# ============================================
-NEXT_PUBLIC_ORY_SDK_URL=http://localhost:4433
-ORY_KRATOS_PUBLIC_URL=http://localhost:4433
-KRATOS_ADMIN_URL=http://localhost:4434
-
-# ============================================
-# Ory Hydra (через port-forward)
-# ============================================
-NEXT_PUBLIC_HYDRA_PUBLIC_URL=http://localhost:4444
-HYDRA_ADMIN_URL=http://localhost:4445
-
-# OAuth2 Client (должен быть создан в Hydra)
-NEXT_PUBLIC_OAUTH_CLIENT_ID=archpad-portal
-NEXT_PUBLIC_OAUTH_REDIRECT_URI=http://localhost:3000/oauth/callback
-
-# ============================================
-# Hasura (через port-forward)
-# ============================================
-NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT=http://localhost:8080/v1/graphql
-HASURA_ENDPOINT=http://localhost:8080
-HASURA_GRAPHQL_ADMIN_SECRET=your-hasura-admin-secret
-
-# ============================================
-# Tolgee (используем публичный URL)
-# ============================================
-NEXT_PUBLIC_TOLGEE_API_URL=https://i18n.archpad.pro
-NEXT_PUBLIC_TOLGEE_API_KEY=your-tolgee-api-key
-
-# Альтернатива: через port-forward (если публичный URL недоступен)
-# NEXT_PUBLIC_TOLGEE_API_URL=http://localhost:8081
-
-# ============================================
-# Portal
-# ============================================
-NEXT_PUBLIC_URL=http://localhost:3000
-
-# ============================================
-# Backend Services (для локальной разработки)
-# ============================================
-# Vault (используем публичный URL, port-forward не требуется)
-VAULT_ADDR=https://vault.archpad.pro
-VAULT_TOKEN=your-vault-token
-
-# PostgreSQL (локальный или через port-forward)
-PG_HOST=localhost
-PG_PORT=5432
-PROJECT_DB=project_db
-PROJECT_DB_USER=project_user
-PROJECT_DB_PASSWORD=your-password
-TENANT_DB=tenant_db
-```
-
-**Важно:** 
-- Файл `.env.local` должен быть в `.gitignore` и не коммититься в Git
-- Файл создается в **корне проекта** (где находится `docs/` и `packages/`)
-- Скрипт `dev-local.sh` автоматически создаст симлинк `packages/portal/.env.local` → `../../.env.local`
-- Если запускаете `pnpm dev` вручную, создайте симлинк самостоятельно (см. выше)
+Оба файла должны быть в `.gitignore` и **не коммититься**.
 
 ### 2. Получение секретов
 
-#### HASURA_GRAPHQL_ADMIN_SECRET
+Заполните “секретные” переменные в `.env.local` из Vault.
 
-Получите из Vault:
+#### Portal
 
-```bash
-VAULT_ADDR="https://vault.archpad.pro"
-VAULT_TOKEN="your-vault-token"
+- **OAuth client (Hydra)**:
+  - Vault path: `kv/data/archpad/demo/ory/hydra/oauth`
+  - keys: `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, `OAUTH_SCOPE`
+  - локально: положите `OAUTH_CLIENT_SECRET` в `packages/portal/.env.local`
 
-curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/hasura-secret" | \
-  jq -r '.data.data.HASURA_GRAPHQL_ADMIN_SECRET'
-```
+- **Hasura admin secret (опционально, если нужен server-side bypass)**:
+  - Vault path: `kv/data/archpad/demo/hasura/secret`
+  - key: `HASURA_GRAPHQL_ADMIN_SECRET`
 
-#### NEXT_PUBLIC_TOLGEE_API_KEY
+- **Tolgee API key**:
+  - генерируется в UI Tolgee, хранить в `NEXT_PUBLIC_TOLGEE_API_KEY`
 
-1. Запустите port-forward к Tolgee: `kubectl port-forward -n platform svc/tolgee 8081:8080`
-2. Откройте http://localhost:8081
-3. Войдите в Tolgee (используйте учетные данные из Vault)
-4. Перейдите в Settings → API Keys
-5. Создайте новый API ключ или используйте существующий
+#### Backend (если запускаете локально)
+
+- Vault: `VAULT_ADDR=https://vault.archpad.pro`, `VAULT_TOKEN=<token>`
+- PostgreSQL креды: см. `kv/data/archpad/demo/backend/*`
 
 #### VAULT_TOKEN
 
@@ -128,34 +65,20 @@ curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
 - Root token (только для разработки!)
 - Или создайте отдельный токен с правами на чтение секретов
 
-#### PostgreSQL credentials
-
-Получите из Vault:
-
-```bash
-curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/backend/common" | \
-  jq -r '.data.data | {PROJECT_DB_USER, PROJECT_DB_PASSWORD}'
-
-curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/backend/arch-repo-service" | \
-  jq -r '.data.data.PROJECT_DB'
-```
-
 ### 3. Запуск локальной разработки
 
 #### Вариант A: Автоматический (рекомендуется)
 
-Запустите скрипт, который автоматически настроит port-forward и запустит Portal:
+Запустите скрипт, который (если нужно) поднимет port-forward и будет держать его активным:
 
 ```bash
 ./scripts/dev-local.sh
 ```
 
 Этот скрипт:
-- Запустит port-forward ко всем сервисам
-- Запустит Portal в режиме разработки
-- Поддержит hot reload
+- Запустит `./scripts/k8s-port-forward.sh`
+- Проверит наличие `packages/portal/.env.local` (симлинки не используются)
+- Будет держать port-forward активным до `Ctrl+C`
 
 #### Вариант B: Ручной запуск
 
@@ -181,12 +104,11 @@ curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
 После запуска будут доступны:
 
 - **Portal**: http://localhost:3000
-- **Kratos Public**: http://localhost:4433
-- **Kratos Admin**: http://localhost:4434
-- **Hydra Public**: http://localhost:4444
-- **Hydra Admin**: http://localhost:4445
-- **Hasura**: http://localhost:8080
-- **Tolgee**: http://localhost:8081
+- **Kratos**: https://auth.archpad.pro (рекомендуется)
+- **Hydra**: https://authz.archpad.pro (рекомендуется)
+- **Hasura GraphQL**: https://apim.archpad.pro/v1/graphql (рекомендуется)
+- **API Gateway**: https://api.archpad.pro
+- **Tolgee**: https://i18n.archpad.pro
 - **Mailpit**: http://localhost:8025
 
 ## Hot Reload
@@ -196,27 +118,76 @@ curl -H "X-Vault-Token: ${VAULT_TOKEN}" \
 
 ## Настройка Ory для локальной разработки
 
-Ory уже настроен для работы с локальной разработкой:
+Ory (Kratos/Hydra) настроен так, чтобы Portal на `http://localhost:3000` мог проходить OAuth flow через публичные URL.
 
-✅ **Kratos CORS** - `http://localhost:3000` добавлен в `allowed_origins`  
-✅ **Kratos allowed_return_urls** - `http://localhost:3000/` добавлен  
-✅ **Hydra CORS** - `http://localhost:3000` добавлен в `allowed_origins` (public и admin)  
-✅ **Hydra OAuth Redirect URI** - `http://localhost:3000/oauth/callback` автоматически добавляется в OAuth клиент через `hydra-init-client` Job
+### Важно про OAuth redirect на `portal.archpad.pro`
+
+Hydra в нашем окружении использует **login/consent endpoints Portal** (роуты `/hydra/login` и `/hydra/consent`) и редиректит браузер на домен `portal.archpad.pro`.
+
+Если вы разрабатываете на `http://localhost:3000`, то после логина вы можете увидеть редирект на:
+- `https://portal.archpad.pro/hydra/login?...`
+
+Чтобы OAuth flow полностью работал **в локальной dev-версии**, нужно, чтобы ваша локальная Portal была доступна по `https://portal.archpad.pro` (локально).
+
+Минимальный способ (macOS):
+
+- Добавить в `/etc/hosts`:
+  - `127.0.0.1 portal.archpad.pro`
+- Поднять локальный HTTPS reverse-proxy на `portal.archpad.pro` → `http://localhost:3000`
+  - например через Caddy (самый простой вариант на macOS)
+
+После этого выставьте в `packages/portal/.env.local`:
+- `NEXT_PUBLIC_URL=https://portal.archpad.pro`
+- `NEXT_PUBLIC_OAUTH_REDIRECT_URI=https://portal.archpad.pro/oauth/callback`
+
+#### Caddy (локально, macOS)
+
+1) Установить Caddy:
+
+```bash
+brew install caddy
+```
+
+2) Один раз добавить локальный CA Caddy в доверенные (для `tls internal`):
+
+```bash
+pnpm run caddy:trust
+```
+
+3) Запустить Caddy (нужно `sudo`, потому что слушает `:443`):
+
+```bash
+pnpm run caddy:start
+```
+
+Остановить:
+
+```bash
+pnpm run caddy:stop
+```
+
+По умолчанию Caddy конфиг лежит в `infra/caddy/Caddyfile` (в репозитории).
+
+#### Важно: Hydra Admin для локального OAuth
+
+Portal обрабатывает `GET /hydra/login` и `GET /hydra/consent` и для этого должен обращаться в **Hydra Admin API**.
+Снаружи он обычно недоступен, поэтому в локальной разработке нужен **port-forward**:
+
+- `HYDRA_ADMIN_URL=http://localhost:24445`
+
+Если видишь ошибку вида `getaddrinfo ENOTFOUND hydra.secure.svc` — это как раз означает, что Portal пытается сходить во внутренний адрес кластера вместо `localhost`.
 
 ### Проверка конфигурации Ory
 
 #### Проверка Kratos CORS:
 
 ```bash
-# Через port-forward
-kubectl port-forward -n secure svc/kratos 4433:4433
-
-# В другом терминале
+# Проверка публичного Kratos
 curl -H "Origin: http://localhost:3000" \
   -H "Access-Control-Request-Method: POST" \
   -H "Access-Control-Request-Headers: Content-Type" \
   -X OPTIONS \
-  http://localhost:4433/self-service/login/browser
+  https://auth.archpad.pro/self-service/login/browser
 
 # Должен вернуть заголовки:
 # Access-Control-Allow-Origin: http://localhost:3000
@@ -226,14 +197,11 @@ curl -H "Origin: http://localhost:3000" \
 #### Проверка Hydra CORS:
 
 ```bash
-# Через port-forward
-kubectl port-forward -n secure svc/hydra 4444:4444
-
-# В другом терминале
+# Проверка публичного Hydra
 curl -H "Origin: http://localhost:3000" \
   -H "Access-Control-Request-Method: POST" \
   -X OPTIONS \
-  http://localhost:4444/oauth2/auth
+  https://authz.archpad.pro/oauth2/auth
 
 # Должен вернуть заголовки:
 # Access-Control-Allow-Origin: http://localhost:3000
@@ -242,17 +210,17 @@ curl -H "Origin: http://localhost:3000" \
 #### Проверка OAuth клиента:
 
 ```bash
-# Через port-forward к Hydra Admin
-kubectl port-forward -n secure svc/hydra 4445:4445
+# Hydra Admin API доступен только из кластера.
+# Для проверки включите port-forward (на любой свободный локальный порт):
+kubectl -n secure port-forward svc/hydra 24445:4445
 
-# В другом терминале
-curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
+# В другом терминале:
+curl -fsS http://127.0.0.1:24445/clients/archpad-portal | python3 -c \
+  'import json,sys; j=json.load(sys.stdin); print(j["token_endpoint_auth_method"], j.get("scope")); print(j.get("redirect_uris"))'
 
-# Должен вернуть:
-# [
-#   "https://portal.archpad.pro/oauth/callback",
-#   "http://localhost:3000/oauth/callback"
-# ]
+# Должно быть:
+# - token_endpoint_auth_method: client_secret_basic
+# - scope: openid offline_access
 ```
 
 ## Структура Kubernetes кластера
@@ -261,6 +229,15 @@ curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
 
 - **`platform`** - основные сервисы приложения (Portal, Hasura, Tolgee, Backend сервисы)
 - **`secure`** - сервисы безопасности (Kratos, Hydra, Oathkeeper)
+
+### Внутренние адреса (in-cluster)
+
+Полезно, если Portal запущен **внутри Kubernetes** (или вы дебажите через `kubectl exec`):
+
+- **Kratos Public**: `http://kratos.secure.svc:4433`
+- **Hydra Admin**: `http://hydra.secure.svc:4445`
+- **Oathkeeper (API Gateway internal)**: `http://oathkeeper.secure.svc:4455`
+- **Hasura**: `http://hasura.platform.svc:8080` (GraphQL: `/v1/graphql`)
 
 ### Сервисы и порты
 
@@ -292,8 +269,7 @@ curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
 
 1. Проверьте, что port-forward работает:
    ```bash
-   curl http://localhost:4433/health/ready  # Kratos
-   curl http://localhost:4444/.well-known/openid-configuration  # Hydra
+   curl -fsS https://apim.archpad.pro/v1/graphql -o /dev/null
    ```
 
 2. Проверьте, что сервисы запущены в Kubernetes:
@@ -333,26 +309,10 @@ curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
 
 1. Проверьте, что OAuth клиент обновлен:
    ```bash
-   kubectl logs -n secure -l app=hydra-init-client --tail=50
+   kubectl -n secure logs job/hydra-init-client --tail=200 || true
    ```
 
-2. Вручную обновите клиент через Hydra Admin API:
-   ```bash
-   kubectl port-forward -n secure svc/hydra 4445:4445
-   
-   curl -X PUT http://localhost:4445/clients/archpad-portal \
-     -H "Content-Type: application/json" \
-     -d '{
-       "client_id": "archpad-portal",
-       "redirect_uris": [
-         "https://portal.archpad.pro/oauth/callback",
-         "http://localhost:3000/oauth/callback"
-       ],
-       "grant_types": ["authorization_code", "refresh_token"],
-       "response_types": ["code"],
-       "token_endpoint_auth_method": "none"
-     }'
-   ```
+2. Проверьте, что в `packages/portal/.env.local` установлен `OAUTH_CLIENT_SECRET` из Vault (`kv/data/archpad/demo/ory/hydra/oauth`).
 
 ### Cookies не работают
 
@@ -368,27 +328,23 @@ curl http://localhost:4445/clients/archpad-portal | jq '.redirect_uris'
 После создания `.env.local` и запуска port-forward, проверьте доступность сервисов:
 
 ```bash
-# Kratos
-curl http://localhost:4433/health/ready
-
-# Hydra
-curl http://localhost:4444/.well-known/openid-configuration
-
 # Hasura
 curl -H "x-hasura-admin-secret: ${HASURA_GRAPHQL_ADMIN_SECRET}" \
-  http://localhost:8080/v1/graphql
+  https://apim.archpad.pro/v1/graphql
 
-# Tolgee
-curl http://localhost:8081/actuator/health
+# Tolgee (публичный URL)
+curl https://i18n.archpad.pro/actuator/health
 ```
 
 ## Использование публичных URL
 
 Некоторые сервисы доступны через публичные URL и не требуют port-forward:
 
-### Tolgee и Vault
+### Ory, Tolgee и Vault
 
 **Рекомендуется использовать публичные URL:**
+- **Kratos**: `https://auth.archpad.pro`
+- **Hydra**: `https://authz.archpad.pro`
 - **Tolgee**: `https://i18n.archpad.pro` (уже настроено по умолчанию)
 - **Vault**: `https://vault.archpad.pro` (уже настроено по умолчанию)
 
@@ -401,26 +357,24 @@ curl http://localhost:8081/actuator/health
 - Требует доступ к интернету
 - Может быть немного медленнее (но обычно незаметно)
 
-### Альтернатива: Использование port-forward для всех сервисов
+### Альтернатива: port-forward для Ory
 
-Если публичные URL недоступны, можно использовать port-forward для всех сервисов:
+Если публичные URL недоступны, можно включить port-forward для Ory (не рекомендуется из-за cookie/redirect проблем, но иногда полезно для отладки):
 
 ```bash
-# .env.local
-NEXT_PUBLIC_TOLGEE_API_URL=http://localhost:8081
-VAULT_ADDR=http://localhost:8200  # если настроен port-forward для Vault
+# Запуск port-forward c Ory
+FORWARD_ORY=true ./scripts/k8s-port-forward.sh
 ```
 
-И раскомментировать соответствующие строки в `k8s-port-forward.sh`.
+И выставить в `.env.local` localhost URL для Ory (см. пример в начале документа).
 
 ## Рекомендации
 
-1. **Используйте port-forward для разработки** - быстрее и надежнее
+1. **Используйте публичные URL по умолчанию** (Ory/Hasura/Tolgee/Vault)
 2. **Настройте автоматический запуск** через скрипт `dev-local.sh`
 3. **Держите `.env.local` в `.gitignore`** - не коммитьте секреты
-4. **Используйте разные порты** для Hasura и Tolgee, если они оба нужны одновременно
+4. **Включайте port-forward только при необходимости** (Mailpit / debug / доступ к admin API)
 5. **Проверяйте логи** при возникновении проблем
-6. **Используйте внешние URL** только если port-forward недоступен
 
 ## Остановка
 

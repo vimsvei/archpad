@@ -12,8 +12,12 @@ NAMESPACE_SECURE="secure"
 # По умолчанию Ory (Kratos/Hydra) НЕ форвардим, т.к. localhost ломает cookies/redirect flow
 # из-за настроек домена `.archpad.pro` и базовых URL в Ory.
 FORWARD_ORY="${FORWARD_ORY:-false}"
+FORWARD_HYDRA_ADMIN="${FORWARD_HYDRA_ADMIN:-false}"
 FORWARD_MAILPIT="${FORWARD_MAILPIT:-true}"
 FORWARD_HASURA="${FORWARD_HASURA:-true}"
+
+# Порт для Hydra Admin (локально). Часто 4445 занято, поэтому дефолт 24445.
+HYDRA_ADMIN_LOCAL_PORT="${HYDRA_ADMIN_LOCAL_PORT:-24445}"
 
 # Функция для запуска port-forward
 start_port_forward() {
@@ -112,12 +116,18 @@ if [ "$FORWARD_ORY" = "true" ]; then
   start_port_forward "kratos" "$NAMESPACE_SECURE" 4434 4434  # Kratos Admin
 
   start_port_forward "hydra" "$NAMESPACE_SECURE" 4444 4444    # Hydra Public
-  start_port_forward "hydra" "$NAMESPACE_SECURE" 4445 4445   # Hydra Admin
 else
   echo "Skipping Ory port-forward (FORWARD_ORY=false)."
   echo "Recommended: use public URLs:"
   echo "  Kratos: https://auth.archpad.pro"
   echo "  Hydra:  https://authz.archpad.pro"
+fi
+
+# Hydra Admin (нужен для OAuth login/consent в Portal; можно форвардить отдельно от публичных URL)
+if [ "$FORWARD_ORY" = "true" ] || [ "$FORWARD_HYDRA_ADMIN" = "true" ]; then
+  start_port_forward "hydra" "$NAMESPACE_SECURE" "$HYDRA_ADMIN_LOCAL_PORT" 4445   # Hydra Admin
+else
+  echo "Skipping Hydra Admin port-forward (FORWARD_HYDRA_ADMIN=false)."
 fi
 
 # Hasura (опционально, если используете публичный API Gateway: https://apim.archpad.pro/v1/graphql)
@@ -150,10 +160,12 @@ if [ "$FORWARD_ORY" = "true" ]; then
   echo "  Kratos Public:  http://localhost:4433 (not recommended)"
   echo "  Kratos Admin:   http://localhost:4434 (not recommended)"
   echo "  Hydra Public:   http://localhost:4444 (not recommended)"
-  echo "  Hydra Admin:    http://localhost:4445 (not recommended)"
 else
   echo "  Kratos Public:  https://auth.archpad.pro (recommended)"
   echo "  Hydra Public:   https://authz.archpad.pro (recommended)"
+fi
+if [ "$FORWARD_ORY" = "true" ] || [ "$FORWARD_HYDRA_ADMIN" = "true" ]; then
+  echo "  Hydra Admin:    http://localhost:${HYDRA_ADMIN_LOCAL_PORT}"
 fi
 if [ "$FORWARD_HASURA" = "true" ]; then
   echo "  Hasura:         http://localhost:8080"
