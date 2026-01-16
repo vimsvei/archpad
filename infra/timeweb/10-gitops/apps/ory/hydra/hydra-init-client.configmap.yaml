@@ -82,7 +82,7 @@ data:
 
     HYDRA_ADMIN_URL="${HYDRA_ADMIN_URL:-http://hydra:4445}"
     CLIENT_ID="${ORY_CLIENT_ID:-archpad-oathkeeper}"
-    CLIENT_SECRET="${ORY_CLIENT_SECRET:-change-me}"
+    CLIENT_SECRET="${ORY_CLIENT_SECRET:?ORY_CLIENT_SECRET is required (expected from Vault kv/data/archpad/demo/ory/oathkeeper)}"
     SCOPE="${ORY_INTROSPECT_SCOPE:-introspect}"
 
     payload="$(cat <<JSON

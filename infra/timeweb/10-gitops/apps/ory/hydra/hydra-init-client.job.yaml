@@ -15,10 +15,16 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
+        # Для Job'ов используем pre-populate-only, чтобы sidecar не держал Pod "живым" бесконечно.
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         # Ранее использовался путь `kv/data/archpad/demo/ory/hydra`, но после пересоздания Vault он может отсутствовать.
-        # Для инициализации клиентов достаточно секретов из `.../ory/hydra/secret` (ORY_CLIENT_SECRET, etc).
+        # Для инициализации клиентов нужны:
+        # - Hydra secrets (`.../ory/hydra/secret`)
+        # - Portal OAuth client params (`.../ory/hydra/oauth`)
+        # - Oathkeeper introspection client creds (`.../ory/oathkeeper`)
         vault.hashicorp.com/agent-inject-secret-hydra-init: "kv/data/archpad/demo/ory/hydra/secret"
         vault.hashicorp.com/agent-inject-secret-hydra-oauth: "kv/data/archpad/demo/ory/hydra/oauth"
+        vault.hashicorp.com/agent-inject-secret-oathkeeper: "kv/data/archpad/demo/ory/oathkeeper"
         vault.hashicorp.com/agent-inject-template-hydra-init: |
           {{- with secret "kv/data/archpad/demo/ory/hydra/secret" }}
           {{- range $k, $v := .Data.data }}
@@ -26,6 +32,11 @@ spec:
           {{- end }}
           {{- end }}
           {{- with secret "kv/data/archpad/demo/ory/hydra/oauth" }}
+          {{- range $k, $v := .Data.data }}
+          export {{ $k }}="{{ $v }}"
+          {{- end }}
+          {{- end }}
+          {{- with secret "kv/data/archpad/demo/ory/oathkeeper" }}
           {{- range $k, $v := .Data.data }}
           export {{ $k }}="{{ $v }}"
           {{- end }}
