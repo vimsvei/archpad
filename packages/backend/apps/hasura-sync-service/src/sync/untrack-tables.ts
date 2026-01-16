@@ -15,20 +15,17 @@ export async function untrackTables(args: {
   }
 
   logger.log(`Untracking ${tables.length} tracked tables (cascade=true)...`);
+  const ops = tables.map((t) => ({
+    type: 'pg_untrack_table',
+    args: {
+      source: hasura.source,
+      table: { schema: t.schema, name: t.name },
+      cascade: true,
+    },
+  }));
 
-  for (const t of tables) {
-    logger.log(`Untracking table ${t.schema}.${t.name}...`);
-    try {
-      await hasura.postMetadata({
-        type: 'pg_untrack_table',
-        args: {
-          source: hasura.source,
-          table: { schema: t.schema, name: t.name },
-          cascade: true,
-        },
-      });
-    } catch (e) {
-      logger.warn(`Failed to untrack table ${t.schema}.${t.name}: ${e}`);
-    }
-  }
+  await hasura.postMetadataBulkAtomicChunked(ops, {
+    chunkSize: 50,
+    label: 'pg_untrack_table',
+  });
 }

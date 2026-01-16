@@ -50,6 +50,7 @@ export async function applyCamelCaseCustomization(args: {
     );
   }
 
+  const ops: any[] = [];
   for (const table of tables) {
     const hasuraTableName = tableOverrideByKey.get(
       `${table.schema}.${table.name}`,
@@ -135,15 +136,15 @@ export async function applyCamelCaseCustomization(args: {
       }, columns=${Object.keys(columnConfig).length})`,
     );
 
-    try {
-      await hasura.postMetadata({
-        type: 'pg_set_table_customization',
-        args: metadataArgs,
-      });
-    } catch (e) {
-      logger.warn(
-        `Failed to set customization for ${table.schema}.${table.name}: ${e}`,
-      );
-    }
+    ops.push({
+      type: 'pg_set_table_customization',
+      args: metadataArgs,
+    });
   }
+
+  if (ops.length === 0) return;
+  await hasura.postMetadataBulkAtomicChunked(ops, {
+    chunkSize: 25,
+    label: 'pg_set_table_customization',
+  });
 }

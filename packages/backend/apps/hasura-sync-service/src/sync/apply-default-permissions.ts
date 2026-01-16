@@ -37,6 +37,7 @@ export async function applyDefaultSelectPermissions(args: {
 
   logger.log(`Applying default select permissions for role="${role}"...`);
 
+  const ops: any[] = [];
   for (const t of tables) {
     const columns = await getTableColumns({
       hasura,
@@ -60,31 +61,24 @@ export async function applyDefaultSelectPermissions(args: {
       `Ensuring select permission for ${t.schema}.${t.name} role="${role}" columns=${columns.length} allow_aggregations=true`,
     );
 
-    try {
-      await hasura.postMetadata({
-        type: 'pg_create_select_permission',
-        args: {
-          source: hasura.source,
-          table: { schema: t.schema, name: t.name },
-          role,
-          permission: {
-            // Dev-friendly default: allow reading all columns (explicit list).
-            columns,
-            filter: {},
-            allow_aggregations: true,
-          },
+    ops.push({
+      type: 'pg_create_select_permission',
+      args: {
+        source: hasura.source,
+        table: { schema: t.schema, name: t.name },
+        role,
+        permission: {
+          columns,
+          filter: {},
+          allow_aggregations: true,
         },
-      });
-    } catch (e) {
-      if (isAlreadyExistsError(e)) {
-        logger.log(
-          `Select permission already exists for ${t.schema}.${t.name} role="${role}" — skipping`,
-        );
-        continue;
-      }
-      logger.warn(
-        `Failed to create select permission for ${t.schema}.${t.name} role="${role}": ${formatHasuraError(e)}`,
-      );
-    }
+      },
+    });
   }
+
+  if (ops.length === 0) return;
+  await hasura.postMetadataBulkAtomicChunked(ops, {
+    chunkSize: 20,
+    label: 'pg_create_select_permission',
+  });
 }

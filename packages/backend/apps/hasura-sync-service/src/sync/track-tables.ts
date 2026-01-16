@@ -15,19 +15,16 @@ export async function trackTables(args: {
   }
 
   logger.log(`Tracking ${tables.length} tables...`);
+  const ops = tables.map((t) => ({
+    type: 'pg_track_table',
+    args: {
+      source: hasura.source,
+      table: { schema: t.schema, name: t.name },
+    },
+  }));
 
-  for (const t of tables) {
-    logger.log(`Tracking table ${t.schema}.${t.name}...`);
-    try {
-      await hasura.postMetadata({
-        type: 'pg_track_table',
-        args: {
-          source: hasura.source,
-          table: { schema: t.schema, name: t.name },
-        },
-      });
-    } catch (e) {
-      logger.warn(`Failed to track table ${t.schema}.${t.name}: ${e}`);
-    }
-  }
+  await hasura.postMetadataBulkAtomicChunked(ops, {
+    chunkSize: 30,
+    label: 'pg_track_table',
+  });
 }

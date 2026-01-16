@@ -68,6 +68,7 @@ export async function syncForeignKeyRelationships(args: {
 
   const desiredObjectKeys = new Set<string>();
   const desiredArrayKeys = new Set<string>();
+  const ops: any[] = [];
 
   const orderedFks = foreignKeys
     .slice()
@@ -101,23 +102,15 @@ export async function syncForeignKeyRelationships(args: {
         cols: fk.fk_columns,
       });
       desiredObjectKeys.add(oKey);
-
-      try {
-        await hasura.postMetadata({
-          type: 'pg_create_object_relationship',
-          args: {
-            source: hasura.source,
-            table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
-            name: objectName,
-            using: { foreign_key_constraint_on: fk.fk_columns[0] },
-          },
-        });
-      } catch (e) {
-        // Usually "already exists" - safe to ignore.
-        logger.debug(
-          `Skip create object relationship ${fk.fk_table_name}.${objectName}: ${e}`,
-        );
-      }
+      ops.push({
+        type: 'pg_create_object_relationship',
+        args: {
+          source: hasura.source,
+          table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
+          name: objectName,
+          using: { foreign_key_constraint_on: fk.fk_columns[0] },
+        },
+      });
     } else {
       logger.warn(
         `Skipping object relationship for composite FK ${fk.constraint_name} (${fk.fk_table_name} -> ${fk.pk_table_name})`,
@@ -140,26 +133,25 @@ export async function syncForeignKeyRelationships(args: {
       cols: fk.fk_columns,
     });
     desiredArrayKeys.add(aKey);
-
-    try {
-      await hasura.postMetadata({
-        type: 'pg_create_array_relationship',
-        args: {
-          source: hasura.source,
-          table: { schema: fk.pk_table_schema, name: fk.pk_table_name },
-          name: arrayName,
-          using: {
-            foreign_key_constraint_on: {
-              table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
-              columns: fk.fk_columns,
-            },
+    ops.push({
+      type: 'pg_create_array_relationship',
+      args: {
+        source: hasura.source,
+        table: { schema: fk.pk_table_schema, name: fk.pk_table_name },
+        name: arrayName,
+        using: {
+          foreign_key_constraint_on: {
+            table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
+            columns: fk.fk_columns,
           },
         },
-      });
-    } catch (e) {
-      logger.debug(
-        `Skip create array relationship ${fk.pk_table_name}.${arrayName}: ${e}`,
-      );
-    }
+      },
+    });
   }
+
+  if (ops.length === 0) return;
+  await hasura.postMetadataBulkAtomicChunked(ops, {
+    chunkSize: 50,
+    label: 'pg_create_relationships',
+  });
 }

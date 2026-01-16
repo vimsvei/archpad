@@ -7,12 +7,23 @@ import { loadVaultSecrets } from '@archpad/vault-config';
 async function bootstrap() {
   // Load secrets from Vault before creating the application
   // В Kubernetes секреты уже загружены через Vault Agent Injector в переменные окружения
-  // В local development загружаем из Vault API
+  // В local/development загружаем из Vault API
   const nodeEnv = process.env.NODE_ENV || 'development';
-  if (nodeEnv === 'local') {
+  if (nodeEnv !== 'production') {
+    // Hasura sync service config (HASURA_SOURCES, HASURA_SCHEMA, etc.)
     await loadVaultSecrets({
       nodeEnv,
       secretsPath: 'kv/data/archpad/demo/backend/hasura-sync-service',
+    });
+    // Hasura admin secret (required for /v1/metadata, /v2/query)
+    await loadVaultSecrets({
+      nodeEnv,
+      secretsPath: 'kv/data/archpad/demo/hasura/secret',
+    });
+    // Hasura endpoint (optional; in k8s we use internal URL, locally you may use apim)
+    await loadVaultSecrets({
+      nodeEnv,
+      secretsPath: 'kv/data/archpad/demo/hasura/endpoint',
     });
   }
 

@@ -6,11 +6,17 @@ import { LoggerService } from '@archpad/logger';
 
 @Injectable()
 export class HasuraClientService {
-  readonly endpoint: string;
+  // Selected base URL (no trailing slash).
+  endpoint: string;
   readonly secret: string;
   // Active source for run_sql etc. Set by sync service loop.
   source: string;
   readonly schema: string;
+  private endpointSelected?: Promise<void>;
+  private readonly requestTimeoutMs: number;
+  private readonly requestRetries: number;
+  private readonly internalEndpointCandidate?: string;
+  private readonly externalEndpointCandidates: string[];
 
   constructor(
     private readonly http: HttpService,
@@ -20,24 +26,71 @@ export class HasuraClientService {
     const nodeEnv =
       this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
 
-    // Policy:
-    // - NODE_ENV=local  -> use HASURA_HOST (host-friendly, with TLS + local CA)
-    // - otherwise       -> use HASURA_ENDPOINT (docker-network-friendly)
-    const rawEndpoint =
-      nodeEnv === 'local'
-        ? this.config.get<string>('HASURA_HOST')
-        : this.config.get<string>('HASURA_ENDPOINT');
+    // Defaults:
+    // - Local dev: prefer public apim (HASURA_HOST/HASURA_ENDPOINT).
+    // - Production/k8s: prefer internal service DNS.
+    const internalCandidate = (
+      this.config.get<string>('HASURA_INTERNAL_CANDIDATE') ??
+      'http://hasura.platform.svc:8080'
+    ).trim();
+    const externalCandidates = [
+      this.config.get<string>('HASURA_HOST'),
+      this.config.get<string>('HASURA_ENDPOINT'),
+      this.config.get<string>('HASURA_INTERNAL_URL'),
+    ]
+      .map((v) => (v ?? '').trim())
+      .filter(Boolean);
 
-    if (!rawEndpoint) {
+    const preferInternalDefault = nodeEnv === 'production';
+    const preferInternal =
+      ((this.config.get<string>('HASURA_PREFER_INTERNAL') ?? '')
+        .trim()
+        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) === 'true';
+    const tryInternal =
+      ((this.config.get<string>('HASURA_TRY_INTERNAL') ?? '')
+        .trim()
+        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) === 'true';
+
+    const internalList = internalCandidate ? [internalCandidate] : [];
+    const candidates = preferInternal
+      ? [...internalList, ...externalCandidates]
+      : [...externalCandidates, ...(tryInternal ? internalList : [])];
+
+    if (!candidates.length) {
       throw new Error(
-        nodeEnv === 'local'
-          ? 'NODE_ENV=local: HASURA_HOST is not set. Set HASURA_HOST to something like "hasura.192-168-1-119.sslip.io".'
-          : 'HASURA_ENDPOINT is not set. Inside Docker use "http://hasura:8080".',
+        'No Hasura endpoint configured. Set HASURA_HOST (e.g. https://apim.archpad.pro) or HASURA_ENDPOINT.',
       );
     }
 
-    this.endpoint = normalizeHasuraEndpoint(rawEndpoint);
-    this.secret = this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET')!;
+    this.internalEndpointCandidate = internalCandidate
+      ? normalizeHasuraEndpoint(internalCandidate)
+      : undefined;
+    this.externalEndpointCandidates = externalCandidates.map((c) =>
+      normalizeHasuraEndpoint(c),
+    );
+    this.logger.log(
+      `Hasura endpoint candidates: preferInternal=${preferInternal} tryInternal=${tryInternal} internal=${this.internalEndpointCandidate ?? '-'} external=[${this.externalEndpointCandidates.join(
+        ', ',
+      )}]`,
+      HasuraClientService.name,
+    );
+
+    // Start with the first candidate; validate lazily (once) before first request.
+    this.endpoint = normalizeHasuraEndpoint(candidates[0]!);
+    this.endpointSelected = this.selectReachableEndpoint(candidates, nodeEnv);
+
+    const timeoutRaw =
+      (this.config.get<string>('HASURA_HTTP_TIMEOUT_MS') ?? '').trim() || '30000';
+    const retriesRaw =
+      (this.config.get<string>('HASURA_HTTP_RETRIES') ?? '').trim() || '3';
+    this.requestTimeoutMs = clampInt(parseInt(timeoutRaw, 10), 1000, 300000);
+    this.requestRetries = clampInt(parseInt(retriesRaw, 10), 0, 20);
+    this.secret = (this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET') ?? '').trim();
+    if (!this.secret) {
+      throw new Error(
+        'HASURA_GRAPHQL_ADMIN_SECRET is not set. It is required for /v1/metadata and /v2/query. (Vault: kv/data/archpad/demo/hasura/secret)',
+      );
+    }
     // Back-compat: support both HASURA_SOURCES and HASURA_SOURCE.
     // If HASURA_SOURCES is provided, sync service will override `source` for each entry.
     this.source =
@@ -66,29 +119,25 @@ export class HasuraClientService {
   }
 
   async postMetadata<T = any>(body: any): Promise<T> {
+    await this.ensureEndpointSelected();
     this.logger.debug(
       `POST /v1/metadata type=${body?.type}`,
       HasuraClientService.name,
     );
-    const res = await firstValueFrom(
-      this.http.post<T>(`${this.endpoint}/v1/metadata`, body, {
-        headers: this.buildHeaders(),
-      }),
-    );
-    return res.data;
+    return this.postJsonWithRetry<T>(`${this.endpoint}/v1/metadata`, body, {
+      label: 'metadata',
+    });
   }
 
   async postQuery<T = any>(body: any): Promise<T> {
+    await this.ensureEndpointSelected();
     this.logger.debug(
       `POST /v2/query type=${body?.type}`,
       HasuraClientService.name,
     );
-    const res = await firstValueFrom(
-      this.http.post<T>(`${this.endpoint}/v2/query`, body, {
-        headers: this.buildHeaders(),
-      }),
-    );
-    return res.data;
+    return this.postJsonWithRetry<T>(`${this.endpoint}/v2/query`, body, {
+      label: 'query',
+    });
   }
 
   async runSql(
@@ -110,6 +159,136 @@ export class HasuraClientService {
       args: {},
     });
   }
+
+  async postMetadataBulkAtomic(args: any[]): Promise<any> {
+    return this.postMetadata({
+      type: 'bulk_atomic',
+      args,
+    });
+  }
+
+  async postMetadataBulkAtomicChunked(
+    ops: any[],
+    options?: { chunkSize?: number; label?: string },
+  ): Promise<void> {
+    const chunkSize = options?.chunkSize ?? 50;
+    const label = options?.label ?? 'bulk_atomic';
+
+    const chunks: any[][] = [];
+    for (let i = 0; i < ops.length; i += chunkSize) {
+      chunks.push(ops.slice(i, i + chunkSize));
+    }
+
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]!;
+      try {
+        this.logger.log(
+          `Applying ${label}: chunk ${i + 1}/${chunks.length} ops=${chunk.length} source=${this.source}`,
+          HasuraClientService.name,
+        );
+        await this.postMetadataBulkAtomic(chunk);
+      } catch (e: any) {
+        // If a chunk fails, split it to isolate a bad op (keeps total requests bounded).
+        if (chunk.length <= 1) throw e;
+        this.logger.warn(
+          `Failed ${label} chunk (source=${this.source}, ops=${chunk.length}). Splitting...`,
+          HasuraClientService.name,
+        );
+        const mid = Math.floor(chunk.length / 2);
+        await this.postMetadataBulkAtomicChunked(chunk.slice(0, mid), {
+          chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
+          label,
+        });
+        await this.postMetadataBulkAtomicChunked(chunk.slice(mid), {
+          chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
+          label,
+        });
+      }
+    }
+  }
+
+  private async selectReachableEndpoint(candidatesRaw: string[], nodeEnv: string) {
+    const candidates = candidatesRaw
+      .map((c) => (c ?? '').trim())
+      .filter(Boolean)
+      .map((c) => normalizeHasuraEndpoint(c));
+
+    const check = async (base: string) => {
+      try {
+        await firstValueFrom(
+          this.http.get(`${base}/healthz`, {
+            timeout: 1500,
+            validateStatus: (s) => s >= 200 && s < 500,
+          }),
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    for (const base of candidates) {
+      const ok = await check(base);
+      if (ok) {
+        const kind =
+          this.internalEndpointCandidate &&
+          base === this.internalEndpointCandidate
+            ? 'internal'
+            : 'external';
+        this.logger.log(
+          `Selected Hasura endpoint=${base} kind=${kind} (NODE_ENV=${nodeEnv})`,
+          HasuraClientService.name,
+        );
+        this.endpoint = base;
+        return;
+      }
+    }
+
+    this.logger.warn(
+      `No Hasura endpoint candidates are reachable; keeping endpoint=${this.endpoint}. Candidates: ${candidates.join(', ')}`,
+      HasuraClientService.name,
+    );
+  }
+
+  private async ensureEndpointSelected() {
+    if (!this.endpointSelected) return;
+    await this.endpointSelected;
+    this.endpointSelected = undefined;
+  }
+
+  private async postJsonWithRetry<T>(
+    url: string,
+    body: any,
+    options?: { label?: string },
+  ): Promise<T> {
+    const label = options?.label ?? 'request';
+    const maxAttempts = this.requestRetries + 1;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const res = await firstValueFrom(
+          this.http.post<T>(url, body, {
+            headers: this.buildHeaders(),
+            timeout: this.requestTimeoutMs,
+          }),
+        );
+        return res.data;
+      } catch (e: any) {
+        const retryable = isRetryableAxiosError(e);
+        const status = e?.response?.status;
+        if (!retryable || attempt >= maxAttempts) throw e;
+
+        const backoffMs = Math.min(5000, 250 * Math.pow(2, attempt - 1));
+        this.logger.warn(
+          `Hasura ${label} failed (attempt ${attempt}/${maxAttempts}) status=${status ?? '-'}; retrying in ${backoffMs}ms`,
+          HasuraClientService.name,
+        );
+        await delay(backoffMs);
+      }
+    }
+
+    throw new Error(`Hasura ${label} failed after retries`);
+  }
 }
 
 function normalizeHasuraEndpoint(input: string): string {
@@ -129,4 +308,27 @@ function normalizeHasuraEndpoint(input: string): string {
   url = url.replace(/\/+$/g, '');
 
   return url;
+}
+
+function clampInt(n: number, min: number, max: number): number {
+  if (!Number.isFinite(n)) return min;
+  return Math.max(min, Math.min(max, n));
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableAxiosError(e: any): boolean {
+  const status = e?.response?.status;
+  if (typeof status === 'number') {
+    return status === 429 || status === 502 || status === 503 || status === 504;
+  }
+  const code = (e?.code ?? '').toString().toUpperCase();
+  return (
+    code === 'ECONNRESET' ||
+    code === 'ETIMEDOUT' ||
+    code === 'EAI_AGAIN' ||
+    code === 'ENOTFOUND'
+  );
 }
