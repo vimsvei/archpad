@@ -173,9 +173,14 @@ export const menu: TMenu = [
         icon: Settings,
         items: [
           {
-            title: 'management.settings.upload',
+            title: 'management.settings.upload.repository',
             icon: Upload,
-            url: '/upload',
+            url: '/upload/repository',
+          },
+          {
+            title: 'management.settings.upload.directories',
+            icon: Upload,
+            url: '/upload/directories',
           },
         ]
       }

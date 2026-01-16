@@ -2,7 +2,7 @@ import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
-import {StakeholderRole} from "@/model/enums/stakeholder-role.enum";
+import { StakeholderRole } from '@/model/enums/stakeholder-role.enum';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_stakeholder' })
@@ -26,7 +26,7 @@ export class ApplicationComponentStakeholderMap extends MappedObject {
     deleteRule: 'no action',
   })
   stakeholder!: Stakeholder;
-  
+
   @Enum({
     items: () => StakeholderRole,
     nativeEnumName: 'stakeholder_role_enum',

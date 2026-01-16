@@ -22,12 +22,20 @@ export function KratosFormRoot({
   action,
   method,
   onFlow,
+  successRedirectTo,
 }: {
   className?: string
   children: React.ReactNode
   action?: string
   method?: string
   onFlow?: (flow: unknown) => void
+  /**
+   * When a submission succeeds (Kratos may return 200 JSON with session fields),
+   * force a full navigation to this path.
+   *
+   * Defaults to "/".
+   */
+  successRedirectTo?: string
 }) {
   const router = useRouter()
   const lastSubmitRef = React.useRef<{ name: string; value: string } | null>(null)
@@ -117,7 +125,7 @@ export function KratosFormRoot({
             const looksLikeSuccess =
               Boolean(o?.session) || Boolean(o?.session_token) || Boolean(o?.session_token_exchange_code)
             if (looksLikeSuccess) {
-              window.location.assign("/")
+              window.location.assign(successRedirectTo ?? "/")
               return
             }
 

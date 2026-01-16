@@ -2,7 +2,7 @@ export type ImportJobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export type ImportJobLogItem = {
   /**
-   * Tolgee key, e.g. "upload.open-exchange.stage.parse"
+   * Tolgee key, e.g. "repository.open-exchange.stage.parse"
    */
   key: string;
   /**

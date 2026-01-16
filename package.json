@@ -9,6 +9,15 @@
     "dev:app": "pnpm -C infra dev:app",
     "dev:backend": "pnpm -C infra dev:backend",
     "dev:all": "pnpm -C infra dev:all",
+
+    "dev:local": "bash ./scripts/dev-local.sh start",
+    "dev:local:stop": "bash ./scripts/dev-local.sh stop",
+
+    "caddy:trust": "bash ./scripts/caddy-local.sh trust",
+
+    "caddy:start": "bash ./scripts/caddy-local.sh start",
+    "caddy:stop": "bash ./scripts/caddy-local.sh stop",
+
     "build:all": "pnpm --filter @archpad/contract build && pnpm --filter @archpad/backend build:arch-repo && pnpm --filter @archpad/portal build",
     "build:all:ci": "pnpm -w install --frozen-lockfile --prod=false --force && pnpm run build:all",
     "down": "pnpm -C infra dev:down",

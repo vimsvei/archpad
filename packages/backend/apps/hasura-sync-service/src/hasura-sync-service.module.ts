@@ -25,12 +25,18 @@ export class HasuraSyncServiceModule implements OnModuleInit {
     const buildVersion = process.env.BUILD_VERSION || 'unknown';
     const buildBranch = process.env.BUILD_BRANCH || 'unknown';
 
-    this.logger.log('========================================', this.loggerContext);
+    this.logger.log(
+      '========================================',
+      this.loggerContext,
+    );
     this.logger.log('🚀 Hasura Sync Service Starting', this.loggerContext);
     this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
     this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
     this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
     this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
-    this.logger.log('========================================', this.loggerContext);
+    this.logger.log(
+      '========================================',
+      this.loggerContext,
+    );
   }
 }

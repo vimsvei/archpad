@@ -24,7 +24,9 @@ export async function GET(request: Request) {
   const subject = (session as any)?.identity?.id
   if (!subject) return NextResponse.json({ error: "Missing Kratos subject" }, { status: 500 })
 
-  const hydraAdminUrl = process.env.HYDRA_ADMIN_URL ?? "http://hydra:4445"
+  const hydraAdminUrl =
+    process.env.HYDRA_ADMIN_URL ??
+    (process.env.NODE_ENV === "development" ? "http://localhost:24445" : "http://hydra.secure.svc:4445")
 
   const getReq = await fetch(
     `${hydraAdminUrl}/oauth2/auth/requests/login?login_challenge=${encodeURIComponent(challenge)}`,

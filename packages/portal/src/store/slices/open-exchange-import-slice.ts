@@ -92,7 +92,7 @@ export const openExchangeImportReducer = slice.reducer
 export const openExchangeImportActions = slice.actions
 
 function computeUiProgress(uploadProgress: number, jobProgress: number): number {
-  // Show upload as first 25%, then server job as remaining 75%.
+  // Show repository as first 25%, then server job as remaining 75%.
   const uploadWeight = 25
   const processWeight = 75
   const u = Math.max(0, Math.min(1, uploadProgress))
@@ -105,7 +105,7 @@ export function startOpenExchangeImport(file: File, options?: { clearBeforeImpor
     dispatch(openExchangeImportActions.reset())
     dispatch(openExchangeImportActions.setFile({ name: file.name, size: file.size }))
     dispatch(openExchangeImportActions.setStatus("uploading"))
-    dispatch(openExchangeImportActions.setLogs([{ key: "upload.open-exchange.client.selected", params: { fileName: file.name }, at: Date.now() }]))
+    dispatch(openExchangeImportActions.setLogs([{ key: "repository.open-exchange.client.selected", params: { fileName: file.name }, at: Date.now() }]))
 
     const form = new FormData()
     form.append("file", file, file.name)
@@ -140,7 +140,7 @@ export function startOpenExchangeImport(file: File, options?: { clearBeforeImpor
 
     dispatch(openExchangeImportActions.setJob({ jobId }))
     dispatch(openExchangeImportActions.setStatus("processing"))
-    dispatch(openExchangeImportActions.setLogs([{ key: "upload.open-exchange.client.job-created", params: { jobId }, at: Date.now() }]))
+    dispatch(openExchangeImportActions.setLogs([{ key: "repository.open-exchange.client.job-created", params: { jobId }, at: Date.now() }]))
 
     // Poll job status
     while (true) {
@@ -155,7 +155,7 @@ export function startOpenExchangeImport(file: File, options?: { clearBeforeImpor
         const msg = (json as any)?.message ?? (json as any)?.error ?? `Job poll failed (${res.status})`
         dispatch(openExchangeImportActions.setStatus("failed"))
         dispatch(openExchangeImportActions.setError(msg))
-        dispatch(openExchangeImportActions.setLogs([{ key: "upload.open-exchange.client.poll-failed", params: { message: msg }, at: Date.now() }]))
+        dispatch(openExchangeImportActions.setLogs([{ key: "repository.open-exchange.client.poll-failed", params: { message: msg }, at: Date.now() }]))
         return
       }
 

@@ -68,7 +68,7 @@ export class OpenExchangeImportController {
     // Run async (return immediately).
     setImmediate(() => {
       void this.jobs.runJob(job.id, async (reporter) => {
-        reporter.log('upload.open-exchange.stage.started', {
+        reporter.log('repository.open-exchange.stage.started', {
           fileName,
         });
         const result = await this.service.importApplicationFromOpenExchangeXml(

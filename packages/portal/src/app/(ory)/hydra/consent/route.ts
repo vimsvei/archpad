@@ -22,7 +22,9 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`/sign-in?return_to=${encodeURIComponent(returnTo)}`)
   }
 
-  const hydraAdminUrl = process.env.HYDRA_ADMIN_URL ?? "http://hydra:4445"
+  const hydraAdminUrl =
+    process.env.HYDRA_ADMIN_URL ??
+    (process.env.NODE_ENV === "development" ? "http://localhost:24445" : "http://hydra.secure.svc:4445")
   const getReq = await fetch(
     `${hydraAdminUrl}/oauth2/auth/requests/consent?consent_challenge=${encodeURIComponent(challenge)}`,
     { cache: "no-store" }

@@ -1,6 +1,6 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 import { MappedObject } from '@archpad/models';
-import {SolutionItemImpactTypeEnum } from '@/model/enums/solution-item-impact-type.enum';
+import { SolutionItemImpactTypeEnum } from '@/model/enums/solution-item-impact-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ abstract: true })

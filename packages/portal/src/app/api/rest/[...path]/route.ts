@@ -8,8 +8,14 @@ import {
 import { exchangeRefreshToken } from "@/lib/auth/hydra"
 
 function getApiGatewayBaseUrl(): string {
-  // Для серверных компонентов приоритет у внутренних адресов
-  const url = process.env.API_GATEWAY_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_REST_ENDPOINT
+  // Для серверных компонентов приоритет у внутренних адресов (в кластере).
+  const internal = process.env.API_GATEWAY_INTERNAL_URL?.trim()
+  const external = process.env.NEXT_PUBLIC_API_REST_ENDPOINT?.trim()
+  const defaultInternal = "http://oathkeeper.secure.svc:4455"
+  const url =
+    process.env.NODE_ENV === "production"
+      ? internal || defaultInternal || external
+      : external || internal
   if (!url) {
     throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_REST_ENDPOINT must be set')
   }

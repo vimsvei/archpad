@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { clearTokensCookies } from '@/lib/auth/oauth'
 
 function getOryBaseUrl(): URL | null {
-  // Для серверных компонентов приоритет у внутренних адресов
-  const raw = process.env.ORY_KRATOS_INTERNAL_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
+  // In production (in-cluster) prefer internal URL; in local dev prefer public URL.
+  const internal = process.env.ORY_KRATOS_INTERNAL_URL?.trim()
+  const external = process.env.NEXT_PUBLIC_ORY_SDK_URL?.trim()
+  const raw =
+    process.env.NODE_ENV === 'production'
+      ? internal || external
+      : external || internal
   if (!raw) return null
   try {
     return new URL(raw)

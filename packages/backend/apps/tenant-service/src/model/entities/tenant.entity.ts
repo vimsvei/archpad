@@ -1,7 +1,8 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { ArchimateCode, NamedObject } from '@archpad/models';
+import { ArchimateCode, HasuraTable, NamedObject } from '@archpad/models';
 import { UserProfile } from './user-profile.entity';
 
+@HasuraTable()
 @Entity({
   tableName: 'tenants',
 })

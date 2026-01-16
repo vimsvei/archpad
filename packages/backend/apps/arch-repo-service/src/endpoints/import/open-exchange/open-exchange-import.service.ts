@@ -201,7 +201,7 @@ export class OpenExchangeImportService {
     options?: { clear?: boolean },
   ): Promise<NonNullable<ImportJob['result']>> {
     reporter.setProgress(2);
-    reporter.log('upload.open-exchange.stage.parse');
+    reporter.log('repository.open-exchange.stage.parse');
     const parsed = parseOpenExchangeXml(xml);
 
     const elementById = new Map<string, ParsedElement>();
@@ -243,7 +243,7 @@ export class OpenExchangeImportService {
     const assessments = parsed.elements.filter((e) => e.type === 'Assessment');
 
     reporter.setProgress(8);
-    reporter.log('upload.open-exchange.stage.create-entities', {
+    reporter.log('repository.open-exchange.stage.create-entities', {
       components: appComponents.length,
       functions: appFunctions.length,
       dataObjects: dataObjects.length,
@@ -275,7 +275,7 @@ export class OpenExchangeImportService {
 
     await em.transactional(async (txEm) => {
       if (options?.clear) {
-        reporter.log('upload.open-exchange.stage.clear-repo');
+        reporter.log('repository.open-exchange.stage.clear-repo');
         await this.clearRepository(txEm, reporter);
       }
 
@@ -313,7 +313,7 @@ export class OpenExchangeImportService {
       });
 
       reporter.setProgress(55);
-      reporter.log('upload.open-exchange.stage.create-links');
+      reporter.log('repository.open-exchange.stage.create-links');
 
       // Relationships:
       // - component ↔ function: Assignment OR Realization
@@ -393,7 +393,7 @@ export class OpenExchangeImportService {
 
       // Technology relationships: Device ↔ CommunicationNetwork and Device ↔ SystemSoftware
       reporter.setProgress(60);
-      reporter.log('upload.open-exchange.stage.create-technology-links');
+      reporter.log('repository.open-exchange.stage.create-technology-links');
       await this.linkTechnologyFromXml(txEm, {
         relationships: parsed.relationships,
         elementById,
@@ -405,7 +405,7 @@ export class OpenExchangeImportService {
 
       // Relationships: Access (component/function -> dataObject)
       reporter.setProgress(65);
-      reporter.log('upload.open-exchange.stage.create-data-access');
+      reporter.log('repository.open-exchange.stage.create-data-access');
 
       const accesses = parsed.relationships.filter((r) => r.type === 'Access');
       const functionDataObjectSeen = new Set<string>();
@@ -503,7 +503,7 @@ export class OpenExchangeImportService {
       }
 
       reporter.setProgress(75);
-      reporter.log('upload.open-exchange.stage.create-flows');
+      reporter.log('repository.open-exchange.stage.create-flows');
 
       // Relationships: Flow (component -> component)
       const flows = parsed.relationships.filter((r) => r.type === 'Flow');
@@ -553,7 +553,7 @@ export class OpenExchangeImportService {
       reporter.setProgress(92);
     });
 
-    reporter.log('upload.open-exchange.stage.completed', {
+    reporter.log('repository.open-exchange.stage.completed', {
       components: result.created.applicationComponents,
       functions: result.created.applicationFunctions,
       links: result.created.componentFunctionLinks,
@@ -733,7 +733,7 @@ export class OpenExchangeImportService {
       'solutions',
     ];
 
-    reporter.log('upload.open-exchange.clear-repo.count', {
+    reporter.log('repository.open-exchange.clear-repo.count', {
       count: tables.length,
     });
 

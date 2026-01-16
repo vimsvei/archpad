@@ -386,14 +386,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.upload")}
+                aria-label={tr("action.repository")}
                 onClick={handleUploadClick}
                 disabled={isImporting || bulkCreateState.isLoading || bulkUpsertState.isLoading}
               >
                 <Upload />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.upload")}</TooltipContent>
+            <TooltipContent side="bottom">{tr("action.repository")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>

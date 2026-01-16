@@ -1,6 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { SchemaInitializer } from './schema-initializer.service';
-import { SchemaInitializerOptions, SCHEMA_INITIALIZER_OPTIONS } from './schema-initializer-options.interface';
+import {
+  SchemaInitializerOptions,
+  SCHEMA_INITIALIZER_OPTIONS,
+} from './schema-initializer-options.interface';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { LoggerModule } from '@archpad/logger';
 

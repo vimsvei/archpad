@@ -18,12 +18,22 @@ export class HasuraSyncService {
   private readonly renameToCamelCase: boolean;
   private readonly applyDefaultPermissions: boolean;
   private readonly defaultRole: string;
+  private readonly sourcesToSync: string[];
 
   constructor(
     private readonly hasura: HasuraClientService,
     private readonly config: ConfigService,
     private readonly logger: LoggerService,
   ) {
+    const sourcesRaw =
+      (this.config.get<string>('HASURA_SOURCES') ??
+        this.config.get<string>('HASURA_SOURCE') ??
+        '').trim();
+    this.sourcesToSync = sourcesRaw
+      .split(/\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     this.renameToCamelCase = readBool(
       this.config,
       'HASURA_RENAME_COLUMNS_CAMELCASE',
@@ -45,82 +55,108 @@ export class HasuraSyncService {
       `Config: applyDefaultPermissions=${this.applyDefaultPermissions} defaultRole=${this.defaultRole}`,
       HasuraSyncService.name,
     );
+    this.logger.log(
+      `Config: sources=${this.sourcesToSync.join(' ') || '(none)'}`,
+      HasuraSyncService.name,
+    );
   }
 
   async syncAll(options?: { renameColumnsToCamelCase?: boolean }) {
     this.logger.log('Starting Hasura repo sync...', HasuraSyncService.name);
-    const renameToCamelCase =
-      options?.renameColumnsToCamelCase ?? this.renameToCamelCase;
-
-    const exportResult = await this.hasura.exportMetadata();
-    const metadata = exportResult?.metadata ?? exportResult;
-    const sources: any[] = metadata?.sources ?? [];
-    const source =
-      sources.find((s) => s?.name === this.hasura.source) ?? sources[0] ?? null;
-    if (!source) {
+    if (this.sourcesToSync.length === 0) {
       this.logger.warn(
-        `Source "${this.hasura.source}" not found in metadata.`,
+        'No sources configured. Set HASURA_SOURCES (space-separated) or HASURA_SOURCE.',
         HasuraSyncService.name,
       );
       return;
     }
+    const renameToCamelCase =
+      options?.renameColumnsToCamelCase ?? this.renameToCamelCase;
 
-    const tables: any[] = source?.tables ?? [];
-    const trackedTables: DbTableRef[] = tables
-      .map((t) => t?.table ?? t)
-      .filter(Boolean)
-      .map((t) => ({ schema: t.schema, name: t.name }))
-      .filter((t) => !!t.schema && !!t.name)
-      .filter((t) => !this.hasura.schema || t.schema === this.hasura.schema);
+    for (const sourceName of this.sourcesToSync) {
+      this.logger.log(
+        `Syncing source="${sourceName}" schema="${this.hasura.schema || '*'}"...`,
+        HasuraSyncService.name,
+      );
 
-    // 1) Full reset: untrack everything first (cascade removes relationships too)
-    await untrackTables({
-      hasura: this.hasura,
-      logger: this.logger,
-      tables: trackedTables,
-    });
+      // Switch active source in Hasura client (used by run_sql etc.)
+      this.hasura.source = sourceName;
 
-    // 2) Pull updated table list from DB (archpad) and track again
-    const dbTables = await fetchDbTables({
-      hasura: this.hasura,
-      logger: this.logger,
-    });
-    await trackTables({
-      hasura: this.hasura,
-      logger: this.logger,
-      tables: dbTables,
-    });
+      const exportResult = await this.hasura.exportMetadata();
+      const metadata = exportResult?.metadata ?? exportResult;
+      const sources: any[] = metadata?.sources ?? [];
+      const source =
+        sources.find((s) => s?.name === this.hasura.source) ?? null;
+      if (!source) {
+        this.logger.warn(
+          `Source "${this.hasura.source}" not found in metadata (skip).`,
+          HasuraSyncService.name,
+        );
+        continue;
+      }
 
-    const foreignKeys = await getSchemaForeignKeys(this.hasura);
-    await syncForeignKeyRelationships({
-      hasura: this.hasura,
-      logger: this.logger,
-      foreignKeys,
-    });
+      const tables: any[] = source?.tables ?? [];
+      const trackedTables: DbTableRef[] = tables
+        .map((t) => t?.table ?? t)
+        .filter(Boolean)
+        .map((t) => ({ schema: t.schema, name: t.name }))
+        .filter((t) => !!t.schema && !!t.name)
+        .filter((t) => !this.hasura.schema || t.schema === this.hasura.schema);
 
-    if (this.applyDefaultPermissions) {
-      await applyDefaultSelectPermissions({
+      // 1) Full reset: untrack everything first (cascade removes relationships too)
+      await untrackTables({
         hasura: this.hasura,
         logger: this.logger,
-        role: this.defaultRole,
+        tables: trackedTables,
+      });
+
+      // 2) Pull updated table list from DB (current source) and track again
+      const dbTables = await fetchDbTables({
+        hasura: this.hasura,
+        logger: this.logger,
+      });
+      await trackTables({
+        hasura: this.hasura,
+        logger: this.logger,
         tables: dbTables,
       });
-    } else {
+
+      const foreignKeys = await getSchemaForeignKeys(this.hasura);
+      await syncForeignKeyRelationships({
+        hasura: this.hasura,
+        logger: this.logger,
+        foreignKeys,
+      });
+
+      if (this.applyDefaultPermissions) {
+        await applyDefaultSelectPermissions({
+          hasura: this.hasura,
+          logger: this.logger,
+          role: this.defaultRole,
+          tables: dbTables,
+        });
+      } else {
+        this.logger.log(
+          'Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)',
+          HasuraSyncService.name,
+        );
+      }
+
+      await applyCamelCaseCustomization({
+        hasura: this.hasura,
+        logger: this.logger,
+        tables: dbTables,
+        // If false: still apply decorator-driven naming (from hasura_sync registry), but do not auto-camelcase everything.
+        fallbackCamelCase: renameToCamelCase,
+      });
+
+      await reloadMetadata({ hasura: this.hasura, logger: this.logger });
       this.logger.log(
-        'Skipping default permissions (HASURA_APPLY_DEFAULT_PERMISSIONS=false)',
+        `Source "${sourceName}" sync finished.`,
         HasuraSyncService.name,
       );
     }
 
-    await applyCamelCaseCustomization({
-      hasura: this.hasura,
-      logger: this.logger,
-      tables: dbTables,
-      // If false: still apply decorator-driven naming (from hasura_sync registry), but do not auto-camelcase everything.
-      fallbackCamelCase: renameToCamelCase,
-    });
-
-    await reloadMetadata({ hasura: this.hasura, logger: this.logger });
     this.logger.log('Hasura repo sync finished.', HasuraSyncService.name);
   }
 }

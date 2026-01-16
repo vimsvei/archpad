@@ -6,6 +6,7 @@ import {Separator} from "@/components/ui/separator";
 import {ModeToggle} from "@/components/toggles/mode-toggle";
 import {LocaleToggle} from "@/components/toggles/locale-toggle";
 import { PrivateBreadcrumbs } from "@/components/layouts/private/breadcrumbs";
+import { DirectoriesPreloader } from "@/components/providers/directories-preloader";
 
 export const metadata: Metadata = {
   title: "Archpad - The new Architecture Repository",
@@ -19,6 +20,7 @@ export default function PrivateLayout({
 }>) {
   return (
     <SidebarProvider>
+      <DirectoriesPreloader />
       <AppSidebar />
       {/* Prevent document/body scrolling; allow only inner regions (e.g. tables) to scroll */}
       <SidebarInset className="min-w-0 overflow-hidden">

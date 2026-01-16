@@ -47,7 +47,7 @@ export function OpenExchangeUploader() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">{t("upload.title")}</h1>
+      <h1 className="text-2xl font-semibold">{t("upload.repository.title")}</h1>
 
       <Card className="p-4">
         <div className="flex flex-col gap-3">
@@ -119,7 +119,7 @@ export function OpenExchangeUploader() {
           {state?.status !== "idle" ? (
             <div className="flex flex-col gap-2 pt-2">
               <div className="flex items-center justify-between text-sm">
-                <div className="font-medium">{t("upload.open-exchange.progress")}</div>
+                <div className="font-medium">{t("repository.open-exchange.progress")}</div>
                 <div className="text-muted-foreground">{Math.round(state.progress ?? 0)}%</div>
               </div>
               <Progress value={state.progress ?? 0} />

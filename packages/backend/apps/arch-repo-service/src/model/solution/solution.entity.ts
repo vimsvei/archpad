@@ -1,4 +1,11 @@
-import { Collection, Embedded, Entity, Enum, OneToMany, Property} from '@mikro-orm/core';
+import {
+  Collection,
+  Embedded,
+  Entity,
+  Enum,
+  OneToMany,
+  Property,
+} from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ActionStamp,
@@ -12,27 +19,27 @@ import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
 import { SolutionDataObjectMap } from '@/model/maps/solution-data-object.map';
 import { SolutionApplicationFunctionMap } from '@/model/maps/solution-application-function.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
-import {SolutionLifecycle} from "@/model/enums/solution-life-cycle.enum";
-import {SolutionImplementationStatus} from "@/model/enums/solution-implementation-status.enum";
+import { SolutionLifecycle } from '@/model/enums/solution-life-cycle.enum';
+import { SolutionImplementationStatus } from '@/model/enums/solution-implementation-status.enum';
 
 @HasuraTable()
 @Entity({ tableName: 'solutions' })
 export class Solution extends ArchimateElementGeneric {
   @ArchimateCode('SOLUTION')
   override code: string = undefined as any;
-  
+
   @ApiProperty()
   @Property({ type: 'text' })
   context!: string;
-  
+
   @ApiProperty()
   @Property({ type: 'text' })
   decision!: string;
-  
+
   @ApiProperty()
   @Property({ type: 'text' })
   consequences!: string;
-  
+
   @ApiProperty()
   @Property({ type: 'text' })
   alternatives!: string;
@@ -44,10 +51,10 @@ export class Solution extends ArchimateElementGeneric {
   @Enum({
     items: () => SolutionLifecycle,
     nativeEnumName: 'solution_life_cycle_enum',
-    default: SolutionLifecycle.PROPOSED
+    default: SolutionLifecycle.PROPOSED,
   })
   decisionStatus!: SolutionLifecycle;
-  
+
   @ApiProperty({
     enum: SolutionImplementationStatus,
     description: 'Статус реализации решения',
@@ -58,7 +65,7 @@ export class Solution extends ArchimateElementGeneric {
     default: SolutionImplementationStatus.NOT_STARTED,
   })
   ImplementationStatus!: SolutionImplementationStatus;
-  
+
   @Embedded({
     entity: () => ActionStamp,
     prefix: 'accepted_',

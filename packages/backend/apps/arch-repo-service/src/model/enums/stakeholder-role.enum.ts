@@ -8,7 +8,7 @@ export enum StakeholderRole {
   DOMAIN_OWNER = 'stakeholder.role.domain-owner',
   CUSTOMER_REPRESENTATIVE = 'stakeholder.role.customer-representative',
   END_USER_REPRESENTATIVE = 'stakeholder.role.end-user-representative',
-  
+
   ENTERPRISE_ARCHITECT = 'stakeholder.role.enterprise-architect',
   SOLUTION_ARCHITECT = 'stakeholder.role.solution-architect',
   DOMAIN_ARCHITECT = 'stakeholder.role.domain-architect',
@@ -20,7 +20,7 @@ export enum StakeholderRole {
   CLOUD_ARCHITECT = 'stakeholder.role.cloud-architect',
   NETWORK_ARCHITECT = 'stakeholder.role.network-architect',
   INFRASTRUCTURE_ARCHITECT = 'stakeholder.role.infrastructure-architect',
-  
+
   ENGINEERING_MANAGER = 'stakeholder.role.engineering-manager',
   TECH_LEAD = 'stakeholder.role.tech-lead',
   DEVELOPMENT_LEAD = 'stakeholder.role.development-lead',
@@ -32,7 +32,7 @@ export enum StakeholderRole {
   RELEASE_MANAGER = 'stakeholder.role.release-manager',
   BUILD_ENGINEER = 'stakeholder.role.build-engineer',
   CONFIGURATION_MANAGER = 'stakeholder.role.configuration-manager',
-  
+
   SRE = 'stakeholder.role.sre',
   DEVOPS_ENGINEER = 'stakeholder.role.devops-engineer',
   OPERATIONS_ENGINEER = 'stakeholder.role.operations-engineer',
@@ -45,7 +45,7 @@ export enum StakeholderRole {
   CAPACITY_MANAGER = 'stakeholder.role.capacity-manager',
   CONTINUITY_MANAGER = 'stakeholder.role.continuity-manager',
   OBSERVABILITY_OWNER = 'stakeholder.role.observability-owner',
-  
+
   CISO = 'stakeholder.role.ciso',
   SECURITY_OFFICER = 'stakeholder.role.security-officer',
   RISK_MANAGER = 'stakeholder.role.risk-manager',
@@ -56,26 +56,26 @@ export enum StakeholderRole {
   SOC_ANALYST = 'stakeholder.role.soc-analyst',
   IAM_ADMINISTRATOR = 'stakeholder.role.iam-administrator',
   SECURITY_ENGINEER = 'stakeholder.role.security-engineer',
-  
+
   DATA_OWNER = 'stakeholder.role.data-owner',
   DATA_STEWARD = 'stakeholder.role.data-steward',
   ANALYTICS_OWNER = 'stakeholder.role.analytics-owner',
   ML_OWNER = 'stakeholder.role.ml-owner',
-  
+
   PROJECT_MANAGER = 'stakeholder.role.project-manager',
   PROGRAM_MANAGER = 'stakeholder.role.program-manager',
   PORTFOLIO_MANAGER = 'stakeholder.role.portfolio-manager',
   SCRUM_MASTER = 'stakeholder.role.scrum-master',
   AGILE_COACH = 'stakeholder.role.agile-coach',
   RELEASE_TRAIN_ENGINEER = 'stakeholder.role.release-train-engineer',
-  
+
   FINOPS_OWNER = 'stakeholder.role.finops-owner',
   PROCUREMENT_SPECIALIST = 'stakeholder.role.procurement-specialist',
   VENDOR_MANAGER = 'stakeholder.role.vendor-manager',
   LEGAL_COUNSEL = 'stakeholder.role.legal-counsel',
   EXTERNAL_VENDOR = 'stakeholder.role.external-vendor',
   REGULATOR = 'stakeholder.role.regulator',
-  
+
   UX_DESIGNER = 'stakeholder.role.ux-designer',
   UX_RESEARCHER = 'stakeholder.role.ux-researcher',
   TECHNICAL_WRITER = 'stakeholder.role.technical-writer',

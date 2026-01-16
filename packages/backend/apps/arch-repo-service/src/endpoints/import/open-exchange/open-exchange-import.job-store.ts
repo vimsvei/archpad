@@ -62,7 +62,7 @@ export class OpenExchangeImportJobStore {
       job.status = 'failed';
       job.finishedAt = Date.now();
       job.error = e?.message ?? 'Import failed';
-      reporter.log('upload.open-exchange.error', {
+      reporter.log('repository.open-exchange.error', {
         message: job.error,
       });
     }

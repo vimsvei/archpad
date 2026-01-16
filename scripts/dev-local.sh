@@ -7,6 +7,62 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+CMD="${1:-start}"
+START_CADDY="${START_CADDY:-false}"
+START_PORTAL="${START_PORTAL:-false}"
+
+PORTAL_PID_FILE="/tmp/archpad-portal-dev.pid"
+HYDRA_ADMIN_LOCAL_PORT="${HYDRA_ADMIN_LOCAL_PORT:-24445}"
+
+case "$CMD" in
+  start|stop) ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+    echo ""
+    echo "Env:"
+    echo "  START_CADDY=true   # start/stop Caddy reverse proxy for portal.archpad.pro"
+    echo "  START_PORTAL=true  # start/stop Portal dev server (pnpm -C packages/portal dev-k8s)"
+    exit 2
+    ;;
+esac
+
+stop_only() {
+  echo "🛑 Stopping local development environment..."
+
+  # Stop port-forwards via PID files
+  for pidfile in /tmp/k8s-port-forward-*.pid; do
+    if [ -f "$pidfile" ]; then
+      pid=$(cat "$pidfile" 2>/dev/null || echo "")
+      if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+        kill "$pid" 2>/dev/null || true
+      fi
+      rm -f "$pidfile" 2>/dev/null || true
+    fi
+  done
+
+  # Stop portal dev server if we started it
+  if [ -f "$PORTAL_PID_FILE" ]; then
+    pid=$(cat "$PORTAL_PID_FILE" 2>/dev/null || echo "")
+    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+      kill "$pid" 2>/dev/null || true
+      kill -9 "$pid" 2>/dev/null || true
+    fi
+    rm -f "$PORTAL_PID_FILE" 2>/dev/null || true
+  fi
+
+  # Stop caddy if we started it
+  if [ "$START_CADDY" = "true" ]; then
+    "$SCRIPT_DIR/caddy-local.sh" stop || true
+  fi
+
+  echo "✅ Cleanup complete"
+}
+
+if [ "$CMD" = "stop" ]; then
+  stop_only
+  exit 0
+fi
+
 echo "🚀 Starting local development environment..."
 echo ""
 
@@ -49,6 +105,21 @@ if echo "${HYDRA_PUBLIC_URL}" | grep -q "localhost:4444"; then
   NEEDS_ORY_PORT_FORWARD=true
 fi
 
+# Hydra Admin нужен Portal для /hydra/login и /hydra/consent.
+# В локальной разработке обычно используем port-forward на localhost:24445.
+NEEDS_HYDRA_ADMIN_PORT_FORWARD=true
+HYDRA_ADMIN_URL="$(get_env_value "HYDRA_ADMIN_URL" || true)"
+if [ -n "$HYDRA_ADMIN_URL" ]; then
+  if echo "${HYDRA_ADMIN_URL}" | grep -qE 'localhost:24445|127\.0\.0\.1:24445'; then
+    NEEDS_HYDRA_ADMIN_PORT_FORWARD=true
+  elif echo "${HYDRA_ADMIN_URL}" | grep -qE '\.svc(\.|$)'; then
+    # in-cluster URL won't resolve locally; use port-forward instead
+    NEEDS_HYDRA_ADMIN_PORT_FORWARD=true
+  else
+    NEEDS_HYDRA_ADMIN_PORT_FORWARD=false
+  fi
+fi
+
 # Определяем, нужен ли Hasura через port-forward
 # Рекомендуемый публичный endpoint: https://apim.archpad.pro/v1/graphql
 NEEDS_HASURA_PORT_FORWARD=true
@@ -84,25 +155,10 @@ fi
 
 # Функция для очистки при завершении
 cleanup() {
+  exit_code=$?
   echo ""
-  echo "🛑 Stopping local development environment..."
-  
-  # Останавливаем port-forward напрямую через PID файлы
-  for pidfile in /tmp/k8s-port-forward-*.pid; do
-    if [ -f "$pidfile" ]; then
-      pid=$(cat "$pidfile" 2>/dev/null || echo "")
-      if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-        kill "$pid" 2>/dev/null || true
-      fi
-      rm -f "$pidfile" 2>/dev/null || true
-    fi
-  done
-  
-  # Останавливаем все дочерние процессы (включая фоновый k8s-port-forward.sh)
-  jobs -p | xargs -r kill 2>/dev/null || true
-  
-  echo "✅ Cleanup complete"
-  exit 0
+  stop_only
+  exit "$exit_code"
 }
 
 trap cleanup EXIT INT TERM
@@ -130,18 +186,42 @@ fi
 PORT_FORWARD_AVAILABLE=false
 if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
   # Пробуем подключиться к кластеру
+  set +e
   CLUSTER_ERROR=$(kubectl cluster-info 2>&1)
   CLUSTER_EXIT_CODE=$?
+  set -e
   if [ $CLUSTER_EXIT_CODE -eq 0 ]; then
     # Определяем, нужно ли вообще поднимать port-forward
     NEEDS_ANY_PORT_FORWARD=false
-    if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ] || [ "$NEEDS_ORY_PORT_FORWARD" = "true" ]; then
+    if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ] || [ "$NEEDS_ORY_PORT_FORWARD" = "true" ] || [ "$NEEDS_HYDRA_ADMIN_PORT_FORWARD" = "true" ]; then
       NEEDS_ANY_PORT_FORWARD=true
     fi
 
     if [ "$NEEDS_ANY_PORT_FORWARD" = "true" ]; then
       PORT_FORWARD_AVAILABLE=true
       echo "📡 Setting up Kubernetes port-forwards..."
+      echo ""
+      echo "Planned port-forwards:"
+      if [ "$NEEDS_ORY_PORT_FORWARD" = "true" ]; then
+        echo "  - secure/kratos  : 4433 -> 4433 (public; not recommended)"
+        echo "  - secure/kratos  : 4434 -> 4434 (admin; not recommended)"
+        echo "  - secure/hydra   : 4444 -> 4444 (public; not recommended)"
+      else
+        echo "  - secure/kratos  : (skip; using public URL)"
+        echo "  - secure/hydra   : (skip public; using public URL)"
+      fi
+      if [ "$NEEDS_HYDRA_ADMIN_PORT_FORWARD" = "true" ]; then
+        echo "  - secure/hydra   : ${HYDRA_ADMIN_LOCAL_PORT} -> 4445 (admin; required for /hydra/login & /hydra/consent)"
+      else
+        echo "  - secure/hydra   : (skip admin; HYDRA_ADMIN_URL is set to non-localhost)"
+      fi
+      if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ]; then
+        echo "  - platform/hasura: 8080 -> 8080"
+      else
+        echo "  - platform/hasura: (skip; using https://apim.archpad.pro/v1/graphql)"
+      fi
+      echo "  - platform/mailpit: 8025 -> 8025 (default on)"
+      echo ""
       # Передаем KUBECONFIG в дочерний процесс
       export KUBECONFIG
 
@@ -149,6 +229,8 @@ if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
       # - Ory форвардим только если .env.local указывает на localhost
       # - Hasura форвардим только если endpoint не apim.archpad.pro
       FORWARD_ORY="$NEEDS_ORY_PORT_FORWARD" \
+      FORWARD_HYDRA_ADMIN="$NEEDS_HYDRA_ADMIN_PORT_FORWARD" \
+      HYDRA_ADMIN_LOCAL_PORT="${HYDRA_ADMIN_LOCAL_PORT:-24445}" \
       FORWARD_HASURA="$NEEDS_HASURA_PORT_FORWARD" \
       "$SCRIPT_DIR/k8s-port-forward.sh" &
       PORT_FORWARD_PID=$!
@@ -208,6 +290,39 @@ if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
           echo "   Recommended fix: use public URLs in .env.local instead of localhost:"
           echo "     NEXT_PUBLIC_ORY_SDK_URL=https://auth.archpad.pro"
           echo "     NEXT_PUBLIC_HYDRA_PUBLIC_URL=https://authz.archpad.pro"
+          echo ""
+        fi
+      fi
+
+      if [ "$NEEDS_HYDRA_ADMIN_PORT_FORWARD" = "true" ]; then
+        echo "🔍 Verifying Hydra Admin (required for /hydra/login & /hydra/consent)..."
+        sleep 1
+
+        HYDRA_ADMIN_AVAILABLE=false
+        if command -v curl &> /dev/null; then
+          if curl -s -f -o /dev/null --max-time 3 "http://localhost:${HYDRA_ADMIN_LOCAL_PORT}/health/ready" 2>/dev/null; then
+            HYDRA_ADMIN_AVAILABLE=true
+            echo "  ✅ Hydra Admin is accessible on :${HYDRA_ADMIN_LOCAL_PORT}"
+          else
+            echo "  ⚠️  Hydra Admin is not accessible on :${HYDRA_ADMIN_LOCAL_PORT}"
+          fi
+        else
+          if nc -z localhost "${HYDRA_ADMIN_LOCAL_PORT}" 2>/dev/null || lsof -i ":${HYDRA_ADMIN_LOCAL_PORT}" &>/dev/null; then
+            HYDRA_ADMIN_AVAILABLE=true
+            echo "  ✅ Hydra Admin port ${HYDRA_ADMIN_LOCAL_PORT} is listening"
+          else
+            echo "  ⚠️  Hydra Admin port ${HYDRA_ADMIN_LOCAL_PORT} is not listening"
+          fi
+        fi
+
+        if [ "$HYDRA_ADMIN_AVAILABLE" = "false" ]; then
+          echo ""
+          echo "⚠️  Hydra Admin is required but not reachable."
+          echo "   Make sure port-forward is running and port is free:"
+          echo "     - run: pnpm run dev:local (in a separate terminal)"
+          echo "     - check: sudo lsof -nP -iTCP:${HYDRA_ADMIN_LOCAL_PORT} -sTCP:LISTEN"
+          echo "   Portal expects:"
+          echo "     HYDRA_ADMIN_URL=http://localhost:${HYDRA_ADMIN_LOCAL_PORT}"
           echo ""
         fi
       fi
@@ -297,6 +412,21 @@ if [ ! -f "$PORTAL_ENV" ]; then
   echo "   See docs/LOCAL_DEVELOPMENT.md for details"
 fi
 
+if [ "$START_CADDY" = "true" ]; then
+  echo ""
+  echo "🔒 Starting Caddy (portal.archpad.pro -> localhost:3000)..."
+  "$SCRIPT_DIR/caddy-local.sh" start
+fi
+
+if [ "$START_PORTAL" = "true" ]; then
+  echo ""
+  echo "🧩 Starting Portal dev server..."
+  (cd "$PROJECT_ROOT/packages/portal" && pnpm run dev-k8s) &
+  PORTAL_PID=$!
+  echo "$PORTAL_PID" > "$PORTAL_PID_FILE"
+  echo "✓ Portal PID: $PORTAL_PID"
+fi
+
 echo ""
 echo "✅ Port-forward setup complete!"
 echo ""
@@ -346,7 +476,7 @@ else
   echo "⚠️  packages/portal/.env.local is missing"
 fi
 echo ""
-echo "Press Ctrl+C to stop port-forward"
+echo "Press Ctrl+C to stop"
 echo ""
 
 # Ждем завершения (port-forward будет работать до Ctrl+C)

@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
 
+function getRequestProto(request: NextRequest): 'http' | 'https' {
+  const protoHeader = request.headers.get('x-forwarded-proto')
+  if (protoHeader === 'http' || protoHeader === 'https') return protoHeader
+  // In production behind an ingress/controller, requests may reach Next.js as plain HTTP.
+  // If the ingress didn't forward the proto, default to HTTPS to keep Ory base_url generation correct.
+  if (process.env.NODE_ENV === 'production') return 'https'
+  const protoFromUrl = request.nextUrl.protocol.replace(':', '')
+  return protoFromUrl === 'https' ? 'https' : 'http'
+}
+
 function getOryBaseUrl(): URL | null {
-  // Для серверных компонентов приоритет у внутренних адресов
-  const raw = process.env.ORY_KRATOS_INTERNAL_URL ?? process.env.NEXT_PUBLIC_ORY_SDK_URL
+  // In production (in-cluster) prefer internal URL; in local dev prefer public URL.
+  const internal = process.env.ORY_KRATOS_INTERNAL_URL?.trim()
+  const external = process.env.NEXT_PUBLIC_ORY_SDK_URL?.trim()
+  const raw =
+    process.env.NODE_ENV === 'production'
+      ? internal || external
+      : external || internal
   if (!raw) return null
   try {
     return new URL(raw)
@@ -20,7 +35,7 @@ function forwardedHeaders(request: NextRequest): Headers {
   headers.delete('connection')
 
   const host = request.headers.get('host')
-  const proto = request.headers.get('x-forwarded-proto') ?? 'https'
+  const proto = getRequestProto(request)
   if (host) headers.set('x-forwarded-host', host)
   headers.set('x-forwarded-proto', proto)
   return headers
@@ -39,7 +54,19 @@ function normalizeHref(rawHref: string): string {
   return rawHref
 }
 
-function copyResponseHeaders(from: Response, to: NextResponse) {
+function rewriteSetCookieForLocalDev(cookie: string, proto: string): string {
+  if (process.env.NODE_ENV === 'production') return cookie
+  const parts = cookie.split(';').map((p) => p.trim()).filter(Boolean)
+  if (parts.length === 0) return cookie
+
+  const [nameValue, ...attrs] = parts
+  const withoutDomain = attrs.filter((a) => !/^domain=/i.test(a))
+  const withoutSecure =
+    proto === 'http' ? withoutDomain.filter((a) => a.toLowerCase() !== 'secure') : withoutDomain
+  return [nameValue, ...withoutSecure].join('; ')
+}
+
+function copyResponseHeaders(from: Response, to: NextResponse, proto: 'http' | 'https') {
   from.headers.forEach((value, key) => {
     if (key.toLowerCase() === 'set-cookie') return
     if (key.toLowerCase() === 'location') {
@@ -52,12 +79,14 @@ function copyResponseHeaders(from: Response, to: NextResponse) {
   const anyHeaders = from.headers as any
   const setCookies: string[] | undefined = anyHeaders?.getSetCookie?.()
   if (Array.isArray(setCookies) && setCookies.length > 0) {
-    for (const c of setCookies) to.headers.append('set-cookie', c)
+    for (const c of setCookies) to.headers.append('set-cookie', rewriteSetCookieForLocalDev(c, proto))
     return
   }
 
   const single = from.headers.get('set-cookie')
-  if (single) to.headers.set('set-cookie', single)
+  if (single) {
+    to.headers.set('set-cookie', rewriteSetCookieForLocalDev(single, proto))
+  }
 }
 
 export async function GET(request: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
@@ -113,7 +142,23 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
     init.duplex = 'half'
   }
 
-  const res = await fetch(target, init)
+  let res: Response
+  try {
+    res = await fetch(target, init)
+  } catch (e: any) {
+    const message = e instanceof Error ? e.message : String(e)
+    const cause = e?.cause instanceof Error ? e.cause.message : e?.cause ? String(e.cause) : undefined
+    console.error('Ory proxy fetch failed:', { url: target.toString(), message, cause })
+    return NextResponse.json(
+      {
+        error: 'Ory proxy fetch failed',
+        message,
+        ...(cause ? { cause } : {}),
+        url: target.toString(),
+      },
+      { status: 500 }
+    )
+  }
 
   if (process.env.NODE_ENV !== 'production' && res.status >= 400) {
     try {
@@ -131,7 +176,7 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
   }
 
   const nextRes = new NextResponse(res.body, { status: res.status })
-  copyResponseHeaders(res, nextRes)
+  copyResponseHeaders(res, nextRes, getRequestProto(request))
 
   if (process.env.NODE_ENV !== 'production' && res.status === 404) {
     nextRes.headers.set(

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOkResponse,
@@ -17,10 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { SolutionService } from './solution.service';
 import { Solution } from '@/model/solution/solution.entity';
-import {
-  CreateDtoSolution,
-  UpdateDtoSolution,
-} from '@/model/dto/solution.dto';
+import { CreateDtoSolution, UpdateDtoSolution } from '@/model/dto/solution.dto';
 import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 
@@ -34,11 +23,7 @@ class SolutionListResponse {
 }
 
 @ApiTags('Решение')
-@ApiExtraModels(
-  Solution,
-  CreateDtoSolution,
-  UpdateDtoSolution,
-)
+@ApiExtraModels(Solution, CreateDtoSolution, UpdateDtoSolution)
 @Controller('solutions')
 export class SolutionController {
   constructor(protected readonly service: SolutionService) {}

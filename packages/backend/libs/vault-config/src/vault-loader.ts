@@ -10,7 +10,7 @@ export async function loadVaultSecrets(options?: {
   nodeEnv?: string;
 }): Promise<void> {
   const nodeEnv = options?.nodeEnv || process.env.NODE_ENV || 'development';
-  
+
   // Determine Vault address based on environment
   let vaultAddr: string;
   if (options?.address) {
@@ -24,18 +24,20 @@ export async function loadVaultSecrets(options?: {
     // Docker/Production: use internal service name
     vaultAddr = 'http://vault:8200';
   }
-  
+
   // Use token from options, then from environment (VAULT_TOKEN from .env), then fallback to VAULT_TOKEN_ROOT
-  const vaultToken = options?.token || process.env.VAULT_TOKEN || process.env.VAULT_TOKEN_ROOT;
+  const vaultToken =
+    options?.token || process.env.VAULT_TOKEN || process.env.VAULT_TOKEN_ROOT;
   const enabled = options?.enabled ?? !!vaultAddr;
   const secretsPath = options?.secretsPath || 'kv/data/archpad';
 
   console.log(`[Vault] Initializing...`);
   console.log(`[Vault] Address: ${vaultAddr}`);
   if (vaultToken) {
-    const tokenPreview = vaultToken.length > 13 
-      ? `${vaultToken.substring(0, 10)}...${vaultToken.substring(vaultToken.length - 3)}`
-      : vaultToken;
+    const tokenPreview =
+      vaultToken.length > 13
+        ? `${vaultToken.substring(0, 10)}...${vaultToken.substring(vaultToken.length - 3)}`
+        : vaultToken;
     console.log(`[Vault] Token: ${tokenPreview}`);
   } else {
     console.log(`[Vault] Token: NOT SET`);
@@ -49,15 +51,19 @@ export async function loadVaultSecrets(options?: {
   }
 
   if (!vaultToken) {
-    console.warn('[Vault] Token is not provided, skipping Vault secrets loading');
-    console.warn(`[Vault] Available env vars: VAULT_ADDR=${process.env.VAULT_ADDR}, VAULT_TOKEN=${process.env.VAULT_TOKEN ? 'SET' : 'NOT SET'}, VAULT_DEV_ROOT_TOKEN_ID=${process.env.VAULT_DEV_ROOT_TOKEN_ID ? 'SET' : 'NOT SET'}`);
+    console.warn(
+      '[Vault] Token is not provided, skipping Vault secrets loading',
+    );
+    console.warn(
+      `[Vault] Available env vars: VAULT_ADDR=${process.env.VAULT_ADDR}, VAULT_TOKEN=${process.env.VAULT_TOKEN ? 'SET' : 'NOT SET'}, VAULT_DEV_ROOT_TOKEN_ID=${process.env.VAULT_DEV_ROOT_TOKEN_ID ? 'SET' : 'NOT SET'}`,
+    );
     return;
   }
 
   try {
     const url = `${vaultAddr}/v1/${secretsPath}`;
     console.log(`[Vault] Fetching secrets from: ${url}`);
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -65,14 +71,20 @@ export async function loadVaultSecrets(options?: {
       },
     });
 
-    console.log(`[Vault] Response status: ${response.status} ${response.statusText}`);
+    console.log(
+      `[Vault] Response status: ${response.status} ${response.statusText}`,
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
         console.warn(`[Vault] Secrets path ${secretsPath} not found in Vault`);
         console.warn(`[Vault] Full URL: ${url}`);
-        console.warn(`[Vault] Token used: ${vaultToken ? `${vaultToken.substring(0, 10)}...${vaultToken.substring(vaultToken.length - 3)}` : 'NOT SET'}`);
-        console.warn(`[Vault] Please verify that secrets are loaded at this path in Vault UI`);
+        console.warn(
+          `[Vault] Token used: ${vaultToken ? `${vaultToken.substring(0, 10)}...${vaultToken.substring(vaultToken.length - 3)}` : 'NOT SET'}`,
+        );
+        console.warn(
+          `[Vault] Please verify that secrets are loaded at this path in Vault UI`,
+        );
         console.warn(`[Vault] You can check with: vault kv list kv/data/`);
         return;
       }
@@ -85,18 +97,28 @@ export async function loadVaultSecrets(options?: {
       } catch {
         // Ignore
       }
-      throw new Error(`Vault API error: ${response.status} ${response.statusText}${errorDetails}`);
+      throw new Error(
+        `Vault API error: ${response.status} ${response.statusText}${errorDetails}`,
+      );
     }
 
-    const data: { data?: { data?: Record<string, string> } } = await response.json();
+    const data: { data?: { data?: Record<string, string> } } =
+      await response.json();
     const secrets = data.data?.data || {};
 
     // Set environment variables from Vault secrets (Vault has priority, overwrites existing vars)
     let loadedCount = 0;
     let overwrittenCount = 0;
-    const dbKeys = ['PROJECT_DB', 'PROJECT_DB_USER', 'PROJECT_DB_PASSWORD', 'PG_HOST', 'POSTGRES_ENDPOINT', 'POSTGRES_PORT'];
+    const dbKeys = [
+      'PROJECT_DB',
+      'PROJECT_DB_USER',
+      'PROJECT_DB_PASSWORD',
+      'PG_HOST',
+      'POSTGRES_ENDPOINT',
+      'POSTGRES_PORT',
+    ];
     const dbSecrets: Record<string, string> = {};
-    
+
     for (const [key, value] of Object.entries(secrets)) {
       const wasSet = !!process.env[key];
       process.env[key] = value;
@@ -126,9 +148,13 @@ export async function loadVaultSecrets(options?: {
     }
 
     if (overwrittenCount > 0) {
-      console.log(`[Vault] Successfully loaded ${loadedCount} secrets from Vault (${overwrittenCount} overwritten)`);
+      console.log(
+        `[Vault] Successfully loaded ${loadedCount} secrets from Vault (${overwrittenCount} overwritten)`,
+      );
     } else {
-      console.log(`[Vault] Successfully loaded ${loadedCount} secrets from Vault`);
+      console.log(
+        `[Vault] Successfully loaded ${loadedCount} secrets from Vault`,
+      );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

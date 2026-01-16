@@ -33,7 +33,7 @@ async function migrateSolutionItemStateEnum(conn: any) {
 
   const currentType = columnInfo[0]?.udt_name;
   const columnDefault = columnInfo[0]?.column_default;
-  
+
   // Only migrate if it's the old enum type
   if (currentType === 'solution_item_state') {
     // Step 1: Remove old default value if exists
@@ -44,7 +44,10 @@ async function migrateSolutionItemStateEnum(conn: any) {
       );
     } catch (error: any) {
       // Ignore error if default doesn't exist (code 42704) or other non-critical errors
-      if (error.code !== '42704' && !error.message?.includes('does not have a default')) {
+      if (
+        error.code !== '42704' &&
+        !error.message?.includes('does not have a default')
+      ) {
         throw error;
       }
     }
@@ -69,7 +72,7 @@ async function migrateSolutionItemStateEnum(conn: any) {
       WHERE state IN ('ADD', 'USE', 'CHANGE', 'REMOVE')
     `);
   }
-  
+
   // Also handle if column is already text (from previous migration run)
   // This happens if migration was run before but updateSchema hasn't changed type to enum yet
   if (currentType === 'text') {
@@ -85,7 +88,7 @@ async function migrateSolutionItemStateEnum(conn: any) {
       END
       WHERE state IN ('ADD', 'USE', 'CHANGE', 'REMOVE')
     `);
-    
+
     // Remove any old default if exists (critical before changing type to enum)
     // Always try to drop default to avoid PostgreSQL trying to cast old default value
     try {
@@ -95,7 +98,10 @@ async function migrateSolutionItemStateEnum(conn: any) {
       );
     } catch (error: any) {
       // Ignore error if default doesn't exist (code 42704) or column doesn't have a default
-      if (error.code !== '42704' && !error.message?.includes('does not have a default')) {
+      if (
+        error.code !== '42704' &&
+        !error.message?.includes('does not have a default')
+      ) {
         throw error;
       }
     }
@@ -128,7 +134,7 @@ async function migrateTenantIdColumns(conn: any) {
   // So we use a hardcoded UUID for migration
   // This will be replaced when a real tenant is created
   let defaultTenantId: string = '00000000-0000-0000-0000-000000000000';
-  
+
   // Try to get an existing tenant from tenant_db (if cross-database query is possible)
   // In production, tenants are in a separate database, so we skip this
   try {

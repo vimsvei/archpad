@@ -1,4 +1,10 @@
-import { Injectable, OnApplicationBootstrap, Logger, Inject, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  Logger,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { getArchimateSequences } from '@archpad/models';
 import type { SchemaInitializerOptions } from './schema-initializer-options.interface';
@@ -10,19 +16,28 @@ export class SchemaInitializer implements OnApplicationBootstrap {
 
   constructor(
     private readonly orm: MikroORM,
-    @Optional() @Inject(SCHEMA_INITIALIZER_OPTIONS) private readonly options?: SchemaInitializerOptions,
+    @Optional()
+    @Inject(SCHEMA_INITIALIZER_OPTIONS)
+    private readonly options?: SchemaInitializerOptions,
   ) {}
 
   async onApplicationBootstrap() {
     const generator = this.orm.getSchemaGenerator();
     const conn = this.orm.em.getConnection();
     const config = this.orm.config as any;
-    const schema = this.options?.schema ?? config.get?.('schema') ?? config.get?.('schemaName') ?? 'public';
+    const schema =
+      this.options?.schema ??
+      config.get?.('schema') ??
+      config.get?.('schemaName') ??
+      'public';
 
     // Always create additional sequences (they are required by entities)
     // If skipSequenceCreation is true, we still need to create additionalSequences
     // because they are explicitly required by entities
-    if (this.options?.additionalSequences && this.options.additionalSequences.length > 0) {
+    if (
+      this.options?.additionalSequences &&
+      this.options.additionalSequences.length > 0
+    ) {
       await this.createAdditionalSequences(conn, schema);
     }
 
@@ -70,7 +85,9 @@ export class SchemaInitializer implements OnApplicationBootstrap {
       return;
     }
 
-    this.logger.log(`Creating ${additionalSeqs.length} additional sequence(s)...`);
+    this.logger.log(
+      `Creating ${additionalSeqs.length} additional sequence(s)...`,
+    );
 
     for (const seq of additionalSeqs) {
       try {

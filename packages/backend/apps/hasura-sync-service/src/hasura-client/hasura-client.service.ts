@@ -8,7 +8,8 @@ import { LoggerService } from '@archpad/logger';
 export class HasuraClientService {
   readonly endpoint: string;
   readonly secret: string;
-  readonly source: string;
+  // Active source for run_sql etc. Set by sync service loop.
+  source: string;
   readonly schema: string;
 
   constructor(
@@ -37,7 +38,15 @@ export class HasuraClientService {
 
     this.endpoint = normalizeHasuraEndpoint(rawEndpoint);
     this.secret = this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET')!;
-    this.source = this.config.get<string>('HASURA_SOURCE')!;
+    // Back-compat: support both HASURA_SOURCES and HASURA_SOURCE.
+    // If HASURA_SOURCES is provided, sync service will override `source` for each entry.
+    this.source =
+      (this.config.get<string>('HASURA_SOURCE') ?? '').trim() ||
+      ((this.config.get<string>('HASURA_SOURCES') ?? '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)[0] ??
+        '');
     this.schema = this.config.get<string>('HASURA_SCHEMA')!;
 
     this.logger.log(

@@ -1,14 +1,13 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
-import {ArchimateCode, IdentifiedObject } from '@archpad/models';
+import { ArchimateCode, HasuraTable, IdentifiedObject } from '@archpad/models';
 
-@Entity({
-  tableName: 'user_profiles',
-})
+@HasuraTable()
+@Entity({ tableName: 'user_profiles' })
 export abstract class UserProfile extends IdentifiedObject {
   @ArchimateCode('USER')
   code: string = undefined as any;
-  
+
   @ApiProperty({ description: 'First name', required: true })
   @Property({ type: 'string', name: 'first_name' })
   firstName!: string;

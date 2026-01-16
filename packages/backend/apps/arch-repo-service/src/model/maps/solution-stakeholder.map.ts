@@ -1,9 +1,9 @@
-import {MappedSolutionObject} from "@/model/abstract/mapped-solution-object.abstract";
-import {HasuraRefName, HasuraTable} from "@archpad/models";
-import {Entity, Enum, ManyToOne, Unique} from "@mikro-orm/core";
-import {Stakeholder} from "@/model/archimate/motivation/stakeholder.entity";
-import {Solution} from "@/model/solution/solution.entity";
-import {StakeholderRole} from "@/model/enums/stakeholder-role.enum";
+import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
+import { HasuraRefName, HasuraTable } from '@archpad/models';
+import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
+import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
+import { Solution } from '@/model/solution/solution.entity';
+import { StakeholderRole } from '@/model/enums/stakeholder-role.enum';
 
 @HasuraTable()
 @Entity({ tableName: 'map_solution_stakeholder' })
@@ -18,7 +18,7 @@ export class SolutionStakeholderMap extends MappedSolutionObject {
     deleteRule: 'no action',
   })
   solution!: Solution;
-  
+
   @HasuraRefName('solutions')
   @ManyToOne({
     entity: () => Stakeholder,

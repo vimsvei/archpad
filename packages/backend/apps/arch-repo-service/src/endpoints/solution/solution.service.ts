@@ -58,9 +58,7 @@ export class SolutionService {
     private readonly stakeholderMapRepo: EntityRepository<SolutionStakeholderMap>,
   ) {}
 
-  async findAll(
-    query: SolutionListQuery,
-  ): Promise<PaginatedResult<Solution>> {
+  async findAll(query: SolutionListQuery): Promise<PaginatedResult<Solution>> {
     const rawSearch = (query.search ?? '').trim();
     const search = rawSearch.length ? rawSearch : undefined;
 
@@ -101,10 +99,13 @@ export class SolutionService {
     context: ArchpadRequestContext,
   ): Promise<Solution> {
     const em = this.repo.getEntityManager();
-    
+
     // Get tenantId from context (first tenantId from the list, or use default)
     const ctx = getArchpadRequestContext();
-    const tenantId = ctx?.tenantIds?.[0] || context.tenantIds?.[0] || '102153b6-28d4-40c2-ac27-11e419b639e0';
+    const tenantId =
+      ctx?.tenantIds?.[0] ||
+      context.tenantIds?.[0] ||
+      '102153b6-28d4-40c2-ac27-11e419b639e0';
 
     const dtoData = dto as any;
     const entity = this.repo.create({
@@ -115,8 +116,12 @@ export class SolutionService {
       decision: dtoData.decision || '',
       consequences: dtoData.consequences || '',
       alternatives: dtoData.alternatives || '',
-      decisionStatus: dtoData.decisionStatus ? (dtoData.decisionStatus as SolutionLifecycle) : SolutionLifecycle.PROPOSED,
-      ImplementationStatus: dtoData.implementationStatus ? (dtoData.implementationStatus as SolutionImplementationStatus) : SolutionImplementationStatus.NOT_STARTED,
+      decisionStatus: dtoData.decisionStatus
+        ? (dtoData.decisionStatus as SolutionLifecycle)
+        : SolutionLifecycle.PROPOSED,
+      ImplementationStatus: dtoData.implementationStatus
+        ? (dtoData.implementationStatus as SolutionImplementationStatus)
+        : SolutionImplementationStatus.NOT_STARTED,
       tenantId,
       created: {
         at: new Date(),
@@ -150,14 +155,23 @@ export class SolutionService {
           ? { description: dtoData.description }
           : {}),
         ...(dtoData.context !== undefined ? { context: dtoData.context } : {}),
-        ...(dtoData.decision !== undefined ? { decision: dtoData.decision } : {}),
-        ...(dtoData.consequences !== undefined ? { consequences: dtoData.consequences } : {}),
-        ...(dtoData.alternatives !== undefined ? { alternatives: dtoData.alternatives } : {}),
+        ...(dtoData.decision !== undefined
+          ? { decision: dtoData.decision }
+          : {}),
+        ...(dtoData.consequences !== undefined
+          ? { consequences: dtoData.consequences }
+          : {}),
+        ...(dtoData.alternatives !== undefined
+          ? { alternatives: dtoData.alternatives }
+          : {}),
         ...(dtoData.decisionStatus !== undefined
           ? { decisionStatus: dtoData.decisionStatus as SolutionLifecycle }
           : {}),
         ...(dtoData.implementationStatus !== undefined
-          ? { ImplementationStatus: dtoData.implementationStatus as SolutionImplementationStatus }
+          ? {
+              ImplementationStatus:
+                dtoData.implementationStatus as SolutionImplementationStatus,
+            }
           : {}),
         updated: {
           at: new Date(),
@@ -206,12 +220,9 @@ export class SolutionService {
       }
 
       // Update data objects - always replace all existing with provided ones
-      const existingDataObjectMaps = await trxEm.find(
-        SolutionDataObjectMap,
-        {
-          solution: id as any,
-        } as any,
-      );
+      const existingDataObjectMaps = await trxEm.find(SolutionDataObjectMap, {
+        solution: id as any,
+      } as any);
       await trxEm.remove(existingDataObjectMaps);
 
       if (dtoData.dataObjectIds && dtoData.dataObjectIds.length > 0) {
@@ -225,12 +236,9 @@ export class SolutionService {
       }
 
       // Update flows - always replace all existing with provided ones
-      const existingFlowMaps = await trxEm.find(
-        SolutionFlowMap,
-        {
-          solution: id as any,
-        } as any,
-      );
+      const existingFlowMaps = await trxEm.find(SolutionFlowMap, {
+        solution: id as any,
+      } as any);
       await trxEm.remove(existingFlowMaps);
 
       if (dtoData.flowIds && dtoData.flowIds.length > 0) {
@@ -256,26 +264,29 @@ export class SolutionService {
         for (const motivationId of dtoData.motivationIds) {
           const map = trxEm.create(SolutionMotivationElementMap, {
             solution: trxEm.getReference(Solution, id),
-            motivation: trxEm.getReference(MotivationElementGeneric, motivationId),
+            motivation: trxEm.getReference(
+              MotivationElementGeneric,
+              motivationId,
+            ),
           } as any);
           await trxEm.persist(map);
         }
       }
 
       // Update stakeholders - always replace all existing with provided ones
-      const existingStakeholderMaps = await trxEm.find(
-        SolutionStakeholderMap,
-        {
-          solution: id as any,
-        } as any,
-      );
+      const existingStakeholderMaps = await trxEm.find(SolutionStakeholderMap, {
+        solution: id as any,
+      } as any);
       await trxEm.remove(existingStakeholderMaps);
 
       if (dtoData.stakeholderIds && dtoData.stakeholderIds.length > 0) {
         for (const stakeholderItem of dtoData.stakeholderIds) {
           const map = trxEm.create(SolutionStakeholderMap, {
             solution: trxEm.getReference(Solution, id),
-            stakeholder: trxEm.getReference(Stakeholder, stakeholderItem.stakeholderId),
+            stakeholder: trxEm.getReference(
+              Stakeholder,
+              stakeholderItem.stakeholderId,
+            ),
             role: stakeholderItem.roleId as StakeholderRole,
           } as any);
           await trxEm.persist(map);

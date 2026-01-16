@@ -65,6 +65,7 @@ export function SignUpForm({ flow }: { flow: unknown }) {
         action={meta.action ?? undefined}
         method={meta.httpMethod ?? undefined}
         onFlow={setFlowState}
+        successRedirectTo="/sign-in"
       >
         {csrfToken ? <input type="hidden" name="csrf_token" value={csrfToken} /> : null}
         <input type="hidden" name="method" value={method} />

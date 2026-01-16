@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
 
+function getRequestProto(request: NextRequest): 'http' | 'https' {
+  const protoHeader = request.headers.get('x-forwarded-proto')
+  if (protoHeader === 'http' || protoHeader === 'https') return protoHeader
+  // In production behind an ingress/controller, requests may reach Next.js as plain HTTP.
+  // If the ingress didn't forward the proto, default to HTTPS to keep Ory base_url generation correct.
+  if (process.env.NODE_ENV === 'production') return 'https'
+  const protoFromUrl = request.nextUrl.protocol.replace(':', '')
+  return protoFromUrl === 'https' ? 'https' : 'http'
+}
+
 function getOryBaseUrl(): URL | null {
   // Для серверных компонентов приоритет у внутренних адресов
   const raw = process.env.NEXT_PUBLIC_ORY_SDK_URL
@@ -20,7 +30,7 @@ function forwardedHeaders(request: NextRequest): Headers {
   headers.delete('connection')
 
   const host = request.headers.get('host')
-  const proto = request.headers.get('x-forwarded-proto') ?? 'https'
+  const proto = getRequestProto(request)
   if (host) headers.set('x-forwarded-host', host)
   headers.set('x-forwarded-proto', proto)
   return headers
@@ -82,6 +92,18 @@ function rewriteSelfServiceLocation(rawLocation: string): string {
   return href
 }
 
+function rewriteSetCookieForLocalDev(cookie: string, proto: string): string {
+  if (process.env.NODE_ENV === 'production') return cookie
+  const parts = cookie.split(';').map((p) => p.trim()).filter(Boolean)
+  if (parts.length === 0) return cookie
+
+  const [nameValue, ...attrs] = parts
+  const withoutDomain = attrs.filter((a) => !/^domain=/i.test(a))
+  const withoutSecure =
+    proto === 'http' ? withoutDomain.filter((a) => a.toLowerCase() !== 'secure') : withoutDomain
+  return [nameValue, ...withoutSecure].join('; ')
+}
+
 function setDeep(obj: any, path: string[], value: any) {
   let cur = obj
   for (let i = 0; i < path.length; i++) {
@@ -127,7 +149,7 @@ function buildJsonBodyFromFormData(form: FormData) {
   return out
 }
 
-function copyResponseHeaders(from: Response, to: NextResponse) {
+function copyResponseHeaders(from: Response, to: NextResponse, proto: 'http' | 'https') {
   from.headers.forEach((value, key) => {
     if (key.toLowerCase() === 'set-cookie') return
     if (key.toLowerCase() === 'location') {
@@ -140,12 +162,14 @@ function copyResponseHeaders(from: Response, to: NextResponse) {
   const anyHeaders = from.headers as any
   const setCookies: string[] | undefined = anyHeaders?.getSetCookie?.()
   if (Array.isArray(setCookies) && setCookies.length > 0) {
-    for (const c of setCookies) to.headers.append('set-cookie', c)
+    for (const c of setCookies) to.headers.append('set-cookie', rewriteSetCookieForLocalDev(c, proto))
     return
   }
 
   const single = from.headers.get('set-cookie')
-  if (single) to.headers.set('set-cookie', single)
+  if (single) {
+    to.headers.set('set-cookie', rewriteSetCookieForLocalDev(single, proto))
+  }
 }
 
 export async function GET(request: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
@@ -250,7 +274,7 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
   }
 
   const nextRes = new NextResponse(res.body, { status: res.status })
-  copyResponseHeaders(res, nextRes)
+  copyResponseHeaders(res, nextRes, getRequestProto(request))
 
   // In local/dev setups, a very common misconfiguration is pointing NEXT_PUBLIC_ORY_SDK_URL
   // to a hostname that is not actually routed to Kratos (Traefik will return plain "404 page not found").
