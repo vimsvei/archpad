@@ -54,7 +54,9 @@ spec:
             protocol: TCP
           # Порт для метрик Prometheus
           metrics:
-            port: 8080
+            # Keep Service port 8080 (for existing dashboards / checks),
+            # but avoid clashing with Traefik internal entrypoint "traefik" (also 8080).
+            port: 9100
             expose:
               default: true
             exposedPort: 8080
