@@ -20,9 +20,11 @@ spec:
       # This is an "app-of-apps". It should manage ONLY ArgoCD Application manifests,
       # otherwise we'll get resource ownership conflicts (SharedResourceWarning).
       include: |
-        **/*.app.yaml
+        *.app.yaml
+        */*.app.yaml
+        */*/*.app.yaml
       # Avoid self-management recursion.
-      exclude: "applications/**"
+      exclude: "applications/applications.app.yaml"
   syncPolicy:
     automated:
       prune: true
