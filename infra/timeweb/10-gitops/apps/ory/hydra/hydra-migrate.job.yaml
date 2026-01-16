@@ -39,9 +39,13 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              source /vault/secrets/hydra-db
-              source /vault/secrets/hydra-secret
-              exec hydra migrate sql -e --yes -c /etc/config/hydra.yml
+              set -euo pipefail
+              # В этом Job переменные окружения формируются шаблоном `agent-inject-template-hydra`
+              # и рендерятся в файл /vault/secrets/hydra (а /vault/secrets/hydra-db|hydra-secret могут
+              # быть дефолтными kv-v2 дампами и не подходят для `source`).
+              source /vault/secrets/hydra
+              # v25+ рекомендует явный subcommand `up`
+              exec hydra migrate sql up -e --yes -c /etc/config/hydra.yml
           volumeMounts:
             - name: config
               mountPath: /etc/config/hydra.yml
