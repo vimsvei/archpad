@@ -100,24 +100,24 @@ spec:
               echo "Hasura schema: $HASURA_SCHEMA"
 
               # Wait for dependent services to be ready.
-              echo "Waiting for arch-repo-service..."
-              tries=60
-              until curl -fsS "http://arch-repo-service.platform:3000/healthz" >/dev/null 2>&1; do
+              echo "Waiting for arch-repo-service (/healthz)..."
+              tries=90
+              until curl -fsS --max-time 2 "http://arch-repo-service:3000/healthz" >/dev/null 2>&1; do
                 tries=$((tries-1))
                 if [ "$tries" -le 0 ]; then
-                  echo "ERROR: arch-repo-service is not ready"
+                  echo "ERROR: arch-repo-service is not ready (http://arch-repo-service:3000/healthz)"
                   exit 1
                 fi
                 sleep 2
               done
               echo "arch-repo-service ready"
 
-              echo "Waiting for tenant-service..."
-              tries=60
-              until curl -fsS "http://tenant-service.platform:3000/healthz" >/dev/null 2>&1; do
+              echo "Waiting for tenant-service (/healthz)..."
+              tries=90
+              until curl -fsS --max-time 2 "http://tenant-service:3000/healthz" >/dev/null 2>&1; do
                 tries=$((tries-1))
                 if [ "$tries" -le 0 ]; then
-                  echo "ERROR: tenant-service is not ready"
+                  echo "ERROR: tenant-service is not ready (http://tenant-service:3000/healthz)"
                   exit 1
                 fi
                 sleep 2
