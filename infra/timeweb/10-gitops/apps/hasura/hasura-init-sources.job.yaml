@@ -1,0 +1,110 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hasura-init-sources
+  namespace: platform
+  annotations:
+    # Run after Hasura is applied
+    argocd.argoproj.io/sync-wave: "55"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
+        vault.hashicorp.com/agent-inject-secret-hasura-endpoint: "kv/data/archpad/demo/hasura/endpoint"
+        vault.hashicorp.com/agent-inject-template-hasura-init-sources: |
+          {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
+          {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
+          export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
+          export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+        vault.hashicorp.com/role: "platform"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+    spec:
+      serviceAccountName: hasura
+      restartPolicy: Never
+      containers:
+        - name: init
+          image: curlimages/curl:8.18.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              . /vault/secrets/hasura-init-sources
+
+              if [ -z "${HASURA_INTERNAL_URL:-}" ]; then
+                echo "ERROR: HASURA_INTERNAL_URL is not set"
+                exit 1
+              fi
+              if [ -z "${HASURA_GRAPHQL_ADMIN_SECRET:-}" ]; then
+                echo "ERROR: HASURA_GRAPHQL_ADMIN_SECRET is not set"
+                exit 1
+              fi
+
+              # HASURA_INTERNAL_URL might include /v1/graphql in our secrets; normalize to base.
+              HASURA_BASE="$HASURA_INTERNAL_URL"
+              HASURA_BASE="${HASURA_BASE%/}"
+              if echo "$HASURA_BASE" | grep -q "/v1/graphql$"; then
+                HASURA_BASE="${HASURA_BASE%/v1/graphql}"
+              fi
+
+              echo "[hasura-init-sources] Hasura base: $HASURA_BASE"
+
+              # Wait until ready.
+              tries=60
+              until curl -fsS "$HASURA_BASE/healthz" >/dev/null 2>&1; do
+                tries=$((tries-1))
+                if [ "$tries" -le 0 ]; then
+                  echo "[hasura-init-sources] ERROR: Hasura is not ready"
+                  exit 1
+                fi
+                sleep 2
+              done
+
+              call_metadata() {
+                payload="$1"
+                curl -fsS "$HASURA_BASE/v1/metadata" \
+                  -H 'content-type: application/json' \
+                  -H "x-hasura-admin-secret: ${HASURA_GRAPHQL_ADMIN_SECRET}" \
+                  --data-binary "$payload" >/dev/null
+              }
+
+              echo "[hasura-init-sources] Upserting sources via from_env..."
+
+              call_metadata "$(cat <<'JSON'
+              {
+                "type": "pg_add_source",
+                "args": {
+                  "name": "arch-repo-service",
+                  "configuration": {
+                    "connection_info": {
+                      "database_url": { "from_env": "ARCH_REPO_DATABASE_URL" }
+                    }
+                  },
+                  "replace_configuration": true
+                }
+              }
+              JSON
+              )"
+
+              call_metadata "$(cat <<'JSON'
+              {
+                "type": "pg_add_source",
+                "args": {
+                  "name": "tenant-service",
+                  "configuration": {
+                    "connection_info": {
+                      "database_url": { "from_env": "TENANT_DATABASE_URL" }
+                    }
+                  },
+                  "replace_configuration": true
+                }
+              }
+              JSON
+              )"
+
+              echo "[hasura-init-sources] Done"
+
