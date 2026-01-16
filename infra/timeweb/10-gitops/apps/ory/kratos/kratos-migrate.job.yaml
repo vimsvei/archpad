@@ -52,20 +52,23 @@ spec:
               echo "Waiting for Vault secrets..."
               max_wait=60
               waited=0
-              while [ ! -f /vault/secrets/kratos-db ] && [ $waited -lt $max_wait ]; do
-                echo "Waiting for /vault/secrets/kratos-db... (${waited}s/${max_wait}s)"
+              # В этом Job переменные окружения рендерятся в файл /vault/secrets/kratos
+              # (см. vault.hashicorp.com/agent-inject-template-kratos). Файл /vault/secrets/kratos-db
+              # создаётся Vault Agent'ом по дефолтному шаблону и НЕ является shell-скриптом.
+              while [ ! -f /vault/secrets/kratos ] && [ $waited -lt $max_wait ]; do
+                echo "Waiting for /vault/secrets/kratos... (${waited}s/${max_wait}s)"
                 sleep 2
                 waited=$((waited+2))
               done
               
-              if [ ! -f /vault/secrets/kratos-db ]; then
-                echo "ERROR: /vault/secrets/kratos-db not found after ${max_wait}s"
+              if [ ! -f /vault/secrets/kratos ]; then
+                echo "ERROR: /vault/secrets/kratos not found after ${max_wait}s"
                 exit 1
               fi
               
               # Загружаем секреты
               echo "Loading secrets from Vault..."
-              source /vault/secrets/kratos-db || { echo "ERROR: Failed to load kratos-db secrets"; exit 1; }
+              source /vault/secrets/kratos || { echo "ERROR: Failed to load kratos secrets"; exit 1; }
               
               if [ -f /vault/secrets/kratos-secret ]; then
                 source /vault/secrets/kratos-secret || echo "WARNING: Failed to load kratos-secret"

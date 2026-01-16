@@ -33,7 +33,9 @@ spec:
           {{- end }}
         vault.hashicorp.com/agent-inject-template-hydra-secret: |
           {{- with secret "kv/data/archpad/demo/ory/hydra/secret" }}
-          export SECRETS_SYSTEM="{{ .Data.data.SECRETS_SYSTEM }}"
+          # Hydra expects SECRETS_SYSTEM for key management. After Vault reset the key
+          # may be stored under HYDRA_SECRET, so keep backward compatibility.
+          export SECRETS_SYSTEM="{{ or .Data.data.HYDRA_SECRET .Data.data.SECRETS_SYSTEM }}"
           {{- end }}
         vault.hashicorp.com/role: "secure"
     spec:

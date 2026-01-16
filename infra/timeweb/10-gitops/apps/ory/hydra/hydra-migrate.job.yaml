@@ -26,7 +26,9 @@ spec:
           {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export DSN="postgres://{{ $hydraDb.Data.data.HYDRA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hydraDb.Data.data.HYDRA_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
-          export SECRETS_SYSTEM="{{ $hydraSecret.Data.data.SECRETS_SYSTEM }}"
+          # Hydra expects SECRETS_SYSTEM for key management. After Vault reset the key
+          # may be stored under HYDRA_SECRET, so keep backward compatibility.
+          export SECRETS_SYSTEM="{{ or $hydraSecret.Data.data.HYDRA_SECRET $hydraSecret.Data.data.SECRETS_SYSTEM }}"
         vault.hashicorp.com/role: "secure"
     spec:
       serviceAccountName: hydra

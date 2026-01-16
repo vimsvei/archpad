@@ -16,6 +16,10 @@ spec:
     path: infra/timeweb/10-gitops/apps/monitoring
     directory:
       recurse: true
+      # prometheus управляется отдельным Application (`apps/monitoring/prometheus/prometheus.app.yaml`).
+      # Если не исключить папку, monitoring и prometheus начинают "драться" за одни и те же ресурсы,
+      # что приводит к SharedResourceWarning и бесконечной Syncing/OutOfSync.
+      exclude: "prometheus/**"
   syncPolicy:
     automated:
       prune: true
@@ -24,8 +28,5 @@ spec:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
   ignoreDifferences:
-    # Игнорируем отсутствие PVC grafana-storage (используем PostgreSQL вместо локального хранилища)
-    - group: ""
-      kind: PersistentVolumeClaim
-      name: grafana-storage
-      namespace: monitoring
+    # (опционально) здесь можно добавлять игноры на "шумные" ресурсы,
+    # но prometheus ресурсы должны быть исключены через directory.exclude выше.
