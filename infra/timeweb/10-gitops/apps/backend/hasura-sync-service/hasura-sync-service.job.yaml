@@ -6,8 +6,8 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "60"
     # ArgoCD будет пересоздавать Job при каждом синхронизации
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
     # ArgoCD Image Updater: отслеживание обновлений образа
     argocd-image-updater.argoproj.io/image-list: hasura-sync-service=archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service
     argocd-image-updater.argoproj.io/write-back-method: git
@@ -41,8 +41,13 @@ spec:
           {{- $postgresCredential := secret "kv/data/archpad/demo/postgres/credential" }}
           # Экспортируем переменные окружения для hasura-sync-service
           export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
+          export HASURA_ENDPOINT="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
-          export HASURA_SOURCE="{{ $hasuraSync.Data.data.HASURA_SOURCE }}"
+          {{- if $hasuraSync.Data.data.HASURA_SOURCES }}
+          export HASURA_SOURCES="{{ $hasuraSync.Data.data.HASURA_SOURCES }}"
+          {{- else }}
+          export HASURA_SOURCES="{{ $hasuraSync.Data.data.HASURA_SOURCE }}"
+          {{- end }}
           export HASURA_SCHEMA="{{ $hasuraSync.Data.data.HASURA_SCHEMA }}"
           {{- if $hasuraSync.Data.data.HASURA_RENAME_COLUMNS_CAMELCASE }}
           export HASURA_RENAME_COLUMNS_CAMELCASE="{{ $hasuraSync.Data.data.HASURA_RENAME_COLUMNS_CAMELCASE }}"
@@ -82,24 +87,45 @@ spec:
                 echo "ERROR: HASURA_GRAPHQL_ADMIN_SECRET is not set"
                 exit 1
               fi
-              if [ -z "$HASURA_SOURCE" ]; then
-                echo "ERROR: HASURA_SOURCE is not set"
+              if [ -z "${HASURA_SOURCES:-}" ]; then
+                echo "ERROR: HASURA_SOURCES is not set"
                 exit 1
               fi
               if [ -z "$HASURA_SCHEMA" ]; then
                 echo "ERROR: HASURA_SCHEMA is not set"
                 exit 1
               fi
-              echo "Hasura endpoint: $HASURA_INTERNAL_URL"
-              echo "Hasura source: $HASURA_SOURCE"
+              echo "Hasura endpoint: $HASURA_ENDPOINT"
+              echo "Hasura sources: $HASURA_SOURCES"
               echo "Hasura schema: $HASURA_SCHEMA"
-              # Запускаем синхронизацию
-              # TODO: После сборки образа использовать правильный путь к main.js
-              # exec node dist/apps/hasura-sync-service/apps/hasura-sync-service/src/main.js
-              # Временная заглушка для проверки конфигурации
-              echo "Hasura Sync Service starting..."
-              echo "This is a placeholder. Replace with actual sync command after building the image."
-              exit 0
+
+              # Wait for dependent services to be ready.
+              echo "Waiting for arch-repo-service..."
+              tries=60
+              until curl -fsS "http://arch-repo-service.platform:3000/healthz" >/dev/null 2>&1; do
+                tries=$((tries-1))
+                if [ "$tries" -le 0 ]; then
+                  echo "ERROR: arch-repo-service is not ready"
+                  exit 1
+                fi
+                sleep 2
+              done
+              echo "arch-repo-service ready"
+
+              echo "Waiting for tenant-service..."
+              tries=60
+              until curl -fsS "http://tenant-service.platform:3000/healthz" >/dev/null 2>&1; do
+                tries=$((tries-1))
+                if [ "$tries" -le 0 ]; then
+                  echo "ERROR: tenant-service is not ready"
+                  exit 1
+                fi
+                sleep 2
+              done
+              echo "tenant-service ready"
+
+              # Run sync (supports HASURA_SOURCES space-separated).
+              exec node dist/apps/hasura-sync-service/apps/hasura-sync-service/src/main.js
           env:
             - name: NODE_ENV
               value: "production"

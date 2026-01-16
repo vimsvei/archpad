@@ -4,7 +4,8 @@ metadata:
   name: hasura-sync-service
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "10"
+    # If you're applying apps in waves (app-of-apps), run after backend services.
+    argocd.argoproj.io/sync-wave: "20"
     # ArgoCD Image Updater: настройка отслеживания образов
     argocd-image-updater.argoproj.io/image-list: hasura-sync-service=archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service
     argocd-image-updater.argoproj.io/write-back-method: git
