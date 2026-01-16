@@ -22,3 +22,19 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  # Игнорируем изменения, которые вносят Vault Agent Injector и другие mutating webhooks
+  ignoreDifferences:
+    # Игнорируем изменения в Pod template spec (init-контейнеры, sidecar'ы от Vault Agent)
+    - group: apps
+      kind: Deployment
+      name: kratos
+      namespace: secure
+      jsonPointers:
+        - /spec/template/spec
+    # Игнорируем изменения в Job (Vault Agent Injector добавляет init-контейнеры)
+    - group: batch
+      kind: Job
+      name: kratos-migrate
+      namespace: secure
+      jsonPointers:
+        - /spec/template/spec
