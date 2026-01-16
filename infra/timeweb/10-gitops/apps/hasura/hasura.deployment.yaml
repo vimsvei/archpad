@@ -83,6 +83,10 @@ spec:
               value: "graphql,metadata,config,pgdump,metrics"
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
               value: "true"
+            # Force serving console assets locally (avoid external CDN).
+            # Helps when browsers/extensions block graphql-engine-cdn.hasura.io (e.g. Safari + content blockers).
+            - name: HASURA_GRAPHQL_CONSOLE_ASSETS_DIR
+              value: "/srv/console-assets"
             - name: HASURA_GRAPHQL_ENABLE_ALLOWLIST
               value: "false"
           livenessProbe:

@@ -11,6 +11,9 @@ spec:
   routes:
     - match: Host(`apim.archpad.pro`)
       kind: Rule
+      middlewares:
+        - name: hasura-console-redirect
+          namespace: platform
       services:
         - name: hasura
           port: 8080
