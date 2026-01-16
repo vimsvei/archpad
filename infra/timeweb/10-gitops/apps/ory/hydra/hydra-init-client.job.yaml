@@ -6,7 +6,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "65"
     argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    # Важно: Job.spec.template immutable, поэтому при изменениях hook-job нужно удалять
+    # перед созданием нового, иначе ArgoCD попытается patch и получит "field is immutable".
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
 spec:
   template:
     metadata:
