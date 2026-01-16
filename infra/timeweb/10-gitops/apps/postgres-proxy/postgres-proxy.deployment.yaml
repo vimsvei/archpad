@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-proxy
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "70"
+  labels:
+    app: postgres-proxy
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: postgres-proxy
+  template:
+    metadata:
+      labels:
+        app: postgres-proxy
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        vault.hashicorp.com/agent-inject-template-postgres-proxy: |
+          {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
+        vault.hashicorp.com/role: "platform"
+    spec:
+      serviceAccountName: postgres-proxy
+      containers:
+        - name: postgres-proxy
+          image: alpine/socat:1.8.0.3
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              if [ -f /vault/secrets/postgres-proxy ]; then
+                set -a
+                . /vault/secrets/postgres-proxy
+                set +a
+              fi
+              if [ -z "${POSTGRES_HOST:-}" ] || [ -z "${POSTGRES_PORT:-}" ]; then
+                echo "ERROR: POSTGRES_HOST/POSTGRES_PORT are not set"
+                exit 1
+              fi
+              echo "Postgres proxy: listening :5432 -> ${POSTGRES_HOST}:${POSTGRES_PORT}"
+              exec socat -d -d TCP-LISTEN:5432,fork,reuseaddr TCP:${POSTGRES_HOST}:${POSTGRES_PORT}
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi

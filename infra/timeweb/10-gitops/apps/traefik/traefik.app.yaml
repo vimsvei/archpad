@@ -45,6 +45,12 @@ spec:
             protocol: TCP
             tls:
               enabled: true
+          # TCP entrypoint for PostgreSQL access (external clients -> cluster)
+          db:
+            port: 9432
+            expose: true
+            exposedPort: 9432
+            protocol: TCP
           # Порт для метрик Prometheus
           metrics:
             port: 8080
