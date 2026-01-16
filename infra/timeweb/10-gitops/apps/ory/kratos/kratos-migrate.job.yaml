@@ -19,10 +19,8 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-pre-populate-only: "true"
-        vault.hashicorp.com/agent-inject-secret-kratos-db: "kv/data/archpad/demo/ory/kratos/db"
-        vault.hashicorp.com/agent-inject-secret-kratos-secret: "kv/data/archpad/demo/ory/kratos/secret"
-        vault.hashicorp.com/agent-inject-secret-kratos-other: "kv/data/archpad/demo/ory/kratos/other"
-        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        # В этом Job мы используем только шаблонный файл /vault/secrets/kratos (shell export'ы).
+        # Не инжектим "сырые" kv-v2 файлы (типа /vault/secrets/kratos-secret), т.к. их нельзя `source`.
         vault.hashicorp.com/agent-inject-template-kratos: |
           {{- $kratosDb := secret "kv/data/archpad/demo/ory/kratos/db" }}
           {{- $kratosSecret := secret "kv/data/archpad/demo/ory/kratos/secret" }}
@@ -69,14 +67,6 @@ spec:
               # Загружаем секреты
               echo "Loading secrets from Vault..."
               source /vault/secrets/kratos || { echo "ERROR: Failed to load kratos secrets"; exit 1; }
-              
-              if [ -f /vault/secrets/kratos-secret ]; then
-                source /vault/secrets/kratos-secret || echo "WARNING: Failed to load kratos-secret"
-              fi
-              
-              if [ -f /vault/secrets/kratos-other ]; then
-                source /vault/secrets/kratos-other || echo "WARNING: Failed to load kratos-other"
-              fi
               
               # Проверяем наличие обязательных переменных
               if [ -z "${DSN:-}" ]; then
