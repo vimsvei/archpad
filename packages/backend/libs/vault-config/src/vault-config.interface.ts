@@ -15,6 +15,13 @@ export interface VaultConfigOptions {
   secretsPath?: string;
 
   /**
+   * Multiple paths to secrets in KV v2 engine.
+   * If provided, will be loaded in order and merged into process.env (without overwriting existing keys).
+   * Back-compat: if only `secretsPath` is provided, it is treated as a single-element list.
+   */
+  secretsPaths?: string[];
+
+  /**
    * Whether to enable Vault integration (default: true if VAULT_ADDR is set)
    */
   enabled?: boolean;

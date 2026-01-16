@@ -10,8 +10,11 @@ interface VaultSecretData {
 @Injectable()
 export class VaultConfigService implements OnModuleInit {
   private readonly logger = new Logger(VaultConfigService.name);
-  private readonly options: Required<VaultConfigOptions>;
+  private readonly options: Required<Omit<VaultConfigOptions, 'secretsPath' | 'secretsPaths'>> & {
+    secretsPaths: string[];
+  };
   private secrets: Record<string, string> = {};
+  private loaded = false;
 
   constructor(options?: VaultConfigOptions) {
     const nodeEnv = options?.nodeEnv || process.env.NODE_ENV || 'development';
@@ -34,51 +37,69 @@ export class VaultConfigService implements OnModuleInit {
 
     const enabled = options?.enabled ?? !!vaultAddr;
 
+    const secretsPathsRaw = Array.isArray(options?.secretsPaths)
+      ? options!.secretsPaths!
+      : options?.secretsPath
+        ? [options.secretsPath]
+        : ['kv/data/archpad'];
+    const secretsPaths = secretsPathsRaw
+      .map((p) => (p ?? '').trim())
+      .filter(Boolean);
+
     this.options = {
       address: vaultAddr,
       token: options?.token || vaultToken || '',
-      secretsPath: options?.secretsPath || 'kv/data/archpad',
+      secretsPaths,
       enabled,
       nodeEnv,
     };
 
     this.logger.log(
-      `Vault configuration: address=${vaultAddr}, nodeEnv=${nodeEnv}, enabled=${enabled}`,
+      `Vault configuration: address=${vaultAddr}, nodeEnv=${nodeEnv}, enabled=${enabled}, secretsPaths=${secretsPaths.length}`,
     );
   }
 
   async onModuleInit() {
+    await this.ensureLoaded();
+  }
+
+  /**
+   * Ensure secrets are loaded (safe to call multiple times).
+   * Intended to be called from early bootstrap paths (e.g. before MikroORM config).
+   */
+  async ensureLoaded(): Promise<void> {
+    if (this.loaded) return;
     if (!this.options.enabled) {
-      this.logger.log(
-        'Vault integration is disabled (using environment variables from Vault Agent Injector)',
-      );
+      this.loaded = true;
       return;
     }
 
-    // В Kubernetes секреты уже загружены через Vault Agent Injector в переменные окружения
-    // Проверяем, есть ли уже секреты в переменных окружения
+    // In Kubernetes, secrets are typically injected as env vars via Vault Agent Injector.
     const hasEnvSecrets =
       process.env.PROJECT_DB ||
       process.env.TENANT_DB ||
       process.env.HASURA_ENDPOINT;
     if (hasEnvSecrets && this.options.nodeEnv !== 'local') {
-      this.logger.log(
-        'Secrets already loaded from Vault Agent Injector (using environment variables)',
-      );
+      this.loaded = true;
       return;
     }
 
     if (!this.options.token) {
-      this.logger.warn(
-        'Vault token is not provided, skipping Vault secrets loading',
-      );
+      this.logger.warn('Vault token is not provided, skipping Vault API loading');
+      this.loaded = true;
       return;
     }
 
     try {
-      await this.loadSecrets();
-      this.logger.log('Successfully loaded secrets from Vault API');
+      for (const secretsPath of this.options.secretsPaths) {
+        await this.loadSecretsFromPath(secretsPath);
+      }
+      this.loaded = true;
+      this.logger.log(
+        `Successfully loaded secrets from Vault API (paths=${this.options.secretsPaths.length})`,
+      );
     } catch (error) {
+      this.loaded = true; // do not block service startup
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       const errorStack = error instanceof Error ? error.stack : undefined;
@@ -86,12 +107,11 @@ export class VaultConfigService implements OnModuleInit {
         `Failed to load secrets from Vault: ${errorMessage}`,
         errorStack,
       );
-      // Don't throw - allow app to start with fallback to env vars
     }
   }
 
-  private async loadSecrets(): Promise<void> {
-    const url = `${this.options.address}/v1/${this.options.secretsPath}`;
+  private async loadSecretsFromPath(secretsPath: string): Promise<void> {
+    const url = `${this.options.address}/v1/${secretsPath}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -103,7 +123,7 @@ export class VaultConfigService implements OnModuleInit {
     if (!response.ok) {
       if (response.status === 404) {
         this.logger.warn(
-          `Secrets path ${this.options.secretsPath} not found in Vault`,
+          `Secrets path ${secretsPath} not found in Vault`,
         );
         return;
       }
@@ -115,7 +135,7 @@ export class VaultConfigService implements OnModuleInit {
     const data: VaultSecretData = await response.json();
     const secrets = data.data?.data || {};
 
-    // Set environment variables from Vault secrets
+    // Set environment variables from Vault secrets (do not overwrite existing keys).
     for (const [key, value] of Object.entries(secrets)) {
       if (!process.env[key]) {
         process.env[key] = value;
@@ -123,9 +143,7 @@ export class VaultConfigService implements OnModuleInit {
       }
     }
 
-    this.logger.log(
-      `Loaded ${Object.keys(this.secrets).length} secrets from Vault`,
-    );
+    this.logger.log(`Loaded secrets from Vault path=${secretsPath}`);
   }
 
   /**

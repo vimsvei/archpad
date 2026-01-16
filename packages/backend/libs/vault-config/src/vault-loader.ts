@@ -6,6 +6,7 @@ export async function loadVaultSecrets(options?: {
   address?: string;
   token?: string;
   secretsPath?: string;
+  secretsPaths?: string[];
   enabled?: boolean;
   nodeEnv?: string;
 }): Promise<void> {
@@ -29,7 +30,16 @@ export async function loadVaultSecrets(options?: {
   const vaultToken =
     options?.token || process.env.VAULT_TOKEN || process.env.VAULT_TOKEN_ROOT;
   const enabled = options?.enabled ?? !!vaultAddr;
-  const secretsPath = options?.secretsPath || 'kv/data/archpad';
+  const secretsPaths = (
+    options?.secretsPaths?.length
+      ? options.secretsPaths
+      : options?.secretsPath
+        ? [options.secretsPath]
+        : (process.env.VAULT_SECRETS_PATHS || '')
+            .split(/[\s,]+/)
+            .filter(Boolean)
+  ).map((p) => p.trim());
+  const paths = secretsPaths.length ? secretsPaths : ['kv/data/archpad'];
 
   console.log(`[Vault] Initializing...`);
   console.log(`[Vault] Address: ${vaultAddr}`);
@@ -42,7 +52,7 @@ export async function loadVaultSecrets(options?: {
   } else {
     console.log(`[Vault] Token: NOT SET`);
   }
-  console.log(`[Vault] Secrets path: ${secretsPath}`);
+  console.log(`[Vault] Secrets paths: ${paths.join(', ')}`);
   console.log(`[Vault] Enabled: ${enabled}`);
 
   if (!enabled) {
@@ -61,90 +71,54 @@ export async function loadVaultSecrets(options?: {
   }
 
   try {
-    const url = `${vaultAddr}/v1/${secretsPath}`;
-    console.log(`[Vault] Fetching secrets from: ${url}`);
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-Vault-Token': vaultToken,
-      },
-    });
-
-    console.log(
-      `[Vault] Response status: ${response.status} ${response.statusText}`,
-    );
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`[Vault] Secrets path ${secretsPath} not found in Vault`);
-        console.warn(`[Vault] Full URL: ${url}`);
-        console.warn(
-          `[Vault] Token used: ${vaultToken ? `${vaultToken.substring(0, 10)}...${vaultToken.substring(vaultToken.length - 3)}` : 'NOT SET'}`,
-        );
-        console.warn(
-          `[Vault] Please verify that secrets are loaded at this path in Vault UI`,
-        );
-        console.warn(`[Vault] You can check with: vault kv list kv/data/`);
-        return;
-      }
-      // Try to get error details from response
-      let errorDetails = '';
-      try {
-        const errorData = await response.text();
-        errorDetails = ` Response: ${errorData}`;
-        console.error(`[Vault] Error response: ${errorData}`);
-      } catch {
-        // Ignore
-      }
-      throw new Error(
-        `Vault API error: ${response.status} ${response.statusText}${errorDetails}`,
-      );
-    }
-
-    const data: { data?: { data?: Record<string, string> } } =
-      await response.json();
-    const secrets = data.data?.data || {};
-
-    // Set environment variables from Vault secrets (Vault has priority, overwrites existing vars)
     let loadedCount = 0;
     let overwrittenCount = 0;
-    const dbKeys = [
-      'PROJECT_DB',
-      'PROJECT_DB_USER',
-      'PROJECT_DB_PASSWORD',
-      'PG_HOST',
-      'POSTGRES_ENDPOINT',
-      'POSTGRES_PORT',
-    ];
-    const dbSecrets: Record<string, string> = {};
 
-    for (const [key, value] of Object.entries(secrets)) {
-      const wasSet = !!process.env[key];
-      process.env[key] = value;
-      loadedCount++;
-      if (wasSet) {
-        overwrittenCount++;
-      }
-      // Track database-related keys for debugging
-      if (dbKeys.includes(key)) {
-        dbSecrets[key] = value;
-      }
-    }
+    for (const secretsPath of paths) {
+      const url = `${vaultAddr}/v1/${secretsPath}`;
+      console.log(`[Vault] Fetching secrets from: ${url}`);
 
-    // Log database-related secrets (mask passwords)
-    if (Object.keys(dbSecrets).length > 0) {
-      console.log(`[Vault] Database secrets loaded:`);
-      for (const [key, value] of Object.entries(dbSecrets)) {
-        if (key.includes('PASS')) {
-          console.log(`[Vault]   ${key}: ${value ? '***SET***' : 'NOT SET'}`);
-        } else {
-          console.log(`[Vault]   ${key}: ${value || 'NOT SET'}`);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-Vault-Token': vaultToken,
+        },
+      });
+
+      console.log(
+        `[Vault] Response status: ${response.status} ${response.statusText}`,
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.warn(`[Vault] Secrets path ${secretsPath} not found in Vault`);
+          console.warn(`[Vault] Full URL: ${url}`);
+          continue;
         }
+        // Try to get error details from response
+        let errorDetails = '';
+        try {
+          const errorData = await response.text();
+          errorDetails = ` Response: ${errorData}`;
+          console.error(`[Vault] Error response: ${errorData}`);
+        } catch {
+          // Ignore
+        }
+        throw new Error(
+          `Vault API error: ${response.status} ${response.statusText}${errorDetails}`,
+        );
       }
-    } else {
-      console.warn(`[Vault] WARNING: No database secrets found in Vault!`);
-      console.warn(`[Vault] Expected keys: ${dbKeys.join(', ')}`);
+
+      const data: { data?: { data?: Record<string, string> } } =
+        await response.json();
+      const secrets = data.data?.data || {};
+
+      for (const [key, value] of Object.entries(secrets)) {
+        const wasSet = !!process.env[key];
+        process.env[key] = value;
+        loadedCount++;
+        if (wasSet) overwrittenCount++;
+      }
     }
 
     if (overwrittenCount > 0) {
@@ -152,9 +126,7 @@ export async function loadVaultSecrets(options?: {
         `[Vault] Successfully loaded ${loadedCount} secrets from Vault (${overwrittenCount} overwritten)`,
       );
     } else {
-      console.log(
-        `[Vault] Successfully loaded ${loadedCount} secrets from Vault`,
-      );
+      console.log(`[Vault] Successfully loaded ${loadedCount} secrets from Vault`);
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

@@ -5,7 +5,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
 import { LoggerModule, LoggerService } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
-import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
+import {
+  VaultConfigModule,
+  VaultConfigService,
+} from '@archpad/vault-config';
 import path from 'node:path';
 import { BootstrapModule } from './bootstrap.module';
 
@@ -15,57 +18,57 @@ import { BootstrapModule } from './bootstrap.module';
     HealthCheckerModule,
     VaultConfigModule.forRoot({
       nodeEnv: process.env.NODE_ENV,
-      // В Kubernetes секреты уже загружены через Vault Agent Injector
-      // В local development загружаем из Vault API
-      secretsPath:
-        process.env.NODE_ENV === 'local'
-          ? 'kv/data/archpad/demo/backend/tenant-service'
-          : undefined, // В production не загружаем из Vault API, используем переменные окружения
-      enabled: process.env.NODE_ENV === 'local', // Включаем только для local
+      // В Kubernetes секреты приходят через Vault Agent Injector (env).
+      // В local/development нужно прочитать несколько путей из Vault API.
+      secretsPaths: [
+        'kv/data/archpad/demo/backend/tenant-service',
+        'kv/data/archpad/demo/backend/common',
+        'kv/data/archpad/demo/postgres/connect',
+      ],
+      enabled: process.env.NODE_ENV === 'development',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [ path.resolve(process.cwd(), ".env") ],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule, VaultConfigModule],
-      useFactory: (
+      useFactory: async (
         configService: ConfigService,
         vaultConfigService: VaultConfigService,
       ) => {
-        // VaultConfigService.get() reads from cache (secrets loaded in main.ts via loadVaultSecrets)
-        // or from process.env as fallback
+        // IMPORTANT: load Vault secrets BEFORE building MikroORM config.
+        await vaultConfigService.ensureLoaded();
+
+        // VaultConfigService.get() reads from cache or from process.env as fallback
         const nodeEnv =
           vaultConfigService.get('NODE_ENV') ||
           configService.get<string>('NODE_ENV') ||
-          process.env.NODE_ENV;
+          'development';
         const dbName =
           vaultConfigService.get('TENANT_DB') ||
           configService.get<string>('TENANT_DB') ||
-          process.env.TENANT_DB ||
-          'tenant';
+          'tenant_db';
         const dbUser =
           vaultConfigService.get('PROJECT_DB_USER') ||
-          configService.get<string>('PROJECT_DB_USER') ||
-          process.env.PROJECT_DB_USER;
+          configService.get<string>('PROJECT_DB_USER');
         const dbPass =
           vaultConfigService.get('PROJECT_DB_PASSWORD') ||
-          configService.get<string>('PROJECT_DB_PASSWORD') ||
-          process.env.PROJECT_DB_PASSWORD;
+          configService.get<string>('PROJECT_DB_PASSWORD')
         const pgHost =
-          nodeEnv === 'local'
-            ? vaultConfigService.get('POSTGRES_ENDPOINT') ||
-              configService.get<string>('POSTGRES_ENDPOINT') ||
-              process.env.POSTGRES_ENDPOINT ||
-              'postgres'
-            : vaultConfigService.get('POSTGRES_HOST') ||
-              configService.get<string>('POSTGRES_HOST') ||
-              process.env.POSTGRES_HOST ||
-              'postgres';
+          nodeEnv === 'development'
+            ? vaultConfigService.get('POSTGRES_HOST') ||
+              configService.get<string>('PG_HOST')
+            : vaultConfigService.get('POSTGRES_ENDPOINT') ||
+              configService.get<string>('PG_ENDPOINT')
         const pgPort = +(
-          vaultConfigService.get('POSTGRES_PORT') ||
-          configService.get<string>('POSTGRES_PORT') ||
-          process.env.POSTGRES_PORT ||
-          '5432'
+          nodeEnv === 'development'
+            ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
+              configService.get<string>('PG_HOST_PORT') ||
+              '5432'
+            :  vaultConfigService.get('POSTGRES_PORT') ||
+              configService.get<string>('PG_ENDPOINT_PORT') ||
+              '5432'
         );
 
         console.log(`[TenantService MikroORM Config] dbName: "${dbName}"`);
@@ -113,21 +116,6 @@ import { BootstrapModule } from './bootstrap.module';
           user: dbUser,
           password: dbPass,
           debug: nodeEnv !== 'production',
-          driverOptions:
-            nodeEnv === 'local'
-              ? {
-                  pgSsl: {
-                    pgSslCertFile: path.join(
-                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                      'local.crt',
-                    ),
-                    pgSslKeyFile: path.join(
-                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                      'local.key',
-                    ),
-                  },
-                }
-              : {},
         };
       },
       inject: [ConfigService, VaultConfigService],
@@ -145,19 +133,13 @@ export class TenantServiceModule implements OnModuleInit {
     const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
     const buildVersion = process.env.BUILD_VERSION || 'unknown';
     const buildBranch = process.env.BUILD_BRANCH || 'unknown';
-
-    this.logger.log(
-      '========================================',
-      this.loggerContext,
-    );
+    
+    this.logger.log( '='.repeat(40), this.loggerContext );
     this.logger.log('🚀 Tenant Service Starting', this.loggerContext);
     this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
     this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
     this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
     this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
-    this.logger.log(
-      '========================================',
-      this.loggerContext,
-    );
+    this.logger.log( '='.repeat(40), this.loggerContext );
   }
 }

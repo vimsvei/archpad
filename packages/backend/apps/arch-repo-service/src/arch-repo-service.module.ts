@@ -34,23 +34,30 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     ArchimateBootstrapModule,
     VaultConfigModule.forRoot({
       nodeEnv: process.env.NODE_ENV,
-      // В Kubernetes секреты уже загружены через Vault Agent Injector
-      // В local development загружаем из Vault API
-      secretsPath:
-        process.env.NODE_ENV === 'local'
-          ? 'kv/data/archpad/demo/backend/arch-repo-service'
-          : undefined, // В production не загружаем из Vault API, используем переменные окружения
-      enabled: process.env.NODE_ENV === 'local', // Включаем только для local
+      // В Kubernetes секреты приходят через Vault Agent Injector (env).
+      // В local/development нужно прочитать несколько путей из Vault API.
+      secretsPaths: [
+        'kv/data/archpad/demo/backend/arch-repo-service',
+        'kv/data/archpad/demo/backend/common',
+        'kv/data/archpad/demo/postgres/connect',
+      ],
+      enabled: process.env.NODE_ENV === 'development',
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // единый .env для бэкенда лежит в packages/backend/.env (обычно cwd=packages/backend)
+      envFilePath: [path.resolve(process.cwd(), '.env')],
+    }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule, VaultConfigModule],
-      useFactory: (
+      useFactory: async (
         configService: ConfigService,
         vaultConfigService: VaultConfigService,
       ) => {
-        // VaultConfigService.get() reads from cache (secrets loaded in main.ts via loadVaultSecrets)
-        // or from process.env as fallback
+        // IMPORTANT: load Vault secrets BEFORE building MikroORM config.
+        await vaultConfigService.ensureLoaded();
+
+        // VaultConfigService.get() reads from cache or from process.env as fallback
         const nodeEnv =
           vaultConfigService.get('NODE_ENV') ||
           configService.get<string>('NODE_ENV') ||
@@ -141,21 +148,6 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
           user: dbUser,
           password: dbPass,
           debug: nodeEnv !== 'production',
-          driverOptions:
-            nodeEnv === 'local'
-              ? {
-                  pgSsl: {
-                    pgSslCertFile: path.join(
-                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                      'local.crt',
-                    ),
-                    pgSslKeyFile: path.join(
-                      path.resolve(process.cwd(), '../../infra/traefik/certs'),
-                      'local.key',
-                    ),
-                  },
-                }
-              : {},
         };
       },
       inject: [ConfigService, VaultConfigService],
@@ -191,19 +183,13 @@ export class ArchRepoServiceModule implements OnModuleInit {
     const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
     const buildVersion = process.env.BUILD_VERSION || 'unknown';
     const buildBranch = process.env.BUILD_BRANCH || 'unknown';
-
-    this.logger.log(
-      '========================================',
-      this.loggerContext,
-    );
+    
+    this.logger.log( '='.repeat(40), this.loggerContext );
     this.logger.log('🚀 Arch Repo Service Starting', this.loggerContext);
     this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
     this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
     this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
     this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
-    this.logger.log(
-      '========================================',
-      this.loggerContext,
-    );
+    this.logger.log( '='.repeat(40), this.loggerContext );
   }
 }
