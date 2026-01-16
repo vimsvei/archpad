@@ -8,6 +8,13 @@ set -e
 NAMESPACE_PLATFORM="platform"
 NAMESPACE_SECURE="secure"
 
+# Флаги (можно переопределить через env)
+# По умолчанию Ory (Kratos/Hydra) НЕ форвардим, т.к. localhost ломает cookies/redirect flow
+# из-за настроек домена `.archpad.pro` и базовых URL в Ory.
+FORWARD_ORY="${FORWARD_ORY:-false}"
+FORWARD_MAILPIT="${FORWARD_MAILPIT:-true}"
+FORWARD_HASURA="${FORWARD_HASURA:-true}"
+
 # Функция для запуска port-forward
 start_port_forward() {
   local service=$1
@@ -85,9 +92,10 @@ if ! kubectl cluster-info &> /dev/null; then
   echo "     kubectl cluster-info"
   echo ""
   echo "  4. If you don't have cluster access, you can still use:"
+  echo "     - Ory (Kratos/Hydra): https://auth.archpad.pro / https://authz.archpad.pro (public URL; recommended)"
   echo "     - Tolgee: https://i18n.archpad.pro (public URL)"
   echo "     - Vault: https://vault.archpad.pro (public URL)"
-  echo "     But other services (Kratos, Hydra, Hasura) require port-forward"
+  echo "     But Hasura (and optionally Mailpit) require port-forward"
   echo ""
   exit 1
 fi
@@ -98,16 +106,28 @@ stop_port_forward
 # Запускаем port-forward для всех сервисов
 echo "Setting up port-forwards..."
 
-# Ory Kratos
-start_port_forward "kratos" "$NAMESPACE_SECURE" 4433 4433  # Kratos Public
-start_port_forward "kratos" "$NAMESPACE_SECURE" 4434 4434  # Kratos Admin
+# Ory (опционально, выключено по умолчанию)
+if [ "$FORWARD_ORY" = "true" ]; then
+  start_port_forward "kratos" "$NAMESPACE_SECURE" 4433 4433  # Kratos Public
+  start_port_forward "kratos" "$NAMESPACE_SECURE" 4434 4434  # Kratos Admin
 
-# Ory Hydra
-start_port_forward "hydra" "$NAMESPACE_SECURE" 4444 4444    # Hydra Public
-start_port_forward "hydra" "$NAMESPACE_SECURE" 4445 4445   # Hydra Admin
+  start_port_forward "hydra" "$NAMESPACE_SECURE" 4444 4444    # Hydra Public
+  start_port_forward "hydra" "$NAMESPACE_SECURE" 4445 4445   # Hydra Admin
+else
+  echo "Skipping Ory port-forward (FORWARD_ORY=false)."
+  echo "Recommended: use public URLs:"
+  echo "  Kratos: https://auth.archpad.pro"
+  echo "  Hydra:  https://authz.archpad.pro"
+fi
 
-# Hasura
-start_port_forward "hasura" "$NAMESPACE_PLATFORM" 8080 8080
+# Hasura (опционально, если используете публичный API Gateway: https://apim.archpad.pro/v1/graphql)
+if [ "$FORWARD_HASURA" = "true" ]; then
+  start_port_forward "hasura" "$NAMESPACE_PLATFORM" 8080 8080
+else
+  echo "Skipping Hasura port-forward (FORWARD_HASURA=false)."
+  echo "Using public endpoint:"
+  echo "  Hasura GraphQL: https://apim.archpad.pro/v1/graphql"
+fi
 
 # Tolgee - используем публичный URL https://i18n.archpad.pro вместо port-forward
 # start_port_forward "tolgee" "$NAMESPACE_PLATFORM" 8081 8080
@@ -116,20 +136,35 @@ start_port_forward "hasura" "$NAMESPACE_PLATFORM" 8080 8080
 # (Vault не требует port-forward, так как доступен через Ingress)
 
 # Mailpit (опционально)
-start_port_forward "mailpit" "$NAMESPACE_PLATFORM" 8025 8025
+if [ "$FORWARD_MAILPIT" = "true" ]; then
+  start_port_forward "mailpit" "$NAMESPACE_PLATFORM" 8025 8025
+else
+  echo "Skipping Mailpit port-forward (FORWARD_MAILPIT=false)."
+fi
 
 echo ""
 echo "✅ All port-forwards started!"
 echo ""
 echo "Services available at:"
-echo "  Kratos Public:  http://localhost:4433"
-echo "  Kratos Admin:   http://localhost:4434"
-echo "  Hydra Public:   http://localhost:4444"
-echo "  Hydra Admin:    http://localhost:4445"
-echo "  Hasura:         http://localhost:8080"
+if [ "$FORWARD_ORY" = "true" ]; then
+  echo "  Kratos Public:  http://localhost:4433 (not recommended)"
+  echo "  Kratos Admin:   http://localhost:4434 (not recommended)"
+  echo "  Hydra Public:   http://localhost:4444 (not recommended)"
+  echo "  Hydra Admin:    http://localhost:4445 (not recommended)"
+else
+  echo "  Kratos Public:  https://auth.archpad.pro (recommended)"
+  echo "  Hydra Public:   https://authz.archpad.pro (recommended)"
+fi
+if [ "$FORWARD_HASURA" = "true" ]; then
+  echo "  Hasura:         http://localhost:8080"
+else
+  echo "  Hasura GraphQL: https://apim.archpad.pro/v1/graphql"
+fi
 echo "  Tolgee:         https://i18n.archpad.pro (public URL)"
 echo "  Vault:          https://vault.archpad.pro (public URL)"
-echo "  Mailpit:        http://localhost:8025"
+if [ "$FORWARD_MAILPIT" = "true" ]; then
+  echo "  Mailpit:        http://localhost:8025"
+fi
 echo ""
 echo "Press Ctrl+C to stop all port-forwards"
 echo ""

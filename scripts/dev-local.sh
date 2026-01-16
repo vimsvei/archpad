@@ -10,13 +10,62 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 echo "🚀 Starting local development environment..."
 echo ""
 
+# Чтение значения переменной из .env.local (Portal).
+# Возвращает значение без кавычек, если возможно.
+get_env_value() {
+  local key="$1"
+  local env_file="$PROJECT_ROOT/packages/portal/.env.local"
+  if [ ! -f "$env_file" ]; then
+    return 1
+  fi
+
+  # Берём только первую не закомментированную строку KEY=...
+  # shellcheck disable=SC2002
+  local line
+  line="$(grep -E "^[[:space:]]*${key}=" "$env_file" 2>/dev/null | head -n 1 || true)"
+  if [ -z "$line" ]; then
+    return 1
+  fi
+
+  local value="${line#*=}"
+  value="${value%$'\r'}"
+  # убираем парные кавычки
+  value="${value%\"}"
+  value="${value#\"}"
+  value="${value%\'}"
+  value="${value#\'}"
+  printf '%s' "$value"
+  return 0
+}
+
+# Определяем, нужен ли Ory через port-forward (только если в .env.local указан localhost)
+NEEDS_ORY_PORT_FORWARD=false
+ORY_SDK_URL="$(get_env_value "NEXT_PUBLIC_ORY_SDK_URL" || true)"
+HYDRA_PUBLIC_URL="$(get_env_value "NEXT_PUBLIC_HYDRA_PUBLIC_URL" || true)"
+if echo "${ORY_SDK_URL}" | grep -q "localhost:4433"; then
+  NEEDS_ORY_PORT_FORWARD=true
+fi
+if echo "${HYDRA_PUBLIC_URL}" | grep -q "localhost:4444"; then
+  NEEDS_ORY_PORT_FORWARD=true
+fi
+
+# Определяем, нужен ли Hasura через port-forward
+# Рекомендуемый публичный endpoint: https://apim.archpad.pro/v1/graphql
+NEEDS_HASURA_PORT_FORWARD=true
+HASURA_GRAPHQL_ENDPOINT="$(get_env_value "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" || true)"
+if echo "${HASURA_GRAPHQL_ENDPOINT}" | grep -q "apim.archpad.pro"; then
+  NEEDS_HASURA_PORT_FORWARD=false
+elif echo "${HASURA_GRAPHQL_ENDPOINT}" | grep -q "localhost:8080"; then
+  NEEDS_HASURA_PORT_FORWARD=true
+fi
+
 # Проверяем наличие необходимых команд
 if ! command -v kubectl &> /dev/null; then
   echo "✗ kubectl is not installed"
   echo "  Install kubectl: https://kubernetes.io/docs/tasks/tools/"
   echo ""
-  echo "  Note: You can still use Portal with public URLs for Tolgee and Vault,"
-  echo "        but port-forward is required for other services (Kratos, Hydra, Hasura)"
+  echo "  Note: You can still use Portal with public URLs for Ory (Kratos/Hydra), Tolgee and Vault,"
+  echo "        but port-forward may be required for Hasura (if not using apim.archpad.pro) and optionally Mailpit."
   exit 1
 fi
 
@@ -52,9 +101,6 @@ cleanup() {
   # Останавливаем все дочерние процессы (включая фоновый k8s-port-forward.sh)
   jobs -p | xargs -r kill 2>/dev/null || true
   
-  # Также убиваем все процессы kubectl port-forward
-  pkill -f "kubectl port-forward" 2>/dev/null || true
-  
   echo "✅ Cleanup complete"
   exit 0
 }
@@ -87,93 +133,99 @@ if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
   CLUSTER_ERROR=$(kubectl cluster-info 2>&1)
   CLUSTER_EXIT_CODE=$?
   if [ $CLUSTER_EXIT_CODE -eq 0 ]; then
-    PORT_FORWARD_AVAILABLE=true
-    echo "📡 Setting up Kubernetes port-forwards..."
-    # Передаем KUBECONFIG в дочерний процесс
-    export KUBECONFIG
-    "$SCRIPT_DIR/k8s-port-forward.sh" &
-    PORT_FORWARD_PID=$!
-    
-    # Ждем, пока port-forward установится
-    echo "⏳ Waiting for port-forwards to establish..."
-    sleep 5
-    
-    # Проверяем, что port-forward работает
-    if kill -0 "$PORT_FORWARD_PID" 2>/dev/null; then
-      echo "✅ Port-forwards established"
+    # Определяем, нужно ли вообще поднимать port-forward
+    NEEDS_ANY_PORT_FORWARD=false
+    if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ] || [ "$NEEDS_ORY_PORT_FORWARD" = "true" ]; then
+      NEEDS_ANY_PORT_FORWARD=true
+    fi
+
+    if [ "$NEEDS_ANY_PORT_FORWARD" = "true" ]; then
+      PORT_FORWARD_AVAILABLE=true
+      echo "📡 Setting up Kubernetes port-forwards..."
+      # Передаем KUBECONFIG в дочерний процесс
+      export KUBECONFIG
+
+      # Прокидываем решения по умолчанию в k8s-port-forward.sh:
+      # - Ory форвардим только если .env.local указывает на localhost
+      # - Hasura форвардим только если endpoint не apim.archpad.pro
+      FORWARD_ORY="$NEEDS_ORY_PORT_FORWARD" \
+      FORWARD_HASURA="$NEEDS_HASURA_PORT_FORWARD" \
+      "$SCRIPT_DIR/k8s-port-forward.sh" &
+      PORT_FORWARD_PID=$!
+
+      # Ждем, пока port-forward установится
+      echo "⏳ Waiting for port-forwards to establish..."
+      sleep 5
+
+      # Проверяем, что port-forward работает
+      if kill -0 "$PORT_FORWARD_PID" 2>/dev/null; then
+        echo "✅ Port-forwards established"
       
-      # Проверяем доступность критически важных сервисов (Kratos и Hydra)
-      echo "🔍 Verifying critical services (Kratos, Hydra)..."
-      sleep 3
-      
-      KRATOS_AVAILABLE=false
-      HYDRA_AVAILABLE=false
-      
-      # Проверяем Kratos Public (если curl доступен)
-      if command -v curl &> /dev/null; then
-        if curl -s -f -o /dev/null --max-time 3 http://localhost:4433/health/ready 2>/dev/null; then
-          KRATOS_AVAILABLE=true
-          echo "  ✅ Kratos is accessible"
+      if [ "$NEEDS_ORY_PORT_FORWARD" = "true" ]; then
+        # Проверяем доступность Kratos/Hydra только если в .env.local они настроены на localhost.
+        echo "🔍 Verifying Ory services (Kratos, Hydra) because .env.local points to localhost..."
+        sleep 3
+
+        KRATOS_AVAILABLE=false
+        HYDRA_AVAILABLE=false
+
+        # Проверяем Kratos Public (если curl доступен)
+        if command -v curl &> /dev/null; then
+          if curl -s -f -o /dev/null --max-time 3 http://localhost:4433/health/ready 2>/dev/null; then
+            KRATOS_AVAILABLE=true
+            echo "  ✅ Kratos is accessible"
+          else
+            echo "  ⚠️  Kratos is not accessible on port 4433"
+          fi
+
+          # Проверяем Hydra Public
+          if curl -s -f -o /dev/null --max-time 3 http://localhost:4444/.well-known/openid-configuration 2>/dev/null; then
+            HYDRA_AVAILABLE=true
+            echo "  ✅ Hydra is accessible"
+          else
+            echo "  ⚠️  Hydra is not accessible on port 4444"
+          fi
         else
-          echo "  ⚠️  Kratos is not accessible on port 4433"
+          # Если curl недоступен, просто проверяем, что порты слушаются
+          if nc -z localhost 4433 2>/dev/null || lsof -i :4433 &>/dev/null; then
+            KRATOS_AVAILABLE=true
+            echo "  ✅ Kratos port 4433 is listening"
+          else
+            echo "  ⚠️  Kratos port 4433 is not listening"
+          fi
+
+          if nc -z localhost 4444 2>/dev/null || lsof -i :4444 &>/dev/null; then
+            HYDRA_AVAILABLE=true
+            echo "  ✅ Hydra port 4444 is listening"
+          else
+            echo "  ⚠️  Hydra port 4444 is not listening"
+          fi
         fi
-        
-        # Проверяем Hydra Public
-        if curl -s -f -o /dev/null --max-time 3 http://localhost:4444/.well-known/openid-configuration 2>/dev/null; then
-          HYDRA_AVAILABLE=true
-          echo "  ✅ Hydra is accessible"
-        else
-          echo "  ⚠️  Hydra is not accessible on port 4444"
-        fi
-      else
-        # Если curl недоступен, просто проверяем, что порты слушаются
-        if nc -z localhost 4433 2>/dev/null || lsof -i :4433 &>/dev/null; then
-          KRATOS_AVAILABLE=true
-          echo "  ✅ Kratos port 4433 is listening"
-        else
-          echo "  ⚠️  Kratos port 4433 is not listening"
-        fi
-        
-        if nc -z localhost 4444 2>/dev/null || lsof -i :4444 &>/dev/null; then
-          HYDRA_AVAILABLE=true
-          echo "  ✅ Hydra port 4444 is listening"
-        else
-          echo "  ⚠️  Hydra port 4444 is not listening"
+
+        if [ "$KRATOS_AVAILABLE" = "false" ] || [ "$HYDRA_AVAILABLE" = "false" ]; then
+          echo ""
+          echo "⚠️  Ory via localhost is not accessible."
+          echo "   Recommended fix: use public URLs in .env.local instead of localhost:"
+          echo "     NEXT_PUBLIC_ORY_SDK_URL=https://auth.archpad.pro"
+          echo "     NEXT_PUBLIC_HYDRA_PUBLIC_URL=https://authz.archpad.pro"
+          echo ""
         fi
       fi
-      
-      # Если Kratos или Hydra недоступны, это критическая проблема
-      if [ "$KRATOS_AVAILABLE" = "false" ] || [ "$HYDRA_AVAILABLE" = "false" ]; then
+      else
+        echo "❌ Port-forward failed"
         echo ""
-        echo "❌ CRITICAL: Kratos and Hydra are required for authentication!"
-        echo "   Portal will not work correctly without them (redirects will fail)"
+        echo "   Port-forward may be required for Hasura (if not using apim.archpad.pro) and optionally Mailpit."
+        echo "   Kratos/Hydra are recommended via public URLs to avoid cookie/redirect issues."
         echo ""
         echo "   Please check:"
-        echo "   1. Kubernetes cluster is accessible"
-        echo "   2. Kratos and Hydra pods are running:"
-        echo "      kubectl get pods -n secure -l app=kratos"
-        echo "      kubectl get pods -n secure -l app=hydra"
-        echo "   3. Port-forward is working:"
-        echo "      curl http://localhost:4433/health/ready  # Kratos"
-        echo "      curl http://localhost:4444/.well-known/openid-configuration  # Hydra"
+        echo "   1. KUBECONFIG is set correctly"
+        echo "   2. Kubernetes cluster is accessible"
+        echo "   3. kubectl can connect: kubectl cluster-info"
         echo ""
-        echo "   Portal will start, but authentication will not work!"
-        echo ""
-        PORT_FORWARD_AVAILABLE=true  # Port-forward работает, но сервисы недоступны
-      else
-        PORT_FORWARD_AVAILABLE=true
+        PORT_FORWARD_AVAILABLE=false
       fi
     else
-      echo "❌ Port-forward failed"
-      echo ""
-      echo "   Kratos and Hydra are REQUIRED for local development!"
-      echo "   Without them, authentication and redirects will not work."
-      echo ""
-      echo "   Please check:"
-      echo "   1. KUBECONFIG is set correctly"
-      echo "   2. Kubernetes cluster is accessible"
-      echo "   3. kubectl can connect: kubectl cluster-info"
-      echo ""
+      echo "ℹ️  Skipping port-forward: .env.local is configured to use public endpoints."
       PORT_FORWARD_AVAILABLE=false
     fi
   else
@@ -194,8 +246,8 @@ if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
         echo ""
       fi
     fi
-    echo "   Kratos and Hydra are REQUIRED for local development!"
-    echo "   Without them, authentication and redirects will not work."
+    echo "   Port-forward may be required for Hasura (if not using apim.archpad.pro) and optionally Mailpit."
+    echo "   Kratos/Hydra are recommended via public URLs to avoid cookie/redirect issues."
     echo ""
     if [ "$KUBECONFIG_SET" = "false" ]; then
       echo "   To enable port-forward, set KUBECONFIG:"
@@ -208,52 +260,41 @@ if [ -n "$KUBECONFIG" ] || [ -f "$HOME/.kube/config" ]; then
     echo "   3. Test connection manually: kubectl cluster-info"
     echo "   4. Check network connectivity to cluster endpoint"
     echo ""
-    echo "   Portal will start, but authentication will not work!"
+    echo "   Portal can still start, but Hasura-dependent features will fail without port-forward."
     echo ""
     PORT_FORWARD_AVAILABLE=false
   fi
 else
   echo "❌ KUBECONFIG not configured"
   echo ""
-  echo "   Kratos and Hydra are REQUIRED for local development!"
-  echo "   Without them, authentication and redirects will not work."
+  echo "   Port-forward may be required for Hasura (if not using apim.archpad.pro) and optionally Mailpit."
+  echo "   Kratos/Hydra are recommended via public URLs to avoid cookie/redirect issues."
   echo ""
   echo "   To enable port-forward, set KUBECONFIG:"
   echo "     export KUBECONFIG=\$(pwd)/infra/timeweb/k8s_config/twc-archpad-k8s-cluster-config.yaml"
   echo ""
-  echo "   Portal will start, but authentication will not work!"
+  echo "   Portal can still start, but Hasura-dependent features will fail without port-forward."
   echo ""
   PORT_FORWARD_AVAILABLE=false
 fi
 
 echo ""
 
-# Настраиваем .env.local для Portal
-echo "📋 Setting up .env.local for Portal..."
-if [ ! -f "$PROJECT_ROOT/.env.local" ]; then
-  echo "⚠️  Warning: .env.local not found in project root"
-  echo "   Create .env.local in project root with necessary environment variables"
+# Проверяем .env.local для Portal (без симлинков)
+echo "📋 Checking packages/portal/.env.local..."
+PORTAL_ENV="$PROJECT_ROOT/packages/portal/.env.local"
+if [ -L "$PORTAL_ENV" ]; then
+  echo "🔧 Found symlink, replacing with a regular file..."
+  tmp="${PORTAL_ENV}.tmp.$$"
+  cp -L "$PORTAL_ENV" "$tmp"
+  rm -f "$PORTAL_ENV"
+  mv "$tmp" "$PORTAL_ENV"
+  echo "✅ Replaced symlink with a regular file: packages/portal/.env.local"
+fi
+if [ ! -f "$PORTAL_ENV" ]; then
+  echo "⚠️  packages/portal/.env.local not found"
+  echo "   Create it with: ./scripts/update-env-portal.sh"
   echo "   See docs/LOCAL_DEVELOPMENT.md for details"
-else
-  # Next.js ищет .env.local в директории, где находится next.config.ts
-  # Создаем симлинк из корневого .env.local в packages/portal/.env.local
-  if [ ! -f "$PROJECT_ROOT/packages/portal/.env.local" ]; then
-    echo "🔗 Creating symlink: packages/portal/.env.local -> ../../.env.local"
-    ln -s ../../.env.local "$PROJECT_ROOT/packages/portal/.env.local"
-  elif [ -L "$PROJECT_ROOT/packages/portal/.env.local" ]; then
-    # Проверяем, что симлинк указывает на правильный файл
-    LINK_TARGET=$(readlink "$PROJECT_ROOT/packages/portal/.env.local")
-    if [ "$LINK_TARGET" != "../../.env.local" ]; then
-      echo "🔗 Updating symlink: packages/portal/.env.local -> ../../.env.local"
-      rm "$PROJECT_ROOT/packages/portal/.env.local"
-      ln -s ../../.env.local "$PROJECT_ROOT/packages/portal/.env.local"
-    else
-      echo "✅ Symlink already exists: packages/portal/.env.local -> ../../.env.local"
-    fi
-  else
-    echo "⚠️  Warning: packages/portal/.env.local exists but is not a symlink"
-    echo "   Next.js will use this file instead of root .env.local"
-  fi
 fi
 
 echo ""
@@ -261,39 +302,48 @@ echo "✅ Port-forward setup complete!"
 echo ""
 echo "Services available:"
 if [ "$PORT_FORWARD_AVAILABLE" = "true" ]; then
-  echo "  Kratos:        http://localhost:4433 ✅ (via port-forward)"
-  echo "  Hydra:         http://localhost:4444 ✅ (via port-forward)"
-  echo "  Hasura:        http://localhost:8080 (via port-forward)"
+  if [ "$NEEDS_ORY_PORT_FORWARD" = "true" ]; then
+    echo "  Kratos:        http://localhost:4433 ✅ (via port-forward; not recommended)"
+    echo "  Hydra:         http://localhost:4444 ✅ (via port-forward; not recommended)"
+  else
+    echo "  Kratos:        https://auth.archpad.pro (public URL; recommended)"
+    echo "  Hydra:         https://authz.archpad.pro (public URL; recommended)"
+  fi
+  if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ]; then
+    echo "  Hasura:        http://localhost:8080 (via port-forward)"
+  else
+    echo "  Hasura GraphQL: https://apim.archpad.pro/v1/graphql (public URL)"
+  fi
   echo "  Mailpit:       http://localhost:8025 (via port-forward)"
 else
-  echo "  Kratos:        ❌ NOT AVAILABLE - Authentication will fail!"
-  echo "  Hydra:         ❌ NOT AVAILABLE - Authentication will fail!"
-  echo "  Hasura:        ⚠️  Requires port-forward (not available)"
+  if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ]; then
+    echo "  Hasura:        ⚠️  Requires port-forward (not available)"
+  else
+    echo "  Hasura GraphQL: https://apim.archpad.pro/v1/graphql (public URL)"
+  fi
   echo "  Mailpit:       ⚠️  Requires port-forward (not available)"
+  echo "  Kratos:        https://auth.archpad.pro (public URL; recommended)"
+  echo "  Hydra:         https://authz.archpad.pro (public URL; recommended)"
 fi
 echo "  Tolgee:        https://i18n.archpad.pro (public URL, no port-forward needed)"
 echo "  Vault:          https://vault.archpad.pro (public URL, no port-forward needed)"
 echo ""
 if [ "$PORT_FORWARD_AVAILABLE" = "false" ]; then
-  echo "❌ WARNING: Kratos and Hydra are not available!"
-  echo "   Authentication and OAuth redirects will NOT work."
-  echo "   Set KUBECONFIG and ensure cluster access to enable them."
+  if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ]; then
+    echo "⚠️  WARNING: Hasura is not available!"
+    echo "   Features depending on Hasura will NOT work."
+    echo "   Either enable port-forward, or switch NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT to https://apim.archpad.pro/v1/graphql"
+  fi
   echo ""
 fi
 echo "📦 To start Portal, run in a separate terminal:"
 echo "   cd packages/portal"
 echo "   pnpm dev"
 echo ""
-if [ -f "$PROJECT_ROOT/.env.local" ]; then
-  if [ -L "$PROJECT_ROOT/packages/portal/.env.local" ] || [ -f "$PROJECT_ROOT/packages/portal/.env.local" ]; then
-    echo "✅ .env.local is configured (symlink created)"
-  else
-    echo "⚠️  Note: .env.local symlink was not created"
-    echo "   Create it manually: ln -s ../../.env.local packages/portal/.env.local"
-  fi
+if [ -f "$PORTAL_ENV" ]; then
+  echo "✅ packages/portal/.env.local is present"
 else
-  echo "⚠️  Warning: .env.local not found in project root"
-  echo "   Create it before starting Portal"
+  echo "⚠️  packages/portal/.env.local is missing"
 fi
 echo ""
 echo "Press Ctrl+C to stop port-forward"
