@@ -33,15 +33,12 @@ data:
     set -eu
 
     HYDRA_ADMIN_URL="${HYDRA_ADMIN_URL:-http://hydra:4445}"
-    CLIENT_ID="${OAUTH_CLIENT_ID:-${NEXT_PUBLIC_OAUTH_CLIENT_ID:-archpad-portal}}"
+    CLIENT_ID="${OAUTH_CLIENT_ID:-archpad-portal}"
     PORTAL_PUBLIC_URL="${PORTAL_PUBLIC_URL:-https://portal.archpad.pro}"
     REDIRECT_URI="${NEXT_PUBLIC_OAUTH_REDIRECT_URI:-${PORTAL_PUBLIC_URL}/oauth/callback}"
-    SCOPE="${OAUTH_SCOPE:-${NEXT_PUBLIC_OAUTH_SCOPE:-openid offline_access}}"
-    CLIENT_SECRET="${OAUTH_CLIENT_SECRET:-}"
-    AUTH_METHOD="none"
-    if [ -n "${CLIENT_SECRET}" ]; then
-      AUTH_METHOD="client_secret_basic"
-    fi
+    SCOPE="${OAUTH_SCOPE:-openid offline_access}"
+    CLIENT_SECRET="${OAUTH_CLIENT_SECRET:?OAUTH_CLIENT_SECRET is required (expected from Vault kv/data/archpad/demo/ory/hydra/oauth)}"
+    AUTH_METHOD="client_secret_basic"
 
     # Добавляем redirect URI для локальной разработки
     REDIRECT_URI_LOCAL="http://localhost:3000/oauth/callback"
@@ -55,8 +52,8 @@ data:
       "grant_types": ["authorization_code", "refresh_token"],
       "response_types": ["code"],
       "scope": "${SCOPE}",
-      "token_endpoint_auth_method": "${AUTH_METHOD}"${CLIENT_SECRET:+,
-      "client_secret": "${CLIENT_SECRET}"}
+      "token_endpoint_auth_method": "${AUTH_METHOD}",
+      "client_secret": "${CLIENT_SECRET}"
     }
     JSON
     )"
