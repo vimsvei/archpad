@@ -36,7 +36,7 @@ spec:
       restartPolicy: Never
       initContainers:
         - name: wait-for-hydra
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.18.0
           command: ["sh", "-c"]
           args:
             - |
