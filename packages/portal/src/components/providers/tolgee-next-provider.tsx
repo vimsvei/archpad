@@ -7,7 +7,12 @@ import {TolgeeBase} from "@/tolgee/shared";
 
 type TolgeeNextProviderProps = {
   language: string;
-  staticData: TolgeeStaticData | CachePublicRecord[];
+  /**
+   * Optional SSR hydration data.
+   * In our setup we load translations dynamically from Tolgee API on the client,
+   * so `staticData` is usually not provided.
+   */
+  staticData?: TolgeeStaticData | CachePublicRecord[];
   children: React.ReactNode;
 };
 
@@ -17,6 +22,10 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
   const router = useRouter();
   
   useEffect(() => {
+    // Ensure Tolgee is on the correct language for current route.
+    // (We don't rely on SSR staticData in local/dev setups.)
+    void tolgee.changeLanguage(language);
+
     // this ensures server components refresh, after translation change
     const { unsubscribe } = tolgee.on('permanentChange', () => {
       router.refresh();
@@ -28,7 +37,7 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
     <TolgeeProvider
       tolgee={tolgee}
       fallback="Loading"
-      ssr={{ language, staticData }}
+      ssr={staticData ? { language, staticData } : undefined}
     >
       {children}
     </TolgeeProvider>
