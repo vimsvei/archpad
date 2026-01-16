@@ -9,8 +9,8 @@ resources:
   - projects/platform.project.yaml
 
   # ArgoCD Application для управления всеми другими Applications
-  # Отключено - используем только отдельные Applications для каждого сервиса
-  # - apps/applications/applications.app.yaml
+  # Включаем app-of-apps, но он управляет ТОЛЬКО *.app.yaml (см. apps/applications/applications.app.yaml)
+  - apps/applications/applications.app.yaml
 
   # После Traefik CRD
   - apps/traefik/traefik-redirect-to-https.middleware.yaml

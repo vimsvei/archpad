@@ -14,13 +14,15 @@ spec:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: main
     path: infra/timeweb/10-gitops/apps
-    # Применяем все Kubernetes ресурсы (Deployment, Service, IngressRoute и т.д.)
-    # Application'ы создаются отдельно (см. README.md)
     directory:
       recurse: true
-      # ВАЖНО: Этот Application отключен, чтобы избежать SharedResourceWarning
-      # Ресурсы управляются через отдельные Applications для каждого сервиса
-      # Этот файл оставлен для справки, но не используется
+      # IMPORTANT:
+      # This is an "app-of-apps". It should manage ONLY ArgoCD Application manifests,
+      # otherwise we'll get resource ownership conflicts (SharedResourceWarning).
+      include: |
+        **/*.app.yaml
+      # Avoid self-management recursion.
+      exclude: "applications/**"
   syncPolicy:
     automated:
       prune: true
