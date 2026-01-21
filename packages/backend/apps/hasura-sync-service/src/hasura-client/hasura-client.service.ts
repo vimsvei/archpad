@@ -382,13 +382,18 @@ function isIgnorableMetadataError(e: any, label: string): boolean {
   // - permissions/relationships: already-exists
   if (label === 'pg_track_table' && code === 'already-tracked') return true;
   if (label === 'pg_untrack_table' && code === 'already-untracked') return true;
-  if (
-    (label === 'pg_create_select_permission' ||
+  if (code === 'already-exists') {
+    // `applyMetadataOps` may group multiple relationship ops under a custom label
+    // (e.g. 'pg_create_relationships'). Hasura bulk is non-atomic, so splitting can
+    // re-apply already-created relationships/permissions. Treat as success.
+    if (
+      label === 'pg_create_select_permission' ||
       label === 'pg_create_object_relationship' ||
-      label === 'pg_create_array_relationship') &&
-    code === 'already-exists'
-  ) {
-    return true;
+      label === 'pg_create_array_relationship' ||
+      label === 'pg_create_relationships'
+    ) {
+      return true;
+    }
   }
   return false;
 }
