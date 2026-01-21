@@ -106,6 +106,25 @@ spec:
                 node -e "const url='${url}'; const ac=new AbortController(); setTimeout(()=>ac.abort(),2000); fetch(url,{signal:ac.signal}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1
               }
 
+              # HASURA_INTERNAL_URL might include /v1/graphql; normalize to base URL.
+              HASURA_BASE="$(node -e "let u=process.env.HASURA_ENDPOINT||process.env.HASURA_INTERNAL_URL||''; u=(u||'').trim(); u=u.replace(/\\/graphql\\/v1\\/graphql\\/?$/i,''); u=u.replace(/\\/v1\\/graphql\\/?$/i,''); u=u.replace(/\\/graphql\\/?$/i,''); u=u.replace(/\\/+$/,''); console.log(u);")"
+              if [ -z "${HASURA_BASE:-}" ]; then
+                echo "ERROR: failed to normalize HASURA endpoint base (HASURA_ENDPOINT/HASURA_INTERNAL_URL)"
+                exit 1
+              fi
+
+              echo "Waiting for hasura (/healthz)..."
+              tries=120
+              until wait_http_ok "${HASURA_BASE}/healthz"; do
+                tries=$((tries-1))
+                if [ "$tries" -le 0 ]; then
+                  echo "ERROR: hasura is not ready (${HASURA_BASE}/healthz)"
+                  exit 1
+                fi
+                sleep 2
+              done
+              echo "hasura ready"
+
               echo "Waiting for arch-repo-service (/healthz)..."
               tries=90
               until wait_http_ok "http://arch-repo-service:3000/healthz"; do

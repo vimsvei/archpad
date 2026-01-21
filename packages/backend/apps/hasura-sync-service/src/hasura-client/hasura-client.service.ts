@@ -357,6 +357,7 @@ function isRetryableAxiosError(e: any): boolean {
   }
   const code = (e?.code ?? '').toString().toUpperCase();
   return (
+    code === 'ECONNREFUSED' ||
     code === 'ECONNRESET' ||
     code === 'ETIMEDOUT' ||
     code === 'EAI_AGAIN' ||
