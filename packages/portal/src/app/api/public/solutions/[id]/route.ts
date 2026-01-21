@@ -31,14 +31,14 @@ async function loadGqlServer(pathFromApiGraphql: string): Promise<string> {
 function getGraphqlGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).
   const internal = process.env.API_GATEWAY_INTERNAL_URL?.trim()
-  const external = process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT?.trim()
+  const external = process.env.NEXT_PUBLIC_API_GRAPHQL_URI?.trim()
   const defaultInternal = "http://oathkeeper.secure.svc:4455"
   const url =
     process.env.NODE_ENV === "production"
       ? internal || defaultInternal || external
       : external || internal
   if (!url) {
-    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_ENDPOINT must be set')
+    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_URI must be set')
   }
   return url
 }
@@ -68,10 +68,10 @@ export async function GET(
     // Bypass Oathkeeper for public access
     // Для серверных компонентов приоритет у внутренних адресов
     const hasuraUrl = process.env.HASURA_INTERNAL_URL || 
-                     process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT
+                     process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL
     if (!hasuraUrl) {
       return NextResponse.json(
-        { error: 'HASURA_INTERNAL_URL or NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT must be set' },
+        { error: 'HASURA_INTERNAL_URL or NEXT_PUBLIC_HASURA_GRAPHQL_URL must be set' },
         { status: 500 }
       )
     }

@@ -9,7 +9,7 @@
 ### Namespaces
 
 - **`platform`** - основные сервисы приложения (Portal, Hasura, Tolgee, Backend сервисы)
-- **`secure`** - сервисы безопасности (Kratos, Hydra, Oathkeeper)
+- **`secure`** - сервисы безопасности (Keycloak, Oathkeeper)
 - **`vault`** - HashiCorp Vault для управления секретами
 - **`argocd`** - ArgoCD для GitOps
 - **`traefik`** - Traefik Ingress Controller
@@ -29,9 +29,8 @@
 - **Tolgee** - сервис интернационализации (i18n)
 - **Mailpit** - SMTP сервер для разработки (email testing)
 
-#### Безопасность (Ory)
-- **Kratos** - Identity Management (аутентификация)
-- **Hydra** - OAuth2/OIDC Provider (авторизация)
+#### Безопасность
+- **Keycloak** - Identity & Access Management (IdM/IAM)
 - **Oathkeeper** - API Gateway / Authorization Proxy
 
 #### Управление секретами
@@ -74,8 +73,7 @@ kubectl apply -f infra/timeweb/10-gitops/apps/hasura/hasura.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/tolgee/tolgee.app.yaml
 
 # Безопасность
-kubectl apply -f infra/timeweb/10-gitops/apps/ory/kratos/kratos.app.yaml
-kubectl apply -f infra/timeweb/10-gitops/apps/ory/hydra/hydra.app.yaml
+kubectl apply -f infra/timeweb/10-gitops/apps/keycloak/keycloak.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/ory/oathkeeper/oathkeeper.app.yaml
 
 # Vault
@@ -104,8 +102,7 @@ kubectl get application portal -n argocd
 - **Portal**: `https://portal.archpad.pro`
 - **Hasura GraphQL**: `https://apim.archpad.pro/v1/graphql`
 - **API Gateway**: `https://api.archpad.pro`
-- **Kratos**: `https://auth.archpad.pro`
-- **Hydra**: `https://authz.archpad.pro`
+- **Keycloak**: `https://id.archpad.pro`
 - **Tolgee**: `https://i18n.archpad.pro`
 - **Vault**: `https://vault.archpad.pro`
 - **Mailpit**: `https://mail.archpad.pro`
@@ -115,8 +112,7 @@ kubectl get application portal -n argocd
 Все сервисы доступны внутри кластера через FQDN:
 - `portal.platform.svc:3000`
 - `hasura.platform.svc:8080`
-- `kratos.secure.svc:4433`
-- `hydra.secure.svc:4444`
+- `keycloak.secure.svc:8080`
 - `oathkeeper.secure.svc:4455`
 
 ## Обновление образов

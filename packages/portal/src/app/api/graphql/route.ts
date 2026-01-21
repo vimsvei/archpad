@@ -12,21 +12,21 @@ function getGraphqlGatewayBaseUrl(): string {
   // This route is an authenticated proxy via API Gateway (Oathkeeper).
   // In-cluster (production) prefer internal URL; in local dev use public URL.
   const internal = process.env.API_GATEWAY_INTERNAL_URL?.trim()
-  const external = process.env.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT?.trim()
+  const external = process.env.NEXT_PUBLIC_API_GRAPHQL_URI?.trim()
   const defaultInternal = "http://oathkeeper.secure.svc:4455"
   const url =
     process.env.NODE_ENV === "production"
       ? internal || defaultInternal || external
       : external || internal
   if (!url) {
-    throw new Error("API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_ENDPOINT must be set")
+    throw new Error("API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_URI must be set")
   }
 
   // Guardrail: this proxy expects Oathkeeper base (api.archpad.pro), not direct Hasura (apim.../v1/graphql).
   // If misconfigured, upstream will typically return 404 and the UI will show "resource does not exist".
   if (url.includes("apim.") || url.includes("/v1/graphql")) {
     throw new Error(
-      'Misconfiguration: NEXT_PUBLIC_API_GRAPHQL_ENDPOINT must point to API Gateway (e.g. "https://api.archpad.pro/graphql"), not Hasura (apim.../v1/graphql).'
+      'Misconfiguration: NEXT_PUBLIC_API_GRAPHQL_URI must point to API Gateway (e.g. "https://api.archpad.pro/graphql"), not Hasura (apim.../v1/graphql).'
     )
   }
   return url
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as GraphQLRequestBody
 
-    // Prefer our stored Hydra access token (opaque) and send it as Bearer.
+    // Prefer our stored Keycloak access token (JWT) and send it as Bearer.
     // This is what Oathkeeper expects for /graphql/* and /rest/*.
     const token = await getAccessTokenFromCookies()
     const refreshTokenFromCookie = await getRefreshTokenFromCookies()

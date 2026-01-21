@@ -67,9 +67,8 @@
 | hasura | 50m | 128Mi | 1 | 50m | 128Mi |
 | tolgee | 100m | 256Mi | 1 | 100m | 256Mi |
 | mailpit | 30m | 64Mi | 1 | 30m | 64Mi |
-| **Безопасность (Ory)** |
-| kratos | 30m | 64Mi | 1 | 30m | 64Mi |
-| hydra | 30m | 64Mi | 1 | 30m | 64Mi |
+| **Безопасность** |
+| keycloak | 100m | 256Mi | 1 | 100m | 256Mi |
 | oathkeeper | 30m | 64Mi | 1 | 30m | 64Mi |
 | **Утилиты** |
 | argocd-image-updater | 50m | 64Mi | 1 | 50m | 64Mi |
@@ -90,8 +89,7 @@
 | mailpit | 100m | 128Mi | 100m | 128Mi |
 | argocd-image-updater | 200m | 256Mi | 200m | 256Mi |
 | pgadmin | 200m | 256Mi | 200m | 256Mi |
-| kratos | 100m | 128Mi | 100m | 128Mi |
-| hydra | 100m | 128Mi | 100m | 128Mi |
+| keycloak | 300m | 512Mi | 300m | 512Mi |
 | oathkeeper | 100m | 128Mi | 100m | 128Mi |
 | **Итого limits** | | | **~1450m** | **~2112Mi** |
 
@@ -138,7 +136,7 @@
 2. ✅ **CPU limits используются на 41%** - отличный резерв (59%)
 3. ✅ **Есть место для масштабирования** - можно увеличить количество реплик при необходимости
 4. ✅ **Низкий риск OOM** - достаточный резерв памяти
-5. ✅ **Ory компоненты имеют resources** - все компоненты ограничены
+5. ✅ **Компоненты безопасности имеют resources** - все компоненты ограничены
 
 ### ✅ **Рекомендации:**
 
@@ -200,19 +198,19 @@
 
 ## Что было сделано для оптимизации
 
-### 1. ✅ Добавлены resources для Ory компонентов
+### 1. ✅ Добавлены resources для компонентов безопасности
 
-Ory компоненты (kratos, hydra, oathkeeper) теперь имеют ограничения ресурсов:
+Компоненты (keycloak, oathkeeper) имеют ограничения ресурсов:
 
 ```yaml
-# В kratos.deployment.yaml, hydra.deployment.yaml, oathkeeper.deployment.yaml
+# В keycloak.deployment.yaml, oathkeeper.deployment.yaml
 resources:
   requests:
-    cpu: 30m
-    memory: 64Mi
-  limits:
     cpu: 100m
-    memory: 128Mi
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
 ```
 
 ### 2. ✅ Уменьшены limits для всех сервисов

@@ -36,33 +36,24 @@ http://hasura.platform.svc:8080
 
 ---
 
-### 2. ORY_KRATOS_INTERNAL_URL
+### 2. KEYCLOAK_INTERNAL_URL
 
-**Путь в Vault:** `kv/data/archpad/demo/ory/kratos/endpoint`
-
-**Значение:**
+**Значение (in-cluster):**
 ```
-http://kratos.secure.svc:4433
+http://keycloak.secure.svc:8080
 ```
 
 **Использование:**
-- `portal` - для server-side API вызовов к Kratos (self-service API, sessions, logout)
+- `portal` - для server-side вызовов к Keycloak (token endpoint, Admin API — если требуется)
 
 **Service:**
-- Name: `kratos`
+- Name: `keycloak`
 - Namespace: `secure`
-- Port: `4433` (public API, используется для self-service операций)
-
-**Примечание:** 
-- Порт `4433` - это public API Kratos, который используется для self-service операций (login, registration, sessions)
-- Порт `4434` - это admin API, используется только для административных операций
+- Port: `8080`
 
 **Файлы:**
-- `infra/timeweb/10-gitops/apps/ory/kratos/kratos.service.yaml`
+- `infra/timeweb/10-gitops/apps/keycloak/keycloak.service.yaml`
 - `infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml`
-- `packages/portal/src/app/api/ory/self-service/[...path]/route.ts`
-- `packages/portal/src/app/api/ory/logout/route.ts`
-- `packages/portal/src/app/api/ory/sessions/[...path]/route.ts`
 
 ---
 
@@ -113,21 +104,11 @@ curl -X POST \
   "${VAULT_ADDR}/v1/kv/data/archpad/demo/hasura/endpoint"
 ```
 
-### ORY_KRATOS_INTERNAL_URL
+### KEYCLOAK_INTERNAL_URL
 
-```bash
-vault kv put kv/data/archpad/demo/ory/kratos/endpoint \
-  ORY_KRATOS_INTERNAL_URL="http://kratos.secure.svc:4433"
-```
+В production (внутри кластера) `KEYCLOAK_INTERNAL_URL` выставляется прямо в манифестах деплоя Portal как `http://keycloak.secure.svc:8080`.
 
-Или через API:
-```bash
-curl -X POST \
-  -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"data": {"ORY_KRATOS_INTERNAL_URL": "http://kratos.secure.svc:4433"}}' \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/ory/kratos/endpoint"
-```
+Для локальной разработки (port-forward) см. `LOCAL_DEVELOPMENT.md`.
 
 ### API_GATEWAY_INTERNAL_URL (опционально)
 
@@ -160,7 +141,7 @@ curl -X POST \
 | Переменная | Путь в Vault | Значение | Namespace | Service | Port |
 |------------|--------------|----------|-----------|---------|------|
 | `HASURA_INTERNAL_URL` | `kv/data/archpad/demo/hasura/endpoint` | `http://hasura.platform.svc:8080` | `platform` | `hasura` | `8080` |
-| `ORY_KRATOS_INTERNAL_URL` | `kv/data/archpad/demo/ory/kratos/endpoint` | `http://kratos.secure.svc:4433` | `secure` | `kratos` | `4433` |
+| `KEYCLOAK_INTERNAL_URL` | (manifest) | `http://keycloak.secure.svc:8080` | `secure` | `keycloak` | `8080` |
 | `API_GATEWAY_INTERNAL_URL` | `kv/data/archpad/demo/frontend/portal` | `http://oathkeeper.secure.svc:4455` | `secure` | `oathkeeper` | `4455` |
 
 ---
@@ -169,12 +150,12 @@ curl -X POST \
 
 1. **Порты:**
    - Hasura: `8080` - основной HTTP порт для GraphQL API
-   - Kratos: `4433` - public API для self-service операций (login, registration, sessions)
+   - Keycloak: `8080` - основной HTTP порт (внутри кластера)
    - Oathkeeper: `4455` - proxy port для маршрутизации запросов
 
 2. **Использование:**
    - `HASURA_INTERNAL_URL` - используется для прямого доступа к Hasura из server-side кода
-   - `ORY_KRATOS_INTERNAL_URL` - используется для server-side API вызовов к Kratos
+   - `KEYCLOAK_INTERNAL_URL` - используется для server-side API вызовов к Keycloak (если нужно)
    - `API_GATEWAY_INTERNAL_URL` - используется для server-side запросов к backend API через Oathkeeper
 
 3. **Альтернативные форматы:**

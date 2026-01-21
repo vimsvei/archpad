@@ -3,6 +3,11 @@
 **Дата проверки:** 2026-01-15  
 **Использованный токен:** `root_token` (***REDACTED***)
 
+> **⚠️ Исторический документ**
+>
+> Проверка выполнялась до миграции на Keycloak. Часть путей/ключей ниже (Kratos/Hydra, OAuth-ключи Portal) больше не актуальна.
+> Актуальную структуру секретов см. в **[VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md)**.
+
 ## Результаты проверки
 
 ### Статистика
@@ -26,7 +31,7 @@
    - Keys: `PROJECT_DB_PASSWORD`, `PROJECT_DB_USER`
 
 4. `kv/data/archpad/demo/frontend/portal` - ✅ FOUND
-   - Keys: `API_GATEWAY_INTERNAL_URL`, `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT`, `NEXT_PUBLIC_API_REST_ENDPOINT`, `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT`, `NEXT_PUBLIC_HYDRA_PUBLIC_URL`, `NEXT_PUBLIC_OAUTH_CLIENT_ID`, `NEXT_PUBLIC_OAUTH_REDIRECT_URI`, `NEXT_PUBLIC_ORY_SDK_URL`, `NEXT_PUBLIC_TOLGEE_API_URL`, `NEXT_PUBLIC_URL`
+   - Keys (актуально после миграции): `API_GATEWAY_INTERNAL_URL`, `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT`, `NEXT_PUBLIC_API_REST_ENDPOINT`, `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT`, `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL`, `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_SERVICE_CLIENT_ID`, `KEYCLOAK_SERVICE_CLIENT_SECRET`, `NEXT_PUBLIC_TOLGEE_API_URL`, `NEXT_PUBLIC_URL`
    - **Примечание:** `HASURA_GRAPHQL_ADMIN_SECRET` теперь берется из `kv/data/archpad/demo/hasura/secret` (см. обновленный `portal.deployment.yaml`)
 
 5. `kv/data/archpad/demo/tolgee/api-key` - ✅ FOUND
@@ -53,23 +58,17 @@
 12. `kv/data/archpad/demo/tolgee/admin` - ✅ FOUND
     - Keys: `TOLGEE_ADMIN_PASSWORD`, `TOLGEE_ADMIN_USER`
 
-13. `kv/data/archpad/demo/ory/kratos/db` - ✅ FOUND
-    - Keys: `KRATOS_DB`, `KRATOS_DB_PASSWORD`, `KRATOS_DB_USER`
+13. `kv/data/archpad/demo/keycloak/admin` - ✅ FOUND
+   - Keys: `KEYCLOAK_ADMIN_USER`, `KEYCLOAK_ADMIN_PASSWORD`
 
-14. `kv/data/archpad/demo/ory/kratos/secret` - ✅ FOUND
-    - Keys: `KRATOS_SECRET`
+14. `kv/data/archpad/demo/keycloak/db` - ✅ FOUND
+   - Keys: `KEYCLOAK_DB`, `KEYCLOAK_DB_PASSWORD`, `KEYCLOAK_DB_USER`
 
-15. `kv/data/archpad/demo/ory/kratos/other` - ✅ FOUND
-    - Keys: `SMTP_CONNECTION_URI`, `SMTP_FROM_ADDRESS`
+15. `kv/data/archpad/demo/keycloak/connect` - ✅ FOUND
+   - Keys: `KEYCLOAK_HOST`
 
-16. `kv/data/archpad/demo/ory/kratos/endpoint` - ✅ FOUND
-    - Keys: `ORY_KRATOS_INTERNAL_URL`
-
-17. `kv/data/archpad/demo/ory/hydra/db` - ✅ FOUND
-    - Keys: `HYDRA_DB`, `HYDRA_DB_PASSWORD`, `HYDRA_DB_USER`
-
-18. `kv/data/archpad/demo/ory/hydra/secret` - ✅ FOUND
-    - Keys: `SECRETS_SYSTEM`
+16. `kv/data/archpad/demo/keycloak/smtp` - ✅ FOUND (optional)
+   - Keys: `SMTP_INTERNAL_URL`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS`
 
 19. `kv/data/archpad/demo/grafana/admin` - ✅ FOUND
     - Keys: `GRAFANA_ADMIN_PASSWORD`, `GRAFANA_ADMIN_USER`

@@ -149,7 +149,8 @@ Pipeline автоматически:
 - `NEXT_PUBLIC_TOLGEE_API_URL` - из `kv/data/archpad/demo/frontend/portal`
 - `NEXT_PUBLIC_URL` - из `kv/data/archpad/demo/frontend/portal`
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - из `kv/data/archpad/demo/frontend/portal`
-- `NEXT_PUBLIC_ORY_SDK_URL` - из `kv/data/archpad/demo/frontend/portal`
+- `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL` - из `kv/data/archpad/demo/frontend/portal`
+- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID` - из `kv/data/archpad/demo/frontend/portal`
 - `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - из `kv/data/archpad/demo/frontend/portal`
 
 ## Проверка работы Pipeline

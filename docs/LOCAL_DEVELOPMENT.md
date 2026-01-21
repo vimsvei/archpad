@@ -213,8 +213,7 @@ kubectl -n secure port-forward svc/keycloak 28080:8080
 
 1. Проверьте, что изменения применены в Kubernetes:
    ```bash
-   kubectl get configmap kratos -n secure -o yaml | grep localhost
-   kubectl get configmap hydra -n secure -o yaml | grep localhost
+   kubectl get configmap keycloak -n secure -o yaml | grep localhost
    ```
 
 2. Перезапустите поды:

@@ -30,29 +30,14 @@ curl -X POST \
 
 ---
 
-### 2. ORY_KRATOS_INTERNAL_URL
+### 2. KEYCLOAK_INTERNAL_URL
 
-**Путь в Vault:** `kv/data/archpad/demo/ory/kratos/endpoint`
-
-**Значение:**
+**Значение (in-cluster):**
 ```
-http://kratos.secure.svc:4433
+http://keycloak.secure.svc:8080
 ```
 
-**Команда для восстановления:**
-```bash
-vault kv put kv/data/archpad/demo/ory/kratos/endpoint \
-  ORY_KRATOS_INTERNAL_URL="http://kratos.secure.svc:4433"
-```
-
-**Или через API:**
-```bash
-curl -X POST \
-  -H "X-Vault-Token: ${VAULT_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"data": {"ORY_KRATOS_INTERNAL_URL": "http://kratos.secure.svc:4433"}}' \
-  "${VAULT_ADDR}/v1/kv/data/archpad/demo/ory/kratos/endpoint"
-```
+**Примечание:** В production `KEYCLOAK_INTERNAL_URL` выставляется в манифестах деплоя Portal (а не через Vault).
 
 ---
 
@@ -101,7 +86,7 @@ curl -X POST \
 | Переменная | Путь в Vault | Значение | Обязательно |
 |------------|--------------|----------|-------------|
 | `HASURA_INTERNAL_URL` | `kv/data/archpad/demo/hasura/endpoint` | `http://hasura.platform.svc:8080` | ✅ Да |
-| `ORY_KRATOS_INTERNAL_URL` | `kv/data/archpad/demo/ory/kratos/endpoint` | `http://kratos.secure.svc:4433` | ✅ Да |
+| `KEYCLOAK_INTERNAL_URL` | (manifest) | `http://keycloak.secure.svc:8080` | ✅ Да |
 | `API_GATEWAY_INTERNAL_URL` | `kv/data/archpad/demo/frontend/portal` | `http://oathkeeper.secure.svc:4455` | ⚠️ Опционально |
 
 ---
@@ -113,10 +98,10 @@ curl -X POST \
 - **Port:** `8080` (GraphQL API)
 - **Использование:** Прямой доступ к Hasura из server-side кода (hasura-sync-service, portal)
 
-### ORY_KRATOS_INTERNAL_URL
-- **Service:** `kratos` в namespace `secure`
-- **Port:** `4433` (public API для self-service операций)
-- **Использование:** Server-side API вызовы к Kratos из Portal (self-service, sessions, logout)
+### KEYCLOAK_INTERNAL_URL
+- **Service:** `keycloak` в namespace `secure`
+- **Port:** `8080`
+- **Использование:** Server-side вызовы к Keycloak из Portal (token endpoint / Admin API при необходимости)
 
 ### API_GATEWAY_INTERNAL_URL
 - **Service:** `oathkeeper` в namespace `secure`
@@ -144,8 +129,7 @@ curl -X POST \
 # Проверка HASURA_INTERNAL_URL
 vault kv get kv/data/archpad/demo/hasura/endpoint
 
-# Проверка ORY_KRATOS_INTERNAL_URL
-vault kv get kv/data/archpad/demo/ory/kratos/endpoint
+# KEYCLOAK_INTERNAL_URL не хранится в Vault (смотрите манифесты Portal / LOCAL_DEVELOPMENT.md)
 
 # Проверка API_GATEWAY_INTERNAL_URL (если установлен)
 vault kv get kv/data/archpad/demo/frontend/portal | grep API_GATEWAY_INTERNAL_URL

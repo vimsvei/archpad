@@ -26,12 +26,15 @@ function getRealm(): string {
 }
 
 function getClientId(): string {
-  return process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID?.trim() || "portal"
+  return process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID?.trim() || "archpad-portal"
 }
 
-function getClientSecret(): string | undefined {
+function getClientSecret(): string {
   const s = process.env.KEYCLOAK_CLIENT_SECRET?.trim()
-  return s ? s : undefined
+  if (!s) {
+    throw new Error("KEYCLOAK_CLIENT_SECRET must be set (portal client is confidential)")
+  }
+  return s
 }
 
 async function tokenRequest(body: URLSearchParams): Promise<{ accessToken: string; refreshToken?: string }> {
@@ -48,11 +51,7 @@ async function tokenRequest(body: URLSearchParams): Promise<{ accessToken: strin
     method: "POST",
     headers: {
       "content-type": "application/x-www-form-urlencoded",
-      ...(clientSecret
-        ? {
-            authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-          }
-        : {}),
+      authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
     },
     body: body.toString(),
     cache: "no-store",
@@ -107,11 +106,7 @@ export async function logoutRefreshToken(input: { refreshToken: string }): Promi
     method: "POST",
     headers: {
       "content-type": "application/x-www-form-urlencoded",
-      ...(clientSecret
-        ? {
-            authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-          }
-        : {}),
+      authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
     },
     body: body.toString(),
     cache: "no-store",

@@ -18,10 +18,10 @@ data:
       "rememberMe": true,
       "clients": [
         {
-          "clientId": "portal",
-          "name": "portal",
+          "clientId": "archpad-portal",
+          "name": "archpad-portal",
           "protocol": "openid-connect",
-          "publicClient": true,
+          "publicClient": false,
           "standardFlowEnabled": true,
           "implicitFlowEnabled": false,
           "directAccessGrantsEnabled": true,
@@ -36,6 +36,16 @@ data:
           ]
         },
         {
+          "clientId": "portal-admin",
+          "name": "portal-admin",
+          "protocol": "openid-connect",
+          "publicClient": false,
+          "standardFlowEnabled": false,
+          "implicitFlowEnabled": false,
+          "directAccessGrantsEnabled": false,
+          "serviceAccountsEnabled": true
+        },
+        {
           "clientId": "api",
           "name": "api",
           "protocol": "openid-connect",
@@ -44,6 +54,19 @@ data:
           "implicitFlowEnabled": false,
           "directAccessGrantsEnabled": false,
           "serviceAccountsEnabled": true
+        }
+      ],
+      "users": [
+        {
+          "username": "service-account-portal-admin",
+          "enabled": true,
+          "serviceAccountClientId": "portal-admin",
+          "clientRoles": {
+            "realm-management": [
+              "view-users",
+              "manage-users"
+            ]
+          }
         }
       ]
     }

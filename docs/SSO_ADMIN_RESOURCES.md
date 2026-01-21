@@ -12,29 +12,25 @@
 ## Цели
 
 1. **Единое окно авторизации** - один вход для всех административных ресурсов
-2. **Централизованное управление пользователями** - через Kratos
+2. **Централизованное управление пользователями** - через Keycloak
 3. **Отдельный пул административных пользователей** - не пересекается с пользователями портала
-4. **Безопасность** - проверка аутентификации на стороне Kratos
-5. **Fallback на логин/пароль** - если SSO недоступно, но проверка через Kratos API
+4. **Безопасность** - OIDC/JWT, проверка токенов через Keycloak (JWKS)
+5. **Fallback** - при необходимости (опционально)
 
 ## Архитектура
 
 ### Компоненты
 
-- **Kratos** - Identity Management (IdM) для административных пользователей
-- **Hydra** - OAuth2/OIDC сервер (уже настроен)
-- **Oathkeeper** - API Gateway / Authorization Proxy (уже настроен)
+- **Keycloak** - Identity & Access Management (IdM/IAM), OIDC provider
+- **Oathkeeper** - API Gateway / Authorization Proxy (forwardAuth / JWT validation)
 
 ### Поток аутентификации
 
 ```
-Пользователь → Oathkeeper → Hydra (OAuth2) → Kratos (проверка пользователя) → Доступ к ресурсу
+Пользователь → Resource/Proxy → Oathkeeper (JWT) → Keycloak (JWKS issuer) → Доступ к ресурсу
 ```
 
-Если SSO недоступно:
-```
-Пользователь → Ресурс → Kratos API (проверка логин/пароль) → Доступ к ресурсу
-```
+Примечание: в новой схеме не требуется Hydra/Kratos.
 
 ## Анализ ресурсов
 
@@ -55,8 +51,8 @@
 
 **Вариант 1: Forward Auth через Oathkeeper (рекомендуется)**
 - Использовать Oathkeeper как forward auth endpoint
-- Oathkeeper проверяет токен через Hydra
-- Если токена нет - редирект на Hydra для аутентификации
+- Oathkeeper валидирует JWT по JWKS Keycloak
+- Если токена нет - ресурс/прокси инициирует OIDC login flow (варианты: oauth2-proxy или OIDC на уровне приложения)
 
 **Вариант 2: OAuth2 Middleware**
 - Использовать Traefik OAuth2 middleware
@@ -87,8 +83,8 @@
 **Варианты реализации:**
 
 **Вариант 1: OIDC Auth Method (рекомендуется)**
-- Настроить Vault OIDC Auth Method с Hydra как провайдером
-- Пользователи входят через Hydra → получают Vault токен
+- Настроить Vault OIDC Auth Method с Keycloak как провайдером
+- Пользователи входят через Keycloak → получают Vault токен
 
 **Вариант 2: JWT Auth Method**
 - Использовать JWT токены от Hydra
@@ -119,8 +115,8 @@
 **Варианты реализации:**
 
 **Вариант 1: Generic OAuth (рекомендуется)**
-- Настроить Grafana Generic OAuth с Hydra
-- Пользователи входят через Hydra → получают доступ к Grafana
+- Настроить Grafana Generic OIDC/OAuth с Keycloak
+- Пользователи входят через Keycloak → получают доступ к Grafana
 
 **Вариант 2: Generic OIDC**
 - Настроить Grafana Generic OIDC с Hydra
@@ -152,8 +148,8 @@
 **Варианты реализации:**
 
 **Вариант 1: OIDC (рекомендуется)**
-- Настроить ArgoCD OIDC с Hydra
-- Пользователи входят через Hydra → получают доступ к ArgoCD
+- Настроить ArgoCD OIDC с Keycloak
+- Пользователи входят через Keycloak → получают доступ к ArgoCD
 
 **Вариант 2: Dex + Hydra**
 - Использовать Dex как промежуточный слой
@@ -171,64 +167,13 @@
 
 ## Управление пользователями
 
-### Отдельный пул административных пользователей в Kratos
+### Отдельный пул административных пользователей в Keycloak
 
-**Схема идентификации:**
+Рекомендуется разделять:
+- **Realm**: `archpad` (проект)
+- **Groups/Roles**: `platform-admin`, `platform-operator`, `platform-viewer` (пример)
 
-Создать отдельную схему для административных пользователей:
-
-```json
-{
-  "id": "admin",
-  "schema": {
-    "type": "object",
-    "properties": {
-      "email": {
-        "type": "string",
-        "format": "email"
-      },
-      "name": {
-        "type": "string"
-      },
-      "role": {
-        "type": "string",
-        "enum": ["admin", "operator", "viewer"]
-      }
-    },
-    "required": ["email", "name", "role"]
-  }
-}
-```
-
-**Создание пользователей через Kratos Admin API:**
-
-```bash
-# Создать административного пользователя
-curl -X POST https://auth.archpad.pro/admin/identities \
-  -H "Authorization: Bearer <admin-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "schema_id": "admin",
-    "traits": {
-      "email": "admin@archpad.pro",
-      "name": "Admin User",
-      "role": "admin"
-    },
-    "credentials": {
-      "password": {
-        "config": {
-          "password": "<secure-password>"
-        }
-      }
-    }
-  }'
-```
-
-**Управление через Kratos UI:**
-
-Если настроен административный UI для Kratos, можно управлять пользователями через веб-интерфейс.
-
-**Примечание:** Пользователи портала используют схему `default`, административные пользователи используют схему `admin`.
+Пользователи и роли управляются через Keycloak Admin UI или через “roles/groups as code” (bootstrap + sync job).
 
 ---
 
@@ -240,7 +185,7 @@ curl -X POST https://auth.archpad.pro/admin/identities \
    - Создать схему `admin` в Kratos
    - Настроить поля: email, name, role
 
-2. **Создать OAuth2 клиенты в Hydra для каждого ресурса**
+2. **Создать OIDC clients в Keycloak для каждого ресурса**
    - Traefik Dashboard client
    - Vault client
    - Grafana client
@@ -265,7 +210,7 @@ curl -X POST https://auth.archpad.pro/admin/identities \
    - Обновить IngressRoute для Traefik Dashboard
 
 2. **Протестировать аутентификацию**
-   - Проверить редирект на Hydra
+- Проверить редирект на Keycloak
    - Проверить получение токена
    - Проверить доступ к Traefik Dashboard
 
@@ -279,7 +224,7 @@ curl -X POST https://auth.archpad.pro/admin/identities \
 
 1. **Настроить OIDC Auth Method в Vault**
    - Включить OIDC auth method
-   - Настроить подключение к Hydra
+- Настроить подключение к Keycloak
    - Создать роль для административных пользователей
 
 2. **Настроить политики доступа**
@@ -299,8 +244,8 @@ curl -X POST https://auth.archpad.pro/admin/identities \
 
 ### Этап 4: Интеграция Grafana (1 день)
 
-1. **Настроить Generic OAuth в Grafana**
-   - Настроить OAuth2 провайдер (Hydra)
+1. **Настроить Generic OIDC в Grafana**
+   - Настроить OIDC провайдер (Keycloak)
    - Настроить маппинг ролей из Kratos
    - Настроить автоматическое создание пользователей
 
@@ -323,7 +268,7 @@ curl -X POST https://auth.archpad.pro/admin/identities \
 ### Этап 5: Интеграция ArgoCD (1-2 дня)
 
 1. **Настроить OIDC в ArgoCD**
-   - Настроить OIDC провайдер (Hydra)
+   - Настроить OIDC провайдер (Keycloak)
    - Настроить маппинг ролей из Kratos
    - Настроить RBAC в ArgoCD
 
@@ -394,14 +339,12 @@ curl -X POST https://auth.archpad.pro/admin/identities \
 
 Нужно создать секреты для OAuth2 клиентов:
 
-1. **OAuth2 Client Secrets** (для каждого ресурса):
-   - `kv/data/archpad/monitoring/oauth/traefik` - Traefik Dashboard client
-   - `kv/data/archpad/monitoring/oauth/vault` - Vault client
-   - `kv/data/archpad/monitoring/oauth/grafana` - Grafana client
-   - `kv/data/archpad/monitoring/oauth/argocd` - ArgoCD client
+1. **OIDC Client Secrets (опционально)**:
+   - Нужны только если client в Keycloak создается как confidential
+   - Рекомендуется хранить в Vault по отдельным путям (например, `kv/data/archpad/demo/<service>/oidc/<client-name>`)
 
 2. **Kratos Admin Token** (для управления пользователями):
-   - `kv/data/archpad/monitoring/kratos/admin-token` - токен для Kratos Admin API
+   - (не требуется) — управление пользователями выполняется через Keycloak (UI / Admin API)
 
 ---
 
@@ -487,8 +430,7 @@ curl -X POST https://auth.archpad.pro/admin/identities \
 
 ## Дополнительные ресурсы
 
-- [Kratos Admin API](https://www.ory.sh/docs/kratos/reference/api#tag/identity)
-- [Hydra OAuth2 Clients](https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2)
+- [Keycloak Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
 - [Traefik Forward Auth](https://doc.traefik.io/traefik/middlewares/forwardauth/)
 - [Vault OIDC Auth Method](https://developer.hashicorp.com/vault/docs/auth/oidc)
 - [Grafana Generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/generic-oauth/)

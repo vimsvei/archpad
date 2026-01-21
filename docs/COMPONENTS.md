@@ -14,7 +14,7 @@ Next.js приложение, доступное через `https://portal.arch
 
 **Особенности:**
 - Получает `NEXT_PUBLIC_*` секреты из Vault во время сборки (через GitLab CI/CD)
-- Использует внутренние URL для серверных запросов (Hasura, Kratos)
+- Использует внутренние URL для серверных запросов (Hasura, Keycloak, Oathkeeper)
 - Hot reload в режиме разработки
 
 ## Backend Services
@@ -74,67 +74,47 @@ GraphQL API и управление БД.
 SMTP сервер для разработки (email testing).
 
 **Особенности:**
-- Используется Kratos и Hydra для отправки email
+- Используется Keycloak для отправки email (verification/recovery), если SMTP настроен на Keycloak
 - Веб-интерфейс доступен через `https://mail.archpad.pro`
 - SMTP доступен по `mailpit.platform.svc.cluster.local:1025`
 
-## Безопасность (Ory)
+## Безопасность
 
-### Развертывание Ory компонентов
+### Keycloak + Oathkeeper
 
-Ory компоненты развертываются в Kubernetes через ArgoCD с использованием секретов из Vault.
+Keycloak и Oathkeeper развертываются в Kubernetes через ArgoCD с использованием секретов из Vault.
 
 **Требования:**
 1. Vault развернут и доступен через `vault.archpad.pro`
 2. Vault Agent Injector установлен в кластере
-3. PostgreSQL доступен (для Kratos и Hydra)
+3. PostgreSQL доступен (для Keycloak)
 4. TLS сертификат `wildcard-archpad-pro-tls` должен быть скопирован в namespace `secure`
 
-**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#6-ory-services)
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) (разделы Keycloak и Oathkeeper)
 
-### Kratos
+### Keycloak
 
-Identity Management (аутентификация).
-
-**Особенности:**
-- Использует PostgreSQL для хранения пользователей
-- Доступен через `https://auth.archpad.pro`
-- Внутренний доступ: `http://kratos.secure.svc:4433` (Public), `http://kratos.secure.svc:4434` (Admin)
-- Миграции БД выполняются автоматически через Job `kratos-migrate` (PreSync hook)
-
-**Секреты в Vault:**
-- Путь: `/v1/kv/data/archpad/demo/ory/kratos`
-- DSN формируется автоматически из компонентов
-
-### Hydra
-
-OAuth2/OIDC Provider (авторизация).
+Identity & Access Management (IdM/IAM) для проекта: пользователи, роли, группы, OIDC/JWT.
 
 **Особенности:**
-- Использует PostgreSQL для хранения OAuth2 клиентов и токенов
-- Доступен через `https://authz.archpad.pro`
-- Внутренний доступ: `http://hydra.secure.svc:4444` (Public), `http://hydra.secure.svc:4445` (Admin)
-- Миграции БД выполняются автоматически через Job `hydra-migrate` (PreSync hook)
-- OAuth2 клиенты создаются автоматически через Job `hydra-init-client` (PostSync hook)
-
-**Секреты в Vault:**
-- Путь: `/v1/kv/data/archpad/demo/ory/hydra`
-- DSN формируется автоматически из компонентов
+- Использует PostgreSQL для хранения данных
+- Публичный URL: `https://id.archpad.pro`
+- Внутренний доступ: `http://keycloak.secure.svc:8080`
+- Realm/clients/roles поддерживаются “как код” (bootstrap import + sync job)
 
 ### Oathkeeper
 
 API Gateway / Authorization Proxy.
 
 **Особенности:**
-- Использует OAuth2 introspection для проверки токенов
+- Валидирует JWT по JWKS из Keycloak (issuer `https://id.archpad.pro/realms/archpad`)
 - Проксирует запросы к backend сервисам
 - Доступен через `https://api.archpad.pro`
 - Внутренний доступ: `http://oathkeeper.secure.svc:4455`
-- Не использует БД напрямую, только OAuth2 клиент для подключения к Hydra
+ - Не использует БД напрямую
 
 **Секреты в Vault:**
-- Путь: `/v1/kv/data/archpad/demo/ory/oauthkeeper`
-- Требует только OAuth2 клиент credentials для introspection
+ - Путь: `/v1/kv/data/archpad/demo/ory/oathkeeper`
 
 ### Копирование TLS Secret
 
@@ -216,12 +196,12 @@ kubectl exec -n platform -l app=arch-repo-service -- \
 
 1. Проверьте логи Job:
 ```bash
-kubectl logs -n secure job/hydra-init-client --tail=50
+kubectl logs -n secure job/keycloak-sync --tail=50
 ```
 
-2. Проверьте, что Hydra доступен:
+2. Проверьте, что Keycloak доступен:
 ```bash
-kubectl exec -n secure <hydra-pod> -- curl -fsS http://localhost:4445/health/ready
+kubectl exec -n secure deploy/keycloak -- curl -fsS http://localhost:8080/realms/archpad
 ```
 
 ## Дополнительная документация

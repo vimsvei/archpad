@@ -30,12 +30,9 @@ spec:
           {{- $portal := secret "kv/data/archpad/demo/frontend/portal" }}
           {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
-          {{- $oryKratosEndpoint := secret "kv/data/archpad/demo/ory/kratos/endpoint" }}
           {{- $keycloakConnect := secret "kv/data/archpad/demo/keycloak/connect" }}
           # Экспортируем переменные окружения для Portal
-          export NEXT_PUBLIC_ORY_SDK_URL="{{ $portal.Data.data.NEXT_PUBLIC_ORY_SDK_URL }}"
-          export ORY_KRATOS_INTERNAL_URL="{{ $oryKratosEndpoint.Data.data.ORY_KRATOS_INTERNAL_URL }}"
-          export NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="{{ $portal.Data.data.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT }}"
+          export NEXT_PUBLIC_HASURA_GRAPHQL_URL="{{ $portal.Data.data.NEXT_PUBLIC_HASURA_GRAPHQL_URL }}"
           export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
           export NEXT_PUBLIC_TOLGEE_API_URL="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
@@ -45,12 +42,24 @@ spec:
           export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://{{ $keycloakConnect.Data.data.KEYCLOAK_HOST }}"
           export KEYCLOAK_INTERNAL_URL="http://keycloak.secure.svc:8080"
           export KEYCLOAK_REALM="archpad"
-          export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="portal"
+          export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="archpad-portal"
+          {{- if $portal.Data.data.KEYCLOAK_CLIENT_SECRET }}
+          export KEYCLOAK_CLIENT_SECRET="{{ $portal.Data.data.KEYCLOAK_CLIENT_SECRET }}"
+          {{- end }}
+          {{- if $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_ID }}
+          export KEYCLOAK_SERVICE_CLIENT_ID="{{ $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_ID }}"
+          {{- end }}
+          {{- if $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_SECRET }}
+          export KEYCLOAK_SERVICE_CLIENT_SECRET="{{ $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_SECRET }}"
+          {{- end }}
           {{- if $portal.Data.data.API_GATEWAY_INTERNAL_URL }}
           export API_GATEWAY_INTERNAL_URL="{{ $portal.Data.data.API_GATEWAY_INTERNAL_URL }}"
           {{- end }}
-          {{- if $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT }}
-          export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="{{ $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_ENDPOINT }}"
+          {{- if $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_URI }}
+          export NEXT_PUBLIC_API_GRAPHQL_URI="{{ $portal.Data.data.NEXT_PUBLIC_API_GRAPHQL_URI }}"
+          {{- end }}
+          {{- if $portal.Data.data.NEXT_PUBLIC_API_REST_URI }}
+          export NEXT_PUBLIC_API_REST_URI="{{ $portal.Data.data.NEXT_PUBLIC_API_REST_URI }}"
           {{- end }}
         vault.hashicorp.com/role: "platform"
     spec:
@@ -71,8 +80,6 @@ spec:
                         - hasura
                         - tolgee
                         - mailpit
-                        - kratos
-                        - hydra
                         - oathkeeper
                 topologyKey: kubernetes.io/hostname
       serviceAccountName: portal
@@ -115,12 +122,17 @@ spec:
               echo "# Portal Configuration"
               echo "NEXT_PUBLIC_URL: $(mask_secret "$NEXT_PUBLIC_URL")"
               echo ""
-              echo "# Ory Kratos (Authentication)"
-              echo "NEXT_PUBLIC_ORY_SDK_URL: $(mask_secret "$NEXT_PUBLIC_ORY_SDK_URL")"
-              echo "ORY_KRATOS_INTERNAL_URL: $(mask_secret "$ORY_KRATOS_INTERNAL_URL")"
+              echo "# Keycloak (Authentication)"
+              echo "NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL: $(mask_secret "$NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL")"
+              echo "KEYCLOAK_INTERNAL_URL: $(mask_secret "$KEYCLOAK_INTERNAL_URL")"
+              echo "KEYCLOAK_REALM: $(mask_secret "$KEYCLOAK_REALM")"
+              echo "NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: $(mask_secret "$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID")"
+              echo "KEYCLOAK_CLIENT_SECRET: $(mask_secret "$KEYCLOAK_CLIENT_SECRET")"
+              echo "KEYCLOAK_SERVICE_CLIENT_ID: $(mask_secret "$KEYCLOAK_SERVICE_CLIENT_ID")"
+              echo "KEYCLOAK_SERVICE_CLIENT_SECRET: $(mask_secret "$KEYCLOAK_SERVICE_CLIENT_SECRET")"
               echo ""
               echo "# Hasura GraphQL"
-              echo "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT: $(mask_secret "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT")"
+              echo "NEXT_PUBLIC_HASURA_GRAPHQL_URL: $(mask_secret "$NEXT_PUBLIC_HASURA_GRAPHQL_URL")"
               echo "HASURA_INTERNAL_URL: $(mask_secret "$HASURA_INTERNAL_URL")"
               echo "HASURA_GRAPHQL_ADMIN_SECRET: $(mask_secret "$HASURA_GRAPHQL_ADMIN_SECRET")"
               echo ""
@@ -144,10 +156,15 @@ spec:
               else
                 echo "API_GATEWAY_INTERNAL_URL: <not set>"
               fi
-              if [ -n "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT" ]; then
-                echo "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: $(mask_secret "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT")"
+              if [ -n "$NEXT_PUBLIC_API_GRAPHQL_URI" ]; then
+                echo "NEXT_PUBLIC_API_GRAPHQL_URI: $(mask_secret "$NEXT_PUBLIC_API_GRAPHQL_URI")"
               else
-                echo "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT: <not set>"
+                echo "NEXT_PUBLIC_API_GRAPHQL_URI: <not set>"
+              fi
+              if [ -n "$NEXT_PUBLIC_API_REST_URI" ]; then
+                echo "NEXT_PUBLIC_API_REST_URI: $(mask_secret "$NEXT_PUBLIC_API_REST_URI")"
+              else
+                echo "NEXT_PUBLIC_API_REST_URI: <not set>"
               fi
               echo "=========================================="
               
@@ -156,35 +173,42 @@ spec:
                 echo "ERROR: NEXT_PUBLIC_URL is not set or has invalid value"
                 exit 1
               fi
-              if [ -z "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" ] || [ "$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" = "<no value>" ]; then
-                echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT is not set or has invalid value"
+              if [ -z "$NEXT_PUBLIC_HASURA_GRAPHQL_URL" ] || [ "$NEXT_PUBLIC_HASURA_GRAPHQL_URL" = "<no value>" ]; then
+                echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_URL is not set or has invalid value"
+                exit 1
+              fi
+              if [ -z "$KEYCLOAK_CLIENT_SECRET" ] || [ "$KEYCLOAK_CLIENT_SECRET" = "<no value>" ]; then
+                echo "ERROR: KEYCLOAK_CLIENT_SECRET is not set or has invalid value (portal client is confidential)"
                 exit 1
               fi
               # Запускаем Next.js приложение с явной передачей переменных окружения
               echo "Portal starting..."
               cd /app/packages/portal
               # Экспортируем все переменные окружения для Next.js
-              export NEXT_PUBLIC_ORY_SDK_URL NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY NEXT_PUBLIC_URL ORY_KRATOS_INTERNAL_URL
+              export NEXT_PUBLIC_HASURA_GRAPHQL_URL HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY NEXT_PUBLIC_URL
               [ -n "$API_GATEWAY_INTERNAL_URL" ] && export API_GATEWAY_INTERNAL_URL
-              [ -n "$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT" ] && export NEXT_PUBLIC_API_GRAPHQL_ENDPOINT
+              [ -n "$NEXT_PUBLIC_API_GRAPHQL_URI" ] && export NEXT_PUBLIC_API_GRAPHQL_URI
+              [ -n "$NEXT_PUBLIC_API_REST_URI" ] && export NEXT_PUBLIC_API_REST_URI
               
               # В Next.js standalone режиме переменные NEXT_PUBLIC_* должны быть доступны через process.env
               # Передаем их явно в процесс node через env
               exec env \
-                NEXT_PUBLIC_ORY_SDK_URL="$NEXT_PUBLIC_ORY_SDK_URL" \
-                NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT="$NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" \
+                NEXT_PUBLIC_HASURA_GRAPHQL_URL="$NEXT_PUBLIC_HASURA_GRAPHQL_URL" \
                 HASURA_INTERNAL_URL="$HASURA_INTERNAL_URL" \
                 HASURA_GRAPHQL_ADMIN_SECRET="$HASURA_GRAPHQL_ADMIN_SECRET" \
                 NEXT_PUBLIC_TOLGEE_API_URL="$NEXT_PUBLIC_TOLGEE_API_URL" \
                 NEXT_PUBLIC_TOLGEE_API_KEY="$NEXT_PUBLIC_TOLGEE_API_KEY" \
                 NEXT_PUBLIC_URL="$NEXT_PUBLIC_URL" \
-                ORY_KRATOS_INTERNAL_URL="$ORY_KRATOS_INTERNAL_URL" \
                 NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="$NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL" \
                 NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" \
+                KEYCLOAK_CLIENT_SECRET="$KEYCLOAK_CLIENT_SECRET" \
                 KEYCLOAK_INTERNAL_URL="$KEYCLOAK_INTERNAL_URL" \
                 KEYCLOAK_REALM="$KEYCLOAK_REALM" \
+                ${KEYCLOAK_SERVICE_CLIENT_ID:+KEYCLOAK_SERVICE_CLIENT_ID="$KEYCLOAK_SERVICE_CLIENT_ID"} \
+                ${KEYCLOAK_SERVICE_CLIENT_SECRET:+KEYCLOAK_SERVICE_CLIENT_SECRET="$KEYCLOAK_SERVICE_CLIENT_SECRET"} \
                 ${API_GATEWAY_INTERNAL_URL:+API_GATEWAY_INTERNAL_URL="$API_GATEWAY_INTERNAL_URL"} \
-                ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT"} \
+                ${NEXT_PUBLIC_API_GRAPHQL_URI:+NEXT_PUBLIC_API_GRAPHQL_URI="$NEXT_PUBLIC_API_GRAPHQL_URI"} \
+                ${NEXT_PUBLIC_API_REST_URI:+NEXT_PUBLIC_API_REST_URI="$NEXT_PUBLIC_API_REST_URI"} \
                 node server.js
           ports:
             - name: http

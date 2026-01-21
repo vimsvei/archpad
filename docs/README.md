@@ -46,7 +46,7 @@
 - **Frontend**: Portal (Next.js) - см. [COMPONENTS.md](./COMPONENTS.md#frontend)
 - **Backend**: arch-repo-service, tenant-service, hasura-sync-service - см. [COMPONENTS.md](./COMPONENTS.md#backend-services)
 - **Инфраструктура**: Hasura, Tolgee, Mailpit - см. [COMPONENTS.md](./COMPONENTS.md#инфраструктура)
-- **Безопасность**: Kratos, Hydra, Oathkeeper - см. [COMPONENTS.md](./COMPONENTS.md#безопасность-ory)
+- **Безопасность**: Keycloak, Oathkeeper - см. [COMPONENTS.md](./COMPONENTS.md#безопасность)
 - **Управление секретами**: Vault - см. [VAULT_SETUP.md](./VAULT_SETUP.md)
 
 ### По задачам
@@ -62,4 +62,4 @@
 
 - [Официальная документация Vault](https://www.vaultproject.io/docs)
 - [Официальная документация ArgoCD Image Updater](https://argocd-image-updater.readthedocs.io/)
-- [Официальная документация Ory](https://www.ory.sh/docs/)
+- [Официальная документация Keycloak](https://www.keycloak.org/documentation)

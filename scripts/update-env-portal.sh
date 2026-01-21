@@ -43,25 +43,20 @@ ensure_empty() {
 }
 
 set_kv "NEXT_PUBLIC_URL" "http://localhost:3000"
-set_kv "NEXT_PUBLIC_ORY_SDK_URL" "https://auth.archpad.pro"
-set_kv "ORY_KRATOS_PUBLIC_URL" "https://auth.archpad.pro"
-ensure_empty "ORY_KRATOS_INTERNAL_URL"
+set_kv "NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL" "https://id.archpad.pro"
+set_kv "NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" "archpad-portal"
+set_kv "KEYCLOAK_REALM" "archpad"
+ensure_empty "KEYCLOAK_CLIENT_SECRET"
+ensure_empty "KEYCLOAK_SERVICE_CLIENT_ID"
+ensure_empty "KEYCLOAK_SERVICE_CLIENT_SECRET"
+ensure_empty "KEYCLOAK_INTERNAL_URL"
 
-set_kv "NEXT_PUBLIC_HYDRA_PUBLIC_URL" "https://authz.archpad.pro"
-set_kv "HYDRA_ADMIN_URL" "http://localhost:24445"
-
-set_kv "NEXT_PUBLIC_OAUTH_CLIENT_ID" "archpad-portal"
-ensure_empty "OAUTH_CLIENT_SECRET"
-set_kv "NEXT_PUBLIC_OAUTH_REDIRECT_URI" "http://localhost:3000/oauth/callback"
-set_kv "NEXT_PUBLIC_OAUTH_SCOPE" "openid offline_access"
-set_kv "DEBUG_OAUTH_TOKENS" "false"
-
-set_kv "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT" "https://apim.archpad.pro/v1/graphql"
+set_kv "NEXT_PUBLIC_HASURA_GRAPHQL_URL" "https://apim.archpad.pro/v1/graphql"
 ensure_empty "HASURA_INTERNAL_URL"
 ensure_empty "HASURA_GRAPHQL_ADMIN_SECRET"
 
-set_kv "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT" "https://api.archpad.pro/graphql"
-set_kv "NEXT_PUBLIC_API_REST_ENDPOINT" "https://api.archpad.pro"
+set_kv "NEXT_PUBLIC_API_GRAPHQL_URI" "https://api.archpad.pro/graphql"
+set_kv "NEXT_PUBLIC_API_REST_URI" "https://api.archpad.pro"
 ensure_empty "API_GATEWAY_INTERNAL_URL"
 
 set_kv "NEXT_PUBLIC_TOLGEE_API_URL" "https://i18n.archpad.pro"

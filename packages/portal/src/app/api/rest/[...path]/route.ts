@@ -10,14 +10,14 @@ import { exchangeRefreshToken } from "@/lib/auth/keycloak"
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).
   const internal = process.env.API_GATEWAY_INTERNAL_URL?.trim()
-  const external = process.env.NEXT_PUBLIC_API_REST_ENDPOINT?.trim()
+  const external = process.env.NEXT_PUBLIC_API_REST_URI?.trim()
   const defaultInternal = "http://oathkeeper.secure.svc:4455"
   const url =
     process.env.NODE_ENV === "production"
       ? internal || defaultInternal || external
       : external || internal
   if (!url) {
-    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_REST_ENDPOINT must be set')
+    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_REST_URI must be set')
   }
   return url
 }

@@ -174,8 +174,7 @@ Vault Agent Injector автоматически:
 │  │                                                       │
 │  └── Role: "secure"                                      │
 │      ├── Bound ServiceAccounts:                         │
-│      │   - kratos                                       │
-│      │   - hydra                                        │
+│      │   - keycloak                                     │
 │      │   - oathkeeper                                   │
 │      ├── Bound Namespaces: secure                       │
 │      └── Policies: archpad                              │
@@ -432,12 +431,15 @@ kv/data/archpad/demo/
 │   └── hasura-sync-service/ # Секреты для hasura-sync-service
 ├── frontend/
 │   └── portal/              # Секреты для Portal
+├── keycloak/
+│   ├── admin/               # Keycloak admin bootstrap
+│   ├── connect/             # Keycloak public hostname (KEYCLOAK_HOST)
+│   ├── db/                  # Keycloak DB credentials
+│   └── smtp/                # Keycloak SMTP settings (optional)
 ├── hasura/
 │   ├── hasura/              # Секреты для Hasura
 │   └── secret/             # Hasura admin secret
 ├── ory/
-│   ├── kratos/              # Секреты для Kratos
-│   ├── hydra/               # Секреты для Hydra
 │   └── oathkeeper/         # Секреты для Oathkeeper
 ├── tolgee/                  # Секреты для Tolgee
 └── postgres/                # Секреты для PostgreSQL

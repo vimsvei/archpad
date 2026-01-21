@@ -17,13 +17,16 @@ kv/data/archpad/demo/
 │   └── hasura-sync-service/ # Секреты для hasura-sync-service
 ├── frontend/
 │   └── portal/              # Секреты для Portal
+├── keycloak/
+│   ├── admin/               # Keycloak admin bootstrap (user/password)
+│   ├── connect/             # Keycloak public hostname (KEYCLOAK_HOST)
+│   ├── db/                  # Keycloak DB credentials
+│   └── smtp/                # Keycloak SMTP settings (optional)
 ├── hasura/
 │   ├── hasura/              # Секреты для Hasura
 │   └── secret/             # Hasura admin secret
 ├── ory/
-│   ├── kratos/              # Секреты для Kratos
-│   ├── hydra/               # Секреты для Hydra
-│   └── oathkeeper/         # Секреты для Oathkeeper
+│   └── oathkeeper/         # Секреты для Oathkeeper (API Gateway / forwardAuth)
 ├── tolgee/                  # Секреты для Tolgee
 ├── postgres/                # Секреты для PostgreSQL
 └── container-register/      # Секреты для Container Registry
@@ -75,31 +78,18 @@ curl -X POST \
   -d '{
     "data": {
       "NEXT_PUBLIC_URL": "https://portal.archpad.pro",
-      "NEXT_PUBLIC_ORY_SDK_URL": "https://auth.archpad.pro",
       "NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT": "https://apim.archpad.pro/v1/graphql",
       "NEXT_PUBLIC_TOLGEE_API_URL": "https://i18n.archpad.pro",
       "NEXT_PUBLIC_TOLGEE_API_KEY": "tgpak_...",
-      "NEXT_PUBLIC_OAUTH_CLIENT_ID": "archpad-portal",
-      "NEXT_PUBLIC_OAUTH_REDIRECT_URI": "https://portal.archpad.pro/oauth/callback",
-      "NEXT_PUBLIC_OAUTH_SCOPE": "openid offline_access",
+      "NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL": "https://id.archpad.pro",
+      "NEXT_PUBLIC_KEYCLOAK_CLIENT_ID": "portal",
+      "KEYCLOAK_REALM": "archpad",
+      "KEYCLOAK_SERVICE_CLIENT_ID": "portal-admin",
+      "KEYCLOAK_SERVICE_CLIENT_SECRET": "<portal-admin client secret>",
       "NEXT_PUBLIC_API_GRAPHQL_ENDPOINT": "https://api.archpad.pro/graphql"
     }
   }' \
   "${VAULT_ADDR}/v1/kv/data/archpad/demo/frontend/portal"
-
-### Portal OAuth client secret (optional)
-
-По умолчанию OAuth клиент Portal в Hydra создается как **public PKCE client** (`token_endpoint_auth_method=none`) и **не требует** `client_secret`.
-
-Если политика ИБ требует confidential-клиент, добавьте отдельный секрет в Vault:
-
-- Путь: `kv/data/archpad/demo/ory/hydra/oauth`
-- Ключи:
-  - `OAUTH_CLIENT_ID` — обычно `archpad-portal`
-  - `OAUTH_CLIENT_SECRET` — секрет клиента (случайная строка)
-  - `OAUTH_SCOPE` — обычно `openid offline_access`
-
-Тогда Job `hydra-init-client` создаст/обновит OAuth клиента Portal с `token_endpoint_auth_method=client_secret_basic` и заданным секретом.
 ```
 
 ### Через Vault UI
@@ -123,7 +113,9 @@ export VAULT_TOKEN="<your-token>"
 # Создание/обновление секрета
 vault kv put kv/archpad/demo/frontend/portal \
   NEXT_PUBLIC_URL="https://portal.archpad.pro" \
-  NEXT_PUBLIC_ORY_SDK_URL="https://auth.archpad.pro"
+  NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://id.archpad.pro" \
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="portal" \
+  KEYCLOAK_REALM="archpad"
 
 # Просмотр секрета
 vault kv get kv/archpad/demo/frontend/portal

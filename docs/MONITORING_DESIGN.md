@@ -155,7 +155,7 @@ scrape_configs:
       - targets:
           - https://portal.archpad.pro
           - https://hasura.archpad.pro
-          - https://auth.archpad.pro
+          - https://id.archpad.pro
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -535,9 +535,8 @@ infra/timeweb/10-gitops/apps/monitoring/
 
 **Краткая информация:**
 - ✅ Все ресурсы поддерживают SSO в бесплатных версиях
-- ✅ Используем существующие Kratos + Hydra
-- ✅ Отдельный пул административных пользователей в Kratos
-- ✅ Fallback на логин/пароль через Kratos API (если SSO недоступно)
+- ✅ Используем Keycloak как единый OIDC provider
+- ✅ Роли/группы управляются в Keycloak (как код + sync job)
 
 **Рекомендация:** Начать с базовой аутентификации (admin/password), затем добавить SSO согласно плану в [SSO_ADMIN_RESOURCES.md](./SSO_ADMIN_RESOURCES.md).
 
@@ -568,7 +567,7 @@ infra/timeweb/10-gitops/apps/monitoring/
 4. ⏳ Развернуть Grafana (с S3 для дашбордов)
 5. ⏳ Настроить ServiceMonitor для сервисов
 6. ⏳ Проверить работу мониторинга
-7. ⏳ Настроить SSO через Kratos/Hydra (опционально)
+7. ⏳ Настроить SSO через Keycloak (опционально)
 8. ⏳ Добавить Loki для логов (позже)
 9. ⏳ Добавить Tempo для трейсинга (позже)
 

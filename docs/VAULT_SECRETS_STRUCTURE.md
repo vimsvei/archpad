@@ -23,7 +23,7 @@ kv/data/archpad/demo/
 **Переменные:**
 - `POSTGRES_HOST` - IP адрес или hostname PostgreSQL сервера
 - `POSTGRES_PORT` - Порт PostgreSQL (обычно `5432`)
-- `POSTGRES_ENDPOINT` - Доменное имя PostgreSQL (для локальной разработки)
+- `POSTGRES_ENDPOINT` - Внутренний адрес PostgreSQL (для кластера)
 
 **Используется в:** Все сервисы, работающие с PostgreSQL
 
@@ -108,20 +108,20 @@ kv/data/archpad/demo/
 
 **Переменные:**
 - `NEXT_PUBLIC_URL` - Публичный URL Portal
-- `NEXT_PUBLIC_ORY_SDK_URL` - Публичный URL Ory Kratos SDK
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - Публичный URL Hasura GraphQL endpoint
 - `NEXT_PUBLIC_TOLGEE_API_URL` - Публичный URL Tolgee API
 - `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - (опционально) Публичный URL API Gateway GraphQL endpoint
 - `NEXT_PUBLIC_API_REST_ENDPOINT` - (опционально) Публичный URL API Gateway REST endpoint
-- `NEXT_PUBLIC_HYDRA_PUBLIC_URL` - (опционально) Публичный URL Hydra
-- `NEXT_PUBLIC_OAUTH_CLIENT_ID` - (опционально) OAuth2 Client ID
-- `NEXT_PUBLIC_OAUTH_REDIRECT_URI` - (опционально) OAuth2 Redirect URI
+- `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL` - Публичный URL Keycloak (например, `https://id.archpad.pro`)
+- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID` - OIDC clientId для портала (обычно `portal`)
+- `KEYCLOAK_REALM` - Realm (обычно `archpad`)
+- `KEYCLOAK_SERVICE_CLIENT_ID` - Service-account clientId для Admin API (обычно `portal-admin`)
+- `KEYCLOAK_SERVICE_CLIENT_SECRET` - Secret service-account клиента (секрет)
 - `API_GATEWAY_INTERNAL_URL` - (опционально) Внутренний URL API Gateway
 
 **Дополнительные секреты:**
 - `kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
 - `kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET`
-- `kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
 - `kv/data/archpad/demo/tolgee/api-key` - `NEXT_PUBLIC_TOLGEE_API_KEY`
 
 **Примечание:** 
@@ -212,104 +212,57 @@ kv/data/archpad/demo/
 
 ---
 
-## 6. Ory Services
+## 6. Keycloak + Oathkeeper
 
-### 6.1. Kratos - Database
-**Путь:** `kv/data/archpad/demo/ory/kratos/db`
+### 6.1. Keycloak - Admin bootstrap
+**Путь:** `kv/data/archpad/demo/keycloak/admin`
 
 **Переменные:**
-- `KRATOS_DB` - Имя базы данных Kratos
-- `KRATOS_DB_USER` - Пользователь базы данных Kratos
-- `KRATOS_DB_PASSWORD` - Пароль базы данных Kratos
+- `KEYCLOAK_ADMIN_USER`
+- `KEYCLOAK_ADMIN_PASSWORD`
+
+---
+
+### 6.2. Keycloak - Database
+**Путь:** `kv/data/archpad/demo/keycloak/db`
+
+**Переменные:**
+- `KEYCLOAK_DB` - имя базы данных Keycloak
+- `KEYCLOAK_DB_USER`
+- `KEYCLOAK_DB_PASSWORD`
 
 **Дополнительные секреты:**
-- `kv/data/archpad/demo/ory/kratos/secret` - `KRATOS_SECRET`
-- `kv/data/archpad/demo/ory/kratos/other` - `SMTP_CONNECTION_URI`, `SMTP_FROM_ADDRESS`
-- `kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
-- `kv/data/archpad/demo/postgres/connect` - подключение к PostgreSQL
-
-**DSN формируется автоматически:** `postgres://{KRATOS_DB_USER}:{KRATOS_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
-
-**Используется в:** `infra/timeweb/10-gitops/apps/ory/kratos/kratos.deployment.yaml`
+- `kv/data/archpad/demo/postgres/connect` - `POSTGRES_ENDPOINT`, `POSTGRES_PORT`
 
 ---
 
-### 6.2. Kratos - Secret
-**Путь:** `kv/data/archpad/demo/ory/kratos/secret`
+### 6.3. Keycloak - Connect
+**Путь:** `kv/data/archpad/demo/keycloak/connect`
 
 **Переменные:**
-- `KRATOS_SECRET` - Секретный ключ для подписи cookies и токенов
-
-**Используется в:** Kratos
+- `KEYCLOAK_HOST` - публичный hostname (например `id.archpad.pro`)
 
 ---
 
-### 6.3. Kratos - Other Settings
-**Путь:** `kv/data/archpad/demo/ory/kratos/other`
+### 6.4. Keycloak - SMTP (опционально)
+**Путь:** `kv/data/archpad/demo/keycloak/smtp`
 
 **Переменные:**
-- `SMTP_CONNECTION_URI` - URI подключения к SMTP серверу для отправки email
-- `SMTP_FROM_ADDRESS` - Адрес отправителя email
-
-**Примечание:** Если не указаны, используются значения по умолчанию:
-- `SMTP_CONNECTION_URI`: `smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true`
-- `SMTP_FROM_ADDRESS`: `no-reply@archpad.pro`
-
-**Используется в:** Kratos
+- `SMTP_INTERNAL_URL` (host)
+- `SMTP_PORT`
+- `SMTP_USER` (опционально)
+- `SMTP_PASSWORD` (опционально)
+- `SMTP_FROM_ADDRESS` (опционально)
 
 ---
 
-### 6.4. Kratos - Endpoint
-**Путь:** `kv/data/archpad/demo/ory/kratos/endpoint`
-
-**Переменные:**
-- `ORY_KRATOS_INTERNAL_URL` - Внутренний URL Kratos (например, `http://kratos.secure.svc:4433`)
-
-**Используется в:** Portal, Kratos
-
----
-
-### 6.5. Hydra - Database
-**Путь:** `kv/data/archpad/demo/ory/hydra/db`
-
-**Переменные:**
-- `HYDRA_DB` - Имя базы данных Hydra
-- `HYDRA_DB_USER` - Пользователь базы данных Hydra
-- `HYDRA_DB_PASSWORD` - Пароль базы данных Hydra
-
-**Дополнительные секреты:**
-- `kv/data/archpad/demo/ory/hydra/secret` - `SECRETS_SYSTEM`
-- `kv/data/archpad/demo/postgres/connect` - подключение к PostgreSQL
-
-**DSN формируется автоматически:** `postgres://{HYDRA_DB_USER}:{HYDRA_DB_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4`
-
-**Используется в:** 
-- `infra/timeweb/10-gitops/apps/ory/hydra/hydra.deployment.yaml`
-- `infra/timeweb/10-gitops/apps/ory/hydra/hydra-migrate.job.yaml`
-
----
-
-### 6.6. Hydra - Secret
-**Путь:** `kv/data/archpad/demo/ory/hydra/secret`
-
-**Переменные:**
-- `SECRETS_SYSTEM` - Системный секрет для шифрования токенов
-
-**Используется в:** Hydra
-
----
-
-### 6.7. Oathkeeper
+### 6.5. Oathkeeper
 **Путь:** `kv/data/archpad/demo/ory/oathkeeper`
 
 **Переменные:**
-- Все ключи из этого секрета экспортируются как переменные окружения динамически
+- секреты/ключи Oathkeeper (зависят от конфигурации)
 
-**Примечание:** Обычно содержит:
-- `ORY_CLIENT_ID` - ID OAuth2 клиента для introspection
-- `ORY_CLIENT_SECRET` - Секрет OAuth2 клиента для introspection
-
-**Используется в:** `infra/timeweb/10-gitops/apps/ory/oathkeeper/oathkeeper.deployment.yaml`
+**Примечание:** В текущей схеме Oathkeeper валидирует JWT по JWKS Keycloak (без Hydra introspection).
 
 ---
 
@@ -410,13 +363,11 @@ kv/data/archpad/demo/
 | `kv/data/archpad/demo/hasura/endpoint` | `HASURA_INTERNAL_URL` | Hasura, Portal |
 | `kv/data/archpad/demo/tolgee/db` | `TOLGEE_DB`, `TOLGEE_DB_USER`, `TOLGEE_DB_PASSWORD` | Tolgee |
 | `kv/data/archpad/demo/tolgee/admin` | `TOLGEE_ADMIN_USER`, `TOLGEE_ADMIN_PASSWORD` | Tolgee |
-| `kv/data/archpad/demo/ory/kratos/db` | `KRATOS_DB`, `KRATOS_DB_USER`, `KRATOS_DB_PASSWORD` | Kratos |
-| `kv/data/archpad/demo/ory/kratos/secret` | `KRATOS_SECRET` | Kratos |
-| `kv/data/archpad/demo/ory/kratos/other` | `SMTP_CONNECTION_URI`, `SMTP_FROM_ADDRESS` | Kratos |
-| `kv/data/archpad/demo/ory/kratos/endpoint` | `ORY_KRATOS_INTERNAL_URL` | Portal, Kratos |
-| `kv/data/archpad/demo/ory/hydra/db` | `HYDRA_DB`, `HYDRA_DB_USER`, `HYDRA_DB_PASSWORD` | Hydra |
-| `kv/data/archpad/demo/ory/hydra/secret` | `SECRETS_SYSTEM` | Hydra |
-| `kv/data/archpad/demo/ory/oathkeeper` | Все ключи (динамически) | Oathkeeper |
+| `kv/data/archpad/demo/keycloak/admin` | `KEYCLOAK_ADMIN_USER`, `KEYCLOAK_ADMIN_PASSWORD` | Keycloak |
+| `kv/data/archpad/demo/keycloak/db` | `KEYCLOAK_DB`, `KEYCLOAK_DB_USER`, `KEYCLOAK_DB_PASSWORD` | Keycloak |
+| `kv/data/archpad/demo/keycloak/connect` | `KEYCLOAK_HOST` | Keycloak, Oathkeeper, Portal |
+| `kv/data/archpad/demo/keycloak/smtp` | SMTP keys | Keycloak |
+| `kv/data/archpad/demo/ory/oathkeeper` | Oathkeeper keys | Oathkeeper |
 | `kv/data/archpad/demo/grafana/admin` | `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` | Grafana |
 | `kv/data/archpad/demo/grafana/db` | `GRAFANA_DB`, `GRAFANA_DB_USER`, `GRAFANA_DB_PASSWORD` | Grafana |
 | `kv/data/archpad/demo/pgadmin` | `PGADMIN_ADMIN_USER`, `PGADMIN_DEFAULT_PASSWORD` | pgAdmin |

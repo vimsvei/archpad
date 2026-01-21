@@ -36,8 +36,7 @@
 | mailpit | 30m | 100m | 64Mi | 128Mi |
 | hasura-sync-service (Job) | 30m | 100m | 64Mi | 128Mi |
 | registry-secret-sync (Job) | 30m | 100m | 64Mi | 128Mi |
-| kratos | 30m | 100m | 64Mi | 128Mi |
-| hydra | 30m | 100m | 64Mi | 128Mi |
+| keycloak | 100m | 300m | 256Mi | 512Mi |
 | oathkeeper | 30m | 100m | 64Mi | 128Mi |
 | argocd-image-updater | 50m | 200m | 64Mi | 256Mi |
 | pgadmin | 50m | 200m | 128Mi | 256Mi |
@@ -148,8 +147,7 @@ spec:
                         - hasura
                         - tolgee
                         - mailpit
-                        - kratos
-                        - hydra
+                        - keycloak
                         - oathkeeper
                 topologyKey: kubernetes.io/hostname
 ```
@@ -168,15 +166,14 @@ spec:
    - `hasura`
    - `tolgee`
    - `mailpit`
-   - `kratos`
-   - `hydra`
+   - `keycloak`
    - `oathkeeper`
 
 2. После применения изменений через ArgoCD, поды будут перераспределены
 
 3. Проверить размещение:
    ```bash
-   kubectl get pods -o wide -A | grep -E "arch-repo|tenant|portal|hasura|tolgee|mailpit|kratos|hydra|oathkeeper"
+   kubectl get pods -o wide -A | grep -E "arch-repo|tenant|portal|hasura|tolgee|mailpit|keycloak|oathkeeper"
    ```
 
 **Альтернативный подход: nodeSelector**
