@@ -10,7 +10,9 @@ interface VaultSecretData {
 @Injectable()
 export class VaultConfigService implements OnModuleInit {
   private readonly logger = new Logger(VaultConfigService.name);
-  private readonly options: Required<Omit<VaultConfigOptions, 'secretsPath' | 'secretsPaths'>> & {
+  private readonly options: Required<
+    Omit<VaultConfigOptions, 'secretsPath' | 'secretsPaths'>
+  > & {
     secretsPaths: string[];
   };
   private secrets: Record<string, string> = {};
@@ -106,7 +108,9 @@ export class VaultConfigService implements OnModuleInit {
     }
 
     if (!this.options.token) {
-      this.logger.warn('Vault token is not provided, skipping Vault API loading');
+      this.logger.warn(
+        'Vault token is not provided, skipping Vault API loading',
+      );
       this.loaded = true;
       return;
     }
@@ -177,9 +181,7 @@ export class VaultConfigService implements OnModuleInit {
 
     if (!response.ok) {
       if (response.status === 404) {
-        this.logger.warn(
-          `Secrets path ${secretsPath} not found in Vault`,
-        );
+        this.logger.warn(`Secrets path ${secretsPath} not found in Vault`);
         return {
           path: secretsPath,
           fetchedKeys: 0,

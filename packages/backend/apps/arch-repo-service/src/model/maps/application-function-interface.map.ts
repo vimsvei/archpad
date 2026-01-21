@@ -17,7 +17,10 @@ export class ApplicationFunctionInterfaceMap extends MappedObject {
   })
   function!: ApplicationComponentFunctionMap;
 
-  @HasuraReference({ objectName: 'interface', collectionName: 'componentFunctions' })
+  @HasuraReference({
+    objectName: 'interface',
+    collectionName: 'componentFunctions',
+  })
   @ManyToOne({
     entity: () => ApplicationInterface,
     primary: true,

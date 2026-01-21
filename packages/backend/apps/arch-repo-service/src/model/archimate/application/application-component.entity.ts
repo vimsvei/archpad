@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
-import {
-  ArchimateCode,
-  HasuraReference,
-  HasuraTable,
-} from '@archpad/models';
+import { ArchimateCode, HasuraReference, HasuraTable } from '@archpad/models';
 import { ArchimateElementGeneric } from '../core/archimate-element.generic';
 import { ApplicationComponentFunctionMap } from '../../maps/application-component-function.map';
 import { ApplicationComponentEventMap } from '../../maps/application-component-event.map';
@@ -194,7 +190,10 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   products = new Collection<ApplicationComponentProductMap>(this);
 
-  @HasuraReference({ objectName: 'component', collectionName: 'systemSoftware' })
+  @HasuraReference({
+    objectName: 'component',
+    collectionName: 'systemSoftware',
+  })
   @OneToMany({
     entity: () => ApplicationComponentSystemSoftwareMap,
     mappedBy: 'component',

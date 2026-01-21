@@ -29,7 +29,10 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   componentDataObject!: ApplicationComponentDataObjectMap;
 
-  @HasuraReference({ objectName: 'component', collectionName: 'dataObjectsInFunctions' })
+  @HasuraReference({
+    objectName: 'component',
+    collectionName: 'dataObjectsInFunctions',
+  })
   @ManyToOne({
     entity: () => ApplicationComponent,
     fieldName: 'component_id',
@@ -40,7 +43,10 @@ export class ApplicationFunctionDataObjectMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraReference({ objectName: 'dataObject', collectionName: 'useInFunctions' })
+  @HasuraReference({
+    objectName: 'dataObject',
+    collectionName: 'useInFunctions',
+  })
   @ManyToOne({
     entity: () => DataObject,
     fieldName: 'data_object_id',

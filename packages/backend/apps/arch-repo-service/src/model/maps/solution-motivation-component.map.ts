@@ -7,7 +7,10 @@ import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.ab
 @HasuraTable()
 @Entity({ tableName: 'map_solution_motivation_component' })
 export class SolutionMotivationComponentMap extends MappedSolutionObject {
-  @HasuraReference({ objectName: 'componentSolution', collectionName: 'motivationsInSolution' })
+  @HasuraReference({
+    objectName: 'componentSolution',
+    collectionName: 'motivationsInSolution',
+  })
   @ManyToOne({
     entity: () => SolutionApplicationComponentMap,
     primary: true,
@@ -18,7 +21,10 @@ export class SolutionMotivationComponentMap extends MappedSolutionObject {
   })
   componentSolution!: SolutionApplicationComponentMap;
 
-  @HasuraReference({ objectName: 'motivationSolution', collectionName: 'componentsInSolution' })
+  @HasuraReference({
+    objectName: 'motivationSolution',
+    collectionName: 'componentsInSolution',
+  })
   @ManyToOne({
     entity: () => SolutionMotivationElementMap,
     primary: true,

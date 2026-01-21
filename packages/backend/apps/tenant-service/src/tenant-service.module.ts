@@ -5,10 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
 import { LoggerModule, LoggerService } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
-import {
-  VaultConfigModule,
-  VaultConfigService,
-} from '@archpad/vault-config';
+import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
 import { BootstrapModule } from './bootstrap.module';
 
@@ -29,7 +26,7 @@ import { BootstrapModule } from './bootstrap.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [ path.resolve(process.cwd(), ".env") ],
+      envFilePath: [path.resolve(process.cwd(), '.env')],
     }),
     MikroOrmModule.forRootAsync({
       imports: [ConfigModule, VaultConfigModule],
@@ -54,22 +51,20 @@ import { BootstrapModule } from './bootstrap.module';
           configService.get<string>('PROJECT_DB_USER');
         const dbPass =
           vaultConfigService.get('PROJECT_DB_PASSWORD') ||
-          configService.get<string>('PROJECT_DB_PASSWORD')
+          configService.get<string>('PROJECT_DB_PASSWORD');
         const pgHost =
           nodeEnv === 'development'
             ? vaultConfigService.get('POSTGRES_HOST') ||
               configService.get<string>('PG_HOST')
             : vaultConfigService.get('POSTGRES_ENDPOINT') ||
-              configService.get<string>('PG_ENDPOINT')
-        const pgPort = +(
-          nodeEnv === 'development'
-            ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
-              configService.get<string>('PG_HOST_PORT') ||
-              '5432'
-            :  vaultConfigService.get('POSTGRES_PORT') ||
-              configService.get<string>('PG_ENDPOINT_PORT') ||
-              '5432'
-        );
+              configService.get<string>('PG_ENDPOINT');
+        const pgPort = +(nodeEnv === 'development'
+          ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
+            configService.get<string>('PG_HOST_PORT') ||
+            '5432'
+          : vaultConfigService.get('POSTGRES_PORT') ||
+            configService.get<string>('PG_ENDPOINT_PORT') ||
+            '5432');
 
         console.log(`[TenantService MikroORM Config] dbName: "${dbName}"`);
         console.log(`[TenantService MikroORM Config] user: "${dbUser}"`);
@@ -133,13 +128,13 @@ export class TenantServiceModule implements OnModuleInit {
     const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
     const buildVersion = process.env.BUILD_VERSION || 'unknown';
     const buildBranch = process.env.BUILD_BRANCH || 'unknown';
-    
-    this.logger.log( '='.repeat(40), this.loggerContext );
+
+    this.logger.log('='.repeat(40), this.loggerContext);
     this.logger.log('🚀 Tenant Service Starting', this.loggerContext);
     this.logger.log(`📦 Build Commit: ${buildCommitSha}`, this.loggerContext);
     this.logger.log(`🏷️  Build Version: ${buildVersion}`, this.loggerContext);
     this.logger.log(`🌿 Build Branch: ${buildBranch}`, this.loggerContext);
     this.logger.log(`🔧 NODE_ENV: ${mode}`, this.loggerContext);
-    this.logger.log( '='.repeat(40), this.loggerContext );
+    this.logger.log('='.repeat(40), this.loggerContext);
   }
 }

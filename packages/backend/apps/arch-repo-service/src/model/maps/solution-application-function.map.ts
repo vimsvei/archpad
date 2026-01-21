@@ -17,7 +17,10 @@ export class SolutionApplicationFunctionMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraReference({ objectName: 'functionComponent', collectionName: 'solutions' })
+  @HasuraReference({
+    objectName: 'functionComponent',
+    collectionName: 'solutions',
+  })
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,

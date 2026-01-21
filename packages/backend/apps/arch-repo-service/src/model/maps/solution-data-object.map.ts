@@ -7,7 +7,10 @@ import { ApplicationComponentDataObjectMap } from '@/model/maps/application-comp
 @HasuraTable()
 @Entity({ tableName: 'map_solution_data_object' })
 export class SolutionDataObjectMap extends MappedSolutionObject {
-  @HasuraReference({ objectName: 'solution', collectionName: 'dataObjectsInComponent' })
+  @HasuraReference({
+    objectName: 'solution',
+    collectionName: 'dataObjectsInComponent',
+  })
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -17,7 +20,10 @@ export class SolutionDataObjectMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraReference({ objectName: 'functionComponent', collectionName: 'solutions' })
+  @HasuraReference({
+    objectName: 'functionComponent',
+    collectionName: 'solutions',
+  })
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     primary: true,

@@ -91,7 +91,9 @@ export async function loadVaultSecrets(options?: {
 
       if (!response.ok) {
         if (response.status === 404) {
-          console.warn(`[Vault] Secrets path ${secretsPath} not found in Vault`);
+          console.warn(
+            `[Vault] Secrets path ${secretsPath} not found in Vault`,
+          );
           console.warn(`[Vault] Full URL: ${url}`);
           continue;
         }
@@ -126,7 +128,9 @@ export async function loadVaultSecrets(options?: {
         `[Vault] Successfully loaded ${loadedCount} secrets from Vault (${overwrittenCount} overwritten)`,
       );
     } else {
-      console.log(`[Vault] Successfully loaded ${loadedCount} secrets from Vault`);
+      console.log(
+        `[Vault] Successfully loaded ${loadedCount} secrets from Vault`,
+      );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

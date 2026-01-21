@@ -96,7 +96,8 @@ export async function syncForeignKeyRelationships(args: {
       cols: fk.fk_columns,
     });
     const objectNameOverride = objectOverrideByKey.get(oKeyLookup);
-    const objectNameRaw = objectNameOverride ?? buildObjectRelationshipNameForFk(fk);
+    const objectNameRaw =
+      objectNameOverride ?? buildObjectRelationshipNameForFk(fk);
     const aKeyLookup = arrayRelationshipKey({
       schema: fk.pk_table_schema,
       table: fk.pk_table_name,

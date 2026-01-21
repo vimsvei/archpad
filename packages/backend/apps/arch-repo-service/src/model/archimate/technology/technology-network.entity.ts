@@ -1,8 +1,4 @@
-import {
-  ArchimateCode,
-  HasuraReference,
-  HasuraTable,
-} from '@archpad/models';
+import { ArchimateCode, HasuraReference, HasuraTable } from '@archpad/models';
 import {
   Collection,
   Entity,
@@ -41,7 +37,10 @@ export class TechnologyNetwork extends ArchimateElementGeneric {
 
 @Entity({ discriminatorValue: NetworkAbstractionLevel.LOGICAL })
 export class TechnologyLogicalNetwork extends TechnologyNetwork {
-  @HasuraReference({ objectName: 'logicalNetwork', collectionName: 'components' })
+  @HasuraReference({
+    objectName: 'logicalNetwork',
+    collectionName: 'components',
+  })
   @OneToMany({
     entity: () => ApplicationComponentTechnologyLogicalNetworkMap,
     mappedBy: 'logicalNetwork',

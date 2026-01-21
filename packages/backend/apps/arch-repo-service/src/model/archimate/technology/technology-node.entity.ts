@@ -1,8 +1,4 @@
-import {
-  HasuraReference,
-  HasuraTable,
-  NamedObject,
-} from '@archpad/models';
+import { HasuraReference, HasuraTable, NamedObject } from '@archpad/models';
 import {
   Collection,
   Entity,

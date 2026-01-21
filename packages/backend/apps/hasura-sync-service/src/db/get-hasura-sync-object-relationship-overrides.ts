@@ -26,4 +26,3 @@ export async function getHasuraSyncObjectRelationshipOverrides(
     ([json]) => JSON.parse(json) as HasuraSyncObjectRelationshipOverride,
   );
 }
-

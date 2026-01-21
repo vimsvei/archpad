@@ -15,7 +15,7 @@ import {
   LicenseTypeDirectory,
   SoftwareTypeDirectory,
 } from '@/model/directories/directories';
-import {TechnologyRadarZone} from "@/model/enums/technology-radar-zone.enum";
+import { TechnologyRadarZone } from '@/model/enums/technology-radar-zone.enum';
 
 @HasuraTable()
 @Entity({
@@ -38,8 +38,11 @@ export class SystemSoftware extends ArchimateElementGeneric {
   @ApiProperty()
   @Property({ type: String, nullable: true })
   version!: string;
-  
-  @ApiProperty({ enum: TechnologyRadarZone, default: TechnologyRadarZone.ADOPT })
+
+  @ApiProperty({
+    enum: TechnologyRadarZone,
+    default: TechnologyRadarZone.ADOPT,
+  })
   @Enum({
     items: () => TechnologyRadarZone,
     nativeEnumName: 'technology_radar_zone',
@@ -65,7 +68,10 @@ export class SystemSoftware extends ArchimateElementGeneric {
   })
   license!: LicenseTypeDirectory;
 
-  @HasuraReference({ objectName: 'systemSoftware', collectionName: 'components' })
+  @HasuraReference({
+    objectName: 'systemSoftware',
+    collectionName: 'components',
+  })
   @OneToMany({
     entity: () => ApplicationComponentSystemSoftwareMap,
     mappedBy: 'systemSoftware',

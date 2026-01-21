@@ -51,9 +51,7 @@ export class HasuraRelationshipNameInitializer
     const camelCaseFields = getHasuraCamelCaseFields();
 
     const hasAny =
-      references.length ||
-      tableUsages.length ||
-      camelCaseFields.length;
+      references.length || tableUsages.length || camelCaseFields.length;
     if (!hasAny) return;
 
     const conn = this.orm.em.getConnection();
@@ -294,7 +292,9 @@ export class HasuraRelationshipNameInitializer
     return out;
   }
 
-  private assertUniqueObjectNamesWithinFkTable(items: ResolvedHasuraReference[]) {
+  private assertUniqueObjectNamesWithinFkTable(
+    items: ResolvedHasuraReference[],
+  ) {
     const byFk = new Map<string, Map<string, ResolvedHasuraReference[]>>();
     for (const i of items) {
       const fkKey = `${i.fkSchema}.${i.fkTable}`;
@@ -542,7 +542,9 @@ export class HasuraRelationshipNameInitializer
   private async clearHasuraSyncOverrides(conn: any) {
     // Clear all override tables to avoid conflicts with stale data
     await conn.execute(`DELETE FROM hasura_sync.array_relationship_overrides;`);
-    await conn.execute(`DELETE FROM hasura_sync.object_relationship_overrides;`);
+    await conn.execute(
+      `DELETE FROM hasura_sync.object_relationship_overrides;`,
+    );
     await conn.execute(`DELETE FROM hasura_sync.table_overrides;`);
     await conn.execute(`DELETE FROM hasura_sync.column_overrides;`);
     this.logger.log(

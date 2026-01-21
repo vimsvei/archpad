@@ -25,10 +25,11 @@ export class HasuraSyncService {
     private readonly config: ConfigService,
     private readonly logger: LoggerService,
   ) {
-    const sourcesRaw =
-      (this.config.get<string>('HASURA_SOURCES') ??
-        this.config.get<string>('HASURA_SOURCE') ??
-        '').trim();
+    const sourcesRaw = (
+      this.config.get<string>('HASURA_SOURCES') ??
+      this.config.get<string>('HASURA_SOURCE') ??
+      ''
+    ).trim();
     this.sourcesToSync = sourcesRaw
       .split(/\s+/)
       .map((s) => s.trim())

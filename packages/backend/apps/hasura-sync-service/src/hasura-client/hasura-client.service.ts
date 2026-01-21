@@ -45,11 +45,13 @@ export class HasuraClientService {
     const preferInternal =
       ((this.config.get<string>('HASURA_PREFER_INTERNAL') ?? '')
         .trim()
-        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) === 'true';
+        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) ===
+      'true';
     const tryInternal =
       ((this.config.get<string>('HASURA_TRY_INTERNAL') ?? '')
         .trim()
-        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) === 'true';
+        .toLowerCase() || (preferInternalDefault ? 'true' : 'false')) ===
+      'true';
 
     const internalList = internalCandidate ? [internalCandidate] : [];
     const candidates = preferInternal
@@ -80,12 +82,15 @@ export class HasuraClientService {
     this.endpointSelected = this.selectReachableEndpoint(candidates, nodeEnv);
 
     const timeoutRaw =
-      (this.config.get<string>('HASURA_HTTP_TIMEOUT_MS') ?? '').trim() || '30000';
+      (this.config.get<string>('HASURA_HTTP_TIMEOUT_MS') ?? '').trim() ||
+      '30000';
     const retriesRaw =
       (this.config.get<string>('HASURA_HTTP_RETRIES') ?? '').trim() || '3';
     this.requestTimeoutMs = clampInt(parseInt(timeoutRaw, 10), 1000, 300000);
     this.requestRetries = clampInt(parseInt(retriesRaw, 10), 0, 20);
-    this.secret = (this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET') ?? '').trim();
+    this.secret = (
+      this.config.get<string>('HASURA_GRAPHQL_ADMIN_SECRET') ?? ''
+    ).trim();
     if (!this.secret) {
       throw new Error(
         'HASURA_GRAPHQL_ADMIN_SECRET is not set. It is required for /v1/metadata and /v2/query. (Vault: kv/data/archpad/demo/hasura/secret)',
@@ -207,7 +212,10 @@ export class HasuraClientService {
     }
   }
 
-  private async selectReachableEndpoint(candidatesRaw: string[], nodeEnv: string) {
+  private async selectReachableEndpoint(
+    candidatesRaw: string[],
+    nodeEnv: string,
+  ) {
     const candidates = candidatesRaw
       .map((c) => (c ?? '').trim())
       .filter(Boolean)

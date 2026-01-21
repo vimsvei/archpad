@@ -16,7 +16,10 @@ export class ApplicationComponentTechnologyLogicalNetworkMap extends MappedObjec
   })
   component!: ApplicationComponent;
 
-  @HasuraReference({ objectName: 'logicalNetwork', collectionName: 'components' })
+  @HasuraReference({
+    objectName: 'logicalNetwork',
+    collectionName: 'components',
+  })
   @ManyToOne({
     entity: () => TechnologyLogicalNetwork,
     primary: true,

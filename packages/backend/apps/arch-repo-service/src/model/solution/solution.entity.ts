@@ -19,10 +19,10 @@ import { SolutionDataObjectMap } from '@/model/maps/solution-data-object.map';
 import { SolutionApplicationFunctionMap } from '@/model/maps/solution-application-function.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
 import { SolutionImplementationStatus } from '@/model/enums/solution-implementation-status.enum';
-import {SolutionElementGeneric} from "@/model/solution/solution-element.generic";
-import {Variant} from "@/model/solution/variant.entity";
-import {View} from "@/model/solution/view.entity";
-import {SolutionLifecycle} from "@/model/enums/solution-life-cycle.enum";
+import { SolutionElementGeneric } from '@/model/solution/solution-element.generic';
+import { Variant } from '@/model/solution/variant.entity';
+import { View } from '@/model/solution/view.entity';
+import { SolutionLifecycle } from '@/model/enums/solution-life-cycle.enum';
 
 @HasuraTable()
 @Entity({ tableName: 'solutions' })
@@ -45,7 +45,7 @@ export class Solution extends SolutionElementGeneric {
   @ApiProperty()
   @Property({ type: 'text' })
   alternatives!: string;
-  
+
   @ApiProperty({
     enum: SolutionLifecycle,
     description: 'Статус решения',
@@ -75,14 +75,14 @@ export class Solution extends SolutionElementGeneric {
     nullable: true,
   })
   accepted!: ActionStamp;
-  
+
   @HasuraReference({ objectName: 'solution', collectionName: 'variants' })
   @OneToMany({
     entity: () => Variant,
     mappedBy: 'solution',
   })
   variants = new Collection<Variant>(this);
-  
+
   @HasuraReference({ objectName: 'solution', collectionName: 'views' })
   @OneToMany({
     entity: () => View,

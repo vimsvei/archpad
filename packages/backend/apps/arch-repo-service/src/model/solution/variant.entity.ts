@@ -5,11 +5,10 @@ import { SolutionElementGeneric } from '@/model/solution/solution-element.generi
 
 @HasuraTable()
 @Entity({ tableName: 'variants' })
-export class Variant  extends SolutionElementGeneric {
-  
+export class Variant extends SolutionElementGeneric {
   @ArchimateCode('VARIANT')
   override code: string = undefined as any;
-  
+
   @ManyToOne({
     entity: () => Solution,
     fieldName: 'solution_id',
@@ -17,5 +16,4 @@ export class Variant  extends SolutionElementGeneric {
     deleteRule: 'no action',
   })
   solution!: Solution;
-  
 }
