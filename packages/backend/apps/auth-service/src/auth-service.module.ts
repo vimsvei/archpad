@@ -6,6 +6,7 @@ import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
 import { AuthController } from './auth.controller';
+import { HealthController } from './health.controller';
 import { KeycloakService } from './keycloak.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
@@ -109,7 +110,7 @@ import { SchemaInitializerModule } from '@archpad/schema-initializer';
       skipSequenceCreation: true,
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, HealthController],
   providers: [KeycloakService, SessionService],
 })
 export class AuthServiceModule implements OnModuleInit {

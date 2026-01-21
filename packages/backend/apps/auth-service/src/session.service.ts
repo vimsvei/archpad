@@ -13,6 +13,7 @@ type SessionUser = {
   family_name: string | null;
   preferred_username: string | null;
   roles: string[] | null;
+  groups: string[] | null;
 };
 
 @Injectable()
@@ -44,6 +45,12 @@ export class SessionService {
             return Array.isArray(r) ? r.filter((x): x is string => typeof x === 'string') : null;
           })()
         : null;
+    const groups = claims
+      ? (() => {
+          const g = (claims as Record<string, unknown>).groups;
+          return Array.isArray(g) ? g.filter((x): x is string => typeof x === 'string') : null;
+        })()
+      : null;
 
     return {
       ok: true,
@@ -53,6 +60,7 @@ export class SessionService {
       family_name: claims && typeof claims.family_name === 'string' ? claims.family_name : null,
       preferred_username: claims && typeof claims.preferred_username === 'string' ? claims.preferred_username : null,
       roles,
+      groups,
     };
   }
 

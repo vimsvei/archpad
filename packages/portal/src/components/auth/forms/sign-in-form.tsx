@@ -24,6 +24,8 @@ export function SignInForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const returnTo = searchParams?.get("return_to") ?? "/dashboard"
+  const verified = searchParams?.get("verified")
+  const recovered = searchParams?.get("recovered")
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +48,16 @@ export function SignInForm() {
 
   return (
     <div className="grid gap-6">
+      {verified === "1" ? (
+        <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700">
+          {t("auth.common.email-verified")}
+        </div>
+      ) : null}
+      {recovered === "1" ? (
+        <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700">
+          {t("auth.common.password-updated")}
+        </div>
+      ) : null}
       {error ? (
         <div className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
           {error}

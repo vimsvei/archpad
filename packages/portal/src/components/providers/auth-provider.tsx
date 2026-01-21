@@ -9,6 +9,7 @@ type AuthUser = {
   family_name: string | null
   preferred_username: string | null
   roles: string[] | null
+  groups: string[] | null
 }
 
 type AuthContextValue = {
@@ -30,6 +31,7 @@ function normalizeMeResponse(json: any): AuthUser {
     family_name: typeof json?.family_name === "string" ? json.family_name : null,
     preferred_username: typeof json?.preferred_username === "string" ? json.preferred_username : null,
     roles: Array.isArray(json?.roles) ? json.roles.filter((x: unknown) => typeof x === "string") : null,
+    groups: Array.isArray(json?.groups) ? json.groups.filter((x: unknown) => typeof x === "string") : null,
   }
 }
 

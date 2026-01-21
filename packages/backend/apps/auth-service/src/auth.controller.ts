@@ -84,7 +84,21 @@ export class AuthController {
       phone: phone || undefined,
     });
     // optional: send verify email if SMTP configured
-    await this.keycloak.sendExecuteActionsEmail({ email, actions: ['VERIFY_EMAIL'] }).catch(() => {});
+    const clientId =
+      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const portalBase =
+      (process.env.PORTAL_PUBLIC_URL || '').trim() ||
+      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+    const redirectUri = `${portalBase}/sign-in?verified=1`;
+    await this.keycloak
+      .sendExecuteActionsEmail({
+        email,
+        actions: ['VERIFY_EMAIL'],
+        clientId,
+        redirectUri,
+        lifespanSeconds: 60 * 60 * 24, // 24h
+      })
+      .catch(() => {});
     return { ok: true };
   }
 
@@ -95,7 +109,21 @@ export class AuthController {
     const email = String(body.email ?? '').trim().toLowerCase();
     // Avoid user enumeration: always ok.
     if (!email) return { ok: true };
-    await this.keycloak.sendExecuteActionsEmail({ email, actions: ['UPDATE_PASSWORD'] }).catch(() => {});
+    const clientId =
+      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const portalBase =
+      (process.env.PORTAL_PUBLIC_URL || '').trim() ||
+      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+    const redirectUri = `${portalBase}/sign-in?recovered=1`;
+    await this.keycloak
+      .sendExecuteActionsEmail({
+        email,
+        actions: ['UPDATE_PASSWORD'],
+        clientId,
+        redirectUri,
+        lifespanSeconds: 60 * 60, // 1h
+      })
+      .catch(() => {});
     return { ok: true };
   }
 
@@ -105,7 +133,21 @@ export class AuthController {
   async verify(@Body() body: Record<string, unknown>) {
     const email = String(body.email ?? '').trim().toLowerCase();
     if (!email) return { ok: true };
-    await this.keycloak.sendExecuteActionsEmail({ email, actions: ['VERIFY_EMAIL'] }).catch(() => {});
+    const clientId =
+      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const portalBase =
+      (process.env.PORTAL_PUBLIC_URL || '').trim() ||
+      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+    const redirectUri = `${portalBase}/sign-in?verified=1`;
+    await this.keycloak
+      .sendExecuteActionsEmail({
+        email,
+        actions: ['VERIFY_EMAIL'],
+        clientId,
+        redirectUri,
+        lifespanSeconds: 60 * 60 * 24, // 24h
+      })
+      .catch(() => {});
     return { ok: true };
   }
 }

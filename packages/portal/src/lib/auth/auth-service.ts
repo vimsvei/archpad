@@ -8,6 +8,7 @@ type MeResponse = {
   family_name: string | null
   preferred_username: string | null
   roles: string[] | null
+  groups: string[] | null
 }
 
 function getAuthServiceBaseUrl(): string {

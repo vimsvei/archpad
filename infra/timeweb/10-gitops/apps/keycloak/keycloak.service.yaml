@@ -5,6 +5,9 @@ metadata:
   namespace: secure
   annotations:
     argocd.argoproj.io/sync-wave: "46"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9000"
+    prometheus.io/path: "/metrics"
   labels:
     app: keycloak
 spec:
@@ -15,4 +18,8 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+      protocol: TCP
+    - name: management
+      port: 9000
+      targetPort: 9000
       protocol: TCP

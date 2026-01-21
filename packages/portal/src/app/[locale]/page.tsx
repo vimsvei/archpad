@@ -6,7 +6,7 @@ type LocaleRootPageProps = {
 }
 
 export default async function LocaleRootPage({ params }: LocaleRootPageProps) {
-  const { locale: _locale } = await params
+  await params
 
   const c = await cookies()
   if (c.get("archpad_session")?.value) {
