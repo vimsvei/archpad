@@ -30,8 +30,10 @@ spec:
           export GRAFANA_ADMIN_PASSWORD="{{ $admin.Data.data.GRAFANA_ADMIN_PASSWORD }}"
           # Database configuration
           export GF_DATABASE_TYPE="postgres"
-          export GF_DATABASE_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
-          export GF_DATABASE_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
+          # NOTE: inside the cluster we use POSTGRES_ENDPOINT (internal address),
+          # while POSTGRES_HOST is meant for external access.
+          # Grafana expects host:port in GF_DATABASE_HOST.
+          export GF_DATABASE_HOST="{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}:{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
           export GF_DATABASE_NAME="{{ $db.Data.data.GRAFANA_DB }}"
           export GF_DATABASE_USER="{{ $db.Data.data.GRAFANA_DB_USER }}"
           export GF_DATABASE_PASSWORD="{{ $db.Data.data.GRAFANA_DB_PASSWORD }}"

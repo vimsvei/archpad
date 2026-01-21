@@ -27,7 +27,8 @@ spec:
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           # Формируем DSN из компонентов
           {{- $password := $hydraDb.Data.data.HYDRA_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          # In-cluster services should use internal endpoint (POSTGRES_ENDPOINT).
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_ENDPOINT }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export DSN="postgres://{{ $hydraDb.Data.data.HYDRA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hydraDb.Data.data.HYDRA_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4"
           {{- end }}

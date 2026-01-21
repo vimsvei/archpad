@@ -22,7 +22,8 @@ spec:
         vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-template-postgres-proxy: |
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
-          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          # In-cluster proxy should dial internal endpoint (POSTGRES_ENDPOINT).
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}"
           export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
     spec:

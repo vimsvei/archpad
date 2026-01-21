@@ -31,7 +31,8 @@ spec:
           # Формируем строки подключения из компонентов
           # URL-кодируем пароль для безопасной передачи в URI
           {{- $password := $hasuraDb.Data.data.HASURA_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          # In-cluster services should use internal endpoint (POSTGRES_ENDPOINT).
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_ENDPOINT }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export HASURA_GRAPHQL_METADATA_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
           export HASURA_GRAPHQL_DATABASE_URL="postgres://{{ $hasuraDb.Data.data.HASURA_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $hasuraDb.Data.data.HASURA_DB }}?sslmode=disable"
@@ -47,13 +48,13 @@ spec:
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           {{- $password := $common.Data.data.PROJECT_DB_PASSWORD | urlquery }}
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
-          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}"
           export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
           export ARCH_REPO_DB="{{ $archRepo.Data.data.PROJECT_DB }}"
           export TENANT_DB="{{ $tenant.Data.data.TENANT_DB }}"
           # Prefer `from_env` sources to avoid storing credentials in Hasura metadata DB.
-          export ARCH_REPO_DATABASE_URL="postgres://{{ $common.Data.data.PROJECT_DB_USER }}:{{ $password }}@{{ $postgresConnect.Data.data.POSTGRES_HOST }}:{{ $postgresConnect.Data.data.POSTGRES_PORT }}/{{ $archRepo.Data.data.PROJECT_DB }}?sslmode=disable"
-          export TENANT_DATABASE_URL="postgres://{{ $common.Data.data.PROJECT_DB_USER }}:{{ $password }}@{{ $postgresConnect.Data.data.POSTGRES_HOST }}:{{ $postgresConnect.Data.data.POSTGRES_PORT }}/{{ $tenant.Data.data.TENANT_DB }}?sslmode=disable"
+          export ARCH_REPO_DATABASE_URL="postgres://{{ $common.Data.data.PROJECT_DB_USER }}:{{ $password }}@{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}:{{ $postgresConnect.Data.data.POSTGRES_PORT }}/{{ $archRepo.Data.data.PROJECT_DB }}?sslmode=disable"
+          export TENANT_DATABASE_URL="postgres://{{ $common.Data.data.PROJECT_DB_USER }}:{{ $password }}@{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}:{{ $postgresConnect.Data.data.POSTGRES_PORT }}/{{ $tenant.Data.data.TENANT_DB }}?sslmode=disable"
         vault.hashicorp.com/role: "platform"
     spec:
       # Группируем поды на меньшем количестве нод для оптимизации использования ресурсов

@@ -29,7 +29,8 @@ spec:
           {{- $kratosOther := secret "kv/data/archpad/demo/ory/kratos/other" }}
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
           {{- $password := $kratosDb.Data.data.KRATOS_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          # In-cluster services should use internal endpoint (POSTGRES_ENDPOINT).
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_ENDPOINT }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           dsn: postgres://{{ $kratosDb.Data.data.KRATOS_DB_USER }}:{{ $password }}@{{ $pgHost }}:{{ $pgPort }}/{{ $kratosDb.Data.data.KRATOS_DB }}?sslmode=disable&max_conns=20&max_idle_conns=4
 
