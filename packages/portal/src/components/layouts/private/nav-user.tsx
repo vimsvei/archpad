@@ -31,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useAuthSession } from "@/hooks/use-auth-session"
+import { useAuth } from "@/components/providers/auth-provider"
 
 function NavUserContent(
   // { user }: {
@@ -42,28 +42,21 @@ function NavUserContent(
   // } }
 ) {
   const { isMobile } = useSidebar()
-  const { session } = useAuthSession()
+  const { user, logout } = useAuth()
   const router = useRouter()
 
-  const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
+  const sessionObj = user
   const displayName =
     (typeof sessionObj?.name === "string" && sessionObj.name) ||
-    [sessionObj?.given_name, sessionObj?.family_name]
+    [sessionObj?.given_name ?? null, sessionObj?.family_name ?? null]
       .filter((v): v is string => typeof v === "string" && v.length > 0)
       .join(" ") ||
     (typeof sessionObj?.email === "string" ? sessionObj.email.split("@")[0] : "")
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      })
-      if (response.ok) {
-        router.push('/sign-in')
-      } else {
-        router.push('/sign-in')
-      }
+      await logout()
+      router.push('/sign-in')
     } catch (error) {
       console.error('Logout error:', error)
       router.push('/sign-in')

@@ -4,17 +4,16 @@ import * as React from "react"
 import { useTranslate } from "@tolgee/react"
 
 import { Button } from "@/components/ui/button"
-import { useAuthSession } from "@/hooks/use-auth-session"
+import { useAuth } from "@/components/providers/auth-provider"
 
 export function SettingsForm() {
   const { t } = useTranslate()
-  const { session } = useAuthSession()
+  const { user } = useAuth()
   const [message, setMessage] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [isBusy, setIsBusy] = React.useState(false)
 
-  const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
-  const email = sessionObj && typeof sessionObj.email === "string" ? sessionObj.email : ""
+  const email = user?.email ?? ""
 
   const sendRecovery = async () => {
     setError(null)
@@ -29,7 +28,7 @@ export function SettingsForm() {
       })
       if (!res.ok) throw new Error("Failed to send email")
       setMessage("Email sent (if account exists).")
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setIsBusy(false)
@@ -49,7 +48,7 @@ export function SettingsForm() {
       })
       if (!res.ok) throw new Error("Failed to send email")
       setMessage("Email sent (if account exists).")
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setIsBusy(false)

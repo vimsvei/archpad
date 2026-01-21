@@ -8,14 +8,13 @@ type TokenResponse = {
 }
 
 function getKeycloakBaseUrl(): string {
-  // In production (in-cluster) prefer internal URL; in local dev prefer public URL.
   const internal = process.env.KEYCLOAK_INTERNAL_URL?.trim()
   const external = process.env.NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL?.trim()
   const defaultInternal = "http://keycloak.secure.svc:8080"
   const url =
     process.env.NODE_ENV === "production"
       ? internal || defaultInternal || external
-      : external || internal
+      : internal || external || defaultInternal
   if (!url) {
     throw new Error("KEYCLOAK_INTERNAL_URL or NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL must be set")
   }

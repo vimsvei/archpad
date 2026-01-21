@@ -8,6 +8,7 @@ import { useTranslate } from "@tolgee/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/components/providers/auth-provider"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { authFormsActions } from "@/store/slices/auth-forms-slice"
 
@@ -15,6 +16,7 @@ export function SignInForm() {
   const { t } = useTranslate()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { login } = useAuth()
   const dispatch = useAppDispatch()
   const form = useAppSelector((s) => s.authForms.signIn)
 
@@ -28,20 +30,14 @@ export function SignInForm() {
     setError(null)
     setIsSubmitting(true)
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      })
-      const json = (await res.json().catch(() => null)) as any
-      if (!res.ok) {
-        setError(typeof json?.message === "string" ? json.message : "Login failed")
+      const result = await login({ email: form.email, password: form.password })
+      if (!result.ok) {
+        setError(result.message)
         return
       }
       router.push(returnTo)
       router.refresh()
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setIsSubmitting(false)

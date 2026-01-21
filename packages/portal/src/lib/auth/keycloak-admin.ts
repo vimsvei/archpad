@@ -11,7 +11,7 @@ function getKeycloakBaseUrl(): string {
   const url =
     process.env.NODE_ENV === "production"
       ? internal || defaultInternal || external
-      : external || internal
+      : internal || external || defaultInternal
   if (!url) throw new Error("KEYCLOAK_INTERNAL_URL or NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL must be set")
   return url
 }
@@ -120,8 +120,8 @@ async function findUserIdByEmail(email: string): Promise<string | null> {
   if (!res.ok) return null
   const json = (await res.json()) as Array<{ id?: string; email?: string }> | unknown
   if (!Array.isArray(json)) return null
-  const u = json.find((x) => x && typeof x === "object" && (x as any).email === email)
-  return u && typeof (u as any).id === "string" ? (u as any).id : null
+  const u = json.find((x) => x && typeof x === "object" && (x as { email?: unknown }).email === email)
+  return u && typeof (u as { id?: unknown }).id === "string" ? (u as { id: string }).id : null
 }
 
 export async function sendExecuteActionsEmail(input: {
