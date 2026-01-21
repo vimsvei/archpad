@@ -30,8 +30,10 @@ data:
       jwt:
         enabled: true
         config:
+          # NOTE: Oathkeeper validates config schema before any env expansion,
+          # so jwks_urls must be a literal valid URI.
           jwks_urls:
-            - ${KEYCLOAK_INTERNAL_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
+            - http://keycloak:8080/realms/archpad/protocol/openid-connect/certs
           token_from:
             header: Authorization
 
