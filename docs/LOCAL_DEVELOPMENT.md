@@ -45,11 +45,8 @@
 - **Keycloak (Portal client)**:
   - `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL=https://id.archpad.pro`
   - `KEYCLOAK_REALM=archpad`
-  - `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=portal`
-
-- **Keycloak (portal-admin service account)**:
-  - `KEYCLOAK_SERVICE_CLIENT_ID=portal-admin`
-  - `KEYCLOAK_SERVICE_CLIENT_SECRET` — client secret (хранить в Vault, подставлять в `packages/portal/.env.local`)
+  - `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=<OIDC_CLIENT_ID из kv/data/archpad/demo/oidc/portal>`
+  - `AUTH_SERVICE_PUBLIC_URL=http://localhost:3001` (если auth-service запускаете локально)
 
 - **Hasura admin secret (опционально, если нужен server-side bypass)**:
   - Vault path: `kv/data/archpad/demo/hasura/secret`
@@ -132,11 +129,10 @@
 - `NEXT_PUBLIC_URL=http://localhost:3000`
 - `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL=https://id.archpad.pro`
 - `KEYCLOAK_REALM=archpad`
-- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=portal`
+- `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=<OIDC_CLIENT_ID>`
+- `AUTH_SERVICE_PUBLIC_URL=http://localhost:3001`
 
-Для self-service операций (registration/recovery/verify) Portal использует Keycloak Admin API через service-account клиента:
-- `KEYCLOAK_SERVICE_CLIENT_ID=portal-admin`
-- `KEYCLOAK_SERVICE_CLIENT_SECRET=<client secret>`
+Portal больше не ходит в Keycloak Admin API напрямую — self-service операции идут через `auth-service`.
 
 ### Если Keycloak Admin API недоступен снаружи
 

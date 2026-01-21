@@ -22,6 +22,7 @@
 #### Backend Services
 - **arch-repo-service** - основной сервис для работы с проектами
 - **tenant-service** - сервис для работы с tenant'ами
+- **auth-service** - минимальный auth proxy (tokens + user actions) для Keycloak
 - **hasura-sync-service** - Job для синхронизации схемы БД с Hasura
 
 #### Инфраструктура
@@ -63,6 +64,7 @@ find infra/timeweb/10-gitops/apps -name "*.app.yaml" -exec kubectl apply -f {} \
 # Backend сервисы
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.app.yaml
+kubectl apply -f infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.app.yaml
 
 # Frontend
@@ -111,6 +113,7 @@ kubectl get application portal -n argocd
 
 Все сервисы доступны внутри кластера через FQDN:
 - `portal.platform.svc:3000`
+- `auth-service.platform.svc:3000`
 - `hasura.platform.svc:8080`
 - `keycloak.secure.svc:8080`
 - `oathkeeper.secure.svc:4455`
