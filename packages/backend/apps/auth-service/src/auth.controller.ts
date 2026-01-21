@@ -1,40 +1,68 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpCode, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakService } from './keycloak.service';
+import { SessionService } from './session.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly keycloak: KeycloakService) {}
+  constructor(
+    private readonly keycloak: KeycloakService,
+    private readonly sessions: SessionService,
+  ) {}
 
   @Post('login')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Password login (ROPC) via Keycloak' })
+  @ApiOperation({ summary: 'Password login (ROPC) -> server-side session' })
   async login(@Body() body: Record<string, unknown>) {
     const username = String(body.email ?? body.username ?? '').trim();
     const password = String(body.password ?? '');
     if (!username || !password) {
-      return { error: 'Missing email/password' };
+      throw new BadRequestException('Missing email/password');
     }
-    return this.keycloak.passwordLogin({ username, password });
+    try {
+      return await this.sessions.createSessionFromPasswordLogin({ username, password });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new UnauthorizedException(message || 'login_failed');
+    }
   }
 
-  @Post('refresh')
+  @Post('session/access')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Refresh tokens via Keycloak' })
-  async refresh(@Body() body: Record<string, unknown>) {
-    const refreshToken = String(body.refreshToken ?? body.refresh_token ?? '');
-    if (!refreshToken) return { error: 'Missing refreshToken' };
-    return this.keycloak.exchangeRefreshToken({ refreshToken });
+  @ApiOperation({ summary: 'Get access token for session (server-side refresh)' })
+  async sessionAccess(@Body() body: Record<string, unknown>) {
+    const sessionId = String(body.sessionId ?? '').trim();
+    if (!sessionId) throw new BadRequestException('Missing sessionId');
+    try {
+      return await this.sessions.getAccessTokenForSession(sessionId);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new UnauthorizedException(message || 'unauthorized');
+    }
+  }
+
+  @Post('me')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Get current user profile from session' })
+  async me(@Body() body: Record<string, unknown>) {
+    const sessionId = String(body.sessionId ?? '').trim();
+    if (!sessionId) throw new BadRequestException('Missing sessionId');
+    try {
+      return await this.sessions.getMeForSession(sessionId);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new UnauthorizedException(message || 'unauthorized');
+    }
   }
 
   @Post('logout')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Logout (invalidate refresh token) via Keycloak' })
+  @ApiOperation({ summary: 'Logout (revoke server-side session + best-effort KC logout)' })
   async logout(@Body() body: Record<string, unknown>) {
-    const refreshToken = String(body.refreshToken ?? body.refresh_token ?? '');
-    if (!refreshToken) return { ok: true };
-    await this.keycloak.logoutRefreshToken({ refreshToken });
+    const sessionId = String(body.sessionId ?? '').trim();
+    if (!sessionId) return { ok: true };
+    await this.sessions.revokeSession(sessionId).catch(() => {});
     return { ok: true };
   }
 

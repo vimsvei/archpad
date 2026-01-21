@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { setTokensCookies } from "@/lib/auth/oauth"
+import { setSessionCookie } from "@/lib/auth/oauth"
 import { authServiceLogin } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
@@ -24,8 +24,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const tokens = await authServiceLogin({ username, password })
-    await setTokensCookies({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken })
+    const res = await authServiceLogin({ username, password })
+    await setSessionCookie({ sessionId: res.sessionId })
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)

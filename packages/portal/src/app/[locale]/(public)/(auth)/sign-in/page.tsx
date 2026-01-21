@@ -10,9 +10,9 @@ export const revalidate = 0
 export default async function SignInPage() {
   noStore()
 
-  // If user already has an access token cookie, redirect to the app.
+  // If user already has a session cookie, redirect to the app.
   const c = await cookies()
-  if (c.get("archpad_access_token")?.value) {
+  if (c.get("archpad_session")?.value) {
     redirect('/dashboard')
   }
 

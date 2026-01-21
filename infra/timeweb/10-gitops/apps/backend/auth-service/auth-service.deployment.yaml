@@ -22,11 +22,24 @@ spec:
         app: auth-service
       annotations:
         vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-backend-auth-service: "kv/data/archpad/demo/backend/auth-service"
+        vault.hashicorp.com/agent-inject-secret-backend-common: "kv/data/archpad/demo/backend/common"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-secret-keycloak-service: "kv/data/archpad/demo/keycloak/service"
         vault.hashicorp.com/agent-inject-secret-oidc-portal: "kv/data/archpad/demo/oidc/portal"
         vault.hashicorp.com/agent-inject-template-auth-service: |
+          {{- $cfg := secret "kv/data/archpad/demo/backend/auth-service" }}
+          {{- $common := secret "kv/data/archpad/demo/backend/common" }}
+          {{- $pg := secret "kv/data/archpad/demo/postgres/connect" }}
           {{- $svc := secret "kv/data/archpad/demo/keycloak/service" }}
           {{- $oidc := secret "kv/data/archpad/demo/oidc/portal" }}
+          export AUTH_DB="{{ $cfg.Data.data.AUTH_DB }}"
+          export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
+          export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
+          export POSTGRES_ENDPOINT="{{ $pg.Data.data.POSTGRES_ENDPOINT }}"
+          export POSTGRES_PORT="{{ $pg.Data.data.POSTGRES_PORT }}"
+          export POSTGRES_HOST="{{ $pg.Data.data.POSTGRES_HOST }}"
+          export POSTGRES_HOST_PORT="{{ $pg.Data.data.POSTGRES_HOST_PORT }}"
           export KEYCLOAK_INTERNAL_URL="http://keycloak.secure.svc:8080"
           export KEYCLOAK_REALM="archpad"
           export KEYCLOAK_SERVICE_CLIENT_ID="{{ $svc.Data.data.KEYCLOAK_SERVICE_CLIENT_ID }}"
@@ -68,6 +81,11 @@ spec:
                 echo "ERROR: /vault/secrets/auth-service not found"
                 exit 1
               fi
+              [ -n "$AUTH_DB" ] || (echo "ERROR: AUTH_DB is not set" && exit 1)
+              [ -n "$PROJECT_DB_USER" ] || (echo "ERROR: PROJECT_DB_USER is not set" && exit 1)
+              [ -n "$PROJECT_DB_PASSWORD" ] || (echo "ERROR: PROJECT_DB_PASSWORD is not set" && exit 1)
+              [ -n "$POSTGRES_ENDPOINT" ] || (echo "ERROR: POSTGRES_ENDPOINT is not set" && exit 1)
+              [ -n "$POSTGRES_PORT" ] || (echo "ERROR: POSTGRES_PORT is not set" && exit 1)
               [ -n "$KEYCLOAK_SERVICE_CLIENT_ID" ] || (echo "ERROR: KEYCLOAK_SERVICE_CLIENT_ID is not set" && exit 1)
               [ -n "$KEYCLOAK_SERVICE_CLIENT_SECRET" ] || (echo "ERROR: KEYCLOAK_SERVICE_CLIENT_SECRET is not set" && exit 1)
               [ -n "$OIDC_CLIENT_ID" ] || (echo "ERROR: OIDC_CLIENT_ID is not set" && exit 1)

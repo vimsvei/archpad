@@ -21,6 +21,15 @@ export function RecoveryForm() {
   const [sent, setSent] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
+  React.useEffect(() => {
+    if (!sent) return
+    const timer = setTimeout(() => {
+      router.push("/sign-in")
+      router.refresh()
+    }, 2500)
+    return () => clearTimeout(timer)
+  }, [sent, router])
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -70,9 +79,10 @@ export function RecoveryForm() {
             value={form.email}
             onChange={(e) => dispatch(authFormsActions.setRecoveryEmail(e.target.value))}
             required
+            disabled={isSubmitting || sent}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" className="w-full" disabled={isSubmitting || sent}>
           {t("auth.common.submit-send-code")}
         </Button>
       </form>

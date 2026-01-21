@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   noStore()
 
   const c = await cookies()
-  if (!c.get("archpad_access_token")?.value) {
+  if (!c.get("archpad_session")?.value) {
     redirect("/sign-in")
   }
 

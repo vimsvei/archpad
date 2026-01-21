@@ -1,8 +1,7 @@
 import { cookies } from "next/headers"
 import type { NextResponse } from "next/server"
 
-const ACCESS_TOKEN_COOKIE = "archpad_access_token"
-const REFRESH_TOKEN_COOKIE = "archpad_refresh_token"
+const SESSION_COOKIE = "archpad_session"
 const OAUTH_STATE_COOKIE = "archpad_oauth_state"
 const OAUTH_VERIFIER_COOKIE = "archpad_oauth_verifier"
 const OAUTH_RETURN_TO_COOKIE = "archpad_oauth_return_to"
@@ -26,33 +25,30 @@ export async function sha256Base64Url(input: string) {
   return base64UrlEncode(new Uint8Array(hash))
 }
 
-export async function getAccessTokenFromCookies() {
+export async function getSessionIdFromCookies() {
   const c = await cookies()
-  return c.get(ACCESS_TOKEN_COOKIE)?.value ?? null
+  return c.get(SESSION_COOKIE)?.value ?? null
 }
 
-export async function getRefreshTokenFromCookies() {
-  const c = await cookies()
-  return c.get(REFRESH_TOKEN_COOKIE)?.value ?? null
-}
-
-export function setTokensOnResponse(
-  response: NextResponse,
-  input: { accessToken: string; refreshToken?: string }
-) {
+export function setSessionOnResponse(response: NextResponse, input: { sessionId: string }) {
   const opts = {
     httpOnly: true,
     sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
   }
-  response.cookies.set(ACCESS_TOKEN_COOKIE, input.accessToken, { ...opts, maxAge: 15 * 60 })
-  if (input.refreshToken) {
-    response.cookies.set(REFRESH_TOKEN_COOKIE, input.refreshToken, {
-      ...opts,
-      maxAge: 60 * 60 * 24 * 30,
-    })
+  // 30 days
+  response.cookies.set(SESSION_COOKIE, input.sessionId, { ...opts, maxAge: 60 * 60 * 24 * 30 })
+}
+
+export function clearSessionOnResponse(response: NextResponse) {
+  const opts = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
   }
+  response.cookies.set(SESSION_COOKIE, "", { ...opts, maxAge: 0 })
 }
 
 export async function setOAuthTempCookies(input: {
@@ -94,7 +90,7 @@ export async function clearOAuthTempCookies() {
   c.set(OAUTH_RETURN_TO_COOKIE, "", { ...opts, maxAge: 0 })
 }
 
-export async function setTokensCookies(input: { accessToken: string; refreshToken?: string }) {
+export async function setSessionCookie(input: { sessionId: string }) {
   const c = await cookies()
   const opts = {
     httpOnly: true,
@@ -102,13 +98,10 @@ export async function setTokensCookies(input: { accessToken: string; refreshToke
     secure: process.env.NODE_ENV === "production",
     path: "/",
   }
-  c.set(ACCESS_TOKEN_COOKIE, input.accessToken, { ...opts, maxAge: 15 * 60 })
-  if (input.refreshToken) {
-    c.set(REFRESH_TOKEN_COOKIE, input.refreshToken, { ...opts, maxAge: 60 * 60 * 24 * 30 })
-  }
+  c.set(SESSION_COOKIE, input.sessionId, { ...opts, maxAge: 60 * 60 * 24 * 30 })
 }
 
-export async function clearTokensCookies() {
+export async function clearSessionCookie() {
   const c = await cookies()
   const opts = {
     httpOnly: true,
@@ -116,7 +109,6 @@ export async function clearTokensCookies() {
     secure: process.env.NODE_ENV === "production",
     path: "/",
   }
-  c.set(ACCESS_TOKEN_COOKIE, "", { ...opts, maxAge: 0 })
-  c.set(REFRESH_TOKEN_COOKIE, "", { ...opts, maxAge: 0 })
+  c.set(SESSION_COOKIE, "", { ...opts, maxAge: 0 })
 }
 

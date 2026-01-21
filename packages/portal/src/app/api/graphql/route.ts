@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromCookies, getRefreshTokenFromCookies, setTokensOnResponse } from "@/lib/auth/oauth"
-import { authServiceRefresh } from "@/lib/auth/auth-service"
+import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
+import { authServiceSessionAccess } from "@/lib/auth/auth-service"
 
 type GraphQLRequestBody = {
   query: string
@@ -46,11 +46,20 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as GraphQLRequestBody
 
-    // Prefer our stored Keycloak access token (JWT) and send it as Bearer.
-    // This is what Oathkeeper expects for /graphql/* and /rest/*.
-    const token = await getAccessTokenFromCookies()
-    const refreshTokenFromCookie = await getRefreshTokenFromCookies()
-    const auth = token ? `Bearer ${token}` : request.headers.get("authorization")
+    // Browser holds only opaque session id (archpad_session).
+    // Token exchange/refresh is handled by auth-service; JWT never reaches the browser.
+    const sessionId = await getSessionIdFromCookies()
+    const hadSession = Boolean(sessionId)
+    const incomingAuth = request.headers.get("authorization")
+    let auth: string | null = incomingAuth
+    if (sessionId) {
+      try {
+        auth = `Bearer ${(await authServiceSessionAccess({ sessionId })).accessToken}`
+      } catch {
+        // If session is invalid/expired, let upstream respond 401.
+        auth = incomingAuth
+      }
+    }
 
     async function doFetch(currentAuth: string | null) {
       return fetch(targetUrl, {
@@ -65,20 +74,7 @@ export async function POST(request: Request) {
       })
     }
 
-    let refreshedTokens: { accessToken: string; refreshToken?: string } | null = null
-    let currentAuth: string | null = auth
-
-    // Pre-refresh if no access token available but refresh token exists.
-    if (!currentAuth && refreshTokenFromCookie) {
-      try {
-        refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
-        currentAuth = `Bearer ${refreshedTokens.accessToken}`
-      } catch {
-        // ignore
-      }
-    }
-
-    let res = await doFetch(currentAuth)
+    const res = await doFetch(auth)
 
     if (isDev && res.status >= 400) {
       try {
@@ -95,18 +91,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // If access token is expired, try refresh once and retry.
-    if (res.status === 401 && !refreshedTokens) {
-      if (refreshTokenFromCookie) {
-        try {
-          refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
-          res = await doFetch(`Bearer ${refreshedTokens.accessToken}`)
-        } catch {
-          // ignore refresh errors, return original 401 response
-        }
-      }
-    }
-
     const text = await res.text()
     const response = new NextResponse(text, {
       status: res.status,
@@ -114,13 +98,18 @@ export async function POST(request: Request) {
         "content-type": res.headers.get("content-type") ?? "application/json",
       },
     })
-    if (refreshedTokens) {
-      setTokensOnResponse(response, refreshedTokens)
+    if (hadSession && res.status === 401) {
+      clearSessionOnResponse(response)
     }
     return response
-  } catch (e: any) {
+  } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
-    const cause = e?.cause instanceof Error ? e.cause.message : e?.cause ? String(e.cause) : undefined
+    const cause = (() => {
+      if (!e || typeof e !== "object") return undefined
+      const maybeCause = (e as { cause?: unknown }).cause
+      if (maybeCause instanceof Error) return maybeCause.message
+      return maybeCause ? String(maybeCause) : undefined
+    })()
     console.error("[graphql.proxy] failed", { message, cause, base, targetUrl })
     return NextResponse.json(
       {

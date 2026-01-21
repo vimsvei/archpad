@@ -1,4 +1,14 @@
-type TokenResponse = { accessToken: string; refreshToken?: string }
+type LoginResponse = { sessionId: string }
+type AccessResponse = { accessToken: string }
+type MeResponse = {
+  ok: true
+  email: string | null
+  name: string | null
+  given_name: string | null
+  family_name: string | null
+  preferred_username: string | null
+  roles: string[] | null
+}
 
 function getAuthServiceBaseUrl(): string {
   // In-cluster: use service DNS name. In dev: allow override.
@@ -28,15 +38,19 @@ async function postJson<T>(path: string, body: Record<string, unknown>): Promise
   return json as T
 }
 
-export async function authServiceLogin(input: { username: string; password: string }): Promise<TokenResponse> {
-  return postJson<TokenResponse>("/auth/login", input)
+export async function authServiceLogin(input: { username: string; password: string }): Promise<LoginResponse> {
+  return postJson<LoginResponse>("/auth/login", input)
 }
 
-export async function authServiceRefresh(input: { refreshToken: string }): Promise<TokenResponse> {
-  return postJson<TokenResponse>("/auth/refresh", input)
+export async function authServiceSessionAccess(input: { sessionId: string }): Promise<AccessResponse> {
+  return postJson<AccessResponse>("/auth/session/access", input)
 }
 
-export async function authServiceLogout(input: { refreshToken: string }): Promise<void> {
+export async function authServiceMe(input: { sessionId: string }): Promise<MeResponse> {
+  return postJson<MeResponse>("/auth/me", input)
+}
+
+export async function authServiceLogout(input: { sessionId: string }): Promise<void> {
   await postJson<{ ok: true }>("/auth/logout", input)
 }
 

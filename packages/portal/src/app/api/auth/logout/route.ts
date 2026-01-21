@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server"
 
-import { clearTokensCookies, getRefreshTokenFromCookies } from "@/lib/auth/oauth"
+import { clearSessionCookie, getSessionIdFromCookies } from "@/lib/auth/oauth"
 import { authServiceLogout } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
 
 export async function POST() {
-  const refresh = await getRefreshTokenFromCookies()
+  const sessionId = await getSessionIdFromCookies()
   try {
-    if (refresh) await authServiceLogout({ refreshToken: refresh })
+    if (sessionId) await authServiceLogout({ sessionId })
   } catch {
     // ignore upstream logout failures; we still clear local cookies
   }
-  await clearTokensCookies()
+  await clearSessionCookie()
   return NextResponse.json({ ok: true })
 }
 

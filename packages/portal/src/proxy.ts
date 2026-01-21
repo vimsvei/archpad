@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ALL_LANGUAGES, DEFAULT_LANGUAGE } from '@/tolgee/shared'
 
 const LOCALE_COOKIE = 'archpad_locale'
-const ACCESS_TOKEN_COOKIE = 'archpad_access_token'
+const SESSION_COOKIE = 'archpad_session'
 
 const PRIVATE_PREFIXES = ['/dashboard', '/directories', '/application', '/motivation', '/settings', '/solutions', '/flows', '/business', '/strategy', '/technologies', '/implementation']
 
@@ -51,12 +51,12 @@ export default function proxy(request: NextRequest) {
   const cleaned = stripTrailingSlash(pathname)
 
   // "Native" auth gate for private routes:
-  // our upstream access rules for /graphql and /rest require a Keycloak JWT access token,
-  // stored in an httpOnly cookie. If it's missing, redirect to the portal sign-in page.
+  // We store only an opaque session id in httpOnly cookie (tokens live in auth-service DB).
+  // If it's missing, redirect to the portal sign-in page.
   if (
     request.method === 'GET' &&
     PRIVATE_PREFIXES.some((p) => cleaned === p || cleaned.startsWith(`${p}/`)) &&
-    !request.cookies.get(ACCESS_TOKEN_COOKIE)?.value
+    !request.cookies.get(SESSION_COOKIE)?.value
   ) {
     const url = request.nextUrl.clone()
     const returnTo = `${cleaned}${url.search}`

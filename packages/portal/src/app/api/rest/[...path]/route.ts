@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server"
 
-import {
-  getAccessTokenFromCookies,
-  getRefreshTokenFromCookies,
-  setTokensOnResponse,
-} from "@/lib/auth/oauth"
-import { authServiceRefresh } from "@/lib/auth/auth-service"
+import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
+import { authServiceSessionAccess } from "@/lib/auth/auth-service"
 
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).
@@ -74,12 +70,18 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
   target.pathname = `/rest/${path.join("/")}`
   target.search = inUrl.search
 
-  const token = await getAccessTokenFromCookies()
-  const refreshTokenFromCookie = await getRefreshTokenFromCookies()
   const incomingAuth = request.headers.get("authorization")
-  // We intentionally do NOT accept cookies from the browser as "credentials" for Oathkeeper.
-  // Only an access token (Bearer) should be sent. If it's missing, we refresh using refresh_token cookie.
-  let auth = token ? `Bearer ${token}` : incomingAuth
+  const sessionId = await getSessionIdFromCookies()
+  const hadSession = Boolean(sessionId)
+  // Browser holds only opaque session id. JWT is requested from auth-service server-side.
+  let auth: string | null = incomingAuth
+  if (sessionId) {
+    try {
+      auth = `Bearer ${(await authServiceSessionAccess({ sessionId })).accessToken}`
+    } catch {
+      auth = incomingAuth
+    }
+  }
 
   // Forward selected headers.
   const headers = new Headers()
@@ -99,7 +101,7 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     const headersObj = headersToObject(headers, { redactAuthorization: true })
     const cookiePresent = Boolean(request.headers.get("cookie"))
     const authPresent = Boolean(auth)
-    const authSource = token ? "cookie" : incomingAuth ? "header" : "missing"
+    const authSource = sessionId ? "session" : incomingAuth ? "header" : "missing"
     const bodyLen = body?.byteLength ?? 0
 
     console.info(
@@ -127,8 +129,6 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     }
   }
 
-  let refreshedTokens: { accessToken: string; refreshToken?: string } | null = null
-
   async function doFetch(currentAuth: string | null) {
     const h = new Headers(headers)
     if (currentAuth) h.set("authorization", currentAuth)
@@ -140,41 +140,8 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     })
   }
 
-  // If we have no access token but do have a refresh token, refresh first so the initial request is authorized.
-  if (!auth && refreshTokenFromCookie) {
-    try {
-      if (isDev) console.info(`[rest.proxy] refresh id=${requestId} start (pre)`)
-      refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
-      auth = `Bearer ${refreshedTokens.accessToken}`
-      if (isDev) {
-        const redacted = `${auth.slice(0, 20)}…`
-        console.info(`[rest.proxy] refresh id=${requestId} ok (pre) auth=${redacted}`)
-      }
-    } catch (e: any) {
-      if (isDev)
-        console.info(
-          `[rest.proxy] refresh id=${requestId} failed (pre) error=${e?.message ?? "unknown"}`
-        )
-    }
-  }
-
-  let res = await doFetch(auth)
+  const res = await doFetch(auth)
   const duration = Date.now() - startTime
-
-  // If access token is expired, try refresh once and retry the request.
-  if (res.status === 401 && !refreshedTokens) {
-    if (refreshTokenFromCookie) {
-      try {
-        if (isDev) console.info(`[rest.proxy] refresh id=${requestId} start`)
-        refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
-        const retryAuth = `Bearer ${refreshedTokens.accessToken}`
-        res = await doFetch(retryAuth)
-        if (isDev) console.info(`[rest.proxy] refresh id=${requestId} ok retryStatus=${res.status}`)
-      } catch (e: any) {
-        if (isDev) console.info(`[rest.proxy] refresh id=${requestId} failed error=${e?.message ?? "unknown"}`)
-      }
-    }
-  }
 
   const outHeaders = new Headers()
   const outCt = res.headers.get("content-type")
@@ -205,12 +172,8 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
   }
 
   const response = new NextResponse(buf, { status: res.status, headers: outHeaders })
-  if (refreshedTokens) {
-    setTokensOnResponse(response, refreshedTokens)
-    if (isDev) {
-      const tokenPreview = `${refreshedTokens.accessToken.slice(0, 12)}…${refreshedTokens.accessToken.slice(-8)}`
-      console.info(`[rest.proxy] set_tokens id=${requestId} access_token=${tokenPreview}`)
-    }
+  if (hadSession && res.status === 401) {
+    clearSessionOnResponse(response)
   }
   return response
 }

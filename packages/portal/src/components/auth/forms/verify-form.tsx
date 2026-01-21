@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useTranslate } from "@tolgee/react"
 
 import { Button } from "@/components/ui/button"
@@ -12,12 +13,22 @@ import { authFormsActions } from "@/store/slices/auth-forms-slice"
 
 export function VerifyForm() {
   const { t } = useTranslate()
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const form = useAppSelector((s) => s.authForms.verification)
 
   const [error, setError] = React.useState<string | null>(null)
   const [sent, setSent] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+
+  React.useEffect(() => {
+    if (!sent) return
+    const timer = setTimeout(() => {
+      router.push("/sign-in")
+      router.refresh()
+    }, 2500)
+    return () => clearTimeout(timer)
+  }, [sent, router])
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,10 +79,11 @@ export function VerifyForm() {
             value={form.email}
             onChange={(e) => dispatch(authFormsActions.setVerificationEmail(e.target.value))}
             required
+            disabled={isSubmitting || sent}
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" className="w-full" disabled={isSubmitting || sent}>
           {t("auth.common.submit-send-code")}
         </Button>
       </form>

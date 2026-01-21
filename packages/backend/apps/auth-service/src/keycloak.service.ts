@@ -50,7 +50,12 @@ export class KeycloakService {
     return s;
   }
 
-  private async tokenRequest(body: URLSearchParams): Promise<{ accessToken: string; refreshToken?: string }> {
+  private async tokenRequest(body: URLSearchParams): Promise<{
+    accessToken: string;
+    refreshToken?: string;
+    expiresIn?: number;
+    refreshExpiresIn?: number;
+  }> {
     // Ensure VaultConfigService has loaded in local dev (no-op in prod when injected via env).
     await this.vault.ensureLoaded();
 
@@ -77,7 +82,12 @@ export class KeycloakService {
     if (!res.ok || !json.access_token) {
       throw new Error(json.error_description ?? json.error ?? `token_request_failed (${res.status})`);
     }
-    return { accessToken: json.access_token, refreshToken: json.refresh_token };
+    return {
+      accessToken: json.access_token,
+      refreshToken: json.refresh_token,
+      expiresIn: typeof json.expires_in === 'number' ? json.expires_in : undefined,
+      refreshExpiresIn: typeof json.refresh_expires_in === 'number' ? json.refresh_expires_in : undefined,
+    };
   }
 
   async passwordLogin(input: { username: string; password: string; scope?: string }) {
