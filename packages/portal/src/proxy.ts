@@ -77,7 +77,7 @@ export default function proxy(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone()
     const returnTo = `${cleaned}${url.search}`
-    url.pathname = '/oauth/login'
+    url.pathname = '/sign-in'
     url.search = `?return_to=${encodeURIComponent(returnTo)}`
     return NextResponse.redirect(url)
   }

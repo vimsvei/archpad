@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslate } from "@tolgee/react"
 
 import { Button } from "@/components/ui/button"
@@ -9,101 +10,90 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { authFormsActions } from "@/store/slices/auth-forms-slice"
-import { FlowMessages } from "@/components/auth/kratos/flow-messages"
-import { FlowDebug } from "@/components/auth/kratos/flow-debug"
-import {
-  getCsrfToken,
-  getFlowId,
-  getFlowMessages,
-  getFlowMeta,
-  getNodeMessages,
-  pickMethod,
-} from "@/components/auth/kratos/flow-utils"
-import { resolveFieldName } from "@/components/auth/kratos/field-resolver"
-import { KratosFormRoot } from "@/components/auth/kratos/native-form-root"
 
-export function SignInForm({ flow }: { flow: unknown }) {
+export function SignInForm() {
   const { t } = useTranslate()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
   const form = useAppSelector((s) => s.authForms.signIn)
 
-  const [flowState, setFlowState] = React.useState<unknown>(flow)
-  React.useEffect(() => setFlowState(flow), [flow])
+  const [error, setError] = React.useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  React.useEffect(() => {
-    dispatch(authFormsActions.setActiveFlowId(getFlowId(flowState) ?? null))
-    dispatch(authFormsActions.setFlowMeta(getFlowMeta(flowState)))
-  }, [dispatch, flowState])
+  const returnTo = searchParams?.get("return_to") ?? "/dashboard"
 
-  const meta = React.useMemo(() => getFlowMeta(flowState), [flowState])
-  const csrfToken = getCsrfToken(flowState)
-  const method = pickMethod(flowState, [form.selectedMethod, "password"], "password")
-
-  const emailName = resolveFieldName(flowState, "login", "email")
-  const passwordName = resolveFieldName(flowState, "login", "password")
-
-  const globalErrors = getFlowMessages(flowState)
-  const emailErrors = getNodeMessages(flowState, emailName)
-  const passwordErrors = getNodeMessages(flowState, passwordName)
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setIsSubmitting(true)
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      })
+      const json = (await res.json().catch(() => null)) as any
+      if (!res.ok) {
+        setError(typeof json?.message === "string" ? json.message : "Login failed")
+        return
+      }
+      router.push(returnTo)
+      router.refresh()
+    } catch (e: any) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="grid gap-6">
-      <FlowMessages messages={globalErrors} />
-      <FlowDebug flow={flowState} />
+      {error ? (
+        <div className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {error}
+        </div>
+      ) : null}
 
-      <KratosFormRoot
-        action={meta.action ?? undefined}
-        method={meta.httpMethod ?? undefined}
-        onFlow={setFlowState}
-      >
-        {csrfToken ? <input type="hidden" name="csrf_token" value={csrfToken} /> : null}
-        <input type="hidden" name="method" value={method} />
-
+      <form onSubmit={onSubmit} className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor={emailName}>{t("auth.field.email")}</Label>
+          <Label htmlFor="email">{t("auth.field.email")}</Label>
           <Input
-            id={emailName}
-            name={emailName}
+            id="email"
+            name="email"
             type="email"
             autoComplete="email"
             value={form.email}
-            onChange={(e) =>
-              dispatch(authFormsActions.setSignInEmail(e.target.value))
-            }
+            onChange={(e) => dispatch(authFormsActions.setSignInEmail(e.target.value))}
             required
           />
-          <FlowMessages messages={emailErrors} className="border border-destructive/20 bg-destructive/5" />
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={passwordName}>{t("auth.field.password")}</Label>
+          <Label htmlFor="password">{t("auth.field.password")}</Label>
           <Input
-            id={passwordName}
-            name={passwordName}
+            id="password"
+            name="password"
             type={form.showPassword ? "text" : "password"}
             autoComplete="current-password"
             value={form.password}
-            onChange={(e) =>
-              dispatch(authFormsActions.setSignInPassword(e.target.value))
-            }
+            onChange={(e) => dispatch(authFormsActions.setSignInPassword(e.target.value))}
             required
           />
-          <FlowMessages messages={passwordErrors} className="border border-destructive/20 bg-destructive/5" />
         </div>
 
-        <Button type="submit" className="w-full">
-          {t("auth.sign-in.submit")}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? t("auth.sign-in.submit") : t("auth.sign-in.submit")}
         </Button>
-      </KratosFormRoot>
+      </form>
 
       <div className="grid gap-2 text-center text-sm">
         <Link href="/recovery" className="underline underline-offset-4 hover:opacity-80">
           {t("auth.sign-in.forgot")}
         </Link>
         <div>
-          <span className="text-muted-foreground">
-            {t("auth.sign-in.footer.no-account")}
-          </span>{" "}
+          <span className="text-muted-foreground">{t("auth.sign-in.footer.no-account")}</span>{" "}
           <Link href="/sign-up" className="underline underline-offset-4 hover:opacity-80">
             {t("auth.sign-in.footer.sign-up")}
           </Link>
@@ -112,5 +102,3 @@ export function SignInForm({ flow }: { flow: unknown }) {
     </div>
   )
 }
-
-

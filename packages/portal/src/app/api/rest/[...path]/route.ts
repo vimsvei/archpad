@@ -5,7 +5,7 @@ import {
   getRefreshTokenFromCookies,
   setTokensOnResponse,
 } from "@/lib/auth/oauth"
-import { exchangeRefreshToken } from "@/lib/auth/hydra"
+import { exchangeRefreshToken } from "@/lib/auth/keycloak"
 
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).

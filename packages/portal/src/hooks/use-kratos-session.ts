@@ -18,7 +18,7 @@ export function useKratosSession(): KratosSessionState {
     setIsLoading(true)
     setError(null)
     try {
-      const res = await fetch("/sessions/whoami", {
+      const res = await fetch("/api/auth/me", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -32,7 +32,7 @@ export function useKratosSession(): KratosSessionState {
       }
       if (!res.ok) {
         const text = await res.text().catch(() => "")
-        throw new Error(`whoami failed: ${res.status} ${text.slice(0, 300)}`)
+        throw new Error(`session failed: ${res.status} ${text.slice(0, 300)}`)
       }
       const json = await res.json()
       setSession(json ?? null)

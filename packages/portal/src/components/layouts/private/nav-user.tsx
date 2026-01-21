@@ -46,42 +46,21 @@ function NavUserContent(
   const router = useRouter()
 
   const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
-  const identity = sessionObj && typeof sessionObj.identity === "object" && sessionObj.identity !== null
-    ? (sessionObj.identity as Record<string, unknown>)
-    : null
-  const traits =
-    identity && typeof identity.traits === "object" && identity.traits !== null
-      ? (identity.traits as Record<string, unknown>)
-      : {}
-  const nameTrait = traits.name
   const displayName =
-    (typeof nameTrait === "string" && nameTrait) ||
-    (nameTrait && typeof nameTrait === "object" && nameTrait !== null
-      ? [
-          (nameTrait as Record<string, unknown>).first,
-          (nameTrait as Record<string, unknown>).last,
-        ]
-          .filter((v): v is string => typeof v === "string" && v.length > 0)
-          .join(" ")
-      : "") ||
-    [traits.given_name, traits.family_name]
+    (typeof sessionObj?.name === "string" && sessionObj.name) ||
+    [sessionObj?.given_name, sessionObj?.family_name]
       .filter((v): v is string => typeof v === "string" && v.length > 0)
       .join(" ") ||
-    (typeof traits.email === "string" ? traits.email.split("@")[0] : "")
+    (typeof sessionObj?.email === "string" ? sessionObj.email.split("@")[0] : "")
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/ory/logout', {
-        method: 'GET',
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
         credentials: 'include',
       })
       if (response.ok) {
-        const data = await response.json()
-        if (data.logout_url) {
-          window.location.href = data.logout_url
-        } else {
-          router.push('/sign-in')
-        }
+        router.push('/sign-in')
       } else {
         router.push('/sign-in')
       }
@@ -106,7 +85,7 @@ function NavUserContent(
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayName}</span>
-                <span className="truncate text-xs">{typeof traits.email === "string" ? traits.email : ""}</span>
+                <span className="truncate text-xs">{typeof sessionObj?.email === "string" ? sessionObj.email : ""}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

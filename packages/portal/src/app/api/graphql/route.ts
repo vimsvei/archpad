@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getAccessTokenFromCookies, getRefreshTokenFromCookies, setTokensOnResponse } from "@/lib/auth/oauth"
-import { exchangeRefreshToken } from "@/lib/auth/hydra"
+import { exchangeRefreshToken } from "@/lib/auth/keycloak"
 
 type GraphQLRequestBody = {
   query: string
