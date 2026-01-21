@@ -18,9 +18,9 @@ spec:
       annotations:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-oathkeeper: "kv/data/archpad/demo/ory/oathkeeper"
+        vault.hashicorp.com/agent-inject-secret-keycloak-connect: "kv/data/archpad/demo/keycloak/connect"
         vault.hashicorp.com/agent-inject-template-oathkeeper: |
-          {{- with secret "kv/data/archpad/demo/ory/oathkeeper" }}
+          {{- with secret "kv/data/archpad/demo/keycloak/connect" }}
           {{- range $k, $v := .Data.data }}
           export {{ $k }}="{{ $v }}"
           {{- end }}
@@ -68,6 +68,9 @@ spec:
           env:
             - name: LOG_LEVEL
               value: "info"
+            # Default realm name for Keycloak JWKS issuer URL.
+            - name: KEYCLOAK_REALM
+              value: "archpad"
           volumeMounts:
             - name: config
               mountPath: /etc/oathkeeper/config.yml

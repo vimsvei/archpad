@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-keycloak-admin: "kv/data/archpad/demo/keycloak/admin"
+        vault.hashicorp.com/agent-inject-secret-keycloak-db: "kv/data/archpad/demo/keycloak/db"
+        vault.hashicorp.com/agent-inject-secret-keycloak-connect: "kv/data/archpad/demo/keycloak/connect"
+        vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
+        vault.hashicorp.com/agent-inject-secret-keycloak-smtp: "kv/data/archpad/demo/keycloak/smtp"
+        vault.hashicorp.com/agent-inject-template-keycloak: |
+          {{- $admin := secret "kv/data/archpad/demo/keycloak/admin" }}
+          {{- $db := secret "kv/data/archpad/demo/keycloak/db" }}
+          {{- $connect := secret "kv/data/archpad/demo/keycloak/connect" }}
+          {{- $postgres := secret "kv/data/archpad/demo/postgres/connect" }}
+          {{- $smtp := secret "kv/data/archpad/demo/keycloak/smtp" }}
+          # Admin bootstrap
+          export KEYCLOAK_ADMIN="{{ $admin.Data.data.KEYCLOAK_ADMIN_USER }}"
+          export KEYCLOAK_ADMIN_PASSWORD="{{ $admin.Data.data.KEYCLOAK_ADMIN_PASSWORD }}"
+
+          # Hostnames
+          export KC_HOSTNAME="{{ $connect.Data.data.KEYCLOAK_HOST }}"
+
+          # Database
+          export KC_DB="postgres"
+          export KC_DB_USERNAME="{{ $db.Data.data.KEYCLOAK_DB_USER }}"
+          export KC_DB_PASSWORD="{{ $db.Data.data.KEYCLOAK_DB_PASSWORD }}"
+          export KC_DB_URL="jdbc:postgresql://{{ $postgres.Data.data.POSTGRES_ENDPOINT }}:{{ $postgres.Data.data.POSTGRES_PORT }}/{{ $db.Data.data.KEYCLOAK_DB }}"
+
+          # SMTP (optional). We intentionally treat SMTP_INTERNAL_URL as host.
+          {{- if $smtp.Data.data.SMTP_INTERNAL_URL }}
+          export KC_MAIL_HOST="{{ $smtp.Data.data.SMTP_INTERNAL_URL }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_PORT }}
+          export KC_MAIL_PORT="{{ $smtp.Data.data.SMTP_PORT }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_USER }}
+          export KC_MAIL_USER="{{ $smtp.Data.data.SMTP_USER }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_PASSWORD }}
+          export KC_MAIL_PASSWORD="{{ $smtp.Data.data.SMTP_PASSWORD }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_FROM_ADDRESS }}
+          export KC_MAIL_FROM="{{ $smtp.Data.data.SMTP_FROM_ADDRESS }}"
+          {{- end }}
+        vault.hashicorp.com/role: "secure"
+    spec:
+      serviceAccountName: keycloak
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              # Load env rendered by Vault Agent Injector.
+              if [ -f /vault/secrets/keycloak ]; then
+                set -a
+                . /vault/secrets/keycloak
+                set +a
+              else
+                echo "ERROR: /vault/secrets/keycloak not found"
+                exit 1
+              fi
+
+              # Keycloak is behind Traefik TLS, so run HTTP inside cluster.
+              export KC_HTTP_ENABLED="${KC_HTTP_ENABLED:-true}"
+              export KC_PROXY="${KC_PROXY:-edge}"
+              export KC_HEALTH_ENABLED="${KC_HEALTH_ENABLED:-true}"
+              export KC_METRICS_ENABLED="${KC_METRICS_ENABLED:-true}"
+
+              exec /opt/keycloak/bin/kc.sh start
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi

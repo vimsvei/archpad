@@ -17,7 +17,7 @@ data:
         preserve_host: true
         strip_path: /graphql
       authenticators:
-        - handler: oauth2_introspection
+        - handler: jwt
       authorizer:
         handler: allow
       mutators:
@@ -110,7 +110,7 @@ data:
         preserve_host: true
         strip_path: /rest/arch-repo-service
       authenticators:
-        - handler: oauth2_introspection
+        - handler: jwt
       authorizer:
         handler: allow
       mutators:
@@ -130,7 +130,7 @@ data:
         preserve_host: true
         strip_path: /rest/tenant-service
       authenticators:
-        - handler: oauth2_introspection
+        - handler: jwt
       authorizer:
         handler: allow
       mutators:

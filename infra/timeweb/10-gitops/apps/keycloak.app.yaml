@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kratos
+  name: keycloak
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "10"
@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://gitlab.com/zs-archipad/archpad.git
     targetRevision: main
-    path: infra/timeweb/10-gitops/apps/ory/kratos
+    path: infra/timeweb/10-gitops/apps/keycloak
     directory:
       recurse: false
   syncPolicy:
@@ -22,19 +22,11 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  # Игнорируем изменения, которые вносят Vault Agent Injector и другие mutating webhooks
   ignoreDifferences:
-    # Игнорируем изменения в Pod template spec (init-контейнеры, sidecar'ы от Vault Agent)
+    # Vault Agent Injector mutates pod spec (init containers + sidecar).
     - group: apps
       kind: Deployment
-      name: kratos
-      namespace: secure
-      jsonPointers:
-        - /spec/template/spec
-    # Игнорируем изменения в Job (Vault Agent Injector добавляет init-контейнеры)
-    - group: batch
-      kind: Job
-      name: kratos-migrate
+      name: keycloak
       namespace: secure
       jsonPointers:
         - /spec/template/spec
