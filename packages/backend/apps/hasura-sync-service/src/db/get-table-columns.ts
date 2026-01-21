@@ -1,4 +1,5 @@
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
+import { rowsFromRunSql } from './run-sql';
 
 export async function getTableColumns(args: {
   hasura: HasuraClientService;
@@ -15,6 +16,6 @@ export async function getTableColumns(args: {
   `;
 
   const res = await hasura.runSql(sql);
-  const rows = res.result?.slice(1) ?? [];
+  const rows = rowsFromRunSql(res);
   return rows.map(([name]) => name);
 }

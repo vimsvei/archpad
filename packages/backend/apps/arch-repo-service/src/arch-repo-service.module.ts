@@ -133,6 +133,10 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
               process.cwd(),
               'dist/libs/models/src/**/*.embeddable{.ts,.js}',
             ),
+            path.join(
+              process.cwd(),
+              'dist/libs/models/src/**/*.entity{.ts,.js}',
+            ),
           ],
           host: pgHost,
           port: pgPort,

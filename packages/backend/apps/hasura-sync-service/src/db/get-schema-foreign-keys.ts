@@ -1,5 +1,6 @@
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { ForeignKeyInfo } from './types';
+import { runSqlJsonRows } from './run-sql';
 
 export async function getSchemaForeignKeys(
   hasura: HasuraClientService,
@@ -35,8 +36,5 @@ export async function getSchemaForeignKeys(
       kcu.table_schema,
       kcu.table_name;
   `;
-
-  const res = await hasura.runSql(sql);
-  const rows = res.result?.slice(1) ?? [];
-  return rows.map(([json]) => JSON.parse(json) as ForeignKeyInfo);
+  return runSqlJsonRows<ForeignKeyInfo>(hasura, sql);
 }

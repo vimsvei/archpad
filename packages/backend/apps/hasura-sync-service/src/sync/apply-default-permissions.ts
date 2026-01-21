@@ -1,7 +1,7 @@
 import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
-import { getTableColumns } from '../db/get-table-columns';
+import { getSchemaTableColumns } from '../db/get-schema-table-columns';
 
 function isAlreadyExistsError(e: unknown): boolean {
   const msg = (e as any)?.message ?? '';
@@ -37,18 +37,14 @@ export async function applyDefaultSelectPermissions(args: {
 
   logger.log(`Applying default select permissions for role="${role}"...`);
 
+  const columnsByTable = await getSchemaTableColumns(hasura).catch((e) => {
+    logger.warn(`Failed to fetch schema columns: ${formatHasuraError(e)}`);
+    return new Map<string, string[]>();
+  });
+
   const ops: any[] = [];
   for (const t of tables) {
-    const columns = await getTableColumns({
-      hasura,
-      schema: t.schema,
-      table: t.name,
-    }).catch((e) => {
-      logger.warn(
-        `Failed to fetch columns for ${t.schema}.${t.name}: ${formatHasuraError(e)}`,
-      );
-      return [];
-    });
+    const columns = columnsByTable.get(t.name) ?? [];
 
     if (!columns.length) {
       logger.warn(

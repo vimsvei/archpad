@@ -1,13 +1,13 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { MikroORM, ReferenceKind } from '@mikro-orm/core';
 import {
-  HASURA_SYNC_REGISTRY_SQL,
-  getHasuraCamelCaseFields,
+  getHasuraProperties,
   getHasuraReferences,
   getHasuraTables,
-  HasuraCamelCaseUsage,
+  HasuraPropertyUsage,
   HasuraReferenceUsage,
   HasuraTableUsage,
+  isHasuraEmbeddable,
 } from '@archpad/models';
 import { LoggerService } from '@archpad/logger';
 
@@ -54,10 +54,9 @@ export class HasuraRelationshipNameInitializer
   async onApplicationBootstrap() {
     const references = getHasuraReferences();
     const tableUsages = getHasuraTables();
-    const camelCaseFields = getHasuraCamelCaseFields();
+    const hasuraProperties = getHasuraProperties();
 
-    const hasAny =
-      references.length || tableUsages.length || camelCaseFields.length;
+    const hasAny = references.length || tableUsages.length || hasuraProperties.length;
     if (!hasAny) return;
 
     const conn = this.orm.em.getConnection();
@@ -82,8 +81,8 @@ export class HasuraRelationshipNameInitializer
     if (tableUsages.length) {
       await this.applyHasuraTableOverrides(conn, tableUsages);
     }
-    if (camelCaseFields.length) {
-      await this.applyHasuraCamelCaseColumnOverrides(conn, camelCaseFields);
+    if (hasuraProperties.length) {
+      await this.applyHasuraPropertyOverrides(conn, hasuraProperties);
     }
   }
 
@@ -338,34 +337,69 @@ export class HasuraRelationshipNameInitializer
       await this.upsertTableOverride(conn, {
         schema,
         table,
-        customName: t.entity.name,
+        customName: t.options?.name ?? t.entity.name,
+        camelCase: t.options?.camelCase ?? true,
       });
 
-      // For scalar columns: set column comments to mapped property names.
-      const props = Object.entries<any>(m.properties ?? {});
-      for (const [propName, prop] of props) {
-        if (prop.reference !== ReferenceKind.SCALAR) continue;
-        const fieldNames: string[] = prop.fieldNames ?? [];
-        for (const col of fieldNames) {
-          await this.upsertColumnOverride(conn, {
-            schema,
-            table,
-            column: col,
-            customName: propName,
-          });
+      if (t.options?.camelCase ?? true) {
+        // For scalar columns: set column comments to mapped property names.
+        const props = Object.entries<any>(m.properties ?? {});
+        for (const [propName, prop] of props) {
+          if (prop.reference === ReferenceKind.SCALAR) {
+            const fieldNames: string[] = prop.fieldNames ?? [];
+            for (const col of fieldNames) {
+              await this.upsertColumnOverride(conn, {
+                schema,
+                table,
+                column: col,
+                customName: propName,
+              });
+            }
+            continue;
+          }
+
+          // For embedded objects that are explicitly marked as HasuraEmbeddable:
+          // expose underlying scalar columns as `parentChild`.
+          //
+          // NOTE: Hasura can't expose a real nested object from multiple columns without a view/function.
+          if (prop.reference === ReferenceKind.EMBEDDED) {
+            const embeddedCtor =
+              (typeof prop.type === 'function' ? (prop.type as Function) : undefined) ??
+              (typeof prop.embeddable === 'function'
+                ? (prop.embeddable as Function)
+                : undefined) ??
+              (typeof prop.entity === 'function' ? (prop.entity as Function) : undefined);
+
+            if (!embeddedCtor || !isHasuraEmbeddable(embeddedCtor)) continue;
+
+            const embeddedProps: Record<string, any> = prop.embeddedProps ?? {};
+            for (const [subName, subProp] of Object.entries<any>(embeddedProps)) {
+              if ((subProp.reference ?? ReferenceKind.SCALAR) !== ReferenceKind.SCALAR)
+                continue;
+              const cols: string[] = subProp.fieldNames ?? [];
+              for (const col of cols) {
+                await this.upsertColumnOverride(conn, {
+                  schema,
+                  table,
+                  column: col,
+                  customName: `${propName}${upperFirst(subName)}`,
+                });
+              }
+            }
+          }
         }
       }
 
       this.logger.log(
-        `Applied @HasuraTable naming comments for ${schema}.${table} -> ${t.entity.name}`,
+        `Applied @HasuraTable naming comments for ${schema}.${table} -> ${t.options?.name ?? t.entity.name}`,
         this.loggerContext,
       );
     }
   }
 
-  private async applyHasuraCamelCaseColumnOverrides(
+  private async applyHasuraPropertyOverrides(
     conn: any,
-    fields: HasuraCamelCaseUsage[],
+    fields: HasuraPropertyUsage[],
   ) {
     const meta = this.orm.getMetadata();
     const defaultSchema =
@@ -376,7 +410,7 @@ export class HasuraRelationshipNameInitializer
     for (const f of fields) {
       if (!f.entity || !f.entity.name) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on unknown entity.${String(
+          `Skipping @HasuraProperty on unknown entity.${String(
             f.propertyKey,
           )}: entity is undefined or has no name`,
           this.loggerContext,
@@ -389,7 +423,7 @@ export class HasuraRelationshipNameInitializer
         m = meta.get(f.entity.name);
       } catch (error) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on ${f.entity.name}.${String(
+          `Skipping @HasuraProperty on ${f.entity.name}.${String(
             f.propertyKey,
           )}: entity metadata not found (entity not discovered?)`,
           this.loggerContext,
@@ -399,7 +433,7 @@ export class HasuraRelationshipNameInitializer
 
       if (!m) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on ${f.entity.name}.${String(
+          `Skipping @HasuraProperty on ${f.entity.name}.${String(
             f.propertyKey,
           )}: entity metadata not found (entity not discovered?)`,
           this.loggerContext,
@@ -413,7 +447,7 @@ export class HasuraRelationshipNameInitializer
       const prop: any = m.properties?.[propName];
       if (!prop) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on ${f.entity.name}.${propName}: property metadata not found`,
+          `Skipping @HasuraProperty on ${f.entity.name}.${propName}: property metadata not found`,
           this.loggerContext,
         );
         continue;
@@ -421,7 +455,7 @@ export class HasuraRelationshipNameInitializer
 
       if (prop.reference !== ReferenceKind.SCALAR) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on ${f.entity.name}.${propName}: expected scalar column`,
+          `Skipping @HasuraProperty on ${f.entity.name}.${propName}: expected scalar column`,
           this.loggerContext,
         );
         continue;
@@ -430,24 +464,30 @@ export class HasuraRelationshipNameInitializer
       const cols: string[] = prop.fieldNames ?? [];
       if (!cols.length) {
         this.logger.warn(
-          `Skipping @HasuraCamelCase on ${f.entity.name}.${propName}: column name not resolved`,
+          `Skipping @HasuraProperty on ${f.entity.name}.${propName}: column name not resolved`,
           this.loggerContext,
         );
         continue;
       }
 
+      const explicitName = f.options?.name;
+      const camelCase = f.options?.camelCase ?? true;
+
       for (const col of cols) {
-        const camel = toSimpleCamelCase(col);
+        // If camelCase is disabled and no explicit custom name is provided,
+        // we still write an override equal to DB column name to prevent
+        // hasura-sync-service fallback camelCase renaming.
+        const custom = explicitName ?? (camelCase ? toSimpleCamelCase(col) : col);
         await this.upsertColumnOverride(conn, {
           schema,
           table,
           column: col,
-          customName: camel,
+          customName: custom,
         });
       }
 
       this.logger.log(
-        `Applied @HasuraCamelCase comment for ${schema}.${table}.${cols.join(
+        `Applied @HasuraProperty comment for ${schema}.${table}.${cols.join(
           ',',
         )} (property=${propName})`,
         this.loggerContext,
@@ -456,8 +496,11 @@ export class HasuraRelationshipNameInitializer
   }
 
   private async ensureRegistry(conn: any) {
-    // contains multiple statements
-    await conn.execute(HASURA_SYNC_REGISTRY_SQL);
+    // Create `hasura_sync.*` tables via MikroORM metadata (no handwritten SQL).
+    // Safe: true, no drops.
+    await this.orm
+      .getSchemaGenerator()
+      .updateSchema({ safe: true, dropTables: false } as any);
   }
 
   private async clearHasuraSyncOverrides(conn: any) {
@@ -476,16 +519,16 @@ export class HasuraRelationshipNameInitializer
 
   private async upsertTableOverride(
     conn: any,
-    args: { schema: string; table: string; customName: string },
+    args: { schema: string; table: string; customName: string; camelCase: boolean },
   ) {
     await conn.execute(
       `
-      INSERT INTO hasura_sync.table_overrides (table_schema, table_name, custom_name)
+      INSERT INTO hasura_sync.table_overrides (table_schema, table_name, custom_name, camel_case)
       VALUES ('${escapeSqlString(args.schema)}', '${escapeSqlString(
         args.table,
-      )}', '${escapeSqlString(args.customName)}')
+      )}', '${escapeSqlString(args.customName)}', ${args.camelCase ? 'true' : 'false'})
       ON CONFLICT (table_schema, table_name)
-      DO UPDATE SET custom_name = EXCLUDED.custom_name, updated_at = now();
+      DO UPDATE SET custom_name = EXCLUDED.custom_name, camel_case = EXCLUDED.camel_case, updated_at = now();
       `,
     );
   }

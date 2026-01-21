@@ -1,4 +1,5 @@
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
+import { rowsFromRunSql } from './run-sql';
 
 export type HasuraSyncColumnOverride = {
   table_schema: string;
@@ -16,7 +17,7 @@ export async function getHasuraSyncColumnOverrides(
   `;
 
   const res = await hasura.runSql(sql);
-  const rows = res.result?.slice(1) ?? [];
+  const rows = rowsFromRunSql(res);
   return rows.map(([table_schema, table_name, column_name, custom_name]) => ({
     table_schema,
     table_name,

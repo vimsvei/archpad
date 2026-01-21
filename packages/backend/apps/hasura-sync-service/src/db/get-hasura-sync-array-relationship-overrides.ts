@@ -1,4 +1,5 @@
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
+import { runSqlJsonRows } from './run-sql';
 
 export type HasuraSyncArrayRelationshipOverride = {
   pk_table_schema: string;
@@ -23,10 +24,5 @@ export async function getHasuraSyncArrayRelationshipOverrides(
     )
     FROM hasura_sync.array_relationship_overrides;
   `;
-
-  const res = await hasura.runSql(sql);
-  const rows = res.result?.slice(1) ?? [];
-  return rows.map(
-    ([json]) => JSON.parse(json) as HasuraSyncArrayRelationshipOverride,
-  );
+  return runSqlJsonRows<HasuraSyncArrayRelationshipOverride>(hasura, sql);
 }

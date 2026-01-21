@@ -1,6 +1,8 @@
 import { Embeddable, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
+import { HasuraEmbeddable } from '@archpad/models';
 
+@HasuraEmbeddable()
 @Embeddable()
 export class ActionStamp {
   @ApiProperty({ format: 'date-time' })

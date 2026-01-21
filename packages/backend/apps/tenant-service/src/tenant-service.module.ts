@@ -102,6 +102,10 @@ import { BootstrapModule } from './bootstrap.module';
               tenantServiceDist,
               'libs/models/src/**/*.embeddable{.ts,.js}',
             ),
+            path.join(
+              tenantServiceDist,
+              'libs/models/src/**/*.entity{.ts,.js}',
+            ),
           ],
           // Disable auto-discovery to prevent scanning wrong directories
           discoverEntities: false,

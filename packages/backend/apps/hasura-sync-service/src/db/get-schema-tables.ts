@@ -1,5 +1,6 @@
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from './types';
+import { rowsFromRunSql } from './run-sql';
 
 export async function getSchemaTables(
   hasura: HasuraClientService,
@@ -13,6 +14,6 @@ export async function getSchemaTables(
   `;
 
   const res = await hasura.runSql(sql);
-  const rows = res.result?.slice(1) ?? [];
+  const rows = rowsFromRunSql(res);
   return rows.map(([schema, name]) => ({ schema, name }));
 }

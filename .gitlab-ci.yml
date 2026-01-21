@@ -89,8 +89,6 @@ variables:
         local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
         local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
-        local VAULT_KEYCLOAK_CONNECT_PATH="kv/data/archpad/demo/keycloak/connect"
-        local VAULT_OIDC_PORTAL_PATH="kv/data/archpad/demo/oidc/portal"
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -172,17 +170,6 @@ variables:
         export NEXT_PUBLIC_HASURA_GRAPHQL_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_HASURA_GRAPHQL_URL // empty')
         export NEXT_PUBLIC_API_GRAPHQL_URI=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_GRAPHQL_URI // empty')
         export NEXT_PUBLIC_API_REST_URI=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_REST_URI // empty')
-
-        # Keycloak hostname is stored separately (keycloak/connect)
-        local keycloak_connect_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
-          "${VAULT_ADDR}/v1/${VAULT_KEYCLOAK_CONNECT_PATH}" 2>&1)
-        local keycloak_host=$(echo "$keycloak_connect_response" | jq -r '.data.data.KEYCLOAK_HOST // empty' 2>/dev/null || echo "")
-        export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://${keycloak_host}"
-        
-        # OIDC clientId is stored separately (oidc/portal)
-        local oidc_portal_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
-          "${VAULT_ADDR}/v1/${VAULT_OIDC_PORTAL_PATH}" 2>&1)
-        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=$(echo "$oidc_portal_response" | jq -r '.data.data.OIDC_CLIENT_ID // empty')
         
         echo "✅ Successfully fetched secrets from Vault"
         echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
@@ -191,8 +178,6 @@ variables:
         echo "  NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${NEXT_PUBLIC_HASURA_GRAPHQL_URL:+***SET***}"
         echo "  NEXT_PUBLIC_API_GRAPHQL_URI: ${NEXT_PUBLIC_API_GRAPHQL_URI:+***SET***}"
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL: ${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID:+***SET***}"
       }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:}"
@@ -231,8 +216,7 @@ variables:
         echo "  NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${NEXT_PUBLIC_HASURA_GRAPHQL_URL:+***SET***}"
         echo "  NEXT_PUBLIC_API_GRAPHQL_URI: ${NEXT_PUBLIC_API_GRAPHQL_URI:+***SET***}"
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL: ${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID:+***SET***}"
+        # (portal auth is proxied via auth-service; no Keycloak vars required)
         
         docker build \
           -t "$IMAGE_TAG_VERSION" \
@@ -247,8 +231,6 @@ variables:
           --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_URL="${NEXT_PUBLIC_HASURA_GRAPHQL_URL}" \
           --build-arg NEXT_PUBLIC_API_GRAPHQL_URI="${NEXT_PUBLIC_API_GRAPHQL_URI}" \
           --build-arg NEXT_PUBLIC_API_REST_URI="${NEXT_PUBLIC_API_REST_URI}" \
-          --build-arg NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL}" \
-          --build-arg NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}" \
           "$BUILD_CONTEXT"
       else
         docker build \
@@ -333,8 +315,7 @@ variables:
         local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
         local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
-        local VAULT_KEYCLOAK_CONNECT_PATH="kv/data/archpad/demo/keycloak/connect"
-        local VAULT_OIDC_PORTAL_PATH="kv/data/archpad/demo/oidc/portal"
+        # Portal no longer reads Keycloak напрямую; весь auth через auth-service.
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -417,16 +398,7 @@ variables:
         export NEXT_PUBLIC_API_GRAPHQL_URI=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_GRAPHQL_URI // empty')
         export NEXT_PUBLIC_API_REST_URI=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_API_REST_URI // empty')
 
-        # Keycloak hostname is stored separately (keycloak/connect)
-        local keycloak_connect_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
-          "${VAULT_ADDR}/v1/${VAULT_KEYCLOAK_CONNECT_PATH}" 2>&1)
-        local keycloak_host=$(echo "$keycloak_connect_response" | jq -r '.data.data.KEYCLOAK_HOST // empty' 2>/dev/null || echo "")
-        export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://${keycloak_host}"
-        
-        # OIDC clientId is stored separately (oidc/portal)
-        local oidc_portal_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
-          "${VAULT_ADDR}/v1/${VAULT_OIDC_PORTAL_PATH}" 2>&1)
-        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=$(echo "$oidc_portal_response" | jq -r '.data.data.OIDC_CLIENT_ID // empty')
+        # (no Keycloak build args)
         
         echo "✅ Successfully fetched secrets from Vault"
         echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
@@ -435,8 +407,7 @@ variables:
         echo "  NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${NEXT_PUBLIC_HASURA_GRAPHQL_URL:+***SET***}"
         echo "  NEXT_PUBLIC_API_GRAPHQL_URI: ${NEXT_PUBLIC_API_GRAPHQL_URI:+***SET***}"
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL: ${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID:+***SET***}"
+        # (portal auth is proxied via auth-service; no Keycloak vars required)
       }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:main:}"
@@ -474,8 +445,7 @@ variables:
         echo "  NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${NEXT_PUBLIC_HASURA_GRAPHQL_URL:+***SET***}"
         echo "  NEXT_PUBLIC_API_GRAPHQL_URI: ${NEXT_PUBLIC_API_GRAPHQL_URI:+***SET***}"
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL: ${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL:+***SET***}"
-        echo "  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID:+***SET***}"
+        # (portal auth is proxied via auth-service; no Keycloak vars required)
         
         docker build \
           -t "$IMAGE_TAG_MAIN" \
@@ -490,8 +460,6 @@ variables:
           --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_URL="${NEXT_PUBLIC_HASURA_GRAPHQL_URL}" \
           --build-arg NEXT_PUBLIC_API_GRAPHQL_URI="${NEXT_PUBLIC_API_GRAPHQL_URI}" \
           --build-arg NEXT_PUBLIC_API_REST_URI="${NEXT_PUBLIC_API_REST_URI}" \
-          --build-arg NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="${NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL}" \
-          --build-arg NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}" \
           "$BUILD_CONTEXT"
       else
         docker build \

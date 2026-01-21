@@ -2,7 +2,7 @@ import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { getHasuraSyncColumnOverrides } from '../db/get-hasura-sync-column-overrides';
 import { getHasuraSyncTableOverrides } from '../db/get-hasura-sync-table-overrides';
-import { getTableColumns } from '../db/get-table-columns';
+import { getSchemaTableColumns } from '../db/get-schema-table-columns';
 import { DbTableRef } from '../db/types';
 import { toCamelCase } from '../utils/naming.util';
 
@@ -37,9 +37,15 @@ export async function applyCamelCaseCustomization(args: {
     getHasuraSyncColumnOverrides(hasura).catch(() => []),
   ]);
 
-  const tableOverrideByKey = new Map<string, string>();
+  const tableOverrideByKey = new Map<
+    string,
+    { customName: string; camelCase: boolean }
+  >();
   for (const o of tableOverrides) {
-    tableOverrideByKey.set(`${o.table_schema}.${o.table_name}`, o.custom_name);
+    tableOverrideByKey.set(`${o.table_schema}.${o.table_name}`, {
+      customName: o.custom_name,
+      camelCase: o.camel_case ?? true,
+    });
   }
 
   const colOverrideByKey = new Map<string, string>();
@@ -51,16 +57,17 @@ export async function applyCamelCaseCustomization(args: {
   }
 
   const ops: any[] = [];
+  const columnsByTable = await getSchemaTableColumns(hasura).catch(() => new Map());
+
   for (const table of tables) {
-    const hasuraTableName = tableOverrideByKey.get(
+    const tableOverride = tableOverrideByKey.get(
       `${table.schema}.${table.name}`,
     );
+    const hasuraTableName = tableOverride?.customName;
+    const allowFallbackCamelCase =
+      tableOverride?.camelCase ?? fallbackCamelCase;
 
-    const columns = await getTableColumns({
-      hasura,
-      schema: table.schema,
-      table: table.name,
-    });
+    const columns = columnsByTable.get(table.name) ?? [];
 
     const columnConfig: Record<string, { custom_name: string }> = {};
     const customColumnNames: Record<string, string> = {};
@@ -77,7 +84,7 @@ export async function applyCamelCaseCustomization(args: {
         continue;
       }
 
-      if (fallbackCamelCase) {
+      if (allowFallbackCamelCase) {
         const camel = toCamelCase(col);
         if (camel !== col) {
           columnConfig[col] = { custom_name: camel };

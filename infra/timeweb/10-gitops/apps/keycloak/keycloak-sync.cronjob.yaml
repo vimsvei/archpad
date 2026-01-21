@@ -77,22 +77,24 @@ spec:
                   access_token="$(printf "%s" "$token_json" | jq -r '.access_token')"
                   [ -n "$access_token" ]
 
-                  # Apply partial import (roles/groups/clients) from ConfigMap.
-                  # NOTE: partialImport for groups can be buggy in some Keycloak versions; we sync groups via Admin API below.
-                  code="$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
-                    -X POST "${KC_BASE}/admin/realms/${REALM}/partialImport" \
-                    -H "Authorization: Bearer ${access_token}" \
-                    -H "Content-Type: application/json" \
-                    --data-binary "@/config/partial-import.json" || true)"
-
-                  echo "partialImport status=${code}"
-                  # 200 is expected on success.
-                  if [ "$code" != "200" ]; then
-                    echo "Response:"
-                    cat /tmp/resp.json || true
-                    exit 1
+                  # Sync roles.
+                  # NOTE: Keycloak partialImport has proven flaky (NPE/duplicate) across versions.
+                  # We sync desired roles idempotently via Admin API.
+                  if [ -f /config/partial-import.json ]; then
+                    jq -r '.roles.realm[]?.name // empty' /config/partial-import.json | while read -r role; do
+                      [ -n "$role" ] || continue
+                      if curl -fsS -H "Authorization: Bearer ${access_token}" \
+                        "${KC_BASE}/admin/realms/${REALM}/roles/${role}" >/dev/null 2>&1; then
+                        echo "role exists: $role"
+                        continue
+                      fi
+                      echo "creating role: $role"
+                      curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/roles" \
+                        -H "Authorization: Bearer ${access_token}" \
+                        -H "Content-Type: application/json" \
+                        -d "$(jq -cn --arg n "$role" '{name:$n}')" >/dev/null
+                    done
                   fi
-                  cat /tmp/resp.json
 
                   # Sync groups (create if missing).
                   if [ -f /config/groups.json ]; then
