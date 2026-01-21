@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { sendExecuteActionsEmail } from "@/lib/auth/keycloak-admin"
+import { authServiceRecovery } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
 
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   if (!email) return NextResponse.json({ error: "Missing email" }, { status: 400 })
 
   // Avoid user enumeration: always return ok.
-  await sendExecuteActionsEmail({ email, actions: ["UPDATE_PASSWORD"] }).catch(() => {})
+  await authServiceRecovery({ email }).catch(() => {})
   return NextResponse.json({ ok: true })
 }
 

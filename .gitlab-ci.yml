@@ -90,6 +90,7 @@ variables:
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
         local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
         local VAULT_KEYCLOAK_CONNECT_PATH="kv/data/archpad/demo/keycloak/connect"
+        local VAULT_OIDC_PORTAL_PATH="kv/data/archpad/demo/oidc/portal"
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -177,7 +178,11 @@ variables:
           "${VAULT_ADDR}/v1/${VAULT_KEYCLOAK_CONNECT_PATH}" 2>&1)
         local keycloak_host=$(echo "$keycloak_connect_response" | jq -r '.data.data.KEYCLOAK_HOST // empty' 2>/dev/null || echo "")
         export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://${keycloak_host}"
-        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="archpad-portal"
+        
+        # OIDC clientId is stored separately (oidc/portal)
+        local oidc_portal_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_OIDC_PORTAL_PATH}" 2>&1)
+        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=$(echo "$oidc_portal_response" | jq -r '.data.data.OIDC_CLIENT_ID // empty')
         
         echo "✅ Successfully fetched secrets from Vault"
         echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
@@ -329,6 +334,7 @@ variables:
         local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
         local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
         local VAULT_KEYCLOAK_CONNECT_PATH="kv/data/archpad/demo/keycloak/connect"
+        local VAULT_OIDC_PORTAL_PATH="kv/data/archpad/demo/oidc/portal"
         
         if [ -z "$VAULT_TOKEN" ]; then
           echo "ERROR: VAULT_TOKEN is not set"
@@ -416,7 +422,11 @@ variables:
           "${VAULT_ADDR}/v1/${VAULT_KEYCLOAK_CONNECT_PATH}" 2>&1)
         local keycloak_host=$(echo "$keycloak_connect_response" | jq -r '.data.data.KEYCLOAK_HOST // empty' 2>/dev/null || echo "")
         export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://${keycloak_host}"
-        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="archpad-portal"
+        
+        # OIDC clientId is stored separately (oidc/portal)
+        local oidc_portal_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" \
+          "${VAULT_ADDR}/v1/${VAULT_OIDC_PORTAL_PATH}" 2>&1)
+        export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=$(echo "$oidc_portal_response" | jq -r '.data.data.OIDC_CLIENT_ID // empty')
         
         echo "✅ Successfully fetched secrets from Vault"
         echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}"
@@ -532,6 +542,12 @@ build:hasura-sync-service:
     DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
     BUILD_CONTEXT: "."
 
+build:auth-service:
+  extends: .build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/auth-service/Dockerfile"
+    BUILD_CONTEXT: "."
+
 # ============================================
 # Frontend
 # ============================================
@@ -576,6 +592,23 @@ build:main:tenant-service:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/backend/apps/tenant-service/**/*
+        - packages/contract/**/*
+
+build:main:auth-service:
+  extends: .build_docker_image_main
+  variables:
+    DOCKERFILE_PATH: "packages/backend/apps/auth-service/Dockerfile"
+    BUILD_CONTEXT: "."
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/auth-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - packages/backend/apps/auth-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
 
 build:main:hasura-sync-service:

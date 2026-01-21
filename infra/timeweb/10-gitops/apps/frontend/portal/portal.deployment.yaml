@@ -26,8 +26,10 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-portal: "kv/data/archpad/demo/frontend/portal"
         vault.hashicorp.com/agent-inject-secret-keycloak-connect: "kv/data/archpad/demo/keycloak/connect"
+        vault.hashicorp.com/agent-inject-secret-oidc-portal: "kv/data/archpad/demo/oidc/portal"
         vault.hashicorp.com/agent-inject-template-portal: |
           {{- $portal := secret "kv/data/archpad/demo/frontend/portal" }}
+          {{- $oidc := secret "kv/data/archpad/demo/oidc/portal" }}
           {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
           {{- $keycloakConnect := secret "kv/data/archpad/demo/keycloak/connect" }}
@@ -42,16 +44,8 @@ spec:
           export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://{{ $keycloakConnect.Data.data.KEYCLOAK_HOST }}"
           export KEYCLOAK_INTERNAL_URL="http://keycloak.secure.svc:8080"
           export KEYCLOAK_REALM="archpad"
-          export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="archpad-portal"
-          {{- if $portal.Data.data.KEYCLOAK_CLIENT_SECRET }}
-          export KEYCLOAK_CLIENT_SECRET="{{ $portal.Data.data.KEYCLOAK_CLIENT_SECRET }}"
-          {{- end }}
-          {{- if $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_ID }}
-          export KEYCLOAK_SERVICE_CLIENT_ID="{{ $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_ID }}"
-          {{- end }}
-          {{- if $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_SECRET }}
-          export KEYCLOAK_SERVICE_CLIENT_SECRET="{{ $portal.Data.data.KEYCLOAK_SERVICE_CLIENT_SECRET }}"
-          {{- end }}
+          export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="{{ $oidc.Data.data.OIDC_CLIENT_ID }}"
+          export AUTH_SERVICE_INTERNAL_URL="http://auth-service.platform.svc:3000"
           {{- if $portal.Data.data.API_GATEWAY_INTERNAL_URL }}
           export API_GATEWAY_INTERNAL_URL="{{ $portal.Data.data.API_GATEWAY_INTERNAL_URL }}"
           {{- end }}
@@ -127,9 +121,7 @@ spec:
               echo "KEYCLOAK_INTERNAL_URL: $(mask_secret "$KEYCLOAK_INTERNAL_URL")"
               echo "KEYCLOAK_REALM: $(mask_secret "$KEYCLOAK_REALM")"
               echo "NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: $(mask_secret "$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID")"
-              echo "KEYCLOAK_CLIENT_SECRET: $(mask_secret "$KEYCLOAK_CLIENT_SECRET")"
-              echo "KEYCLOAK_SERVICE_CLIENT_ID: $(mask_secret "$KEYCLOAK_SERVICE_CLIENT_ID")"
-              echo "KEYCLOAK_SERVICE_CLIENT_SECRET: $(mask_secret "$KEYCLOAK_SERVICE_CLIENT_SECRET")"
+              echo "AUTH_SERVICE_INTERNAL_URL: $(mask_secret "$AUTH_SERVICE_INTERNAL_URL")"
               echo ""
               echo "# Hasura GraphQL"
               echo "NEXT_PUBLIC_HASURA_GRAPHQL_URL: $(mask_secret "$NEXT_PUBLIC_HASURA_GRAPHQL_URL")"
@@ -177,10 +169,6 @@ spec:
                 echo "ERROR: NEXT_PUBLIC_HASURA_GRAPHQL_URL is not set or has invalid value"
                 exit 1
               fi
-              if [ -z "$KEYCLOAK_CLIENT_SECRET" ] || [ "$KEYCLOAK_CLIENT_SECRET" = "<no value>" ]; then
-                echo "ERROR: KEYCLOAK_CLIENT_SECRET is not set or has invalid value (portal client is confidential)"
-                exit 1
-              fi
               # Запускаем Next.js приложение с явной передачей переменных окружения
               echo "Portal starting..."
               cd /app/packages/portal
@@ -201,11 +189,9 @@ spec:
                 NEXT_PUBLIC_URL="$NEXT_PUBLIC_URL" \
                 NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="$NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL" \
                 NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" \
-                KEYCLOAK_CLIENT_SECRET="$KEYCLOAK_CLIENT_SECRET" \
                 KEYCLOAK_INTERNAL_URL="$KEYCLOAK_INTERNAL_URL" \
                 KEYCLOAK_REALM="$KEYCLOAK_REALM" \
-                ${KEYCLOAK_SERVICE_CLIENT_ID:+KEYCLOAK_SERVICE_CLIENT_ID="$KEYCLOAK_SERVICE_CLIENT_ID"} \
-                ${KEYCLOAK_SERVICE_CLIENT_SECRET:+KEYCLOAK_SERVICE_CLIENT_SECRET="$KEYCLOAK_SERVICE_CLIENT_SECRET"} \
+                AUTH_SERVICE_INTERNAL_URL="$AUTH_SERVICE_INTERNAL_URL" \
                 ${API_GATEWAY_INTERNAL_URL:+API_GATEWAY_INTERNAL_URL="$API_GATEWAY_INTERNAL_URL"} \
                 ${NEXT_PUBLIC_API_GRAPHQL_URI:+NEXT_PUBLIC_API_GRAPHQL_URI="$NEXT_PUBLIC_API_GRAPHQL_URI"} \
                 ${NEXT_PUBLIC_API_REST_URI:+NEXT_PUBLIC_API_REST_URI="$NEXT_PUBLIC_API_REST_URI"} \

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { setTokensCookies } from "@/lib/auth/oauth"
-import { passwordLogin } from "@/lib/auth/keycloak"
+import { authServiceLogin } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const tokens = await passwordLogin({ username, password })
+    const tokens = await authServiceLogin({ username, password })
     await setTokensCookies({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken })
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {

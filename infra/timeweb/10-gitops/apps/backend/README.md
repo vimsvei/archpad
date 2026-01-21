@@ -6,6 +6,7 @@
 
 - `arch-repo-service/` - основной сервис для работы с проектами
 - `tenant-service/` - сервис для работы с tenant'ами
+- `auth-service/` - прокси сервис для Keycloak (tokens + user actions)
 - `hasura-sync-service/` - Job для синхронизации схемы БД с Hasura
 
 ## Манифесты
@@ -37,6 +38,11 @@
 - `/v1/kv/data/archpad/demo/backend/common`
 - `/v1/kv/data/archpad/demo/postgres/connect`
 
+### auth-service
+- `/v1/kv/data/archpad/demo/keycloak/service`
+- `/v1/kv/data/archpad/demo/oidc/portal`
+- `/v1/kv/data/archpad/demo/keycloak/connect` (опционально; для справки/локалки)
+
 Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
 ## Container Registry Secret
@@ -54,6 +60,7 @@
 Все ServiceAccount'ы добавлены в Vault роль `platform`:
 - `arch-repo-service`
 - `tenant-service`
+- `auth-service`
 - `hasura-sync-service`
 - `registry-secret-sync`
 

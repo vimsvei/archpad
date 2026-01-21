@@ -5,7 +5,7 @@ import {
   getRefreshTokenFromCookies,
   setTokensOnResponse,
 } from "@/lib/auth/oauth"
-import { exchangeRefreshToken } from "@/lib/auth/keycloak"
+import { authServiceRefresh } from "@/lib/auth/auth-service"
 
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).
@@ -144,7 +144,7 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
   if (!auth && refreshTokenFromCookie) {
     try {
       if (isDev) console.info(`[rest.proxy] refresh id=${requestId} start (pre)`)
-      refreshedTokens = await exchangeRefreshToken({ refreshToken: refreshTokenFromCookie })
+      refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
       auth = `Bearer ${refreshedTokens.accessToken}`
       if (isDev) {
         const redacted = `${auth.slice(0, 20)}…`
@@ -166,7 +166,7 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     if (refreshTokenFromCookie) {
       try {
         if (isDev) console.info(`[rest.proxy] refresh id=${requestId} start`)
-        refreshedTokens = await exchangeRefreshToken({ refreshToken: refreshTokenFromCookie })
+        refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
         const retryAuth = `Bearer ${refreshedTokens.accessToken}`
         res = await doFetch(retryAuth)
         if (isDev) console.info(`[rest.proxy] refresh id=${requestId} ok retryStatus=${res.status}`)

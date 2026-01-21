@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { createUser, sendExecuteActionsEmail } from "@/lib/auth/keycloak-admin"
+import { authServiceRegister } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
 
@@ -27,9 +27,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await createUser({ email, password, firstName: firstName || undefined, lastName: lastName || undefined, phone: phone || undefined })
-    // Optional: immediately send verify email if SMTP is configured.
-    await sendExecuteActionsEmail({ email, actions: ["VERIFY_EMAIL"] }).catch(() => {})
+    await authServiceRegister({ email, password, firstName: firstName || undefined, lastName: lastName || undefined, phone: phone || undefined })
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)

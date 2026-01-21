@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { sendExecuteActionsEmail } from "@/lib/auth/keycloak-admin"
+import { authServiceVerify } from "@/lib/auth/auth-service"
 
 export const runtime = "nodejs"
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const email = String(obj.email ?? "").trim().toLowerCase()
   if (!email) return NextResponse.json({ error: "Missing email" }, { status: 400 })
 
-  await sendExecuteActionsEmail({ email, actions: ["VERIFY_EMAIL"] }).catch(() => {})
+  await authServiceVerify({ email }).catch(() => {})
   return NextResponse.json({ ok: true })
 }
 

@@ -29,11 +29,14 @@ spec:
               export KEYCLOAK_ADMIN="{{ .Data.data.KEYCLOAK_ADMIN_USER }}"
               export KEYCLOAK_ADMIN_PASSWORD="{{ .Data.data.KEYCLOAK_ADMIN_PASSWORD }}"
               {{- end }}
-            vault.hashicorp.com/agent-inject-secret-portal: "kv/data/archpad/demo/frontend/portal"
-            vault.hashicorp.com/agent-inject-template-portal: |
-              {{- with secret "kv/data/archpad/demo/frontend/portal" }}
-              {{- if .Data.data.KEYCLOAK_CLIENT_SECRET }}
-              export KEYCLOAK_CLIENT_SECRET="{{ .Data.data.KEYCLOAK_CLIENT_SECRET }}"
+            vault.hashicorp.com/agent-inject-secret-oidc-portal: "kv/data/archpad/demo/oidc/portal"
+            vault.hashicorp.com/agent-inject-template-oidc-portal: |
+              {{- with secret "kv/data/archpad/demo/oidc/portal" }}
+              {{- if .Data.data.OIDC_CLIENT_ID }}
+              export OIDC_CLIENT_ID="{{ .Data.data.OIDC_CLIENT_ID }}"
+              {{- end }}
+              {{- if .Data.data.OIDC_CLIENT_SECRET }}
+              export OIDC_CLIENT_SECRET="{{ .Data.data.OIDC_CLIENT_SECRET }}"
               {{- end }}
               {{- end }}
             vault.hashicorp.com/role: "secure"
@@ -49,12 +52,12 @@ spec:
                   apk add --no-cache curl jq >/dev/null
                   # Load admin creds from Vault Agent Injector
                   . /vault/secrets/keycloak-admin
-                  # Load portal client secret (confidential client)
-                  . /vault/secrets/portal || true
+                  # Load portal OIDC client id/secret (confidential client)
+                  . /vault/secrets/oidc-portal || true
 
                   KC_BASE="http://keycloak:8080"
                   REALM="archpad"
-                  PORTAL_CLIENT_ID="archpad-portal"
+                  PORTAL_CLIENT_ID="${OIDC_CLIENT_ID:-archpad-portal}"
 
                   # Wait until realm exists (first boot can take a bit).
                   for i in $(seq 1 60); do
@@ -113,7 +116,7 @@ spec:
                   fi
 
                   # Ensure portal client is confidential and has the configured secret.
-                  if [ -n "${KEYCLOAK_CLIENT_SECRET:-}" ]; then
+                  if [ -n "${OIDC_CLIENT_SECRET:-}" ]; then
                     portal_id="$(curl -fsS \
                       -H "Authorization: Bearer ${access_token}" \
                       "${KC_BASE}/admin/realms/${REALM}/clients?clientId=${PORTAL_CLIENT_ID}" \
@@ -126,7 +129,7 @@ spec:
                     # Fetch client representation and update secret + flags.
                     current="$(curl -fsS -H "Authorization: Bearer ${access_token}" \
                       "${KC_BASE}/admin/realms/${REALM}/clients/${portal_id}")"
-                    updated="$(printf "%s" "$current" | jq --arg s "${KEYCLOAK_CLIENT_SECRET}" '
+                    updated="$(printf "%s" "$current" | jq --arg s "${OIDC_CLIENT_SECRET}" '
                       .publicClient = false
                       | .serviceAccountsEnabled = false
                       | .directAccessGrantsEnabled = true
@@ -141,7 +144,7 @@ spec:
                       "${KC_BASE}/admin/realms/${REALM}/clients/${portal_id}" >/dev/null
                     echo "portal client secret synced: ${PORTAL_CLIENT_ID}"
                   else
-                    echo "WARNING: KEYCLOAK_CLIENT_SECRET is not set; portal client secret not synced"
+                    echo "WARNING: OIDC_CLIENT_SECRET is not set; portal client secret not synced"
                   fi
               volumeMounts:
                 - name: partial-import

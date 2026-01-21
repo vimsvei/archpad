@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getAccessTokenFromCookies, getRefreshTokenFromCookies, setTokensOnResponse } from "@/lib/auth/oauth"
-import { exchangeRefreshToken } from "@/lib/auth/keycloak"
+import { authServiceRefresh } from "@/lib/auth/auth-service"
 
 type GraphQLRequestBody = {
   query: string
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     // Pre-refresh if no access token available but refresh token exists.
     if (!currentAuth && refreshTokenFromCookie) {
       try {
-        refreshedTokens = await exchangeRefreshToken({ refreshToken: refreshTokenFromCookie })
+        refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
         currentAuth = `Bearer ${refreshedTokens.accessToken}`
       } catch {
         // ignore
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     if (res.status === 401 && !refreshedTokens) {
       if (refreshTokenFromCookie) {
         try {
-          refreshedTokens = await exchangeRefreshToken({ refreshToken: refreshTokenFromCookie })
+          refreshedTokens = await authServiceRefresh({ refreshToken: refreshTokenFromCookie })
           res = await doFetch(`Bearer ${refreshedTokens.accessToken}`)
         } catch {
           // ignore refresh errors, return original 401 response
