@@ -8,7 +8,3 @@ export * from './decorators/hasura-embeddable.decorator';
 export * from './decorators/hasura-property.decorator';
 export * from './decorators/hasura-reference.decorator';
 export * from './decorators/hasura-table.decorator';
-export * from './hasura-sync/array-relationship-overrides.entity';
-export * from './hasura-sync/column-overrides.entity';
-export * from './hasura-sync/object-relationship-overrides.entity';
-export * from './hasura-sync/table-overrides.entity';
