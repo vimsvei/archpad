@@ -100,9 +100,15 @@ spec:
               echo "Hasura schema: $HASURA_SCHEMA"
 
               # Wait for dependent services to be ready.
+              # NOTE: do not rely on curl being present in the image.
+              wait_http_ok() {
+                local url="$1"
+                node -e "const url='${url}'; const ac=new AbortController(); setTimeout(()=>ac.abort(),2000); fetch(url,{signal:ac.signal}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1
+              }
+
               echo "Waiting for arch-repo-service (/healthz)..."
               tries=90
-              until curl -fsS --max-time 2 "http://arch-repo-service:3000/healthz" >/dev/null 2>&1; do
+              until wait_http_ok "http://arch-repo-service:3000/healthz"; do
                 tries=$((tries-1))
                 if [ "$tries" -le 0 ]; then
                   echo "ERROR: arch-repo-service is not ready (http://arch-repo-service:3000/healthz)"
@@ -114,7 +120,7 @@ spec:
 
               echo "Waiting for tenant-service (/healthz)..."
               tries=90
-              until curl -fsS --max-time 2 "http://tenant-service:3000/healthz" >/dev/null 2>&1; do
+              until wait_http_ok "http://tenant-service:3000/healthz"; do
                 tries=$((tries-1))
                 if [ "$tries" -le 0 ]; then
                   echo "ERROR: tenant-service is not ready (http://tenant-service:3000/healthz)"
