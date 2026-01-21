@@ -23,7 +23,9 @@ export async function untrackTables(args: {
     hasura,
     logger,
     label: 'pg_untrack_table',
-    chunkSize: 50,
+    // Untracking can be heavy and may cause Hasura to restart on small memory limits.
+    // Keep chunks smaller to reduce peak load.
+    chunkSize: 20,
     ops,
   });
 }
