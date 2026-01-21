@@ -20,6 +20,9 @@ spec:
         metadata:
           annotations:
             vault.hashicorp.com/agent-inject: "true"
+            # Do not keep a long-running vault-agent sidecar in a Job/CronJob.
+            # We only need init-time templating of secrets into files.
+            vault.hashicorp.com/agent-pre-populate-only: "true"
             vault.hashicorp.com/agent-inject-secret-keycloak-admin: "kv/data/archpad/demo/keycloak/admin"
             vault.hashicorp.com/agent-inject-template-keycloak-admin: |
               {{- with secret "kv/data/archpad/demo/keycloak/admin" }}
