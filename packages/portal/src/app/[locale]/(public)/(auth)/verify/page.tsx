@@ -5,7 +5,7 @@ import { unstable_noStore as noStore } from 'next/cache'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function VerifyPage(props: any) {
+export default async function VerifyPage() {
   noStore()
   
   return (

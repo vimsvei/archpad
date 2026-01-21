@@ -37,7 +37,14 @@ export async function GET() {
     given_name: typeof claims.given_name === "string" ? claims.given_name : null,
     family_name: typeof claims.family_name === "string" ? claims.family_name : null,
     preferred_username: typeof claims.preferred_username === "string" ? claims.preferred_username : null,
-    roles: claims.realm_access && typeof claims.realm_access === "object" ? (claims.realm_access as any).roles ?? null : null,
+    roles:
+      claims.realm_access && typeof claims.realm_access === "object"
+        ? (() => {
+            const ra = claims.realm_access as Record<string, unknown>
+            const roles = ra.roles
+            return Array.isArray(roles) ? roles : null
+          })()
+        : null,
   })
 }
 

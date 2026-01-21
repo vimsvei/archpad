@@ -7,7 +7,7 @@ import { cookies } from "next/headers"
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function SignUpPage(props: any) {
+export default async function SignUpPage() {
   noStore()
 
   const c = await cookies()

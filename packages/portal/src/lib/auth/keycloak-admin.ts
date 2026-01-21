@@ -74,23 +74,15 @@ export async function createUser(input: {
   const realm = getRealm()
   const url = new URL(`/admin/realms/${realm}/users`, base)
 
-  const body: any = {
+  const body: Record<string, unknown> = {
     username: input.email,
     email: input.email,
     firstName: input.firstName || undefined,
     lastName: input.lastName || undefined,
     enabled: true,
     emailVerified: false,
-    attributes: {
-      ...(input.phone ? { phone: [input.phone] } : {}),
-    },
-    credentials: [
-      {
-        type: "password",
-        value: input.password,
-        temporary: false,
-      },
-    ],
+    attributes: input.phone ? { phone: [input.phone] } : {},
+    credentials: [{ type: "password", value: input.password, temporary: false }],
   }
 
   const res = await fetch(url.toString(), {

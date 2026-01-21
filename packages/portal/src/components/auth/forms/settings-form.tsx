@@ -13,8 +13,8 @@ export function SettingsForm() {
   const [error, setError] = React.useState<string | null>(null)
   const [isBusy, setIsBusy] = React.useState(false)
 
-  const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, any>) : null
-  const email = typeof sessionObj?.email === "string" ? sessionObj.email : ""
+  const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
+  const email = sessionObj && typeof sessionObj.email === "string" ? sessionObj.email : ""
 
   const sendRecovery = async () => {
     setError(null)

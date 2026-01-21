@@ -7,10 +7,8 @@ import { cookies } from "next/headers"
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function SignInPage(props: any) {
+export default async function SignInPage() {
   noStore()
-
-  const searchParams = await (props as any).searchParams
 
   // If user already has an access token cookie, redirect to the app.
   const c = await cookies()
