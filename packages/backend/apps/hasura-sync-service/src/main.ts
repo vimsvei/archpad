@@ -3,6 +3,7 @@ import { HasuraSyncServiceModule } from './hasura-sync-service.module';
 import { HasuraSyncService } from './hasura-sync-service.service';
 import { LoggerService } from '@archpad/logger';
 import { loadVaultSecrets } from '@archpad/vault-config';
+import { formatHasuraError } from './utils/hasura-error';
 
 async function bootstrap() {
   // Load secrets from Vault before creating the application
@@ -43,6 +44,6 @@ async function bootstrap() {
 }
 bootstrap().catch((err) => {
   // Используем console.error только для критических ошибок при bootstrap, так как logger может быть недоступен
-  console.error('Fatal error in hasura-repo-sync:', err);
+  console.error('Fatal error in hasura-sync-service:', formatHasuraError(err));
   process.exit(1);
 });

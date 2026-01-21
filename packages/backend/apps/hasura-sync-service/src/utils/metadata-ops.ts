@@ -113,7 +113,7 @@ export async function applyMetadataOps(args: {
   const { hasura, logger, label, ops } = args;
   if (ops.length === 0) return;
   logger.log(`Applying ${label}: ops=${ops.length} source=${hasura.source}`);
-  await hasura.postMetadataBulkAtomicChunked(ops, {
+  await hasura.postMetadataBulkChunked(ops, {
     chunkSize: args.chunkSize ?? 50,
     label,
   });

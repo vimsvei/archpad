@@ -17,7 +17,7 @@ jest.mock('../db/get-schema-table-columns', () => ({
 type FakeHasura = {
   source: string;
   schema: string;
-  postMetadataBulkAtomicChunked: jest.Mock<Promise<void>, [any[], any]>;
+  postMetadataBulkChunked: (ops: any[], options: any) => Promise<void>;
 };
 
 describe('applyCamelCaseCustomization', () => {
@@ -25,7 +25,7 @@ describe('applyCamelCaseCustomization', () => {
     const hasura: FakeHasura = {
       source: 'default',
       schema: 'public',
-      postMetadataBulkAtomicChunked: jest.fn(async () => undefined),
+      postMetadataBulkChunked: jest.fn(async () => undefined) as any,
     };
     const logger = { log: jest.fn() } as any;
 
@@ -49,8 +49,9 @@ describe('applyCamelCaseCustomization', () => {
       fallbackCamelCase: true,
     });
 
-    expect(hasura.postMetadataBulkAtomicChunked).toHaveBeenCalledTimes(1);
-    const [ops] = hasura.postMetadataBulkAtomicChunked.mock.calls[0]!;
+    const postMock = hasura.postMetadataBulkChunked as unknown as jest.Mock;
+    expect(postMock).toHaveBeenCalledTimes(1);
+    const [ops] = postMock.mock.calls[0]!;
     expect(Array.isArray(ops)).toBe(true);
     expect(ops).toHaveLength(1);
 
@@ -71,7 +72,7 @@ describe('applyCamelCaseCustomization', () => {
     const hasura: FakeHasura = {
       source: 'default',
       schema: 'public',
-      postMetadataBulkAtomicChunked: jest.fn(async () => undefined),
+      postMetadataBulkChunked: jest.fn(async () => undefined) as any,
     };
     const logger = { log: jest.fn() } as any;
 
@@ -88,8 +89,9 @@ describe('applyCamelCaseCustomization', () => {
       fallbackCamelCase: true,
     });
 
-    expect(hasura.postMetadataBulkAtomicChunked).toHaveBeenCalledTimes(1);
-    const [ops] = hasura.postMetadataBulkAtomicChunked.mock.calls[0]!;
+    const postMock = hasura.postMetadataBulkChunked as unknown as jest.Mock;
+    expect(postMock).toHaveBeenCalledTimes(1);
+    const [ops] = postMock.mock.calls[0]!;
     expect(ops).toHaveLength(1);
 
     const cfg = ops[0].args?.configuration ?? {};

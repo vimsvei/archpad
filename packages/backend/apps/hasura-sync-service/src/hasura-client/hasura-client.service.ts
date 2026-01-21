@@ -181,6 +181,13 @@ export class HasuraClientService {
     });
   }
 
+  async postMetadataBulk(args: any[]): Promise<any> {
+    return this.postMetadata({
+      type: 'bulk',
+      args,
+    });
+  }
+
   async postMetadataBulkAtomic(args: any[]): Promise<any> {
     return this.postMetadata({
       type: 'bulk_atomic',
@@ -188,12 +195,18 @@ export class HasuraClientService {
     });
   }
 
-  async postMetadataBulkAtomicChunked(
+  /**
+   * Chunked metadata apply using Hasura `bulk` (not atomic).
+   *
+   * Important: not all metadata commands are supported in `bulk_atomic`.
+   * We use `bulk` as the default for broad compatibility.
+   */
+  async postMetadataBulkChunked(
     ops: any[],
     options?: { chunkSize?: number; label?: string },
   ): Promise<void> {
     const chunkSize = options?.chunkSize ?? 50;
-    const label = options?.label ?? 'bulk_atomic';
+    const label = options?.label ?? 'bulk';
 
     const chunks: any[][] = [];
     for (let i = 0; i < ops.length; i += chunkSize) {
@@ -207,7 +220,7 @@ export class HasuraClientService {
           `Applying ${label}: chunk ${i + 1}/${chunks.length} ops=${chunk.length} source=${this.source}`,
           HasuraClientService.name,
         );
-        await this.postMetadataBulkAtomic(chunk);
+        await this.postMetadataBulk(chunk);
       } catch (e: any) {
         // If a chunk fails, split it to isolate a bad op (keeps total requests bounded).
         if (chunk.length <= 1) throw e;
@@ -216,11 +229,11 @@ export class HasuraClientService {
           HasuraClientService.name,
         );
         const mid = Math.floor(chunk.length / 2);
-        await this.postMetadataBulkAtomicChunked(chunk.slice(0, mid), {
+        await this.postMetadataBulkChunked(chunk.slice(0, mid), {
           chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
           label,
         });
-        await this.postMetadataBulkAtomicChunked(chunk.slice(mid), {
+        await this.postMetadataBulkChunked(chunk.slice(mid), {
           chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
           label,
         });
