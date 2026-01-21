@@ -11,10 +11,6 @@ export type HasuraEmbeddableUsage = {
 
 const HASURA_EMBEDDABLES: HasuraEmbeddableUsage[] = [];
 
-export function getHasuraEmbeddables(): HasuraEmbeddableUsage[] {
-  return HASURA_EMBEDDABLES.slice();
-}
-
 export function HasuraEmbeddable(
   options: { camelCase?: boolean } = {},
 ): ClassDecorator {

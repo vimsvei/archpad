@@ -87,8 +87,6 @@ export async function syncForeignKeyRelationships(args: {
     return finalName;
   };
 
-  const desiredObjectKeys = new Set<string>();
-  const desiredArrayKeys = new Set<string>();
   const ops: any[] = [];
 
   const orderedFks = foreignKeys
@@ -126,7 +124,6 @@ export async function syncForeignKeyRelationships(args: {
         objectNameOverride ? { strict: true } : undefined,
       );
       const oKey = oKeyLookup;
-      desiredObjectKeys.add(oKey);
       ops.push(
         opCreateObjectRelationship({ source: hasura.source, fk, name: objectName }),
       );
@@ -151,7 +148,6 @@ export async function syncForeignKeyRelationships(args: {
       fkTable: fk.fk_table_name,
       cols: fk.fk_columns,
     });
-    desiredArrayKeys.add(aKey);
     ops.push(
       opCreateArrayRelationship({ source: hasura.source, fk, name: arrayName }),
     );

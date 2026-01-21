@@ -4,7 +4,6 @@ export * from './abstract/named-object.abstract';
 export * from './abstract/mapped-object.abstract';
 export * from './embeddable/action-stamp.embeddable';
 export * from './decorators/archimate-code.decorator';
-export * from './decorators/hasura-camelcase.decorator';
 export * from './decorators/hasura-embeddable.decorator';
 export * from './decorators/hasura-property.decorator';
 export * from './decorators/hasura-reference.decorator';
