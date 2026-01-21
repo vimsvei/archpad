@@ -31,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useKratosSession } from "@/hooks/use-kratos-session"
+import { useAuthSession } from "@/hooks/use-auth-session"
 
 function NavUserContent(
   // { user }: {
@@ -42,7 +42,7 @@ function NavUserContent(
   // } }
 ) {
   const { isMobile } = useSidebar()
-  const { session } = useKratosSession()
+  const { session } = useAuthSession()
   const router = useRouter()
 
   const sessionObj = typeof session === "object" && session !== null ? (session as Record<string, unknown>) : null
@@ -104,7 +104,7 @@ function NavUserContent(
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayName}</span>
-                  <span className="truncate text-xs">{typeof traits.email === "string" ? traits.email : ""}</span>
+                  <span className="truncate text-xs">{typeof sessionObj?.email === "string" ? sessionObj.email : ""}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

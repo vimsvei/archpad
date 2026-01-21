@@ -48,28 +48,11 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // OAuth2 / Hydra endpoints are locale-less (Hydra is configured to call them without locale).
-  if (pathname.startsWith('/oauth') || pathname.startsWith('/hydra')) {
-    return NextResponse.next()
-  }
-
-  // Ory proxy endpoints are locale-less; keep them public but route to API handlers.
-  if (pathname.startsWith('/self-service')) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/api/ory${pathname}`
-    return NextResponse.rewrite(url)
-  }
-  if (pathname.startsWith('/sessions')) {
-    const url = request.nextUrl.clone()
-    url.pathname = `/api/ory${pathname}`
-    return NextResponse.rewrite(url)
-  }
-
   const cleaned = stripTrailingSlash(pathname)
 
   // "Native" auth gate for private routes:
-  // our upstream access rules for /graphql and /rest require a Hydra access token (oauth2_introspection),
-  // stored in an httpOnly cookie. If it's missing, bootstrap OAuth2 code flow via /oauth/login.
+  // our upstream access rules for /graphql and /rest require a Keycloak JWT access token,
+  // stored in an httpOnly cookie. If it's missing, redirect to the portal sign-in page.
   if (
     request.method === 'GET' &&
     PRIVATE_PREFIXES.some((p) => cleaned === p || cleaned.startsWith(`${p}/`)) &&

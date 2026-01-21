@@ -1,26 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SettingsForm } from "@/components/auth/forms/settings-form"
-import { getServerSession, getSettingsFlow, type OryPageParams } from "@ory/nextjs/app"
 import { redirect } from "next/navigation"
 import { unstable_noStore as noStore } from "next/cache"
-
-import config from "../../../../../ory.config"
+import { cookies } from "next/headers"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
-export default async function SettingsPage(props: OryPageParams) {
+export default async function SettingsPage(props: any) {
   noStore()
 
-  const session = await getServerSession().catch(() => null)
-  if (!session) {
+  const c = await cookies()
+  if (!c.get("archpad_access_token")?.value) {
     redirect("/sign-in")
   }
-
-  type QueryParamsLike = Record<string, string | string[] | undefined>
-  const searchParams = (props as unknown as { searchParams: QueryParamsLike }).searchParams
-  const flow = await getSettingsFlow(config, searchParams)
-  if (!flow) return null
 
   return (
     <Card>
@@ -28,7 +21,7 @@ export default async function SettingsPage(props: OryPageParams) {
         <CardTitle>Settings</CardTitle>
       </CardHeader>
       <CardContent>
-        <SettingsForm flow={flow} />
+        <SettingsForm />
       </CardContent>
     </Card>
   )

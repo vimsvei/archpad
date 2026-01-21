@@ -1,27 +1,19 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
 import { SignUpForm } from '@/components/auth/forms/sign-up-form'
-import { getRegistrationFlow, getServerSession, OryPageParams } from '@ory/nextjs/app'
-import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { cookies } from "next/headers"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function SignUpPage(props: OryPageParams) {
+export default async function SignUpPage(props: any) {
   noStore()
 
-  const searchParams = await (props as any).searchParams
-
-  // If already signed in, don't allow creating another account from this browser.
-  const session = await getServerSession()
-  if (session) {
+  const c = await cookies()
+  if (c.get("archpad_access_token")?.value) {
     redirect('/dashboard')
   }
-
-  const flow = await getRegistrationFlow(config, searchParams)
-  
-  if (!flow) { return null }
   
   return (
     <AuthFormWrapper
@@ -30,7 +22,7 @@ export default async function SignUpPage(props: OryPageParams) {
       subtitleKey="auth.sign-up.subtitle"
       subtitle="Create a new account to get started"
     >
-      <SignUpForm flow={flow} />
+      <SignUpForm />
     </AuthFormWrapper>
   )
 }

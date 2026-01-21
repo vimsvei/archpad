@@ -7,106 +7,74 @@ import { useTranslate } from "@tolgee/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FlowMessages } from "@/components/auth/kratos/flow-messages"
-import { FlowDebug } from "@/components/auth/kratos/flow-debug"
-import {
-  getCsrfToken,
-  getFlowId,
-  getFlowMessages,
-  getFlowMeta,
-  getNodeMessages,
-  hasNode,
-  pickMethod,
-} from "@/components/auth/kratos/flow-utils"
-import { resolveFieldName } from "@/components/auth/kratos/field-resolver"
-import { KratosFormRoot } from "@/components/auth/kratos/native-form-root"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { authFormsActions } from "@/store/slices/auth-forms-slice"
 
-export function VerifyForm({ flow }: { flow: unknown }) {
+export function VerifyForm() {
   const { t } = useTranslate()
   const dispatch = useAppDispatch()
   const form = useAppSelector((s) => s.authForms.verification)
 
-  const [flowState, setFlowState] = React.useState<unknown>(flow)
-  React.useEffect(() => setFlowState(flow), [flow])
+  const [error, setError] = React.useState<string | null>(null)
+  const [sent, setSent] = React.useState(false)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  React.useEffect(() => {
-    dispatch(authFormsActions.setActiveFlowId(getFlowId(flowState) ?? null))
-    dispatch(authFormsActions.setFlowMeta(getFlowMeta(flowState)))
-  }, [dispatch, flowState])
-
-  const meta = React.useMemo(() => getFlowMeta(flowState), [flowState])
-  const csrfToken = getCsrfToken(flowState)
-  const method = pickMethod(flowState, [form.selectedMethod, "code", "link"], "code")
-  const emailName = resolveFieldName(flowState, "verification", "email")
-  const codeName = resolveFieldName(flowState, "verification", "code")
-  const showCode = hasNode(flowState, codeName) || hasNode(flowState, "code")
-
-  React.useEffect(() => {
-    dispatch(
-      authFormsActions.setVerificationStep(showCode ? "enter_code" : "enter_email")
-    )
-  }, [dispatch, showCode])
-
-  const globalErrors = getFlowMessages(flowState)
-  const emailErrors = getNodeMessages(flowState, emailName)
-  const codeErrors = getNodeMessages(flowState, codeName)
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setIsSubmitting(true)
+    try {
+      const res = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: form.email }),
+      })
+      if (!res.ok) {
+        const json = (await res.json().catch(() => null)) as any
+        setError(typeof json?.message === "string" ? json.message : "Verification failed")
+        return
+      }
+      setSent(true)
+    } catch (e: any) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="grid gap-6">
-      <FlowMessages messages={globalErrors} />
-      <FlowDebug flow={flowState} />
+      {error ? (
+        <div className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {error}
+        </div>
+      ) : null}
 
-      <KratosFormRoot
-        action={meta.action ?? undefined}
-        method={meta.httpMethod ?? undefined}
-        onFlow={setFlowState}
-      >
-        {csrfToken ? <input type="hidden" name="csrf_token" value={csrfToken} /> : null}
-        <input type="hidden" name="method" value={method} />
+      {sent ? (
+        <div className="rounded-md border px-3 py-2 text-sm">
+          {t("auth.common.submit-send-code")}
+        </div>
+      ) : null}
 
+      <form onSubmit={onSubmit} className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor={emailName}>{t("auth.field.email")}</Label>
+          <Label htmlFor="email">{t("auth.field.email")}</Label>
           <Input
-            id={emailName}
-            name={emailName}
+            id="email"
+            name="email"
             type="email"
             autoComplete="email"
             value={form.email}
-            onChange={(e) =>
-              dispatch(authFormsActions.setVerificationEmail(e.target.value))
-            }
+            onChange={(e) => dispatch(authFormsActions.setVerificationEmail(e.target.value))}
             required
           />
-          <FlowMessages messages={emailErrors} className="border border-destructive/20 bg-destructive/5" />
         </div>
 
-        {showCode ? (
-          <div className="grid gap-2">
-            <Label htmlFor="code">{t("auth.verification.code")}</Label>
-            <Input
-              id={codeName}
-              name={codeName}
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              value={form.code}
-              onChange={(e) =>
-                dispatch(authFormsActions.setVerificationCode(e.target.value))
-              }
-              required
-            />
-            <FlowMessages messages={codeErrors} className="border border-destructive/20 bg-destructive/5" />
-          </div>
-        ) : null}
-
-        <Button type="submit" className="w-full">
-          {showCode
-            ? t("auth.common.submit-confirm")
-            : t("auth.common.submit-send-code")}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {t("auth.common.submit-send-code")}
         </Button>
-      </KratosFormRoot>
+      </form>
 
       <div className="text-center text-sm">
         <Link href="/sign-in" className="underline underline-offset-4 hover:opacity-80">

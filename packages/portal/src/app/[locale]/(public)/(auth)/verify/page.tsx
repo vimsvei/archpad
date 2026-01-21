@@ -1,18 +1,12 @@
 import { AuthFormWrapper } from '@/components/wrappers/auth-form-wrapper'
 import { VerifyForm } from '@/components/auth/forms/verify-form'
-import {getVerificationFlow, OryPageParams} from "@ory/nextjs/app";
-import config from "../../../../../../ory.config";
 import { unstable_noStore as noStore } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function VerifyPage(props: OryPageParams) {
+export default async function VerifyPage(props: any) {
   noStore()
-  const searchParams = await (props as any).searchParams
-  const flow = await getVerificationFlow(config, searchParams)
-  
-  if (!flow) { return null }
   
   return (
     <AuthFormWrapper
@@ -21,7 +15,7 @@ export default async function VerifyPage(props: OryPageParams) {
       subtitleKey="auth.verification.subtitle"
       subtitle="Confirm your email to activate your account"
     >
-      <VerifyForm flow={flow} />
+      <VerifyForm />
     </AuthFormWrapper>
   )
 }

@@ -2,14 +2,14 @@
 
 import * as React from "react"
 
-type KratosSessionState = {
+type AuthSessionState = {
   session: unknown | null
   isLoading: boolean
   error: unknown | null
   refresh: () => Promise<void>
 }
 
-export function useKratosSession(): KratosSessionState {
+export function useAuthSession(): AuthSessionState {
   const [session, setSession] = React.useState<unknown | null>(null)
   const [isLoading, setIsLoading] = React.useState(true)
   const [error, setError] = React.useState<unknown | null>(null)
@@ -21,9 +21,7 @@ export function useKratosSession(): KratosSessionState {
       const res = await fetch("/api/auth/me", {
         method: "GET",
         credentials: "include",
-        headers: {
-          accept: "application/json",
-        },
+        headers: { accept: "application/json" },
       })
 
       if (res.status === 401 || res.status === 403) {
@@ -50,5 +48,4 @@ export function useKratosSession(): KratosSessionState {
 
   return { session, isLoading, error, refresh }
 }
-
 
