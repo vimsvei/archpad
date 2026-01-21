@@ -82,6 +82,10 @@ spec:
               export KC_PROXY="${KC_PROXY:-edge}"
               # Tell Keycloak to trust X-Forwarded-* headers from Traefik.
               export KC_PROXY_HEADERS="${KC_PROXY_HEADERS:-xforwarded}"
+              # External URL settings (Traefik terminates TLS on :443).
+              export KC_HOSTNAME_STRICT="${KC_HOSTNAME_STRICT:-false}"
+              export KC_HOSTNAME_STRICT_HTTPS="${KC_HOSTNAME_STRICT_HTTPS:-true}"
+              export KC_HOSTNAME_PORT="${KC_HOSTNAME_PORT:-443}"
               export KC_HEALTH_ENABLED="${KC_HEALTH_ENABLED:-true}"
               export KC_METRICS_ENABLED="${KC_METRICS_ENABLED:-true}"
 
