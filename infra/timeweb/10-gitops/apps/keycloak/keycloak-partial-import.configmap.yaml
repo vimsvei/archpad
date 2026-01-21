@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-partial-import
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "48"
+data:
+  partial-import.json: |
+    {
+      "ifResourceExists": "OVERWRITE",
+      "roles": {
+        "realm": [
+          { "name": "CHIEF_ARCHITECT" },
+          { "name": "ENTERPRISE_ARCHITECT" },
+          { "name": "SOLUTION_ARCHITECT" },
+          { "name": "SECURITY_ARCHITECT" },
+          { "name": "INFRASTRUCTURE_ARCHITECT" }
+        ]
+      },
+      "groups": [
+        { "name": "ADMIN" },
+        { "name": "USER" }
+      ],
+      "clients": [
+        {
+          "clientId": "portal",
+          "protocol": "openid-connect",
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "directAccessGrantsEnabled": true,
+          "redirectUris": [
+            "https://portal.archpad.pro/*",
+            "http://localhost:3000/*"
+          ],
+          "webOrigins": [
+            "https://portal.archpad.pro",
+            "http://localhost:3000"
+          ],
+          "attributes": {
+            "pkce.code.challenge.method": "S256",
+            "post.logout.redirect.uris": "https://portal.archpad.pro/logout\nhttp://localhost:3000/logout"
+          },
+          "protocolMappers": [
+            {
+              "name": "given_name",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-property-mapper",
+              "consentRequired": false,
+              "config": {
+                "user.attribute": "firstName",
+                "claim.name": "given_name",
+                "jsonType.label": "String",
+                "userinfo.token.claim": "true",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            },
+            {
+              "name": "family_name",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-property-mapper",
+              "consentRequired": false,
+              "config": {
+                "user.attribute": "lastName",
+                "claim.name": "family_name",
+                "jsonType.label": "String",
+                "userinfo.token.claim": "true",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            },
+            {
+              "name": "email",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-property-mapper",
+              "consentRequired": false,
+              "config": {
+                "user.attribute": "email",
+                "claim.name": "email",
+                "jsonType.label": "String",
+                "userinfo.token.claim": "true",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            },
+            {
+              "name": "x-hasura-default-role",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-hardcoded-claim-mapper",
+              "config": {
+                "claim.name": "x-hasura-default-role",
+                "claim.value": "user",
+                "id.token.claim": "true",
+                "access.token.claim": "true",
+                "userinfo.token.claim": "true"
+              }
+            },
+            {
+              "name": "x-hasura-allowed-roles",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-hardcoded-claim-mapper",
+              "config": {
+                "claim.name": "x-hasura-allowed-roles",
+                "claim.value": "[\"user\",\"public\"]",
+                "jsonType.label": "JSON",
+                "id.token.claim": "true",
+                "access.token.claim": "true",
+                "userinfo.token.claim": "true"
+              }
+            }
+          ]
+        },
+        {
+          "clientId": "api",
+          "protocol": "openid-connect",
+          "publicClient": false,
+          "serviceAccountsEnabled": true,
+          "standardFlowEnabled": false,
+          "directAccessGrantsEnabled": false
+        }
+      ]
+    }

@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: keycloak-sync
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "90"
+spec:
+  # Schedule is irrelevant while suspended, but must be valid.
+  schedule: "0 3 * * *"
+  suspend: true
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          annotations:
+            vault.hashicorp.com/agent-inject: "true"
+            vault.hashicorp.com/agent-inject-secret-keycloak-admin: "kv/data/archpad/demo/keycloak/admin"
+            vault.hashicorp.com/agent-inject-template-keycloak-admin: |
+              {{- with secret "kv/data/archpad/demo/keycloak/admin" }}
+              export KEYCLOAK_ADMIN="{{ .Data.data.KEYCLOAK_ADMIN_USER }}"
+              export KEYCLOAK_ADMIN_PASSWORD="{{ .Data.data.KEYCLOAK_ADMIN_PASSWORD }}"
+              {{- end }}
+            vault.hashicorp.com/role: "secure"
+        spec:
+          serviceAccountName: keycloak
+          restartPolicy: Never
+          containers:
+            - name: keycloak-sync
+              image: alpine:3.19
+              command: ["sh", "-ceu"]
+              args:
+                - |
+                  apk add --no-cache curl >/dev/null
+                  # Load admin creds from Vault Agent Injector
+                  . /vault/secrets/keycloak-admin
+
+                  KC_BASE="http://keycloak:8080"
+                  REALM="archpad"
+
+                  # Get admin token from master realm using admin-cli.
+                  token_json="$(curl -fsS -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
+                    -H "Content-Type: application/x-www-form-urlencoded" \
+                    --data-urlencode "grant_type=password" \
+                    --data-urlencode "client_id=admin-cli" \
+                    --data-urlencode "username=${KEYCLOAK_ADMIN}" \
+                    --data-urlencode "password=${KEYCLOAK_ADMIN_PASSWORD}")"
+                  access_token="$(printf "%s" "$token_json" | tr -d '\n' | sed -n 's/.*"access_token":"\\([^"]*\\)".*/\\1/p')"
+                  [ -n "$access_token" ]
+
+                  # Apply partial import (roles/groups/clients) from ConfigMap.
+                  code="$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+                    -X POST "${KC_BASE}/admin/realms/${REALM}/partialImport" \
+                    -H "Authorization: Bearer ${access_token}" \
+                    -H "Content-Type: application/json" \
+                    --data-binary "@/config/partial-import.json" || true)"
+
+                  echo "partialImport status=${code}"
+                  # 200 is expected on success.
+                  if [ "$code" != "200" ]; then
+                    echo "Response:"
+                    cat /tmp/resp.json || true
+                    exit 1
+                  fi
+                  cat /tmp/resp.json
+              volumeMounts:
+                - name: partial-import
+                  mountPath: /config/partial-import.json
+                  subPath: partial-import.json
+                  readOnly: true
+          volumes:
+            - name: partial-import
+              configMap:
+                name: keycloak-partial-import
