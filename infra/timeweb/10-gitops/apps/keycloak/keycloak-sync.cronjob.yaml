@@ -62,6 +62,7 @@ spec:
                   [ -n "$access_token" ]
 
                   # Apply partial import (roles/groups/clients) from ConfigMap.
+                  # NOTE: partialImport for groups can be buggy in some Keycloak versions; we sync groups via Admin API below.
                   code="$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
                     -X POST "${KC_BASE}/admin/realms/${REALM}/partialImport" \
                     -H "Authorization: Bearer ${access_token}" \
@@ -76,10 +77,35 @@ spec:
                     exit 1
                   fi
                   cat /tmp/resp.json
+
+                  # Sync groups (create if missing).
+                  if [ -f /config/groups.json ]; then
+                    jq -r '.[] | .name' /config/groups.json | while read -r name; do
+                      [ -n "$name" ] || continue
+                      # Search group by name (returns array).
+                      existing="$(curl -fsS \
+                        -H "Authorization: Bearer ${access_token}" \
+                        "${KC_BASE}/admin/realms/${REALM}/groups?search=$(printf %s "$name" | jq -sRr @uri)" \
+                        | jq -r --arg n "$name" '[.[] | select(.name == $n)][0].id // empty')"
+                      if [ -n "$existing" ]; then
+                        echo "group exists: $name"
+                        continue
+                      fi
+                      echo "creating group: $name"
+                      curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/groups" \
+                        -H "Authorization: Bearer ${access_token}" \
+                        -H "Content-Type: application/json" \
+                        -d "$(jq -cn --arg n "$name" '{name:$n}')" >/dev/null
+                    done
+                  fi
               volumeMounts:
                 - name: partial-import
                   mountPath: /config/partial-import.json
                   subPath: partial-import.json
+                  readOnly: true
+                - name: partial-import
+                  mountPath: /config/groups.json
+                  subPath: groups.json
                   readOnly: true
           volumes:
             - name: partial-import

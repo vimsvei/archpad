@@ -25,11 +25,13 @@ spec:
         # Vault Agent Injector аннотации для чтения секретов из Vault
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-portal: "kv/data/archpad/demo/frontend/portal"
+        vault.hashicorp.com/agent-inject-secret-keycloak-connect: "kv/data/archpad/demo/keycloak/connect"
         vault.hashicorp.com/agent-inject-template-portal: |
           {{- $portal := secret "kv/data/archpad/demo/frontend/portal" }}
           {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
           {{- $oryKratosEndpoint := secret "kv/data/archpad/demo/ory/kratos/endpoint" }}
+          {{- $keycloakConnect := secret "kv/data/archpad/demo/keycloak/connect" }}
           # Экспортируем переменные окружения для Portal
           export NEXT_PUBLIC_ORY_SDK_URL="{{ $portal.Data.data.NEXT_PUBLIC_ORY_SDK_URL }}"
           export ORY_KRATOS_INTERNAL_URL="{{ $oryKratosEndpoint.Data.data.ORY_KRATOS_INTERNAL_URL }}"
@@ -39,6 +41,11 @@ spec:
           export NEXT_PUBLIC_TOLGEE_API_URL="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
           export NEXT_PUBLIC_TOLGEE_API_KEY="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_KEY }}"
           export NEXT_PUBLIC_URL="{{ $portal.Data.data.NEXT_PUBLIC_URL }}"
+          # Keycloak (SSO). Public URL is used in local dev; in-cluster calls use KEYCLOAK_INTERNAL_URL.
+          export NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="https://{{ $keycloakConnect.Data.data.KEYCLOAK_HOST }}"
+          export KEYCLOAK_INTERNAL_URL="http://keycloak.secure.svc:8080"
+          export KEYCLOAK_REALM="archpad"
+          export NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="portal"
           {{- if $portal.Data.data.API_GATEWAY_INTERNAL_URL }}
           export API_GATEWAY_INTERNAL_URL="{{ $portal.Data.data.API_GATEWAY_INTERNAL_URL }}"
           {{- end }}
@@ -172,6 +179,10 @@ spec:
                 NEXT_PUBLIC_TOLGEE_API_KEY="$NEXT_PUBLIC_TOLGEE_API_KEY" \
                 NEXT_PUBLIC_URL="$NEXT_PUBLIC_URL" \
                 ORY_KRATOS_INTERNAL_URL="$ORY_KRATOS_INTERNAL_URL" \
+                NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL="$NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL" \
+                NEXT_PUBLIC_KEYCLOAK_CLIENT_ID="$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" \
+                KEYCLOAK_INTERNAL_URL="$KEYCLOAK_INTERNAL_URL" \
+                KEYCLOAK_REALM="$KEYCLOAK_REALM" \
                 ${API_GATEWAY_INTERNAL_URL:+API_GATEWAY_INTERNAL_URL="$API_GATEWAY_INTERNAL_URL"} \
                 ${NEXT_PUBLIC_API_GRAPHQL_ENDPOINT:+NEXT_PUBLIC_API_GRAPHQL_ENDPOINT="$NEXT_PUBLIC_API_GRAPHQL_ENDPOINT"} \
                 node server.js

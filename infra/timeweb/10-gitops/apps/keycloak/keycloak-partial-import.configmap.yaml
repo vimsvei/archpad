@@ -18,10 +18,6 @@ data:
           { "name": "INFRASTRUCTURE_ARCHITECT" }
         ]
       },
-      "groups": [
-        { "name": "ADMIN" },
-        { "name": "USER" }
-      ],
       "clients": [
         {
           "clientId": "portal",
@@ -121,3 +117,8 @@ data:
         }
       ]
     }
+  groups.json: |
+    [
+      { "name": "ADMIN" },
+      { "name": "USER" }
+    ]
