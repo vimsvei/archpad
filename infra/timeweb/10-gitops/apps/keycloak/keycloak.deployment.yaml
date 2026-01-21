@@ -80,6 +80,8 @@ spec:
               # Keycloak is behind Traefik TLS, so run HTTP inside cluster.
               export KC_HTTP_ENABLED="${KC_HTTP_ENABLED:-true}"
               export KC_PROXY="${KC_PROXY:-edge}"
+              # Tell Keycloak to trust X-Forwarded-* headers from Traefik.
+              export KC_PROXY_HEADERS="${KC_PROXY_HEADERS:-xforwarded}"
               export KC_HEALTH_ENABLED="${KC_HEALTH_ENABLED:-true}"
               export KC_METRICS_ENABLED="${KC_METRICS_ENABLED:-true}"
 
@@ -88,11 +90,21 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          startupProbe:
+            # First boot may do Quarkus augmentation and take ~1-3 minutes.
+            # Startup probe gates liveness/readiness until the app is actually up.
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 90  # ~7.5 minutes
           readinessProbe:
             httpGet:
               path: /health/ready
               port: 8080
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 12
@@ -100,7 +112,7 @@ spec:
             httpGet:
               path: /health/live
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
