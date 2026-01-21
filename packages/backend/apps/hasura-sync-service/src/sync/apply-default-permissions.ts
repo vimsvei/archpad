@@ -2,28 +2,11 @@ import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
 import { getSchemaTableColumns } from '../db/get-schema-table-columns';
-
-function isAlreadyExistsError(e: unknown): boolean {
-  const msg = (e as any)?.message ?? '';
-  return typeof msg === 'string' && msg.toLowerCase().includes('already');
-}
-
-function formatHasuraError(e: unknown): string {
-  const anyErr = e as any;
-  const status = anyErr?.response?.status;
-  const data = anyErr?.response?.data;
-  const message = anyErr?.message;
-
-  if (data !== undefined) {
-    try {
-      return `status=${status ?? '-'} ${JSON.stringify(data)}`;
-    } catch {
-      return `status=${status ?? '-'} ${String(data)}`;
-    }
-  }
-
-  return String(message ?? e);
-}
+import { formatHasuraError } from '../utils/hasura-error';
+import {
+  applyMetadataOps,
+  opCreateSelectPermission,
+} from '../utils/metadata-ops';
 
 export async function applyDefaultSelectPermissions(args: {
   hasura: HasuraClientService;
@@ -57,24 +40,22 @@ export async function applyDefaultSelectPermissions(args: {
       `Ensuring select permission for ${t.schema}.${t.name} role="${role}" columns=${columns.length} allow_aggregations=true`,
     );
 
-    ops.push({
-      type: 'pg_create_select_permission',
-      args: {
+    ops.push(
+      opCreateSelectPermission({
         source: hasura.source,
-        table: { schema: t.schema, name: t.name },
+        table: t,
         role,
-        permission: {
-          columns,
-          filter: {},
-          allow_aggregations: true,
-        },
-      },
-    });
+        columns,
+        allowAggregations: true,
+      }),
+    );
   }
 
-  if (ops.length === 0) return;
-  await hasura.postMetadataBulkAtomicChunked(ops, {
-    chunkSize: 20,
+  await applyMetadataOps({
+    hasura,
+    logger,
     label: 'pg_create_select_permission',
+    chunkSize: 20,
+    ops,
   });
 }

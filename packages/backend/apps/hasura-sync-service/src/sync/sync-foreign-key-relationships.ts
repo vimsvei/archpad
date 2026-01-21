@@ -6,6 +6,11 @@ import { getHasuraSyncObjectRelationshipOverrides } from '../db/get-hasura-sync-
 import { arrayRelationshipKey } from './array-relationship-key';
 import { objectRelationshipKey } from './object-relationship-key';
 import { buildObjectRelationshipNameForFk } from './build-object-relationship-name';
+import {
+  applyMetadataOps,
+  opCreateArrayRelationship,
+  opCreateObjectRelationship,
+} from '../utils/metadata-ops';
 
 export async function syncForeignKeyRelationships(args: {
   hasura: HasuraClientService;
@@ -122,15 +127,9 @@ export async function syncForeignKeyRelationships(args: {
       );
       const oKey = oKeyLookup;
       desiredObjectKeys.add(oKey);
-      ops.push({
-        type: 'pg_create_object_relationship',
-        args: {
-          source: hasura.source,
-          table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
-          name: objectName,
-          using: { foreign_key_constraint_on: fk.fk_columns[0] },
-        },
-      });
+      ops.push(
+        opCreateObjectRelationship({ source: hasura.source, fk, name: objectName }),
+      );
     } else {
       logger.warn(
         `Skipping object relationship for composite FK ${fk.constraint_name} (${fk.fk_table_name} -> ${fk.pk_table_name})`,
@@ -153,25 +152,16 @@ export async function syncForeignKeyRelationships(args: {
       cols: fk.fk_columns,
     });
     desiredArrayKeys.add(aKey);
-    ops.push({
-      type: 'pg_create_array_relationship',
-      args: {
-        source: hasura.source,
-        table: { schema: fk.pk_table_schema, name: fk.pk_table_name },
-        name: arrayName,
-        using: {
-          foreign_key_constraint_on: {
-            table: { schema: fk.fk_table_schema, name: fk.fk_table_name },
-            columns: fk.fk_columns,
-          },
-        },
-      },
-    });
+    ops.push(
+      opCreateArrayRelationship({ source: hasura.source, fk, name: arrayName }),
+    );
   }
 
-  if (ops.length === 0) return;
-  await hasura.postMetadataBulkAtomicChunked(ops, {
-    chunkSize: 50,
+  await applyMetadataOps({
+    hasura,
+    logger,
     label: 'pg_create_relationships',
+    chunkSize: 50,
+    ops,
   });
 }

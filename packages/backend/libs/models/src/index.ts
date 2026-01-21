@@ -13,4 +13,3 @@ export * from './hasura-sync/array-relationship-overrides.entity';
 export * from './hasura-sync/column-overrides.entity';
 export * from './hasura-sync/object-relationship-overrides.entity';
 export * from './hasura-sync/table-overrides.entity';
-export * from './hasura-sync/registry-sql';

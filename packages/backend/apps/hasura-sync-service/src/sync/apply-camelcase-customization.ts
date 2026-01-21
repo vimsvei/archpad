@@ -4,6 +4,7 @@ import { getHasuraSyncColumnOverrides } from '../db/get-hasura-sync-column-overr
 import { getHasuraSyncTableOverrides } from '../db/get-hasura-sync-table-overrides';
 import { getSchemaTableColumns } from '../db/get-schema-table-columns';
 import { DbTableRef } from '../db/types';
+import { applyMetadataOps, opSetTableCustomization } from '../utils/metadata-ops';
 import { toCamelCase } from '../utils/naming.util';
 
 function buildDefaultRootFields(customName: string): Record<string, string> {
@@ -143,15 +144,20 @@ export async function applyCamelCaseCustomization(args: {
       }, columns=${Object.keys(columnConfig).length})`,
     );
 
-    ops.push({
-      type: 'pg_set_table_customization',
-      args: metadataArgs,
-    });
+    ops.push(
+      opSetTableCustomization({
+        source: hasura.source,
+        table,
+        configuration,
+      }),
+    );
   }
 
-  if (ops.length === 0) return;
-  await hasura.postMetadataBulkAtomicChunked(ops, {
-    chunkSize: 25,
+  await applyMetadataOps({
+    hasura,
+    logger,
     label: 'pg_set_table_customization',
+    chunkSize: 25,
+    ops,
   });
 }

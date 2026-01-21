@@ -3,6 +3,8 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { LoggerService } from '@archpad/logger';
+import { retry } from '../utils/retry';
+import { formatHasuraError } from '../utils/hasura-error';
 
 @Injectable()
 export class HasuraClientService {
@@ -123,25 +125,32 @@ export class HasuraClientService {
     return headers;
   }
 
-  async postMetadata<T = any>(body: any): Promise<T> {
+  private async postHasura<T>(args: {
+    path: '/v1/metadata' | '/v2/query';
+    label: string;
+    body: any;
+  }): Promise<T> {
     await this.ensureEndpointSelected();
-    this.logger.debug(
-      `POST /v1/metadata type=${body?.type}`,
-      HasuraClientService.name,
-    );
-    return this.postJsonWithRetry<T>(`${this.endpoint}/v1/metadata`, body, {
+    const type = args.body?.type;
+    this.logger.debug(`POST ${args.path} type=${type}`, HasuraClientService.name);
+    return this.postJsonWithRetry<T>(`${this.endpoint}${args.path}`, args.body, {
+      label: args.label,
+    });
+  }
+
+  async postMetadata<T = any>(body: any): Promise<T> {
+    return this.postHasura<T>({
+      path: '/v1/metadata',
       label: 'metadata',
+      body,
     });
   }
 
   async postQuery<T = any>(body: any): Promise<T> {
-    await this.ensureEndpointSelected();
-    this.logger.debug(
-      `POST /v2/query type=${body?.type}`,
-      HasuraClientService.name,
-    );
-    return this.postJsonWithRetry<T>(`${this.endpoint}/v2/query`, body, {
+    return this.postHasura<T>({
+      path: '/v2/query',
       label: 'query',
+      body,
     });
   }
 
@@ -272,8 +281,9 @@ export class HasuraClientService {
     const label = options?.label ?? 'request';
     const maxAttempts = this.requestRetries + 1;
 
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
+    return await retry<T>({
+      retries: maxAttempts,
+      fn: async () => {
         const res = await firstValueFrom(
           this.http.post<T>(url, body, {
             headers: this.buildHeaders(),
@@ -281,21 +291,18 @@ export class HasuraClientService {
           }),
         );
         return res.data;
-      } catch (e: any) {
-        const retryable = isRetryableAxiosError(e);
-        const status = e?.response?.status;
-        if (!retryable || attempt >= maxAttempts) throw e;
-
-        const backoffMs = Math.min(5000, 250 * Math.pow(2, attempt - 1));
+      },
+      retryOnError: (e) => isRetryableAxiosError(e),
+      getDelayMs: (attempt) => Math.min(5000, 250 * Math.pow(2, attempt - 1)),
+      onRetry: ({ attempt, nextDelayMs, error }) => {
         this.logger.warn(
-          `Hasura ${label} failed (attempt ${attempt}/${maxAttempts}) status=${status ?? '-'}; retrying in ${backoffMs}ms`,
+          `Hasura ${label} failed (attempt ${attempt}/${maxAttempts}): ${formatHasuraError(
+            error,
+          )}; retrying in ${nextDelayMs}ms`,
           HasuraClientService.name,
         );
-        await delay(backoffMs);
-      }
-    }
-
-    throw new Error(`Hasura ${label} failed after retries`);
+      },
+    });
   }
 }
 
@@ -321,10 +328,6 @@ function normalizeHasuraEndpoint(input: string): string {
 function clampInt(n: number, min: number, max: number): number {
   if (!Number.isFinite(n)) return min;
   return Math.max(min, Math.min(max, n));
-}
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function isRetryableAxiosError(e: any): boolean {

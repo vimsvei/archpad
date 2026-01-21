@@ -1,6 +1,7 @@
 import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
+import { applyMetadataOps, opUntrackTable } from '../utils/metadata-ops';
 
 export async function untrackTables(args: {
   hasura: HasuraClientService;
@@ -15,17 +16,12 @@ export async function untrackTables(args: {
   }
 
   logger.log(`Untracking ${tables.length} tracked tables (cascade=true)...`);
-  const ops = tables.map((t) => ({
-    type: 'pg_untrack_table',
-    args: {
-      source: hasura.source,
-      table: { schema: t.schema, name: t.name },
-      cascade: true,
-    },
-  }));
-
-  await hasura.postMetadataBulkAtomicChunked(ops, {
-    chunkSize: 50,
+  const ops = tables.map((t) => opUntrackTable(hasura.source, t, { cascade: true }));
+  await applyMetadataOps({
+    hasura,
+    logger,
     label: 'pg_untrack_table',
+    chunkSize: 50,
+    ops,
   });
 }

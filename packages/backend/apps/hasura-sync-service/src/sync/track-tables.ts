@@ -1,6 +1,7 @@
 import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { DbTableRef } from '../db/types';
+import { applyMetadataOps, opTrackTable } from '../utils/metadata-ops';
 
 export async function trackTables(args: {
   hasura: HasuraClientService;
@@ -15,16 +16,12 @@ export async function trackTables(args: {
   }
 
   logger.log(`Tracking ${tables.length} tables...`);
-  const ops = tables.map((t) => ({
-    type: 'pg_track_table',
-    args: {
-      source: hasura.source,
-      table: { schema: t.schema, name: t.name },
-    },
-  }));
-
-  await hasura.postMetadataBulkAtomicChunked(ops, {
-    chunkSize: 30,
+  const ops = tables.map((t) => opTrackTable(hasura.source, t));
+  await applyMetadataOps({
+    hasura,
+    logger,
     label: 'pg_track_table',
+    chunkSize: 30,
+    ops,
   });
 }
