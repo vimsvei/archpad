@@ -33,7 +33,8 @@ spec:
           export KEYCLOAK_ADMIN_PASSWORD="{{ $admin.Data.data.KEYCLOAK_ADMIN_PASSWORD }}"
 
           # Hostnames
-          export KC_HOSTNAME="{{ $connect.Data.data.KEYCLOAK_HOST }}"
+          # Use full external URL to ensure correct issuer (no :8080).
+          export KC_HOSTNAME="https://{{ $connect.Data.data.KEYCLOAK_HOST }}"
 
           # Database
           export KC_DB="postgres"
