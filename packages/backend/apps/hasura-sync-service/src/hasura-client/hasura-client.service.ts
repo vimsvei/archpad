@@ -223,7 +223,21 @@ export class HasuraClientService {
         await this.postMetadataBulk(chunk);
       } catch (e: any) {
         // If a chunk fails, split it to isolate a bad op (keeps total requests bounded).
-        if (chunk.length <= 1) throw e;
+        if (chunk.length <= 1) {
+          // Hasura `bulk` is not atomic: some operations may have been applied before the failure.
+          // When we retry by splitting, we can legitimately hit "already exists/tracked" for ops
+          // that were applied in a previous attempt. Treat those as success to make sync idempotent.
+          if (isIgnorableMetadataError(e, label)) {
+            const code = getHasuraErrorCode(e) ?? '-';
+            const msg = getHasuraErrorMessage(e) ?? formatHasuraError(e);
+            this.logger.warn(
+              `Ignoring Hasura metadata error for ${label} (code=${code}): ${msg}`,
+              HasuraClientService.name,
+            );
+            continue;
+          }
+          throw e;
+        }
         this.logger.warn(
           `Failed ${label} chunk (source=${this.source}, ops=${chunk.length}). Splitting...`,
           HasuraClientService.name,
@@ -348,6 +362,33 @@ function normalizeHasuraEndpoint(input: string): string {
 function clampInt(n: number, min: number, max: number): number {
   if (!Number.isFinite(n)) return min;
   return Math.max(min, Math.min(max, n));
+}
+
+function getHasuraErrorCode(e: any): string | undefined {
+  const code = e?.response?.data?.code;
+  return typeof code === 'string' ? code : undefined;
+}
+
+function getHasuraErrorMessage(e: any): string | undefined {
+  const msg = e?.response?.data?.error ?? e?.response?.data?.message;
+  return typeof msg === 'string' ? msg : undefined;
+}
+
+function isIgnorableMetadataError(e: any, label: string): boolean {
+  const code = (getHasuraErrorCode(e) ?? '').toLowerCase();
+  // Common Hasura idempotency errors:
+  // - pg_track_table: already-tracked
+  // - permissions/relationships: already-exists
+  if (label === 'pg_track_table' && code === 'already-tracked') return true;
+  if (
+    (label === 'pg_create_select_permission' ||
+      label === 'pg_create_object_relationship' ||
+      label === 'pg_create_array_relationship') &&
+    code === 'already-exists'
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function isRetryableAxiosError(e: any): boolean {
