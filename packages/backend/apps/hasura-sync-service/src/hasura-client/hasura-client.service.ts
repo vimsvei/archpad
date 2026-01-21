@@ -378,8 +378,10 @@ function isIgnorableMetadataError(e: any, label: string): boolean {
   const code = (getHasuraErrorCode(e) ?? '').toLowerCase();
   // Common Hasura idempotency errors:
   // - pg_track_table: already-tracked
+  // - pg_untrack_table: already-untracked
   // - permissions/relationships: already-exists
   if (label === 'pg_track_table' && code === 'already-tracked') return true;
+  if (label === 'pg_untrack_table' && code === 'already-untracked') return true;
   if (
     (label === 'pg_create_select_permission' ||
       label === 'pg_create_object_relationship' ||
