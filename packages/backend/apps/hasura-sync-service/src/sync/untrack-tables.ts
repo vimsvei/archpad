@@ -16,7 +16,9 @@ export async function untrackTables(args: {
   }
 
   logger.log(`Untracking ${tables.length} tracked tables (cascade=true)...`);
-  const ops = tables.map((t) => opUntrackTable(hasura.source, t, { cascade: true }));
+  const ops = tables.map((t) =>
+    opUntrackTable(hasura.source, t, { cascade: true }),
+  );
   await applyMetadataOps({
     hasura,
     logger,

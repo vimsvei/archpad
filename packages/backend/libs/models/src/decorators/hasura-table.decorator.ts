@@ -31,10 +31,12 @@ export function getHasuraTables(): HasuraTableUsage[] {
  * Materialization is done by application bootstrap (arch-repo-service / tenant-service),
  * typically by writing DB comments that hasura-sync-service can read.
  */
-export function HasuraTable(options: {
-  name?: string;
-  camelCase?: boolean;
-} = {}): ClassDecorator {
+export function HasuraTable(
+  options: {
+    name?: string;
+    camelCase?: boolean;
+  } = {},
+): ClassDecorator {
   return (target: Function) => {
     HASURA_TABLES.push({
       entity: target,

@@ -56,11 +56,12 @@ export class HasuraRelationshipNameInitializer
     const tableUsages = getHasuraTables();
     const hasuraProperties = getHasuraProperties();
 
-    const hasAny = references.length || tableUsages.length || hasuraProperties.length;
+    const hasAny =
+      references.length || tableUsages.length || hasuraProperties.length;
     if (!hasAny) return;
 
     const conn = this.orm.em.getConnection();
-    await this.ensureRegistry(conn);
+    await this.ensureRegistry();
 
     // Clear old overrides to avoid conflicts with stale data
     await this.clearHasuraSyncOverrides(conn);
@@ -364,17 +365,26 @@ export class HasuraRelationshipNameInitializer
           // NOTE: Hasura can't expose a real nested object from multiple columns without a view/function.
           if (prop.reference === ReferenceKind.EMBEDDED) {
             const embeddedCtor =
-              (typeof prop.type === 'function' ? (prop.type as Function) : undefined) ??
+              (typeof prop.type === 'function'
+                ? (prop.type as Function)
+                : undefined) ??
               (typeof prop.embeddable === 'function'
                 ? (prop.embeddable as Function)
                 : undefined) ??
-              (typeof prop.entity === 'function' ? (prop.entity as Function) : undefined);
+              (typeof prop.entity === 'function'
+                ? (prop.entity as Function)
+                : undefined);
 
             if (!embeddedCtor || !isHasuraEmbeddable(embeddedCtor)) continue;
 
             const embeddedProps: Record<string, any> = prop.embeddedProps ?? {};
-            for (const [subName, subProp] of Object.entries<any>(embeddedProps)) {
-              if ((subProp.reference ?? ReferenceKind.SCALAR) !== ReferenceKind.SCALAR)
+            for (const [subName, subProp] of Object.entries<any>(
+              embeddedProps,
+            )) {
+              if (
+                (subProp.reference ?? ReferenceKind.SCALAR) !==
+                ReferenceKind.SCALAR
+              )
                 continue;
               const cols: string[] = subProp.fieldNames ?? [];
               for (const col of cols) {
@@ -477,7 +487,8 @@ export class HasuraRelationshipNameInitializer
         // If camelCase is disabled and no explicit custom name is provided,
         // we still write an override equal to DB column name to prevent
         // hasura-sync-service fallback camelCase renaming.
-        const custom = explicitName ?? (camelCase ? toSimpleCamelCase(col) : col);
+        const custom =
+          explicitName ?? (camelCase ? toSimpleCamelCase(col) : col);
         await this.upsertColumnOverride(conn, {
           schema,
           table,
@@ -495,7 +506,7 @@ export class HasuraRelationshipNameInitializer
     }
   }
 
-  private async ensureRegistry(conn: any) {
+  private async ensureRegistry() {
     // Create `hasura_sync.*` tables via MikroORM metadata (no handwritten SQL).
     // Safe: true, no drops.
     await this.orm
@@ -505,11 +516,15 @@ export class HasuraRelationshipNameInitializer
 
   private async clearHasuraSyncOverrides(conn: any) {
     // Clear all override tables to avoid conflicts with stale data
+    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
     await conn.execute(`DELETE FROM hasura_sync.array_relationship_overrides;`);
+    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
     await conn.execute(
       `DELETE FROM hasura_sync.object_relationship_overrides;`,
     );
+    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
     await conn.execute(`DELETE FROM hasura_sync.table_overrides;`);
+    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
     await conn.execute(`DELETE FROM hasura_sync.column_overrides;`);
     this.logger.log(
       'Cleared all Hasura sync override tables',
@@ -519,8 +534,14 @@ export class HasuraRelationshipNameInitializer
 
   private async upsertTableOverride(
     conn: any,
-    args: { schema: string; table: string; customName: string; camelCase: boolean },
+    args: {
+      schema: string;
+      table: string;
+      customName: string;
+      camelCase: boolean;
+    },
   ) {
+    // noinspection SqlResolve,SqlNoDataSourceInspection
     await conn.execute(
       `
       INSERT INTO hasura_sync.table_overrides (table_schema, table_name, custom_name, camel_case)
@@ -542,6 +563,7 @@ export class HasuraRelationshipNameInitializer
       customName: string;
     },
   ) {
+    // noinspection SqlResolve,SqlNoDataSourceInspection
     await conn.execute(
       `
       INSERT INTO hasura_sync.column_overrides (table_schema, table_name, column_name, custom_name)
@@ -565,6 +587,7 @@ export class HasuraRelationshipNameInitializer
     const fkTable = escapeSqlString(r.fkTable);
     const name = escapeSqlString(r.objectName);
 
+    // noinspection SqlResolve,SqlNoDataSourceInspection
     await conn.execute(
       `
       INSERT INTO hasura_sync.object_relationship_overrides (
@@ -594,6 +617,7 @@ export class HasuraRelationshipNameInitializer
     const fkTable = escapeSqlString(r.fkTable);
     const finalName = r.collectionName;
 
+    // noinspection SqlResolve,SqlNoDataSourceInspection
     await conn.execute(
       `
       INSERT INTO hasura_sync.array_relationship_overrides (

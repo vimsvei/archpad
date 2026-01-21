@@ -1,4 +1,11 @@
-import { BadRequestException, Body, Controller, HttpCode, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakService } from './keycloak.service';
 import { SessionService } from './session.service';
@@ -21,7 +28,10 @@ export class AuthController {
       throw new BadRequestException('Missing email/password');
     }
     try {
-      return await this.sessions.createSessionFromPasswordLogin({ username, password });
+      return await this.sessions.createSessionFromPasswordLogin({
+        username,
+        password,
+      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
       throw new UnauthorizedException(message || 'login_failed');
@@ -30,7 +40,9 @@ export class AuthController {
 
   @Post('session/access')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Get access token for session (server-side refresh)' })
+  @ApiOperation({
+    summary: 'Get access token for session (server-side refresh)',
+  })
   async sessionAccess(@Body() body: Record<string, unknown>) {
     const sessionId = String(body.sessionId ?? '').trim();
     if (!sessionId) throw new BadRequestException('Missing sessionId');
@@ -58,7 +70,9 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Logout (revoke server-side session + best-effort KC logout)' })
+  @ApiOperation({
+    summary: 'Logout (revoke server-side session + best-effort KC logout)',
+  })
   async logout(@Body() body: Record<string, unknown>) {
     const sessionId = String(body.sessionId ?? '').trim();
     if (!sessionId) return { ok: true };
@@ -68,9 +82,13 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Create user via Keycloak Admin API (service account)' })
+  @ApiOperation({
+    summary: 'Create user via Keycloak Admin API (service account)',
+  })
   async register(@Body() body: Record<string, unknown>) {
-    const email = String(body.email ?? '').trim().toLowerCase();
+    const email = String(body.email ?? '')
+      .trim()
+      .toLowerCase();
     const password = String(body.password ?? '');
     const firstName = String(body.firstName ?? '').trim();
     const lastName = String(body.lastName ?? '').trim();
@@ -84,11 +102,16 @@ export class AuthController {
       phone: phone || undefined,
     });
     // optional: send verify email if SMTP configured
-    const clientId =
-      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const clientId = (
+      process.env.OIDC_CLIENT_ID ||
+      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
+      'archpad-portal'
+    ).trim();
     const portalBase =
       (process.env.PORTAL_PUBLIC_URL || '').trim() ||
-      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+      (process.env.NODE_ENV === 'production'
+        ? 'https://portal.archpad.pro'
+        : 'http://localhost:3000');
     const redirectUri = `${portalBase}/sign-in?verified=1`;
     await this.keycloak
       .sendExecuteActionsEmail({
@@ -104,16 +127,25 @@ export class AuthController {
 
   @Post('recovery')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Send UPDATE_PASSWORD email via Keycloak Admin API' })
+  @ApiOperation({
+    summary: 'Send UPDATE_PASSWORD email via Keycloak Admin API',
+  })
   async recovery(@Body() body: Record<string, unknown>) {
-    const email = String(body.email ?? '').trim().toLowerCase();
+    const email = String(body.email ?? '')
+      .trim()
+      .toLowerCase();
     // Avoid user enumeration: always ok.
     if (!email) return { ok: true };
-    const clientId =
-      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const clientId = (
+      process.env.OIDC_CLIENT_ID ||
+      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
+      'archpad-portal'
+    ).trim();
     const portalBase =
       (process.env.PORTAL_PUBLIC_URL || '').trim() ||
-      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+      (process.env.NODE_ENV === 'production'
+        ? 'https://portal.archpad.pro'
+        : 'http://localhost:3000');
     const redirectUri = `${portalBase}/sign-in?recovered=1`;
     await this.keycloak
       .sendExecuteActionsEmail({
@@ -131,13 +163,20 @@ export class AuthController {
   @HttpCode(200)
   @ApiOperation({ summary: 'Send VERIFY_EMAIL via Keycloak Admin API' })
   async verify(@Body() body: Record<string, unknown>) {
-    const email = String(body.email ?? '').trim().toLowerCase();
+    const email = String(body.email ?? '')
+      .trim()
+      .toLowerCase();
     if (!email) return { ok: true };
-    const clientId =
-      (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || 'archpad-portal').trim();
+    const clientId = (
+      process.env.OIDC_CLIENT_ID ||
+      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
+      'archpad-portal'
+    ).trim();
     const portalBase =
       (process.env.PORTAL_PUBLIC_URL || '').trim() ||
-      (process.env.NODE_ENV === 'production' ? 'https://portal.archpad.pro' : 'http://localhost:3000');
+      (process.env.NODE_ENV === 'production'
+        ? 'https://portal.archpad.pro'
+        : 'http://localhost:3000');
     const redirectUri = `${portalBase}/sign-in?verified=1`;
     await this.keycloak
       .sendExecuteActionsEmail({
@@ -151,4 +190,3 @@ export class AuthController {
     return { ok: true };
   }
 }
-

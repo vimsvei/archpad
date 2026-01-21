@@ -24,7 +24,8 @@ export function HasuraEmbeddable(
   };
 }
 
-export function isHasuraEmbeddable(target: Function): HasuraEmbeddableUsage | undefined {
+export function isHasuraEmbeddable(
+  target: Function,
+): HasuraEmbeddableUsage | undefined {
   return HASURA_EMBEDDABLES.find((x) => x.embeddable === target);
 }
-

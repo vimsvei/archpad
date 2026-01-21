@@ -4,7 +4,10 @@ import { getHasuraSyncColumnOverrides } from '../db/get-hasura-sync-column-overr
 import { getHasuraSyncTableOverrides } from '../db/get-hasura-sync-table-overrides';
 import { getSchemaTableColumns } from '../db/get-schema-table-columns';
 import { DbTableRef } from '../db/types';
-import { applyMetadataOps, opSetTableCustomization } from '../utils/metadata-ops';
+import {
+  applyMetadataOps,
+  opSetTableCustomization,
+} from '../utils/metadata-ops';
 import { toCamelCase } from '../utils/naming.util';
 
 function buildDefaultRootFields(customName: string): Record<string, string> {
@@ -58,7 +61,9 @@ export async function applyCamelCaseCustomization(args: {
   }
 
   const ops: any[] = [];
-  const columnsByTable = await getSchemaTableColumns(hasura).catch(() => new Map());
+  const columnsByTable = await getSchemaTableColumns(hasura).catch(
+    () => new Map(),
+  );
 
   for (const table of tables) {
     const tableOverride = tableOverrideByKey.get(

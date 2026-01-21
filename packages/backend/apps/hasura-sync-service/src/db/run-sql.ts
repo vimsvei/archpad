@@ -17,4 +17,3 @@ export async function runSqlJsonRows<T>(
   const res = await hasura.runSql(sql);
   return rowsFromRunSql(res).map(([json]) => JSON.parse(json) as T);
 }
-

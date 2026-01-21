@@ -94,7 +94,8 @@ describe('applyCamelCaseCustomization', () => {
 
     const cfg = ops[0].args?.configuration ?? {};
     expect(cfg.custom_column_names).toEqual({ created_at: 'createdAt' });
-    expect(cfg.column_config).toEqual({ created_at: { custom_name: 'createdAt' } });
+    expect(cfg.column_config).toEqual({
+      created_at: { custom_name: 'createdAt' },
+    });
   });
 });
-

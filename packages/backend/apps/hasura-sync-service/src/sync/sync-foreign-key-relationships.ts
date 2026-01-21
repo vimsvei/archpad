@@ -123,9 +123,12 @@ export async function syncForeignKeyRelationships(args: {
         objectNameRaw!,
         objectNameOverride ? { strict: true } : undefined,
       );
-      const oKey = oKeyLookup;
       ops.push(
-        opCreateObjectRelationship({ source: hasura.source, fk, name: objectName }),
+        opCreateObjectRelationship({
+          source: hasura.source,
+          fk,
+          name: objectName,
+        }),
       );
     } else {
       logger.warn(
@@ -141,13 +144,6 @@ export async function syncForeignKeyRelationships(args: {
       arrayNameRaw,
       arrayNameOverride ? { strict: true } : undefined,
     );
-    const aKey = arrayRelationshipKey({
-      schema: fk.pk_table_schema,
-      table: fk.pk_table_name,
-      fkSchema: fk.fk_table_schema,
-      fkTable: fk.fk_table_name,
-      cols: fk.fk_columns,
-    });
     ops.push(
       opCreateArrayRelationship({ source: hasura.source, fk, name: arrayName }),
     );

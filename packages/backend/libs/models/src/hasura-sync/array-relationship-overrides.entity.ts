@@ -6,7 +6,13 @@ import { Entity, PrimaryKey, Property, Index, Unique } from '@mikro-orm/core';
 @Entity({ schema: 'hasura_sync', tableName: 'array_relationship_overrides' })
 @Index({
   name: 'array_relationship_overrides_pk',
-  properties: ['pkTableSchema', 'pkTableName', 'fkTableSchema', 'fkTableName', 'fkColumns'],
+  properties: [
+    'pkTableSchema',
+    'pkTableName',
+    'fkTableSchema',
+    'fkTableName',
+    'fkColumns',
+  ],
 })
 @Unique({
   name: 'array_relationship_overrides_unique_name_per_pk',
@@ -40,4 +46,3 @@ export class HasuraSyncArrayRelationshipOverride {
   })
   updatedAt: Date = new Date();
 }
-

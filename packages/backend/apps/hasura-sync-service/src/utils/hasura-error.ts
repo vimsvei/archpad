@@ -14,4 +14,3 @@ export function formatHasuraError(e: unknown): string {
 
   return String(message ?? e);
 }
-

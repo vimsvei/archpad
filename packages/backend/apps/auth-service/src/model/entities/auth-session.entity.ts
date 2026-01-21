@@ -2,7 +2,10 @@ import { Entity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity({ tableName: 'auth_sessions' })
 @Index({ name: 'auth_sessions_email_idx', properties: ['email'] })
-@Index({ name: 'auth_sessions_access_expires_idx', properties: ['accessExpiresAt'] })
+@Index({
+  name: 'auth_sessions_access_expires_idx',
+  properties: ['accessExpiresAt'],
+})
 export class AuthSession {
   @PrimaryKey({ type: 'uuid' })
   id!: string;
@@ -28,7 +31,10 @@ export class AuthSession {
   @Property({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date = new Date();
 
-  @Property({ type: 'timestamptz', name: 'updated_at', onUpdate: () => new Date() })
+  @Property({
+    type: 'timestamptz',
+    name: 'updated_at',
+    onUpdate: () => new Date(),
+  })
   updatedAt: Date = new Date();
 }
-

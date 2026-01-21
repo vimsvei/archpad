@@ -132,10 +132,17 @@ export class HasuraClientService {
   }): Promise<T> {
     await this.ensureEndpointSelected();
     const type = args.body?.type;
-    this.logger.debug(`POST ${args.path} type=${type}`, HasuraClientService.name);
-    return this.postJsonWithRetry<T>(`${this.endpoint}${args.path}`, args.body, {
-      label: args.label,
-    });
+    this.logger.debug(
+      `POST ${args.path} type=${type}`,
+      HasuraClientService.name,
+    );
+    return this.postJsonWithRetry<T>(
+      `${this.endpoint}${args.path}`,
+      args.body,
+      {
+        label: args.label,
+      },
+    );
   }
 
   async postMetadata<T = any>(body: any): Promise<T> {

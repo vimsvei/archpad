@@ -34,4 +34,3 @@ export class HasuraSyncObjectRelationshipOverride {
   })
   updatedAt: Date = new Date();
 }
-

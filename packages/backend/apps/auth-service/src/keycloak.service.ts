@@ -30,11 +30,19 @@ export class KeycloakService {
   }
 
   private getOidcClientId(): string {
-    return (process.env.OIDC_CLIENT_ID || process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || '').trim();
+    return (
+      process.env.OIDC_CLIENT_ID ||
+      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
+      ''
+    ).trim();
   }
 
   private getOidcClientSecret(): string {
-    const s = (process.env.OIDC_CLIENT_SECRET || process.env.KEYCLOAK_CLIENT_SECRET || '').trim();
+    const s = (
+      process.env.OIDC_CLIENT_SECRET ||
+      process.env.KEYCLOAK_CLIENT_SECRET ||
+      ''
+    ).trim();
     if (!s) throw new Error('OIDC_CLIENT_SECRET must be set');
     return s;
   }
@@ -62,7 +70,10 @@ export class KeycloakService {
 
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
-    const tokenUrl = new URL(`/realms/${realm}/protocol/openid-connect/token`, base);
+    const tokenUrl = new URL(
+      `/realms/${realm}/protocol/openid-connect/token`,
+      base,
+    );
 
     const clientId = this.getOidcClientId();
     const clientSecret = this.getOidcClientSecret();
@@ -81,17 +92,29 @@ export class KeycloakService {
 
     const json = (await res.json().catch(() => ({}))) as Partial<TokenResponse>;
     if (!res.ok || !json.access_token) {
-      throw new Error(json.error_description ?? json.error ?? `token_request_failed (${res.status})`);
+      throw new Error(
+        json.error_description ??
+          json.error ??
+          `token_request_failed (${res.status})`,
+      );
     }
     return {
       accessToken: json.access_token,
       refreshToken: json.refresh_token,
-      expiresIn: typeof json.expires_in === 'number' ? json.expires_in : undefined,
-      refreshExpiresIn: typeof json.refresh_expires_in === 'number' ? json.refresh_expires_in : undefined,
+      expiresIn:
+        typeof json.expires_in === 'number' ? json.expires_in : undefined,
+      refreshExpiresIn:
+        typeof json.refresh_expires_in === 'number'
+          ? json.refresh_expires_in
+          : undefined,
     };
   }
 
-  async passwordLogin(input: { username: string; password: string; scope?: string }) {
+  async passwordLogin(input: {
+    username: string;
+    password: string;
+    scope?: string;
+  }) {
     const body = new URLSearchParams();
     body.set('grant_type', 'password');
     body.set('username', input.username);
@@ -114,7 +137,10 @@ export class KeycloakService {
     const realm = this.getRealm();
     const clientId = this.getOidcClientId();
     const clientSecret = this.getOidcClientSecret();
-    const url = new URL(`/realms/${realm}/protocol/openid-connect/logout`, base);
+    const url = new URL(
+      `/realms/${realm}/protocol/openid-connect/logout`,
+      base,
+    );
 
     const body = new URLSearchParams();
     body.set('client_id', clientId);
@@ -144,7 +170,10 @@ export class KeycloakService {
     const clientId = this.getServiceClientId();
     const clientSecret = this.getServiceClientSecret();
 
-    const tokenUrl = new URL(`/realms/${realm}/protocol/openid-connect/token`, base);
+    const tokenUrl = new URL(
+      `/realms/${realm}/protocol/openid-connect/token`,
+      base,
+    );
     const body = new URLSearchParams();
     body.set('grant_type', 'client_credentials');
     body.set('client_id', clientId);
@@ -160,12 +189,18 @@ export class KeycloakService {
 
     const json = (await res.json().catch(() => ({}))) as Partial<TokenResponse>;
     if (!res.ok || !json.access_token) {
-      throw new Error(json.error_description ?? json.error ?? `service_token_failed (${res.status})`);
+      throw new Error(
+        json.error_description ??
+          json.error ??
+          `service_token_failed (${res.status})`,
+      );
     }
     return json.access_token;
   }
 
-  async checkHealth(input?: { requiredClients?: string[] }): Promise<KeycloakHealthResult> {
+  async checkHealth(input?: {
+    requiredClients?: string[];
+  }): Promise<KeycloakHealthResult> {
     await this.vault.ensureLoaded();
 
     const base = this.getKeycloakBaseUrl();
@@ -183,13 +218,17 @@ export class KeycloakService {
 
     // 1) OIDC discovery (realm existence + issuer correctness)
     try {
-      const url = new URL(`/realms/${realm}/.well-known/openid-configuration`, base);
+      const url = new URL(
+        `/realms/${realm}/.well-known/openid-configuration`,
+        base,
+      );
       const res = await fetch(url.toString(), { method: 'GET' });
       out.checks.discovery.status = res.status;
       if (res.ok) {
         const json = (await res.json().catch(() => null)) as any;
         out.checks.discovery.ok = true;
-        out.checks.discovery.issuer = typeof json?.issuer === 'string' ? json.issuer : undefined;
+        out.checks.discovery.issuer =
+          typeof json?.issuer === 'string' ? json.issuer : undefined;
       } else {
         const text = await res.text().catch(() => '');
         out.checks.discovery.error = text.slice(0, 200);
@@ -204,7 +243,8 @@ export class KeycloakService {
       serviceToken = await this.getServiceAccessToken();
       out.checks.serviceToken.ok = true;
     } catch (e: unknown) {
-      out.checks.serviceToken.error = e instanceof Error ? e.message : String(e);
+      out.checks.serviceToken.error =
+        e instanceof Error ? e.message : String(e);
     }
 
     // 3) Optional: verify client presence via Admin API (requires view-clients permission)
@@ -240,7 +280,9 @@ export class KeycloakService {
             };
             break;
           }
-          const arr = (await res.json().catch(() => [])) as Array<{ clientId?: string }>;
+          const arr = (await res.json().catch(() => [])) as Array<{
+            clientId?: string;
+          }>;
           const match = arr.find((c) => c?.clientId === clientId);
           if (match?.clientId) found.add(match.clientId);
         }
@@ -279,12 +321,23 @@ export class KeycloakService {
       headers: { authorization: `Bearer ${token}` },
     });
     if (!res.ok) return null;
-    const arr = (await res.json().catch(() => [])) as Array<{ id?: string; email?: string }>;
-    const match = arr.find((u) => (u.email || '').toLowerCase() === email.toLowerCase());
+    const arr = (await res.json().catch(() => [])) as Array<{
+      id?: string;
+      email?: string;
+    }>;
+    const match = arr.find(
+      (u) => (u.email || '').toLowerCase() === email.toLowerCase(),
+    );
     return match?.id ?? null;
   }
 
-  async createUser(input: { email: string; password: string; firstName?: string; lastName?: string; phone?: string }) {
+  async createUser(input: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  }) {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
@@ -298,7 +351,9 @@ export class KeycloakService {
       firstName: input.firstName,
       lastName: input.lastName,
       attributes: input.phone ? { phone: [input.phone] } : undefined,
-      credentials: [{ type: 'password', value: input.password, temporary: false }],
+      credentials: [
+        { type: 'password', value: input.password, temporary: false },
+      ],
     };
 
     const res = await fetch(url.toString(), {
@@ -315,7 +370,9 @@ export class KeycloakService {
     }
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      throw new Error(`create_user_failed (${res.status}) ${text.slice(0, 200)}`);
+      throw new Error(
+        `create_user_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
     }
   }
 
@@ -332,11 +389,22 @@ export class KeycloakService {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
-    const url = new URL(`/admin/realms/${realm}/users/${userId}/execute-actions-email`, base);
+    const url = new URL(
+      `/admin/realms/${realm}/users/${userId}/execute-actions-email`,
+      base,
+    );
     if (input.clientId) url.searchParams.set('client_id', input.clientId);
-    if (input.redirectUri) url.searchParams.set('redirect_uri', input.redirectUri);
-    if (typeof input.lifespanSeconds === 'number' && Number.isFinite(input.lifespanSeconds) && input.lifespanSeconds > 0) {
-      url.searchParams.set('lifespan', String(Math.floor(input.lifespanSeconds)));
+    if (input.redirectUri)
+      url.searchParams.set('redirect_uri', input.redirectUri);
+    if (
+      typeof input.lifespanSeconds === 'number' &&
+      Number.isFinite(input.lifespanSeconds) &&
+      input.lifespanSeconds > 0
+    ) {
+      url.searchParams.set(
+        'lifespan',
+        String(Math.floor(input.lifespanSeconds)),
+      );
     }
 
     const res = await fetch(url.toString(), {
@@ -349,8 +417,9 @@ export class KeycloakService {
     });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      throw new Error(`execute_actions_failed (${res.status}) ${text.slice(0, 200)}`);
+      throw new Error(
+        `execute_actions_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
     }
   }
 }
-

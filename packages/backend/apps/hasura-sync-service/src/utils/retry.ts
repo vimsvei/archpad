@@ -13,7 +13,10 @@ export async function retry<T>(args: {
   /** Retry only when this returns true for thrown errors. */
   retryOnError?: (error: unknown) => boolean;
   /** Compute delay for the next retry. */
-  getDelayMs?: (attempt: number, info: { result?: T; error?: unknown }) => number;
+  getDelayMs?: (
+    attempt: number,
+    info: { result?: T; error?: unknown },
+  ) => number;
   /** Hook before sleeping/retrying. */
   onRetry?: (args: {
     attempt: number;
@@ -34,7 +37,7 @@ export async function retry<T>(args: {
       if (attempt >= total) return result;
 
       const nextDelayMs =
-        args.getDelayMs?.(attempt, { result }) ?? (args.delayMs ?? 0);
+        args.getDelayMs?.(attempt, { result }) ?? args.delayMs ?? 0;
       await args.onRetry?.({ attempt, nextDelayMs, result });
       if (nextDelayMs > 0) await sleep(nextDelayMs);
     } catch (error: unknown) {
@@ -42,7 +45,7 @@ export async function retry<T>(args: {
       if (!needRetry || attempt >= total) throw error;
 
       const nextDelayMs =
-        args.getDelayMs?.(attempt, { error }) ?? (args.delayMs ?? 0);
+        args.getDelayMs?.(attempt, { error }) ?? args.delayMs ?? 0;
       await args.onRetry?.({ attempt, nextDelayMs, error });
       if (nextDelayMs > 0) await sleep(nextDelayMs);
     }
@@ -51,4 +54,3 @@ export async function retry<T>(args: {
   // Unreachable, but TypeScript wants a return.
   throw new Error('retry(): unreachable');
 }
-

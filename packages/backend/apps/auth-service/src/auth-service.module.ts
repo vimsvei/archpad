@@ -68,15 +68,13 @@ import { SchemaInitializerModule } from '@archpad/schema-initializer';
             : vaultConfigService.get('POSTGRES_ENDPOINT') ||
               configService.get<string>('PG_ENDPOINT');
 
-        const pgPort = +(
-          nodeEnv === 'development'
-            ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
-              configService.get<string>('PG_HOST_PORT') ||
-              '5432'
-            : vaultConfigService.get('POSTGRES_PORT') ||
-              configService.get<string>('PG_ENDPOINT_PORT') ||
-              '5432'
-        );
+        const pgPort = +(nodeEnv === 'development'
+          ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
+            configService.get<string>('PG_HOST_PORT') ||
+            '5432'
+          : vaultConfigService.get('POSTGRES_PORT') ||
+            configService.get<string>('PG_ENDPOINT_PORT') ||
+            '5432');
 
         console.log(`[MikroORM Config] dbName: "${dbName}"`);
         console.log(`[MikroORM Config] user: "${dbUser}"`);
@@ -133,4 +131,3 @@ export class AuthServiceModule implements OnModuleInit {
     this.logger.log('='.repeat(40), this.loggerContext);
   }
 }
-

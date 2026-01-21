@@ -14,7 +14,8 @@ export class HealthController {
   })
   async keycloakHealth() {
     const result = await this.keycloak.checkHealth();
-    return result.ok ? { ...result, status: 'ok' } : { ...result, status: 'degraded' };
+    return result.ok
+      ? { ...result, status: 'ok' }
+      : { ...result, status: 'degraded' };
   }
 }
-

@@ -28,4 +28,3 @@ export class HasuraSyncTableOverride {
   })
   updatedAt: Date = new Date();
 }
-

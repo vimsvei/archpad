@@ -29,4 +29,3 @@ export class HasuraSyncColumnOverride {
   })
   updatedAt: Date = new Date();
 }
-
