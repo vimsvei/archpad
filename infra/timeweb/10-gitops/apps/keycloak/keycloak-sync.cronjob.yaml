@@ -6,9 +6,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "90"
 spec:
-  # Schedule is irrelevant while suspended, but must be valid.
-  schedule: "0 3 * * *"
-  suspend: true
+  # Sync "desired state" (roles/groups/clients) periodically.
+  # ArgoCD applies manifests, and this job applies them inside Keycloak via Admin API.
+  schedule: "*/10 * * * *"
+  suspend: false
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
@@ -35,12 +36,20 @@ spec:
               command: ["sh", "-ceu"]
               args:
                 - |
-                  apk add --no-cache curl >/dev/null
+                  apk add --no-cache curl jq >/dev/null
                   # Load admin creds from Vault Agent Injector
                   . /vault/secrets/keycloak-admin
 
                   KC_BASE="http://keycloak:8080"
                   REALM="archpad"
+
+                  # Wait until realm exists (first boot can take a bit).
+                  for i in $(seq 1 60); do
+                    if curl -fsS "${KC_BASE}/realms/${REALM}" >/dev/null; then
+                      break
+                    fi
+                    sleep 2
+                  done
 
                   # Get admin token from master realm using admin-cli.
                   token_json="$(curl -fsS -X POST "${KC_BASE}/realms/master/protocol/openid-connect/token" \
@@ -49,7 +58,7 @@ spec:
                     --data-urlencode "client_id=admin-cli" \
                     --data-urlencode "username=${KEYCLOAK_ADMIN}" \
                     --data-urlencode "password=${KEYCLOAK_ADMIN_PASSWORD}")"
-                  access_token="$(printf "%s" "$token_json" | tr -d '\n' | sed -n 's/.*"access_token":"\\([^"]*\\)".*/\\1/p')"
+                  access_token="$(printf "%s" "$token_json" | jq -r '.access_token')"
                   [ -n "$access_token" ]
 
                   # Apply partial import (roles/groups/clients) from ConfigMap.
