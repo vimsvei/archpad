@@ -1,6 +1,6 @@
 import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-element.generic';
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { ArchimateCode, HasuraRefName, HasuraTable } from '@archpad/models';
+import { ArchimateCode, HasuraTable } from '@archpad/models';
 import { ApiProperty } from '@nestjs/swagger';
 
 @HasuraTable()
@@ -14,7 +14,6 @@ export class Capability extends ArchimateElementGeneric {
     type: 'string',
     description: 'Родительский объект',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => Capability,
     fieldName: 'parent_id',

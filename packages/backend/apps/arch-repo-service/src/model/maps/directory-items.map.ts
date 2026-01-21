@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { DirectoryLinkType } from '@/model/enums/directory-link-type.enum';
@@ -7,7 +7,7 @@ import { DirectoryLinkType } from '@/model/enums/directory-link-type.enum';
 @Entity({ tableName: 'map_directory_items' })
 @Unique({ properties: ['source', 'target'] })
 export class DirectoryItemsMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'source', collectionName: 'children' })
   @ManyToOne({
     entity: () => DirectoryObject,
     primary: true,
@@ -17,7 +17,7 @@ export class DirectoryItemsMap extends MappedObject {
   })
   source!: DirectoryObject;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'target', collectionName: 'parents' })
   @ManyToOne({
     entity: () => DirectoryObject,
     primary: true,

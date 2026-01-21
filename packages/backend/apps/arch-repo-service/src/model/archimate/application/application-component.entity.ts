@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Collection, Entity, ManyToOne, OneToMany } from '@mikro-orm/core';
 import {
   ArchimateCode,
-  HasuraRefCollection,
-  HasuraRefName,
+  HasuraReference,
   HasuraTable,
 } from '@archpad/models';
 import { ArchimateElementGeneric } from '../core/archimate-element.generic';
@@ -39,7 +38,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: ComponentStateDirectory,
     description: 'Статус компонента',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ComponentStateDirectory,
     name: 'state_id',
@@ -54,7 +52,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: LicenseTypeDirectory,
     description: 'Тип лицензии',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => LicenseTypeDirectory,
     name: 'license_type_id',
@@ -69,7 +66,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: ArchitectureStyleDirectory,
     description: 'Архитектурный стиль компонента',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ArchitectureStyleDirectory,
     name: 'style_id',
@@ -84,7 +80,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: CriticalLevelDirectory,
     description: 'Уровень критичности',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => CriticalLevelDirectory,
     name: 'critical_level_id',
@@ -99,7 +94,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: FailoverTypeDirectory,
     description: 'Скорость восстановления',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => FailoverTypeDirectory,
     name: 'failover_type_id',
@@ -114,7 +108,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: RecoveryTimeDirectory,
     description: 'Скорость восстановления',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => RecoveryTimeDirectory,
     name: 'recovery_time_id',
@@ -129,7 +122,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: RedundancyTypeDirectory,
     description: 'Избыточность',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => RedundancyTypeDirectory,
     name: 'redundancy_type_id',
@@ -144,7 +136,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: MonitoringLevelDirectory,
     description: 'Уровень мониторинга',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => MonitoringLevelDirectory,
     name: 'monitoring_level_id',
@@ -159,7 +150,6 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     type: ScalingTypeDirectory,
     description: 'Тип масштабирования',
   })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ScalingTypeDirectory,
     name: 'scaling_type_id',
@@ -169,49 +159,49 @@ export class ApplicationComponent extends ArchimateElementGeneric {
   })
   scalingType!: ScalingTypeDirectory;
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'functions' })
   @OneToMany({
     entity: () => ApplicationComponentFunctionMap,
     mappedBy: 'component',
   })
   functions = new Collection<ApplicationComponentFunctionMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'events' })
   @OneToMany({
     entity: () => ApplicationComponentEventMap,
     mappedBy: 'component',
   })
   events = new Collection<ApplicationComponentEventMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'interfaces' })
   @OneToMany({
     entity: () => ApplicationComponentInterfaceMap,
     mappedBy: 'component',
   })
   interfaces = new Collection<ApplicationComponentInterfaceMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'dataObjects' })
   @OneToMany({
     entity: () => ApplicationComponentDataObjectMap,
     mappedBy: 'component',
   })
   dataObjects = new Collection<ApplicationComponentDataObjectMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'products' })
   @OneToMany({
     entity: () => ApplicationComponentProductMap,
     mappedBy: 'component',
   })
   products = new Collection<ApplicationComponentProductMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'systemSoftware' })
   @OneToMany({
     entity: () => ApplicationComponentSystemSoftwareMap,
     mappedBy: 'component',
   })
   systemSoftware = new Collection<ApplicationComponentSystemSoftwareMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'networks' })
   @OneToMany({
     entity: () => ApplicationComponentTechnologyLogicalNetworkMap,
     mappedBy: 'component',
@@ -220,14 +210,14 @@ export class ApplicationComponent extends ArchimateElementGeneric {
     this,
   );
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'nodes' })
   @OneToMany({
     entity: () => ApplicationComponentTechnologyNodeMap,
     mappedBy: 'component',
   })
   nodes = new Collection<ApplicationComponentTechnologyNodeMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'component', collectionName: 'solutions' })
   @OneToMany({
     entity: () => SolutionApplicationComponentMap,
     mappedBy: 'component',

@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationFunction } from '@/model/archimate/application/application-function.entity';
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_function' })
 export class ApplicationComponentFunctionMap extends MappedObject {
-  @HasuraRefName('functions')
+  @HasuraReference({ objectName: 'component', collectionName: 'functions' })
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -16,7 +16,7 @@ export class ApplicationComponentFunctionMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName('components')
+  @HasuraReference({ objectName: 'function', collectionName: 'components' })
   @ManyToOne({
     entity: () => ApplicationFunction,
     primary: true,

@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { CapabilityApplicationComponentMap } from '@/model/maps/capability-application-component.map';
 import { CapabilityAssessment } from '@/model/archimate/motivation/assessment.entity';

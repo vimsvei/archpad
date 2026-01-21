@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
@@ -7,7 +7,7 @@ import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_system_software' })
 export class ApplicationComponentSystemSoftwareMap extends MappedObject {
-  @HasuraRefName('systemSoftware')
+  @HasuraReference({ objectName: 'component', collectionName: 'systemSoftware' })
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -17,7 +17,7 @@ export class ApplicationComponentSystemSoftwareMap extends MappedObject {
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName('components')
+  @HasuraReference({ objectName: 'systemSoftware', collectionName: 'components' })
   @ManyToOne({
     entity: () => SystemSoftware,
     primary: true,

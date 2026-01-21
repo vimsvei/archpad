@@ -10,21 +10,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ActionStamp,
   ArchimateCode,
-  HasuraRefCollection,
+  HasuraReference,
   HasuraTable,
 } from '@archpad/models';
-import { ArchimateElementGeneric } from '../archimate/core/archimate-element.generic';
 import { SolutionApplicationComponentMap } from '../maps/solution-application-component.map';
 import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
 import { SolutionDataObjectMap } from '@/model/maps/solution-data-object.map';
 import { SolutionApplicationFunctionMap } from '@/model/maps/solution-application-function.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
-import { SolutionLifecycle } from '@/model/enums/solution-life-cycle.enum';
 import { SolutionImplementationStatus } from '@/model/enums/solution-implementation-status.enum';
+import {SolutionElementGeneric} from "@/model/solution/solution-element.generic";
+import {Variant} from "@/model/solution/variant.entity";
+import {View} from "@/model/solution/view.entity";
+import {SolutionLifecycle} from "@/model/enums/solution-life-cycle.enum";
 
 @HasuraTable()
 @Entity({ tableName: 'solutions' })
-export class Solution extends ArchimateElementGeneric {
+export class Solution extends SolutionElementGeneric {
   @ArchimateCode('SOLUTION')
   override code: string = undefined as any;
 
@@ -43,7 +45,7 @@ export class Solution extends ArchimateElementGeneric {
   @ApiProperty()
   @Property({ type: 'text' })
   alternatives!: string;
-
+  
   @ApiProperty({
     enum: SolutionLifecycle,
     description: 'Статус решения',
@@ -73,36 +75,50 @@ export class Solution extends ArchimateElementGeneric {
     nullable: true,
   })
   accepted!: ActionStamp;
+  
+  @HasuraReference({ objectName: 'solution', collectionName: 'variants' })
+  @OneToMany({
+    entity: () => Variant,
+    mappedBy: 'solution',
+  })
+  variants = new Collection<Variant>(this);
+  
+  @HasuraReference({ objectName: 'solution', collectionName: 'views' })
+  @OneToMany({
+    entity: () => View,
+    mappedBy: 'solution',
+  })
+  views = new Collection<View>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'solution', collectionName: 'components' })
   @OneToMany({
     entity: () => SolutionApplicationComponentMap,
     mappedBy: 'solution',
   })
   components = new Collection<SolutionApplicationComponentMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'solution', collectionName: 'functions' })
   @OneToMany({
     entity: () => SolutionApplicationFunctionMap,
     mappedBy: 'solution',
   })
   functions = new Collection<SolutionApplicationFunctionMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'solution', collectionName: 'dataObjects' })
   @OneToMany({
     entity: () => SolutionDataObjectMap,
     mappedBy: 'solution',
   })
   dataObjects = new Collection<SolutionDataObjectMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'solution', collectionName: 'flows' })
   @OneToMany({
     entity: () => SolutionFlowMap,
     mappedBy: 'solution',
   })
   flows = new Collection<SolutionFlowMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'solution', collectionName: 'motivations' })
   @OneToMany({
     entity: () => SolutionMotivationElementMap,
     mappedBy: 'solution',

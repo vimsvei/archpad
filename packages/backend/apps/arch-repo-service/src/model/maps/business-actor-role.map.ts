@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
 import { BusinessRole } from '@/model/archimate/business/business-role.entity';
@@ -7,7 +7,7 @@ import { BusinessRole } from '@/model/archimate/business/business-role.entity';
 @Entity({ tableName: 'map_business_actor_role' })
 @Unique({ properties: ['actor', 'role'] })
 export class BusinessActorRoleMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'actor', collectionName: 'roles' })
   @ManyToOne({
     entity: () => BusinessActor,
     primary: true,
@@ -17,7 +17,7 @@ export class BusinessActorRoleMap extends MappedObject {
   })
   actor!: BusinessActor;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'role', collectionName: 'actors' })
   @ManyToOne({
     entity: () => BusinessRole,
     primary: true,

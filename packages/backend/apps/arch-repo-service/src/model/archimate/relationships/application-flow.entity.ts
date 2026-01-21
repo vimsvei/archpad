@@ -3,12 +3,10 @@ import { Entity, ManyToOne } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
-import { HasuraRefName } from '@archpad/models';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
 export class ApplicationFlow extends FlowGeneric {
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponent,
     nullable: false,
@@ -18,7 +16,6 @@ export class ApplicationFlow extends FlowGeneric {
   })
   sourceComponent!: ApplicationComponent;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     nullable: true,
@@ -29,7 +26,6 @@ export class ApplicationFlow extends FlowGeneric {
   })
   sourceFunction!: ApplicationComponentFunctionMap;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponent,
     nullable: false,
@@ -39,7 +35,6 @@ export class ApplicationFlow extends FlowGeneric {
   })
   targetComponent!: ApplicationComponent;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     nullable: true,
@@ -50,7 +45,6 @@ export class ApplicationFlow extends FlowGeneric {
   })
   targetFunction!: ApplicationComponentFunctionMap;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     nullable: true,
@@ -61,7 +55,6 @@ export class ApplicationFlow extends FlowGeneric {
   })
   requestDataObject!: ApplicationComponentDataObjectMap;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => ApplicationComponentDataObjectMap,
     nullable: true,

@@ -1,13 +1,12 @@
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { ApplicationInterface } from '@/model/archimate/application/application-interface.entity';
-import { HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
-import { HasuraRefName } from '@archpad/models';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_interface_function' })
 export class ApplicationFunctionInterfaceMap extends MappedObject {
-  @HasuraRefName('interfaces')
+  @HasuraReference({ objectName: 'function', collectionName: 'interfaces' })
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,
@@ -18,7 +17,7 @@ export class ApplicationFunctionInterfaceMap extends MappedObject {
   })
   function!: ApplicationComponentFunctionMap;
 
-  @HasuraRefName('componentFunctions')
+  @HasuraReference({ objectName: 'interface', collectionName: 'componentFunctions' })
   @ManyToOne({
     entity: () => ApplicationInterface,
     primary: true,

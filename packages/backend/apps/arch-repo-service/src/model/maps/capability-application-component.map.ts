@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
@@ -6,7 +6,7 @@ import { ApplicationComponent } from '@/model/archimate/application/application-
 @HasuraTable()
 @Entity({ tableName: 'map_capability_application_component' })
 export class CapabilityApplicationComponentMap extends MappedObject {
-  @HasuraRefName('components')
+  @HasuraReference({ objectName: 'capability', collectionName: 'components' })
   @ManyToOne({
     entity: () => Capability,
     primary: true,
@@ -16,7 +16,7 @@ export class CapabilityApplicationComponentMap extends MappedObject {
   })
   capability!: Capability;
 
-  @HasuraRefName('capabilities')
+  @HasuraReference({ objectName: 'component', collectionName: 'capabilities' })
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,

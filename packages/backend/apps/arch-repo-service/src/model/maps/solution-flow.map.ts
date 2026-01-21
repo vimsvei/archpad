@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Solution } from '@/model/solution/solution.entity';
 import { FlowGeneric } from '@/model/archimate/core/flow.generic';
@@ -12,7 +12,7 @@ export class SolutionFlowMap extends MappedSolutionObject {
   @Property({ type: 'string', nullable: true })
   label!: string;
 
-  @HasuraRefName('flows')
+  @HasuraReference({ objectName: 'solution', collectionName: 'flows' })
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -22,7 +22,7 @@ export class SolutionFlowMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraRefName('solutions')
+  @HasuraReference({ objectName: 'flow', collectionName: 'solutions' })
   @ManyToOne({
     entity: () => FlowGeneric,
     primary: true,

@@ -1,5 +1,5 @@
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
-import { HasuraRefName, HasuraTable } from '@archpad/models';
+import { HasuraReference, HasuraTable } from '@archpad/models';
 import { Entity, Enum, ManyToOne, Unique } from '@mikro-orm/core';
 import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
 import { Solution } from '@/model/solution/solution.entity';
@@ -9,7 +9,7 @@ import { StakeholderRole } from '@/model/enums/stakeholder-role.enum';
 @Entity({ tableName: 'map_solution_stakeholder' })
 @Unique({ properties: ['stakeholder', 'solution'] })
 export class SolutionStakeholderMap extends MappedSolutionObject {
-  @HasuraRefName('stakeholders')
+  @HasuraReference({ objectName: 'solution', collectionName: 'stakeholders' })
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -19,7 +19,7 @@ export class SolutionStakeholderMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraRefName('solutions')
+  @HasuraReference({ objectName: 'stakeholder', collectionName: 'solutions' })
   @ManyToOne({
     entity: () => Stakeholder,
     primary: true,

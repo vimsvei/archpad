@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
@@ -6,7 +6,7 @@ import { Capability } from '@/model/archimate/strategy/capability.entity';
 @HasuraTable()
 @Entity({ tableName: 'map_capability_business_process' })
 export class CapabilityBusinessProcessMap extends MappedObject {
-  @HasuraRefName('processes')
+  @HasuraReference({ objectName: 'capability', collectionName: 'processes' })
   @ManyToOne({
     entity: () => Capability,
     primary: true,
@@ -16,7 +16,7 @@ export class CapabilityBusinessProcessMap extends MappedObject {
   })
   capability!: Capability;
 
-  @HasuraRefName('capabilities')
+  @HasuraReference({ objectName: 'process', collectionName: 'capabilities' })
   @ManyToOne({
     entity: () => BusinessProcess,
     primary: true,

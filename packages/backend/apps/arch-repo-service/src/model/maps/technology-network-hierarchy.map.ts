@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { TechnologyNetwork } from '@/model/archimate/technology/technology-network.entity';
 
@@ -6,7 +6,7 @@ import { TechnologyNetwork } from '@/model/archimate/technology/technology-netwo
 @Entity({ tableName: 'map_technology_network_hierarchy' })
 @Unique({ properties: ['parent', 'child'] })
 export class TechnologyNetworkHierarchyMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'parent', collectionName: 'children' })
   @ManyToOne({
     entity: () => TechnologyNetwork,
     primary: true,
@@ -16,7 +16,7 @@ export class TechnologyNetworkHierarchyMap extends MappedObject {
   })
   parent!: TechnologyNetwork;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'child', collectionName: 'parents' })
   @ManyToOne({
     entity: () => TechnologyNetwork,
     primary: true,

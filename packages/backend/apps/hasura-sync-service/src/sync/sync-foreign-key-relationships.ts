@@ -2,6 +2,7 @@ import { LoggerService } from '@archpad/logger';
 import { HasuraClientService } from '../hasura-client/hasura-client.service';
 import { ForeignKeyInfo } from '../db/types';
 import { getHasuraSyncArrayRelationshipOverrides } from '../db/get-hasura-sync-array-relationship-overrides';
+import { getHasuraSyncObjectRelationshipOverrides } from '../db/get-hasura-sync-object-relationship-overrides';
 import { arrayRelationshipKey } from './array-relationship-key';
 import { objectRelationshipKey } from './object-relationship-key';
 import { buildObjectRelationshipNameForFk } from './build-object-relationship-name';
@@ -26,6 +27,21 @@ export async function syncForeignKeyRelationships(args: {
         table: o.pk_table_name,
         fkSchema: o.fk_table_schema,
         fkTable: o.fk_table_name,
+        cols: o.fk_columns,
+      }),
+      o.name,
+    );
+  }
+
+  const objectOverrides = await getHasuraSyncObjectRelationshipOverrides(
+    hasura,
+  ).catch(() => []);
+  const objectOverrideByKey = new Map<string, string>();
+  for (const o of objectOverrides) {
+    objectOverrideByKey.set(
+      objectRelationshipKey({
+        schema: o.fk_table_schema,
+        table: o.fk_table_name,
         cols: o.fk_columns,
       }),
       o.name,
@@ -74,7 +90,13 @@ export async function syncForeignKeyRelationships(args: {
     .slice()
     .sort((a, b) => fkId(a).localeCompare(fkId(b)));
   for (const fk of orderedFks) {
-    const objectNameRaw = buildObjectRelationshipNameForFk(fk);
+    const oKeyLookup = objectRelationshipKey({
+      schema: fk.fk_table_schema,
+      table: fk.fk_table_name,
+      cols: fk.fk_columns,
+    });
+    const objectNameOverride = objectOverrideByKey.get(oKeyLookup);
+    const objectNameRaw = objectNameOverride ?? buildObjectRelationshipNameForFk(fk);
     const aKeyLookup = arrayRelationshipKey({
       schema: fk.pk_table_schema,
       table: fk.pk_table_name,
@@ -95,12 +117,9 @@ export async function syncForeignKeyRelationships(args: {
         usedObjectNamesByTable,
         `${fk.fk_table_schema}.${fk.fk_table_name}`,
         objectNameRaw!,
+        objectNameOverride ? { strict: true } : undefined,
       );
-      const oKey = objectRelationshipKey({
-        schema: fk.fk_table_schema,
-        table: fk.fk_table_name,
-        cols: fk.fk_columns,
-      });
+      const oKey = oKeyLookup;
       desiredObjectKeys.add(oKey);
       ops.push({
         type: 'pg_create_object_relationship',

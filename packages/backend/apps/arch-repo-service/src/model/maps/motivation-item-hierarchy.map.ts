@@ -1,4 +1,4 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { MotivationElementGeneric } from '@/model/archimate/core/motivation-element.generic';
 
@@ -6,7 +6,7 @@ import { MotivationElementGeneric } from '@/model/archimate/core/motivation-elem
 @Entity({ tableName: 'map_motivation_item_hierarchy' })
 @Unique({ properties: ['parent', 'child'] })
 export class MotivationItemHierarchyMap extends MappedObject {
-  @HasuraRefName('children')
+  @HasuraReference({ objectName: 'parent', collectionName: 'children' })
   @ManyToOne({
     entity: () => MotivationElementGeneric,
     primary: true,
@@ -16,7 +16,7 @@ export class MotivationItemHierarchyMap extends MappedObject {
   })
   parent!: MotivationElementGeneric;
 
-  @HasuraRefName('parents')
+  @HasuraReference({ objectName: 'child', collectionName: 'parents' })
   @ManyToOne({
     entity: () => MotivationElementGeneric,
     primary: true,

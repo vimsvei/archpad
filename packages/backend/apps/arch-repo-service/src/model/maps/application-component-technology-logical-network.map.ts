@@ -1,13 +1,12 @@
-import { HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { TechnologyLogicalNetwork } from '@/model/archimate/technology/technology-network.entity';
-import { HasuraRefName } from '@archpad/models';
 
 @HasuraTable()
 @Entity({ tableName: 'map_application_component_technology_logical_network' })
 export class ApplicationComponentTechnologyLogicalNetworkMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'component', collectionName: 'networks' })
   @ManyToOne({
     entity: () => ApplicationComponent,
     primary: true,
@@ -17,7 +16,7 @@ export class ApplicationComponentTechnologyLogicalNetworkMap extends MappedObjec
   })
   component!: ApplicationComponent;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'logicalNetwork', collectionName: 'components' })
   @ManyToOne({
     entity: () => TechnologyLogicalNetwork,
     primary: true,

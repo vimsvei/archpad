@@ -41,4 +41,18 @@ CREATE TABLE IF NOT EXISTS hasura_sync.array_relationship_overrides (
 
 CREATE UNIQUE INDEX IF NOT EXISTS array_relationship_overrides_unique_name_per_pk
   ON hasura_sync.array_relationship_overrides (pk_table_schema, pk_table_name, name);
+
+-- Overrides for Hasura object relationships (FK side).
+-- Uniqueness requirement: within one FK table, relationship names must be unique.
+CREATE TABLE IF NOT EXISTS hasura_sync.object_relationship_overrides (
+  fk_table_schema text NOT NULL,
+  fk_table_name   text NOT NULL,
+  fk_columns      text[] NOT NULL,
+  name            text NOT NULL,
+  updated_at      timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (fk_table_schema, fk_table_name, fk_columns)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS object_relationship_overrides_unique_name_per_fk
+  ON hasura_sync.object_relationship_overrides (fk_table_schema, fk_table_name, name);
 `;

@@ -2,7 +2,7 @@ import { ArchimateElementGeneric } from '@/model/archimate/core/archimate-elemen
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import {
   ArchimateCode,
-  HasuraRefCollection,
+  HasuraReference,
   HasuraTable,
 } from '@archpad/models';
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
@@ -14,14 +14,14 @@ export class DataObject extends ArchimateElementGeneric {
   @ArchimateCode('DATA_OBJECT')
   override code: string = undefined as any;
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'dataObject', collectionName: 'components' })
   @OneToMany({
     entity: () => ApplicationComponentDataObjectMap,
     mappedBy: 'dataObject',
   })
   components = new Collection<ApplicationComponentDataObjectMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'dataObject', collectionName: 'useInFunctions' })
   @OneToMany({
     entity: () => ApplicationFunctionDataObjectMap,
     mappedBy: 'dataObject',

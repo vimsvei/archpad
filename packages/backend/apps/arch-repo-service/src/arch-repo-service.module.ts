@@ -45,7 +45,6 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      // единый .env для бэкенда лежит в packages/backend/.env (обычно cwd=packages/backend)
       envFilePath: [path.resolve(process.cwd(), '.env')],
     }),
     MikroOrmModule.forRootAsync({
@@ -61,34 +60,31 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
         const nodeEnv =
           vaultConfigService.get('NODE_ENV') ||
           configService.get<string>('NODE_ENV') ||
-          process.env.NODE_ENV;
+          'development';
         const dbName =
           vaultConfigService.get('PROJECT_DB') ||
           configService.get<string>('PROJECT_DB') ||
-          process.env.PROJECT_DB;
+          'archpad';
         const dbUser =
           vaultConfigService.get('PROJECT_DB_USER') ||
-          configService.get<string>('PROJECT_DB_USER') ||
-          process.env.PROJECT_DB_USER;
+          configService.get<string>('PROJECT_DB_USER');
         const dbPass =
           vaultConfigService.get('PROJECT_DB_PASSWORD') ||
-          configService.get<string>('PROJECT_DB_PASSWORD') ||
-          process.env.PROJECT_DB_PASSWORD;
+          configService.get<string>('PROJECT_DB_PASSWORD')
         const pgHost =
-          nodeEnv === 'local'
-            ? vaultConfigService.get('POSTGRES_ENDPOINT') ||
-              configService.get<string>('POSTGRES_ENDPOINT') ||
-              process.env.POSTGRES_ENDPOINT ||
-              'postgres'
-            : vaultConfigService.get('POSTGRES_HOST') ||
-              configService.get<string>('POSTGRES_HOST') ||
-              process.env.POSTGRES_HOST ||
-              'postgres';
+          nodeEnv === 'development'
+            ? vaultConfigService.get('POSTGRES_HOST') ||
+            configService.get<string>('PG_HOST')
+            : vaultConfigService.get('POSTGRES_ENDPOINT') ||
+            configService.get<string>('PG_ENDPOINT')
         const pgPort = +(
-          vaultConfigService.get('POSTGRES_PORT') ||
-          configService.get<string>('POSTGRES_PORT') ||
-          process.env.POSTGRES_PORT ||
-          '5432'
+          nodeEnv === 'development'
+            ? vaultConfigService.get('POSTGRES_HOST_PORT') ||
+            configService.get<string>('PG_HOST_PORT') ||
+            '5432'
+            :  vaultConfigService.get('POSTGRES_PORT') ||
+            configService.get<string>('PG_ENDPOINT_PORT') ||
+            '5432'
         );
 
         console.log(`[MikroORM Config] dbName: "${dbName}"`);
@@ -102,8 +98,6 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
         return {
           driver: PostgreSqlDriver,
           entities: [
-            // Only arch-repo-service entities - use absolute paths to prevent scanning tenant-service
-            // Structure: dist/apps/arch-repo-service/apps/arch-repo-service/src/...
             path.join(
               process.cwd(),
               'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/*.entity{.ts,.js}',

@@ -1,11 +1,11 @@
-import { HasuraRefName, HasuraTable, MappedObject } from '@archpad/models';
+import { HasuraReference, HasuraTable, MappedObject } from '@archpad/models';
 import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
 import { Entity, ManyToOne } from '@mikro-orm/core';
 
 @HasuraTable()
 @Entity({ tableName: 'map_business_process_hierarchy' })
 export class BusinessProcessHierarchyMap extends MappedObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'parent', collectionName: 'children' })
   @ManyToOne({
     entity: () => BusinessProcess,
     primary: true,
@@ -15,7 +15,7 @@ export class BusinessProcessHierarchyMap extends MappedObject {
   })
   parent!: BusinessProcess;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'child', collectionName: 'parents' })
   @ManyToOne({
     entity: () => BusinessProcess,
     primary: true,

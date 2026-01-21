@@ -1,4 +1,4 @@
-import { HasuraTable, HasuraRefName } from '@archpad/models';
+import { HasuraReference, HasuraTable } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
@@ -8,7 +8,7 @@ import { TechnologyNode } from '@/model/archimate/technology/technology-node.ent
 @Entity({ tableName: 'map_solution_technology_node' })
 @Unique({ properties: ['node', 'solution'] })
 export class SolutionTechnologyNodeMap extends MappedSolutionObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'solution', collectionName: 'nodes' })
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -18,7 +18,7 @@ export class SolutionTechnologyNodeMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'node', collectionName: 'solutions' })
   @ManyToOne({
     entity: () => TechnologyNode,
     primary: true,

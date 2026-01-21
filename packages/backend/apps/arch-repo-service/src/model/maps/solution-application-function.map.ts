@@ -1,4 +1,4 @@
-import { HasuraTable, HasuraRefName } from '@archpad/models';
+import { HasuraReference, HasuraTable } from '@archpad/models';
 import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { Solution } from '@/model/solution/solution.entity';
 import { MappedSolutionObject } from '@/model/abstract/mapped-solution-object.abstract';
@@ -7,7 +7,7 @@ import { ApplicationComponentFunctionMap } from '@/model/maps/application-compon
 @HasuraTable()
 @Entity({ tableName: 'map_solution_application_function' })
 export class SolutionApplicationFunctionMap extends MappedSolutionObject {
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'solution', collectionName: 'functions' })
   @ManyToOne({
     entity: () => Solution,
     primary: true,
@@ -17,7 +17,7 @@ export class SolutionApplicationFunctionMap extends MappedSolutionObject {
   })
   solution!: Solution;
 
-  @HasuraRefName()
+  @HasuraReference({ objectName: 'functionComponent', collectionName: 'solutions' })
   @ManyToOne({
     entity: () => ApplicationComponentFunctionMap,
     primary: true,

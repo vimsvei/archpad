@@ -1,6 +1,5 @@
 import {
-  HasuraRefCollection,
-  HasuraRefName,
+  HasuraReference,
   HasuraTable,
   NamedObject,
 } from '@archpad/models';
@@ -63,7 +62,6 @@ export abstract class TechnologyNode extends NamedObject {
   storageGb?: number;
 
   @ApiProperty({ format: 'uuid', type: NodeTypeDirectory })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => NodeTypeDirectory,
     name: 'type_id',
@@ -73,7 +71,6 @@ export abstract class TechnologyNode extends NamedObject {
   type!: NodeTypeDirectory;
 
   @ApiProperty({ format: 'uuid', type: TechnologyNetwork })
-  @HasuraRefName()
   @ManyToOne({
     entity: () => TechnologyNetwork,
     fieldName: 'network_id',
@@ -83,7 +80,6 @@ export abstract class TechnologyNode extends NamedObject {
   })
   network!: TechnologyNetwork;
 
-  @HasuraRefName()
   @ManyToOne({
     entity: () => OperatingSystem,
     name: 'operating_system_id',
@@ -92,14 +88,14 @@ export abstract class TechnologyNode extends NamedObject {
   })
   operatingSystem!: OperatingSystem;
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'node', collectionName: 'systemSoftware' })
   @OneToMany({
     entity: () => TechnologyNodeSystemSoftwareMap,
     mappedBy: 'node',
   })
   systemSoftware = new Collection<TechnologyNodeSystemSoftwareMap>(this);
 
-  @HasuraRefCollection()
+  @HasuraReference({ objectName: 'node', collectionName: 'components' })
   @OneToMany({
     entity: () => ApplicationComponentTechnologyNodeMap,
     mappedBy: 'node',
