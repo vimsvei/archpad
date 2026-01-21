@@ -90,7 +90,7 @@ spec:
               export KC_HEALTH_ENABLED="${KC_HEALTH_ENABLED:-true}"
               export KC_METRICS_ENABLED="${KC_METRICS_ENABLED:-true}"
 
-              exec /opt/keycloak/bin/kc.sh start
+              exec /opt/keycloak/bin/kc.sh start --import-realm
           ports:
             - name: http
               containerPort: 8080
@@ -131,3 +131,12 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+          volumeMounts:
+            - name: keycloak-realm
+              mountPath: /opt/keycloak/data/import/archpad-realm.json
+              subPath: archpad-realm.json
+              readOnly: true
+      volumes:
+        - name: keycloak-realm
+          configMap:
+            name: keycloak-realm

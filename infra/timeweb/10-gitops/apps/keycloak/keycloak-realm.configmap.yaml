@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+  namespace: secure
+  annotations:
+    argocd.argoproj.io/sync-wave: "47"
+data:
+  archpad-realm.json: |
+    {
+      "realm": "archpad",
+      "enabled": true,
+      "displayName": "Archpad",
+      "registrationAllowed": false,
+      "loginWithEmailAllowed": true,
+      "duplicateEmailsAllowed": false,
+      "resetPasswordAllowed": true,
+      "rememberMe": true,
+      "clients": [
+        {
+          "clientId": "portal",
+          "name": "portal",
+          "protocol": "openid-connect",
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": false,
+          "directAccessGrantsEnabled": true,
+          "serviceAccountsEnabled": false,
+          "redirectUris": [
+            "https://portal.archpad.pro/*",
+            "http://localhost:3000/*"
+          ],
+          "webOrigins": [
+            "https://portal.archpad.pro",
+            "http://localhost:3000"
+          ]
+        },
+        {
+          "clientId": "api",
+          "name": "api",
+          "protocol": "openid-connect",
+          "publicClient": false,
+          "standardFlowEnabled": false,
+          "implicitFlowEnabled": false,
+          "directAccessGrantsEnabled": false,
+          "serviceAccountsEnabled": true
+        }
+      ]
+    }
