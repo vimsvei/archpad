@@ -32,6 +32,25 @@ data:
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
+          # Grafana Logs Drilldown expects OpenTelemetry-ish labels like `service_name`.
+          # Map common Kubernetes labels into these fields to make the Drilldown UI useful
+          # even when logs are collected from pod files (CRI) via promtail.
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: service_namespace
+          # Prefer app.kubernetes.io/name, then fallback to `app`, then to pod name prefix.
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            target_label: service_name
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: service_name
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: service_name
+            regex: "([a-z0-9-]+)-.*"
+            replacement: "$1"
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: service_instance_id
+            regex: (.+)
           # Keep original filename label for easier debugging.
           - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
             separator: /
