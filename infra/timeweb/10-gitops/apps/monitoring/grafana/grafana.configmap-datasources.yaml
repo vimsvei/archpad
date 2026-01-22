@@ -13,7 +13,8 @@ data:
         access: proxy
         # Для kube-prometheus-stack с releaseName "prometheus" имя сервиса: prometheus-kube-prometheus-prometheus
         # Если сервис еще не готов, можно использовать короткое имя после создания сервиса
-        url: http://prometheus.monitoring.svc:9090
+        # Grafana runs in `monitoring` namespace, so use short service name.
+        url: http://prometheus:9090
         isDefault: true
         editable: true
         jsonData:
@@ -27,5 +28,5 @@ data:
         uid: loki
         type: loki
         access: proxy
-        url: http://loki.monitoring.svc:3100
+        url: http://loki:3100
         editable: true
