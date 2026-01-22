@@ -13,10 +13,12 @@ data:
       http_listen_port: 3100
 
     common:
-      # Store everything under S3 bucket prefix `cluster-logs/loki/` via CSI S3 mount.
-      path_prefix: /mnt/s3/cluster-logs/loki
+      # NOTE: Loki doesn't support an S3 "prefix/subfolder" (bucket-only).
+      # We keep local WAL/cache on ephemeral disk, and store chunks/index in S3.
+      path_prefix: /loki
       replication_factor: 1
       ring:
+        instance_addr: 127.0.0.1
         kvstore:
           store: inmemory
 
@@ -24,7 +26,7 @@ data:
       configs:
         - from: 2024-01-01
           store: tsdb
-          object_store: filesystem
+          object_store: s3
           schema: v13
           index:
             prefix: index_
@@ -32,15 +34,21 @@ data:
 
     storage_config:
       tsdb_shipper:
-        active_index_directory: /mnt/s3/cluster-logs/loki/index
-        cache_location: /mnt/s3/cluster-logs/loki/cache
-      filesystem:
-        directory: /mnt/s3/cluster-logs/loki/chunks
+        active_index_directory: /loki/index
+        cache_location: /loki/index_cache
+      aws:
+        bucketnames: ${S3_BUCKET}
+        endpoint: ${S3_ENDPOINT}
+        region: ${S3_REGION}
+        access_key_id: ${S3_ACCESS_KEY_ID}
+        secret_access_key: ${S3_SECRET_ACCESS_KEY}
+        s3forcepathstyle: true
+        insecure: false
 
     compactor:
-      working_directory: /mnt/s3/cluster-logs/loki/compactor
+      working_directory: /loki/compactor
       retention_enabled: true
-      delete_request_store: filesystem
+      delete_request_store: s3
 
     limits_config:
       # Adjust later if you want longer/shorter retention.
