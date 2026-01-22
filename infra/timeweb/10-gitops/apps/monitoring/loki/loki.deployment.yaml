@@ -17,45 +17,21 @@ spec:
     metadata:
       labels:
         app: loki
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-s3-bucket: "kv/data/archpad/s3/bucket"
-        vault.hashicorp.com/agent-inject-secret-s3-access-key: "kv/data/archpad/s3/access-key"
-        vault.hashicorp.com/agent-inject-template-loki: |
-          {{- $b := secret "kv/data/archpad/s3/bucket" -}}
-          {{- $k := secret "kv/data/archpad/s3/access-key" -}}
-          export S3_BUCKET="{{ or $b.Data.data.S3_BUCKET $b.Data.data.BUCKET $b.Data.data.BUCKET_NAME }}"
-          export S3_ENDPOINT="{{ or $b.Data.data.S3_ENDPOINT $b.Data.data.S3_HOST $b.Data.data.S3_URL $b.Data.data.ENDPOINT "s3.twcstorage.ru" }}"
-          export S3_REGION="{{ or $b.Data.data.S3_REGION $b.Data.data.REGION "ru-1" }}"
-          export S3_ACCESS_KEY_ID="{{ or $k.Data.data.AWS_ACCESS_KEY_ID $k.Data.data.S3_ACCESS_KEY_ID $k.Data.data.ACCESS_KEY_ID $k.Data.data.ACCESS_KEY }}"
-          export S3_SECRET_ACCESS_KEY="{{ or $k.Data.data.AWS_SECRET_ACCESS_KEY $k.Data.data.S3_SECRET_ACCESS_KEY $k.Data.data.SECRET_ACCESS_KEY $k.Data.data.SECRET_KEY }}"
-        vault.hashicorp.com/role: "platform"
     spec:
       serviceAccountName: loki
       containers:
         - name: loki
           image: grafana/loki:3.6.4
-          command: ["sh", "-c"]
           args:
-            - |
-              if [ -f /vault/secrets/loki ]; then
-                set -a
-                . /vault/secrets/loki
-                set +a
-              else
-                echo "ERROR: /vault/secrets/loki not found"
-                exit 1
-              fi
-              [ -n "$S3_BUCKET" ] || (echo "ERROR: S3_BUCKET is not set" && exit 1)
-              [ -n "$S3_ACCESS_KEY_ID" ] || (echo "ERROR: S3_ACCESS_KEY_ID is not set" && exit 1)
-              [ -n "$S3_SECRET_ACCESS_KEY" ] || (echo "ERROR: S3_SECRET_ACCESS_KEY is not set" && exit 1)
-              [ -n "$S3_ENDPOINT" ] || (echo "ERROR: S3_ENDPOINT is not set" && exit 1)
-              [ -n "$S3_REGION" ] || (echo "ERROR: S3_REGION is not set" && exit 1)
-              exec /usr/bin/loki -config.file=/etc/loki/loki.yml -config.expand-env=true
+            - -config.file=/etc/loki/loki.yml
+            - -config.expand-env=true
           ports:
             - name: http
               containerPort: 3100
               protocol: TCP
+          envFrom:
+            - secretRef:
+                name: loki-s3-creds
           readinessProbe:
             httpGet:
               path: /ready
