@@ -114,6 +114,10 @@ spec:
               mountPath: /var/lib/grafana/dashboards/keycloak.json
               subPath: keycloak.json
               readOnly: true
+            - name: grafana-dashboards-logs-errors
+              mountPath: /var/lib/grafana/dashboards/logs-errors.json
+              subPath: logs-errors.json
+              readOnly: true
           startupProbe:
             # Startup probe используется только при старте контейнера
             # Grafana может долго запускаться из-за загрузки секретов из Vault, подключения к PostgreSQL и инициализации БД
@@ -180,3 +184,6 @@ spec:
         - name: grafana-dashboards-keycloak
           configMap:
             name: grafana-dashboard-keycloak
+        - name: grafana-dashboards-logs-errors
+          configMap:
+            name: grafana-dashboard-logs-errors

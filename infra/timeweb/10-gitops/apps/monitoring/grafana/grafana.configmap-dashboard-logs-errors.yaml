@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-logs-errors
+  namespace: monitoring
+  labels:
+    app: grafana
+data:
+  logs-errors.json: |
+    {
+      "uid": "archpad-logs-errors",
+      "title": "Archpad / Logs / Errors overview",
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "tags": ["archpad", "logs", "errors", "loki"],
+      "time": { "from": "now-6h", "to": "now" },
+      "templating": {
+        "list": [
+          {
+            "type": "query",
+            "name": "namespace",
+            "label": "Namespace",
+            "datasource": { "type": "loki", "uid": "loki" },
+            "query": { "query": "label_values(namespace)" },
+            "includeAll": true,
+            "multi": true,
+            "refresh": 1,
+            "current": { "text": "All", "value": "$__all" }
+          },
+          {
+            "type": "query",
+            "name": "service",
+            "label": "Service",
+            "datasource": { "type": "loki", "uid": "loki" },
+            "query": { "query": "label_values({namespace=~\"$namespace\"}, service_name)" },
+            "includeAll": true,
+            "multi": true,
+            "refresh": 1,
+            "current": { "text": "All", "value": "$__all" }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Errors (last 5m)",
+          "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(count_over_time({namespace=~\"$namespace\", service_name=~\"$service\"} |~ \"(?i)error|exception|panic\" [5m]))"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal" }
+        },
+        {
+          "type": "stat",
+          "title": "Warn (last 5m)",
+          "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(count_over_time({namespace=~\"$namespace\", service_name=~\"$service\"} |~ \"(?i)warn\" [5m]))"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal" }
+        },
+        {
+          "type": "stat",
+          "title": "Log lines (last 5m)",
+          "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(count_over_time({namespace=~\"$namespace\", service_name=~\"$service\"}[5m]))"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal" }
+        },
+        {
+          "type": "timeseries",
+          "title": "Errors over time (by service)",
+          "gridPos": { "x": 0, "y": 4, "w": 18, "h": 9 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (namespace, service_name) (count_over_time({namespace=~\"$namespace\", service_name=~\"$service\"} |~ \"(?i)error|exception|panic\" [$__interval]))"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "showLegend": true } }
+        },
+        {
+          "type": "table",
+          "title": "Top services by errors (last 15m)",
+          "gridPos": { "x": 18, "y": 0, "w": 6, "h": 13 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "topk(15, sum by (namespace, service_name) (count_over_time({namespace=~\"$namespace\", service_name=~\"$service\"} |~ \"(?i)error|exception|panic\" [15m])))"
+            }
+          ],
+          "options": { "showHeader": true }
+        },
+        {
+          "type": "logs",
+          "title": "Recent WARN/ERROR logs",
+          "gridPos": { "x": 0, "y": 13, "w": 24, "h": 11 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=~\"$namespace\", service_name=~\"$service\"} |~ \"(?i)warn|error|exception|panic\""
+            }
+          ],
+          "options": { "showLabels": true, "showTime": true, "wrapLogMessage": true, "dedupStrategy": "none" }
+        }
+      ]
+    }
