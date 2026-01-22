@@ -76,13 +76,6 @@ spec:
               value: "https://monitoring.archpad.pro"
             - name: GF_SERVER_DOMAIN
               value: "monitoring.archpad.pro"
-            # Grafana 12+ may auto-install "preinstalled" app plugins (drilldown, loki explore, etc.).
-            # In OSS deployments these apps can spam the UI with 404s for unsupported datasource resource endpoints.
-            # We keep the core Grafana UX (Dashboards/Explore) and disable these optional apps.
-            - name: GF_PLUGINS_PREINSTALL_DISABLED
-              value: "true"
-            - name: GF_PLUGINS_DISABLE_PLUGINS
-              value: "grafana-metricsdrilldown-app,grafana-lokiexplore-app,grafana-exploretraces-app,grafana-pyroscope-app"
             - name: GF_PATHS_PROVISIONING
               value: "/etc/grafana/provisioning"
             - name: GF_PATHS_DATA
