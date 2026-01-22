@@ -32,17 +32,18 @@ spec:
             httpGet:
               path: /ready
               port: 3100
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 10
+            # CSI S3 mount can make Loki start slower; keep probe lenient.
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /ready
               port: 3100
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
-            timeoutSeconds: 5
+            timeoutSeconds: 10
             failureThreshold: 3
           resources:
             requests:
