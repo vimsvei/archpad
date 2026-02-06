@@ -23,19 +23,32 @@ export class KeycloakDesiredStateService implements OnApplicationBootstrap {
     const roles = ['ARCHITECT', 'DIRECTORY_MANAGER', 'VIEWER'];
     const groups = ['ADMIN', 'USER'];
 
-    // Best-effort: don't block auth-service startup if Keycloak is temporarily unavailable.
-    // We retry for a bit and then give up with a warning; registration will still attempt to
-    // assign defaults and will succeed once roles/groups exist.
+    // IMPORTANT: don't block Nest boot / HTTP listener.
+    // If Keycloak is temporarily unavailable or credentials are wrong, we still want the
+    // auth-service to become Ready and serve requests; desired-state sync is best-effort.
+    this.logger.log(
+      `Starting Keycloak desired-state sync in background: roles=[${roles.join(
+        ',',
+      )}] groups=[${groups.join(',')}]`,
+    );
+    void this.syncWithRetry({ roles, groups });
+  }
+
+  private async syncWithRetry(input: {
+    roles: string[];
+    groups: string[];
+  }): Promise<void> {
+    // Best-effort: retry for a bit and then give up with a warning.
     const maxAttempts = 30;
     const delayMs = 2000;
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
-        await this.keycloak.ensureDesiredRealmRoles(roles);
-        await this.keycloak.ensureDesiredGroups(groups);
+        await this.keycloak.ensureDesiredRealmRoles(input.roles);
+        await this.keycloak.ensureDesiredGroups(input.groups);
         this.logger.log(
-          `Keycloak desired-state ensured: roles=[${roles.join(
+          `Keycloak desired-state ensured: roles=[${input.roles.join(
             ',',
-          )}] groups=[${groups.join(',')}]`,
+          )}] groups=[${input.groups.join(',')}]`,
         );
         return;
       } catch (e: unknown) {
