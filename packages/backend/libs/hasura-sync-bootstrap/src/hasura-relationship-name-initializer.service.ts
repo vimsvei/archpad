@@ -34,6 +34,17 @@ function upperFirst(s: string): string {
   return s.length ? s[0].toUpperCase() + s.slice(1) : s;
 }
 
+function normalizeTextArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((v) => String(v)).filter((v) => v.length > 0);
+  }
+  if (typeof value === 'string') {
+    const v = value.trim();
+    return v ? [v] : [];
+  }
+  return [];
+}
+
 /**
  * Creates and materializes `hasura_sync.*` registry tables from @archpad/models decorators.
  *
@@ -263,10 +274,11 @@ export class HasuraRelationshipNameInitializer
         const owningProp: any = mappedBy
           ? targetMeta.properties?.[mappedBy]
           : null;
-        const fkColumns: string[] =
+        const fkColumns = normalizeTextArray(
           owningProp?.fieldNames ??
-          owningProp?.joinColumns ??
-          (owningProp?.fieldName ? [owningProp.fieldName] : []);
+            owningProp?.joinColumns ??
+            (owningProp?.fieldName ? [owningProp.fieldName] : []),
+        );
         if (!fkColumns.length) continue;
 
         out.push({
@@ -298,10 +310,9 @@ export class HasuraRelationshipNameInitializer
       const fkTable = ownerMeta.tableName;
       const pkSchema = targetMeta.schema ?? defaultSchema;
       const pkTable = targetMeta.tableName;
-      const fkColumns: string[] =
-        prop.fieldNames ??
-        prop.joinColumns ??
-        (prop.fieldName ? [prop.fieldName] : []);
+      const fkColumns = normalizeTextArray(
+        prop.fieldNames ?? prop.joinColumns ?? (prop.fieldName ? [prop.fieldName] : []),
+      );
       if (!fkColumns.length) continue;
 
       out.push({

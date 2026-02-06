@@ -8,7 +8,7 @@ import { DefaultTenantWorkspaceInitializer } from './default-tenant-workspace-in
   imports: [
     LoggerModule,
     SchemaInitializerModule.forRoot({
-      additionalSequences: ['tenant_code_seq', 'user_code_seq'],
+      additionalSequences: ['tenant_code_seq', 'user_code_seq', 'space_code_seq'],
       skipSequenceCreation: true, // Let updateSchema handle sequences due to permissions
     }),
   ],
