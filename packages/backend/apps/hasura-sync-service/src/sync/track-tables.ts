@@ -21,7 +21,6 @@ export async function trackTables(args: {
     hasura,
     logger,
     label: 'pg_track_table',
-    chunkSize: 80,
     ops,
   });
 }

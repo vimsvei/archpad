@@ -153,7 +153,6 @@ export async function syncForeignKeyRelationships(args: {
     hasura,
     logger,
     label: 'pg_create_relationships',
-    chunkSize: 80,
     ops,
   });
 }

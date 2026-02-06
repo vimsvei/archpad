@@ -162,7 +162,6 @@ export async function applyCamelCaseCustomization(args: {
     hasura,
     logger,
     label: 'pg_set_table_customization',
-    chunkSize: 80,
     ops,
   });
 }

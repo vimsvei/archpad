@@ -103,11 +103,12 @@ spec:
 
               # Make Hasura calls more resilient to brief restarts.
               export HASURA_HTTP_RETRIES="${HASURA_HTTP_RETRIES:-12}"
-              export HASURA_HTTP_TIMEOUT_MS="${HASURA_HTTP_TIMEOUT_MS:-120000}"
+              export HASURA_HTTP_TIMEOUT_MS="${HASURA_HTTP_TIMEOUT_MS:-300000}"
 
               # Optimize sync: use bulk_keep_going (no recursive split), larger chunks. Target ~5 min.
               export HASURA_SYNC_USE_BULK_KEEP_GOING="${HASURA_SYNC_USE_BULK_KEEP_GOING:-true}"
-              export HASURA_SYNC_BULK_CHUNK_SIZE="${HASURA_SYNC_BULK_CHUNK_SIZE:-80}"
+              # Keep chunks moderate to avoid Hasura metadata timeouts; tune as needed.
+              export HASURA_SYNC_BULK_CHUNK_SIZE="${HASURA_SYNC_BULK_CHUNK_SIZE:-25}"
 
               # Wait for dependent services to be ready.
               # NOTE: do not rely on curl being present in the image.

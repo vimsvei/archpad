@@ -23,7 +23,6 @@ export async function untrackTables(args: {
     hasura,
     logger,
     label: 'pg_untrack_table',
-    chunkSize: 80,
     ops,
   });
 }
