@@ -168,8 +168,8 @@ spec:
           resources:
             # Оптимизировано для демо-стенда (2 ноды по 2 CPU, 2GB RAM)
             requests:
-              cpu: 30m
-              memory: 64Mi
-            limits:
               cpu: 100m
               memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
