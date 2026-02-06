@@ -1,5 +1,6 @@
 stages:
   - build
+  - cleanup
   - version
   - deploy
 
@@ -522,6 +523,224 @@ variables:
         - packages/**/*
 
 # ============================================
+# Registry cleanup (keep only recent tags)
+# ============================================
+
+.cleanup_registry_image:
+  stage: cleanup
+  image: alpine:3.19
+  # Cleanup must never block delivery if registry API forbids deletes.
+  allow_failure: true
+  before_script:
+    - apk add --no-cache curl jq coreutils >/dev/null
+    - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
+    - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
+    - |
+      if [ -z "${REGISTRY_USERNAME:-}" ] || [ -z "${REGISTRY_PASSWORD:-}" ]; then
+        echo "WARNING: REGISTRY_USERNAME/REGISTRY_PASSWORD not set; skipping cleanup"
+        exit 0
+      fi
+  script:
+    - |
+      set -eu
+
+      # Job name format:
+      # - cleanup:main:<service>
+      # - cleanup:<service>
+      SERVICE_NAME="${CI_JOB_NAME#cleanup:}"
+      SERVICE_NAME="${SERVICE_NAME#main:}"
+
+      REPO="${REGISTRY_IMAGE_PREFIX}/${SERVICE_NAME}"
+      BASE="https://${REGISTRY_URL}"
+
+      echo "Registry cleanup for repo=${REPO}"
+      echo "Keeping: latest + new tag + 2 most recent historical tags"
+
+      # Determine NEW_TAG from pipeline context (main vs release).
+      COMMIT_SHA="${CI_COMMIT_SHORT_SHA:-$(echo "${CI_COMMIT_SHA:-}" | cut -c1-8)}"
+      if echo "$CI_JOB_NAME" | grep -q '^cleanup:main:'; then
+        NEW_TAG="main-${COMMIT_SHA}"
+      else
+        if echo "${CI_COMMIT_REF_NAME:-}" | grep -qE '^r[/-][0-9]+\.[0-9]+\.[0-9]+$'; then
+          VERSION="$(echo "$CI_COMMIT_REF_NAME" | sed -E 's/^r[\/-]([0-9]+\.[0-9]+\.[0-9]+)$/\1/')"
+          NEW_TAG="${VERSION}-${COMMIT_SHA}"
+        else
+          echo "WARNING: Not a main push or release branch; skipping cleanup"
+          exit 0
+        fi
+      fi
+      echo "NEW_TAG=${NEW_TAG}"
+
+      # 1) Discover auth realm/service from registry challenge
+      challenge="$(curl -fsSI "${BASE}/v2/" | tr -d '\r' | awk -F': ' 'tolower($1)=="www-authenticate"{print $2}' || true)"
+      if [ -z "$challenge" ]; then
+        echo "WARNING: no WWW-Authenticate challenge from registry; skipping cleanup"
+        exit 0
+      fi
+
+      realm="$(printf "%s" "$challenge" | sed -nE 's/.*realm="([^"]+)".*/\1/p')"
+      service="$(printf "%s" "$challenge" | sed -nE 's/.*service="([^"]+)".*/\1/p')"
+      if [ -z "$realm" ]; then
+        echo "WARNING: cannot parse auth realm; skipping cleanup"
+        exit 0
+      fi
+
+      # Build token URL: add service (if missing) + scope with delete.
+      token_url="$realm"
+      sep='?'
+      echo "$token_url" | grep -q '?' && sep='&' || true
+      echo "$token_url" | grep -q 'service=' || {
+        [ -n "${service:-}" ] && token_url="${token_url}${sep}service=$(printf "%s" "$service" | jq -sRr @uri)" && sep='&'
+      }
+      scope="repository:${REPO}:pull,push,delete"
+      token_url="${token_url}${sep}scope=$(printf "%s" "$scope" | jq -sRr @uri)"
+
+      token_json="$(curl -fsS -u "${REGISTRY_USERNAME}:${REGISTRY_PASSWORD}" "$token_url" || true)"
+      token="$(printf "%s" "$token_json" | jq -r '.token // .access_token // empty' 2>/dev/null || true)"
+      if [ -z "$token" ]; then
+        echo "WARNING: cannot get registry token (maybe delete scope not allowed); skipping cleanup"
+        exit 0
+      fi
+
+      authz="Authorization: Bearer ${token}"
+
+      # 2) List tags
+      tags_json="$(curl -fsS -H "$authz" "${BASE}/v2/${REPO}/tags/list?n=1000" || true)"
+      tags="$(printf "%s" "$tags_json" | jq -r '.tags[]? // empty' | tr -d '\r' || true)"
+      if [ -z "$tags" ]; then
+        echo "No tags found (or cannot list tags). Nothing to cleanup."
+        exit 0
+      fi
+
+      # Helpers
+      accept_header="Accept: application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.index.v1+json"
+
+      get_manifest_json() {
+        # $1 = ref (tag or digest)
+        curl -fsS -H "$authz" -H "$accept_header" "${BASE}/v2/${REPO}/manifests/$1"
+      }
+
+      get_manifest_digest_for_tag() {
+        # $1 = tag
+        curl -fsSI -H "$authz" -H "$accept_header" "${BASE}/v2/${REPO}/manifests/$1" \
+          | tr -d '\r' \
+          | awk -F': ' 'tolower($1)=="docker-content-digest"{print $2}' \
+          | tail -n 1
+      }
+
+      get_created_for_ref() {
+        # $1 = tag
+        m="$(get_manifest_json "$1" || true)"
+        if [ -z "$m" ]; then
+          echo "0000-00-00T00:00:00Z"
+          return 0
+        fi
+        cfg="$(printf "%s" "$m" | jq -r '.config.digest // empty')"
+        if [ -z "$cfg" ]; then
+          # Possibly a manifest list/index; try first child manifest.
+          child="$(printf "%s" "$m" | jq -r '.manifests[0].digest // empty')"
+          if [ -n "$child" ]; then
+            m2="$(get_manifest_json "$child" || true)"
+            cfg="$(printf "%s" "$m2" | jq -r '.config.digest // empty')"
+          fi
+        fi
+        if [ -z "$cfg" ]; then
+          echo "0000-00-00T00:00:00Z"
+          return 0
+        fi
+        cfg_json="$(curl -fsS -H "$authz" "${BASE}/v2/${REPO}/blobs/$cfg" || true)"
+        created="$(printf "%s" "$cfg_json" | jq -r '.created // empty' 2>/dev/null || true)"
+        echo "${created:-0000-00-00T00:00:00Z}"
+      }
+
+      # 3) Build tag -> created + tag -> digest mappings
+      # Keep always: latest + NEW_TAG + 2 newest other tags
+      tmp="$(mktemp)"
+      tmp_dig="$(mktemp)"
+
+      printf "%s\n" "$tags" | while read -r tag; do
+        [ -n "$tag" ] || continue
+        created="$(get_created_for_ref "$tag")"
+        printf "%s\t%s\n" "$created" "$tag" >> "$tmp"
+      done
+
+      # Sort by created desc (ISO-8601 lexicographic)
+      sorted_tags="$(sort -r "$tmp" | awk -F'\t' '{print $2}')"
+
+      keep_latest="latest"
+      keep_new="$NEW_TAG"
+      extra_keep="$(printf "%s\n" "$sorted_tags" \
+        | awk -v k1="$keep_latest" -v k2="$keep_new" '
+            $0!=k1 && $0!=k2 && length($0)>0 {print $0}
+          ' \
+        | head -n 2)"
+
+      echo "Keep tags:"
+      echo " - $keep_latest"
+      echo " - $keep_new"
+      printf "%s\n" "$extra_keep" | sed 's/^/ - /'
+
+      # Compute digest for every tag once
+      printf "%s\n" "$tags" | while read -r tag; do
+        [ -n "$tag" ] || continue
+        dig="$(get_manifest_digest_for_tag "$tag" || true)"
+        [ -n "$dig" ] || continue
+        printf "%s\t%s\n" "$tag" "$dig" >> "$tmp_dig"
+      done
+
+      # Build keep set
+      keep_file="$(mktemp)"
+      {
+        echo "$keep_latest"
+        echo "$keep_new"
+        printf "%s\n" "$extra_keep"
+      } | awk 'length($0)>0' | sort -u > "$keep_file"
+
+      # 4) Delete tags not in keep set, but only if their digest is not used by any keep tag
+      # Build digest -> has_keep_tag
+      keep_dig_file="$(mktemp)"
+      while read -r kt; do
+        kd="$(awk -v t="$kt" -F'\t' '$1==t {print $2}' "$tmp_dig" | tail -n 1)"
+        [ -n "$kd" ] && echo "$kd" >> "$keep_dig_file" || true
+      done < "$keep_file"
+      sort -u "$keep_dig_file" -o "$keep_dig_file"
+
+      deleted=0
+      skipped=0
+
+      # Delete by digest (safe with shared tags)
+      uniq_dig="$(mktemp)"
+      sort -u "$tmp_dig" > "$uniq_dig"
+      while read -r line; do
+        tag="$(printf "%s" "$line" | awk -F'\t' '{print $1}')"
+        dig="$(printf "%s" "$line" | awk -F'\t' '{print $2}')"
+        [ -n "${tag:-}" ] || continue
+        [ -n "${dig:-}" ] || continue
+
+        # Skip keep tags
+        if grep -qx "$tag" "$keep_file"; then
+          continue
+        fi
+
+        # If digest is referenced by keep tags (e.g. latest), don't delete it
+        if grep -qx "$dig" "$keep_dig_file"; then
+          echo "SKIP tag=$tag digest=$dig (digest is still referenced by kept tag)"
+          skipped=$((skipped + 1))
+          continue
+        fi
+
+        echo "DELETE manifest digest=$dig (tag=$tag)"
+        if curl -fsS -X DELETE -H "$authz" "${BASE}/v2/${REPO}/manifests/${dig}" >/dev/null; then
+          deleted=$((deleted + 1))
+        else
+          echo "WARNING: delete failed for digest=$dig (tag=$tag)"
+        fi
+      done < "$uniq_dig"
+
+      echo "Cleanup done: deleted_manifests=$deleted skipped_due_to_keep_digest=$skipped"
+      rm -f "$tmp" "$tmp_dig" "$uniq_dig" "$keep_file" "$keep_dig_file"
+
+# ============================================
 # Backend Services
 # ============================================
 
@@ -531,11 +750,23 @@ build:arch-repo-service:
     DOCKERFILE_PATH: "packages/backend/apps/arch-repo-service/Dockerfile"
     BUILD_CONTEXT: "."
 
+cleanup:arch-repo-service:
+  extends: .cleanup_registry_image
+  needs: ["build:arch-repo-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
+
 build:tenant-service:
   extends: .build_docker_image
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/tenant-service/Dockerfile"
     BUILD_CONTEXT: "."
+
+cleanup:tenant-service:
+  extends: .cleanup_registry_image
+  needs: ["build:tenant-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 build:hasura-sync-service:
   extends: .build_docker_image
@@ -543,11 +774,23 @@ build:hasura-sync-service:
     DOCKERFILE_PATH: "packages/backend/apps/hasura-sync-service/Dockerfile"
     BUILD_CONTEXT: "."
 
+cleanup:hasura-sync-service:
+  extends: .cleanup_registry_image
+  needs: ["build:hasura-sync-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
+
 build:auth-service:
   extends: .build_docker_image
   variables:
     DOCKERFILE_PATH: "packages/backend/apps/auth-service/Dockerfile"
     BUILD_CONTEXT: "."
+
+cleanup:auth-service:
+  extends: .cleanup_registry_image
+  needs: ["build:auth-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 # ============================================
 # Frontend
@@ -558,6 +801,12 @@ build:portal:
   variables:
     DOCKERFILE_PATH: "packages/portal/Dockerfile"
     BUILD_CONTEXT: "."
+
+cleanup:portal:
+  extends: .cleanup_registry_image
+  needs: ["build:portal"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 # ============================================
 # Backend Services (main ветка)
@@ -577,6 +826,17 @@ build:main:arch-repo-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .gitlab-ci.yml
+        - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
+cleanup:main:arch-repo-service:
+  extends: .cleanup_registry_image
+  needs: ["build:main:arch-repo-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - .gitlab-ci.yml
         - packages/backend/apps/arch-repo-service/**/*
@@ -603,6 +863,17 @@ build:main:tenant-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
 
+cleanup:main:tenant-service:
+  extends: .cleanup_registry_image
+  needs: ["build:main:tenant-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - .gitlab-ci.yml
+        - packages/backend/apps/tenant-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
 build:main:auth-service:
   extends: .build_docker_image_main
   variables:
@@ -616,6 +887,17 @@ build:main:auth-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .gitlab-ci.yml
+        - packages/backend/apps/auth-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
+cleanup:main:auth-service:
+  extends: .cleanup_registry_image
+  needs: ["build:main:auth-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - .gitlab-ci.yml
         - packages/backend/apps/auth-service/**/*
@@ -642,6 +924,17 @@ build:main:hasura-sync-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
 
+cleanup:main:hasura-sync-service:
+  extends: .cleanup_registry_image
+  needs: ["build:main:hasura-sync-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - .gitlab-ci.yml
+        - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
 # ============================================
 # Frontend (main ветка)
 # ============================================
@@ -659,6 +952,16 @@ build:main:portal:
         - packages/portal/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .gitlab-ci.yml
+        - packages/portal/**/*
+        - packages/contract/**/*
+
+cleanup:main:portal:
+  extends: .cleanup_registry_image
+  needs: ["build:main:portal"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - .gitlab-ci.yml
         - packages/portal/**/*
