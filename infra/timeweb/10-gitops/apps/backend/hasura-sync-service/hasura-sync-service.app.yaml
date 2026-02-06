@@ -23,6 +23,9 @@ spec:
     path: infra/timeweb/10-gitops/apps/backend/hasura-sync-service
     directory:
       recurse: false
+      # IMPORTANT: this app's source directory also contains this *.app.yaml (Application CR).
+      # Exclude it to avoid the app trying to sync/patch itself (can break sync with resourceVersion errors).
+      exclude: hasura-sync-service.app.yaml
   syncPolicy:
     automated:
       prune: true
