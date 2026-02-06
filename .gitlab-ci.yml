@@ -540,10 +540,12 @@ build:main:arch-repo-service:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
 
 build:main:tenant-service:
@@ -556,10 +558,12 @@ build:main:tenant-service:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - packages/backend/apps/tenant-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/backend/apps/tenant-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
 
 build:main:auth-service:
@@ -589,10 +593,12 @@ build:main:hasura-sync-service:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
         - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/libs/**/*
         - packages/contract/**/*
 
 # ============================================

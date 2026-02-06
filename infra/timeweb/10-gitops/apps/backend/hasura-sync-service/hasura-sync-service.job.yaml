@@ -60,7 +60,8 @@ spec:
           {{- end }}
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
-          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          # In production we use POSTGRES_ENDPOINT/POSTGRES_PORT (in-cluster routing via postgres-proxy).
+          export POSTGRES_ENDPOINT="{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}"
           export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
         # Vault Agent должен завершиться после загрузки секретов
@@ -71,6 +72,7 @@ spec:
       containers:
         - name: hasura-sync-service
           image: archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service:latest
+          imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
             - |

@@ -37,7 +37,8 @@ spec:
           export TENANT_DB="{{ $tenantService.Data.data.TENANT_DB }}"
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
-          export POSTGRES_HOST="{{ $postgresConnect.Data.data.POSTGRES_HOST }}"
+          # In production we use POSTGRES_ENDPOINT/POSTGRES_PORT (in-cluster routing via postgres-proxy).
+          export POSTGRES_ENDPOINT="{{ $postgresConnect.Data.data.POSTGRES_ENDPOINT }}"
           export POSTGRES_PORT="{{ $postgresConnect.Data.data.POSTGRES_PORT }}"
         vault.hashicorp.com/role: "platform"
     spec:
@@ -63,6 +64,7 @@ spec:
       containers:
         - name: tenant-service
           image: archpad-cr.registry.twcstorage.ru/archpad/tenant-service:latest
+          imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
             - |
@@ -87,11 +89,19 @@ spec:
                 echo "ERROR: PROJECT_DB_PASSWORD is not set"
                 exit 1
               fi
-              echo "Using PostgreSQL: $POSTGRES_HOST:$POSTGRES_PORT"
+              if [ -z "${POSTGRES_ENDPOINT:-}" ]; then
+                echo "ERROR: POSTGRES_ENDPOINT is not set"
+                exit 1
+              fi
+              if [ -z "${POSTGRES_PORT:-}" ]; then
+                echo "ERROR: POSTGRES_PORT is not set"
+                exit 1
+              fi
+              echo "Using PostgreSQL: $POSTGRES_ENDPOINT:$POSTGRES_PORT"
               echo "Database: $TENANT_DB"
               echo "User: $PROJECT_DB_USER"
               # Экспортируем переменные для передачи в процесс Node.js
-              export TENANT_DB PROJECT_DB_USER PROJECT_DB_PASSWORD POSTGRES_HOST POSTGRES_PORT
+              export TENANT_DB PROJECT_DB_USER PROJECT_DB_PASSWORD POSTGRES_ENDPOINT POSTGRES_PORT
               # Запускаем приложение
               echo "Tenant Service starting..."
               exec node dist/apps/tenant-service/apps/tenant-service/src/main.js
