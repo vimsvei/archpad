@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-international-phone/style.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -46,6 +47,7 @@
 
 :root {
     --radius: 0.65rem;
+    --radius-md: calc(var(--radius) - 2px);
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
     --card: oklch(1 0 0);
@@ -111,6 +113,65 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.405 0.101 131.063);
+}
+
+/* PhoneInput theme to match shadcn Input */
+.phone-input-theme {
+  --react-international-phone-height: 36px;
+  --react-international-phone-background-color: transparent;
+  --react-international-phone-text-color: var(--foreground);
+  --react-international-phone-font-size: 14px;
+  --react-international-phone-border-radius: var(--radius-md, 6px);
+  --react-international-phone-border-color: var(--input);
+  --react-international-phone-disabled-background-color: transparent;
+  --react-international-phone-disabled-text-color: var(--muted-foreground);
+  /* Dropdown — solid background to match popover/dropdown-menu */
+  --react-international-phone-dropdown-item-background-color: var(--popover);
+  --react-international-phone-dropdown-item-text-color: var(--popover-foreground);
+  --react-international-phone-selected-dropdown-item-background-color: var(--accent);
+  --react-international-phone-selected-dropdown-item-text-color: var(--accent-foreground);
+  --react-international-phone-dropdown-item-dial-code-color: var(--muted-foreground);
+}
+
+/* Explicit border radius override to inherit our design system */
+.phone-input-theme .react-international-phone-input-container .react-international-phone-country-selector-button {
+  border-top-left-radius: var(--radius-md, 6px) !important;
+  border-bottom-left-radius: var(--radius-md, 6px) !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  padding-left: 10px !important; /* align flag with end of rounded corner */
+  justify-content: flex-start !important;
+}
+.phone-input-theme .react-international-phone-input-container .react-international-phone-input {
+  border-top-right-radius: var(--radius-md, 6px) !important;
+  border-bottom-right-radius: var(--radius-md, 6px) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.dark .phone-input-theme {
+  --react-international-phone-background-color: oklch(1 0 0 / 15%);
+}
+
+.phone-input-theme .react-international-phone-input:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+}
+
+/* Dropdown — match DropdownMenu: solid bg, border, rounded corners, shadow, z-index */
+.phone-input-theme .react-international-phone-country-selector-dropdown {
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 6px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  z-index: 50;
+}
+
+/* Dropdown list item padding — align flag with inner spacing */
+.phone-input-theme .react-international-phone-country-selector-dropdown__list-item {
+  padding-left: 12px !important;
 }
 
 @layer base {

@@ -3,7 +3,7 @@
 import {useRouter} from "next/navigation";
 import {useEffect} from "react";
 import {CachePublicRecord, TolgeeProvider, TolgeeStaticData} from "@tolgee/react";
-import {TolgeeBase} from "@/tolgee/shared";
+import {DEFAULT_LANGUAGE, TolgeeBase} from "@/tolgee/shared";
 
 type TolgeeNextProviderProps = {
   language: string;
@@ -16,7 +16,7 @@ type TolgeeNextProviderProps = {
   children: React.ReactNode;
 };
 
-const tolgee = TolgeeBase().init();
+const tolgee = TolgeeBase().init({ defaultLanguage: DEFAULT_LANGUAGE });
 
 export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNextProviderProps) => {
   const router = useRouter();

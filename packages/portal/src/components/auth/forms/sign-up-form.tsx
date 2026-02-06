@@ -8,6 +8,7 @@ import { useTranslate } from "@tolgee/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { authFormsActions } from "@/store/slices/auth-forms-slice"
 
@@ -103,13 +104,17 @@ export function SignUpForm() {
 
         <div className="grid gap-2">
           <Label htmlFor="phone">{t("auth.field.phone")}</Label>
-          <Input
+          <PhoneInput
             id="phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
+            defaultCountry="ru"
+            preferredCountries={["ru", "us", "gb"]}
             value={form.phone}
-            onChange={(e) => dispatch(authFormsActions.setSignUpPhone(e.target.value))}
+            onChange={(phone) => dispatch(authFormsActions.setSignUpPhone(phone))}
+            inputProps={{
+              name: "phone",
+              autoComplete: "tel",
+              "aria-label": t("auth.field.phone"),
+            }}
           />
         </div>
 
