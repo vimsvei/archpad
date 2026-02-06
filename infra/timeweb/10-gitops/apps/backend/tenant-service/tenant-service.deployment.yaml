@@ -35,6 +35,8 @@ spec:
           {{- $postgresCredential := secret "kv/data/archpad/demo/postgres/credential" }}
           # Экспортируем переменные окружения для tenant-service
           export TENANT_DB="{{ $tenantService.Data.data.TENANT_DB }}"
+          export TENANT_DEFAULT_CODE="{{ $tenantService.Data.data.TENANT_DEFAULT_CODE }}"
+          export WORKSPACE_DEFAULT_CODE="{{ $tenantService.Data.data.WORKSPACE_DEFAULT_CODE }}"
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
           # In production we use POSTGRES_ENDPOINT/POSTGRES_PORT (in-cluster routing via postgres-proxy).
@@ -101,7 +103,7 @@ spec:
               echo "Database: $TENANT_DB"
               echo "User: $PROJECT_DB_USER"
               # Экспортируем переменные для передачи в процесс Node.js
-              export TENANT_DB PROJECT_DB_USER PROJECT_DB_PASSWORD POSTGRES_ENDPOINT POSTGRES_PORT
+              export TENANT_DB TENANT_DEFAULT_CODE WORKSPACE_DEFAULT_CODE PROJECT_DB_USER PROJECT_DB_PASSWORD POSTGRES_ENDPOINT POSTGRES_PORT
               # Запускаем приложение
               echo "Tenant Service starting..."
               exec node dist/apps/tenant-service/apps/tenant-service/src/main.js
