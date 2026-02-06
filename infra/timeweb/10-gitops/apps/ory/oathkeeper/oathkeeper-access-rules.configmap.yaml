@@ -44,9 +44,7 @@ data:
       authorizer:
         handler: allow
       mutators:
-        - handler: header
-          config:
-            headers: {}
+        - handler: noop
 
     # ==== Swagger API документация для arch-repo-service (публичный доступ) ====
     - id: arch-repo-api-docs

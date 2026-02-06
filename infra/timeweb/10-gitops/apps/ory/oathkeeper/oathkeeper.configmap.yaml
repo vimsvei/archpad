@@ -42,6 +42,8 @@ data:
         enabled: true
 
     mutators:
+      noop:
+        enabled: true
       header:
         enabled: true
         config:
