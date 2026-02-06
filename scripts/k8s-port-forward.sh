@@ -15,6 +15,8 @@ FORWARD_ORY="${FORWARD_ORY:-false}"
 FORWARD_HYDRA_ADMIN="${FORWARD_HYDRA_ADMIN:-false}"
 FORWARD_MAILPIT="${FORWARD_MAILPIT:-true}"
 FORWARD_HASURA="${FORWARD_HASURA:-true}"
+# auth-service: обход Oathkeeper для /auth/session/access (403 Forbidden через api.archpad.pro)
+FORWARD_AUTH_SERVICE="${FORWARD_AUTH_SERVICE:-true}"
 
 # Порт для Hydra Admin (локально). Часто 4445 занято, поэтому дефолт 24445.
 HYDRA_ADMIN_LOCAL_PORT="${HYDRA_ADMIN_LOCAL_PORT:-24445}"
@@ -152,6 +154,13 @@ else
   echo "Skipping Mailpit port-forward (FORWARD_MAILPIT=false)."
 fi
 
+# auth-service: обход Oathkeeper для GraphQL/REST (403 Forbidden при вызове /auth/session/access через api.archpad.pro)
+if [ "$FORWARD_AUTH_SERVICE" = "true" ]; then
+  start_port_forward "auth-service" "$NAMESPACE_PLATFORM" 3001 3000
+else
+  echo "Skipping auth-service port-forward (FORWARD_AUTH_SERVICE=false)."
+fi
+
 echo ""
 echo "✅ All port-forwards started!"
 echo ""
@@ -176,6 +185,9 @@ echo "  Tolgee:         https://i18n.archpad.pro (public URL)"
 echo "  Vault:          https://vault.archpad.pro (public URL)"
 if [ "$FORWARD_MAILPIT" = "true" ]; then
   echo "  Mailpit:        http://localhost:8025"
+fi
+if [ "$FORWARD_AUTH_SERVICE" = "true" ]; then
+  echo "  auth-service:   http://localhost:3001 (set AUTH_SERVICE_INTERNAL_URL=http://localhost:3001 in portal .env.local)"
 fi
 echo ""
 echo "Press Ctrl+C to stop all port-forwards"

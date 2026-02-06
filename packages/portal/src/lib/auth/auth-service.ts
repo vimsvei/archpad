@@ -53,7 +53,15 @@ async function postJson<T>(
   })
   const json = (await res.json().catch(() => ({}))) as any
   if (!res.ok) {
-    const message = typeof json?.message === "string" ? json.message : `auth_service_failed (${res.status})`
+    let message = typeof json?.message === "string" ? json.message : `auth_service_failed (${res.status})`
+    if (res.status === 403 && message.toLowerCase().includes("forbidden")) {
+      const base = getAuthServiceBaseUrl()
+      const hint =
+        base.includes("api.archpad.pro") && !process.env.AUTH_SERVICE_INTERNAL_URL
+          ? " Try AUTH_SERVICE_INTERNAL_URL=http://localhost:3001 with auth-service port-forward (see scripts/k8s-port-forward.sh)."
+          : ""
+      message = `${message}${hint}`
+    }
     throw new Error(message)
   }
   return json as T

@@ -315,6 +315,10 @@ if [ "$PORT_FORWARD_AVAILABLE" = "true" ]; then
     echo "  Hasura GraphQL: https://apim.archpad.pro/v1/graphql (public URL)"
   fi
   echo "  Mailpit:       http://localhost:8025 (via port-forward)"
+  echo "  auth-service:  http://localhost:3001 (via port-forward)"
+  echo ""
+  echo "  To fix 403 Forbidden on GraphQL, add to packages/portal/.env.local:"
+  echo "    AUTH_SERVICE_INTERNAL_URL=http://localhost:3001"
 else
   if [ "$NEEDS_HASURA_PORT_FORWARD" = "true" ]; then
     echo "  Hasura:        ⚠️  Requires port-forward (not available)"

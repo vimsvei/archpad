@@ -68,6 +68,21 @@ kill %1 2>/dev/null
 
 Если так работает, а через api.archpad.pro — нет, проблема в Oathkeeper или маршрутизации.
 
+## 403 Forbidden на /auth/session/access (GraphQL после логина)
+
+При локальной разработке (Portal → api.archpad.pro → auth-service) запросы к `/auth/session/access` могут возвращать 403 Forbidden, из-за чего GraphQL падает и происходит редирект на логин.
+
+**Решение:** обойти Oathkeeper через port-forward auth-service:
+
+1. Запустите port-forward: `./scripts/k8s-port-forward.sh` (auth-service форвардится по умолчанию на порт 3001).
+2. Добавьте в `packages/portal/.env.local`:
+   ```
+   AUTH_SERVICE_INTERNAL_URL=http://localhost:3001
+   ```
+3. Перезапустите Portal.
+
+Либо запустите `./scripts/dev-local.sh` — он поднимает port-forward; затем добавьте `AUTH_SERVICE_INTERNAL_URL=http://localhost:3001` в `.env.local`.
+
 ## Локальная разработка: смотреть логи Next.js
 
 При `pnpm dev` в `packages/portal` смотрите вывод терминала. После добавления `console.error` там будет:
