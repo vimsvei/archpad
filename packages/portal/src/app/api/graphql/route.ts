@@ -58,10 +58,16 @@ export async function POST(request: Request) {
     if (sessionId) {
       try {
         auth = `Bearer ${(await authServiceSessionAccess({ sessionId })).accessToken}`
-      } catch {
+      } catch (e) {
         // If session is invalid/expired, let upstream respond 401.
+        if (isDev) {
+          const msg = e instanceof Error ? e.message : String(e)
+          log.error({ sessionId: sessionId.slice(0, 8) + "...", message: msg }, undefined, e instanceof Error ? e.stack : undefined)
+        }
         auth = incomingAuth
       }
+    } else if (isDev) {
+      log.error({ message: "No sessionId in cookies; request will go without Bearer token" })
     }
 
     async function doFetch(currentAuth: string | null) {

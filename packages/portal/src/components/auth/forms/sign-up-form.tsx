@@ -8,7 +8,7 @@ import { useTranslate } from "@tolgee/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PasswordInput } from "@/components/ui/password-input"
+import { PasswordInput, PasswordStrengthIndicator } from "@/components/ui/password-input"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { authFormsActions } from "@/store/slices/auth-forms-slice"
@@ -136,7 +136,6 @@ export function SignUpForm() {
               onChange={(e) => dispatch(authFormsActions.setSignUpPassword(e.target.value))}
               aria-invalid={passwordsMismatch}
               aria-describedby={passwordsMismatch ? "password-mismatch" : undefined}
-              showStrength
               required
             />
           </div>
@@ -151,6 +150,9 @@ export function SignUpForm() {
               aria-invalid={passwordsMismatch}
               aria-describedby={passwordsMismatch ? "password-mismatch" : undefined}
             />
+          </div>
+          <div className="sm:col-span-2">
+            <PasswordStrengthIndicator password={form.password} />
           </div>
           {passwordsMismatch && (
             <p id="password-mismatch" className="text-destructive text-sm sm:col-span-2" role="alert">

@@ -13,6 +13,30 @@ export interface PasswordInputProps extends Omit<React.ComponentProps<typeof Inp
   showStrength?: boolean
 }
 
+/** Renders password strength bar + warning. Use separately below a row of password fields to avoid layout shift. */
+export function PasswordStrengthIndicator({ password }: { password: string }) {
+  const strength = React.useMemo(() => {
+    if (!password) return null
+    return zxcvbn(password)
+  }, [password])
+  if (!password) return null
+  const scorePercent = strength ? Math.min(100, (strength.score + 1) * 25) : 0
+  const progressBarColor =
+    strength && strength.score < 2
+      ? "[&>div]:bg-destructive"
+      : strength && strength.score < 4
+        ? "[&>div]:bg-amber-500"
+        : "[&>div]:bg-green-500"
+  return (
+    <div className="mt-1.5 space-y-1">
+      <Progress value={scorePercent} className={cn("h-1.5 [&>div]:transition-colors", progressBarColor)} />
+      {strength?.feedback.warning && (
+        <p className="text-muted-foreground text-xs">{strength.feedback.warning}</p>
+      )}
+    </div>
+  )
+}
+
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, showStrength = false, value, "aria-invalid": ariaInvalid, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false)
