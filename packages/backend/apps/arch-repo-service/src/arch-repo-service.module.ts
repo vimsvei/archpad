@@ -124,7 +124,20 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
               process.cwd(),
               'dist/apps/arch-repo-service/apps/arch-repo-service/src/**/mapped-solution-object.abstract{.ts,.js}',
             ),
-            // Shared models from libs (only those compiled in arch-repo-service dist)
+            // Shared models from libs (compiled into app dist; keep root dist fallback too)
+            path.join(
+              process.cwd(),
+              'dist/apps/arch-repo-service/libs/models/src/**/*.abstract{.ts,.js}',
+            ),
+            path.join(
+              process.cwd(),
+              'dist/apps/arch-repo-service/libs/models/src/**/*.embeddable{.ts,.js}',
+            ),
+            path.join(
+              process.cwd(),
+              'dist/apps/arch-repo-service/libs/models/src/**/*.entity{.ts,.js}',
+            ),
+            // Fallback for other build layouts
             path.join(
               process.cwd(),
               'dist/libs/models/src/**/*.abstract{.ts,.js}',
