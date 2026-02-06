@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
+import { getSessionIdFromCookies } from "@/lib/auth/oauth"
 import { authServiceSessionAccess } from "@/lib/auth/auth-service"
 import { createContextLogger } from "@/lib/logger"
 
@@ -85,11 +85,24 @@ export async function POST(request: Request) {
 
     const res = await doFetch(auth)
 
-    if (isDev && res.status >= 400) {
+    if (res.status >= 400) {
       try {
         const ct = res.headers.get("content-type") ?? ""
         const preview = (await res.clone().text().catch(() => "")).slice(0, 2000)
-        log.error({ status: res.status, contentType: ct, targetUrl, body: preview })
+        const reason =
+          res.status === 401
+            ? "Upstream (Hasura/Oathkeeper) returned 401 Unauthorized. Possible causes: JWT invalid/expired, auth-service /session/access failed (403), misconfiguration."
+            : res.status === 403
+              ? "Upstream returned 403 Forbidden."
+              : `Upstream returned ${res.status}.`
+        log.error({
+          message: `api-graphql request failed: ${reason}`,
+          status: res.status,
+          contentType: ct,
+          targetUrl,
+          hadSession,
+          bodyPreview: preview,
+        })
       } catch {
         // ignore
       }
@@ -102,9 +115,9 @@ export async function POST(request: Request) {
         "content-type": res.headers.get("content-type") ?? "application/json",
       },
     })
-    if (hadSession && res.status === 401) {
-      clearSessionOnResponse(response)
-    }
+    // Do NOT clear session on data fetch 401: upstream 401 can be due to misconfiguration
+    // (auth-service 403, Oathkeeper) or transient issues, not necessarily invalid session.
+    // Session invalidation is handled by /api/auth/me and explicit logout.
     return response
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)

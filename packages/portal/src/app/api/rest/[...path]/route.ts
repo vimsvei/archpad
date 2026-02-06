@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
+import { getSessionIdFromCookies } from "@/lib/auth/oauth"
 import { authServiceSessionAccess } from "@/lib/auth/auth-service"
 import { createContextLogger } from "@/lib/logger"
 
@@ -148,10 +148,9 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
 
   const buf = await res.arrayBuffer()
 
-  // Development logging (readable + structured)
-  if (isDev) {
-    const shouldLogBody = !res.ok && buf.byteLength > 0
-    const responseText = shouldLogBody ? new TextDecoder().decode(buf) : null
+  // Log response; on error, log reason why api-rest request may have failed
+  if (!res.ok) {
+    const responseText = buf.byteLength > 0 ? new TextDecoder().decode(buf) : null
     const responseBodyPreview =
       responseText != null
         ? truncateString(
@@ -161,17 +160,28 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
             2_000
           )
         : undefined
-
+    const reason =
+      res.status === 401
+        ? "Upstream returned 401 Unauthorized. Possible causes: JWT invalid/expired, auth-service /session/access failed (403), misconfiguration."
+        : res.status === 403
+          ? "Upstream returned 403 Forbidden."
+          : `Upstream returned ${res.status}.`
+    log.error({
+      message: `api-rest request failed: ${reason}`,
+      requestId,
+      status: res.status,
+      path: inUrl.pathname,
+      target: target.toString(),
+      hadSession,
+      bodyPreview: responseBodyPreview,
+    })
+  } else if (isDev) {
     log.info(`res id=${requestId} status=${res.status} ms=${duration} ct=${outCt ?? "-"}`)
-    if (responseBodyPreview) {
-      log.info(`res.body id=${requestId} ${responseBodyPreview}`)
-    }
   }
 
   const response = new NextResponse(buf, { status: res.status, headers: outHeaders })
-  if (hadSession && res.status === 401) {
-    clearSessionOnResponse(response)
-  }
+  // Do NOT clear session on data fetch 401: upstream 401 can be due to misconfiguration
+  // or transient issues, not necessarily invalid session.
   return response
 }
 
