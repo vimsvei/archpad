@@ -90,6 +90,8 @@ kv/data/archpad/demo/
 - `HASURA_RENAME_COLUMNS_CAMELCASE` - (опционально) Переименование колонок в camelCase
 - `HASURA_APPLY_DEFAULT_PERMISSIONS` - (опционально) Применение дефолтных прав
 - `HASURA_DEFAULT_ROLE` - (опционально) Дефолтная роль
+- `HASURA_SYNC_BULK_CHUNK_SIZE` - (опционально) Размер чанка для bulk metadata API (по умолчанию 80). Больше = меньше round-trips, целевое время синка ~5 мин
+- `HASURA_SYNC_USE_BULK_KEEP_GOING` - (опционально) Использовать bulk_keep_going вместо bulk (по умолчанию true). Исключает рекурсивный split при ошибках
 
 **Дополнительные секреты:**
 - `kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET`

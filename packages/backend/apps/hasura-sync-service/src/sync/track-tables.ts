@@ -21,8 +21,7 @@ export async function trackTables(args: {
     hasura,
     logger,
     label: 'pg_track_table',
-    // Tracking can be slow on Hasura; keep chunks smaller to reduce timeouts.
-    chunkSize: 15,
+    chunkSize: 80,
     ops,
   });
 }

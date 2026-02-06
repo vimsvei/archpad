@@ -109,8 +109,15 @@ export class HasuraClientService {
         '');
     this.schema = this.config.get<string>('HASURA_SCHEMA')!;
 
+    const bulkChunkSize =
+      (this.config.get<string>('HASURA_SYNC_BULK_CHUNK_SIZE') ?? '').trim() ||
+      '80';
+    const useBulkKeepGoing =
+      (this.config.get<string>('HASURA_SYNC_USE_BULK_KEEP_GOING') ?? 'true')
+        .trim()
+        .toLowerCase() !== 'false';
     this.logger.log(
-      `Hasura endpoint=${this.endpoint} source=${this.source} schema=${this.schema} NODE_ENV=${nodeEnv}`,
+      `Hasura endpoint=${this.endpoint} source=${this.source} schema=${this.schema} bulkChunkSize=${bulkChunkSize} bulkKeepGoing=${useBulkKeepGoing} NODE_ENV=${nodeEnv}`,
       HasuraClientService.name,
     );
   }
@@ -188,6 +195,18 @@ export class HasuraClientService {
     });
   }
 
+  /**
+   * bulk_keep_going: like bulk, but individual ops can fail without failing the batch.
+   * Used to avoid recursive split-on-failure and reduce round-trips.
+   */
+  async postMetadataBulkKeepGoing(args: any[]): Promise<any> {
+    return this.postMetadata({
+      type: 'bulk_keep_going',
+      version: 1,
+      args,
+    });
+  }
+
   async postMetadataBulkAtomic(args: any[]): Promise<any> {
     return this.postMetadata({
       type: 'bulk_atomic',
@@ -196,17 +215,37 @@ export class HasuraClientService {
   }
 
   /**
-   * Chunked metadata apply using Hasura `bulk` (not atomic).
+   * Chunked metadata apply. Uses bulk_keep_going by default (individual ops can fail without
+   * failing the batch) to avoid recursive split-on-failure and reduce round-trips.
    *
-   * Important: not all metadata commands are supported in `bulk_atomic`.
-   * We use `bulk` as the default for broad compatibility.
+   * Chunk size is configurable via HASURA_SYNC_BULK_CHUNK_SIZE (default 80).
    */
   async postMetadataBulkChunked(
     ops: any[],
-    options?: { chunkSize?: number; label?: string },
+    options?: { chunkSize?: number; label?: string; useBulkKeepGoing?: boolean },
   ): Promise<void> {
-    const chunkSize = options?.chunkSize ?? 50;
+    const defaultChunk = Math.max(
+      10,
+      Math.min(
+        200,
+        parseInt(
+          (this.config.get<string>('HASURA_SYNC_BULK_CHUNK_SIZE') ?? '').trim() ||
+            '80',
+          10,
+        ) || 80,
+      ),
+    );
+    const chunkSize = options?.chunkSize ?? defaultChunk;
     const label = options?.label ?? 'bulk';
+    const useBulkKeepGoing =
+      options?.useBulkKeepGoing ??
+      ((this.config.get<string>('HASURA_SYNC_USE_BULK_KEEP_GOING') ?? 'true')
+        .trim()
+        .toLowerCase() !== 'false');
+
+    const postChunk = useBulkKeepGoing
+      ? (chunk: any[]) => this.postMetadataBulkKeepGoing(chunk)
+      : (chunk: any[]) => this.postMetadataBulk(chunk);
 
     const chunks: any[][] = [];
     for (let i = 0; i < ops.length; i += chunkSize) {
@@ -220,13 +259,15 @@ export class HasuraClientService {
           `Applying ${label}: chunk ${i + 1}/${chunks.length} ops=${chunk.length} source=${this.source}`,
           HasuraClientService.name,
         );
-        await this.postMetadataBulk(chunk);
+        await postChunk(chunk);
       } catch (e: any) {
-        // If a chunk fails, split it to isolate a bad op (keeps total requests bounded).
-        if (chunk.length <= 1) {
-          // Hasura `bulk` is not atomic: some operations may have been applied before the failure.
-          // When we retry by splitting, we can legitimately hit "already exists/tracked" for ops
-          // that were applied in a previous attempt. Treat those as success to make sync idempotent.
+        if (useBulkKeepGoing) {
+          // bulk_keep_going should not throw for individual op failures; if we get here, it's a real error.
+          throw e;
+        }
+        // bulk mode: recursive split to isolate bad op. Limit recursion to avoid 30+ min runs.
+        const minChunkBeforeSplit = 5;
+        if (chunk.length <= minChunkBeforeSplit) {
           if (isIgnorableMetadataError(e, label)) {
             const code = getHasuraErrorCode(e) ?? '-';
             const msg = getHasuraErrorMessage(e) ?? formatHasuraError(e);
@@ -239,17 +280,19 @@ export class HasuraClientService {
           throw e;
         }
         this.logger.warn(
-          `Failed ${label} chunk (source=${this.source}, ops=${chunk.length}). Splitting...`,
+          `Failed ${label} chunk (source=${this.source}, ops=${chunk.length}). Splitting (min=${minChunkBeforeSplit})...`,
           HasuraClientService.name,
         );
         const mid = Math.floor(chunk.length / 2);
         await this.postMetadataBulkChunked(chunk.slice(0, mid), {
-          chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
+          chunkSize: Math.max(minChunkBeforeSplit, Math.floor(chunkSize / 2)),
           label,
+          useBulkKeepGoing: false,
         });
         await this.postMetadataBulkChunked(chunk.slice(mid), {
-          chunkSize: Math.max(1, Math.floor(chunkSize / 2)),
+          chunkSize: Math.max(minChunkBeforeSplit, Math.floor(chunkSize / 2)),
           label,
+          useBulkKeepGoing: false,
         });
       }
     }

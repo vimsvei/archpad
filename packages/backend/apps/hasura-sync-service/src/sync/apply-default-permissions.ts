@@ -55,7 +55,7 @@ export async function applyDefaultSelectPermissions(args: {
     hasura,
     logger,
     label: 'pg_create_select_permission',
-    chunkSize: 20,
+    chunkSize: 80,
     ops,
   });
 }

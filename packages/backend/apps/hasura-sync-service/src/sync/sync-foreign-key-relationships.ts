@@ -153,8 +153,7 @@ export async function syncForeignKeyRelationships(args: {
     hasura,
     logger,
     label: 'pg_create_relationships',
-    // Relationship creation can be slow; keep chunks smaller to reduce timeouts.
-    chunkSize: 15,
+    chunkSize: 80,
     ops,
   });
 }

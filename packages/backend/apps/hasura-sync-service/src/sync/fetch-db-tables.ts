@@ -11,8 +11,8 @@ export async function fetchDbTables(args: {
   delayMs?: number;
 }): Promise<DbTableRef[]> {
   const { hasura, logger } = args;
-  const retries = args.retries ?? 10;
-  const delayMs = args.delayMs ?? 500;
+  const retries = args.retries ?? 5;
+  const delayMs = args.delayMs ?? 300;
 
   return await retry<DbTableRef[]>({
     retries,
