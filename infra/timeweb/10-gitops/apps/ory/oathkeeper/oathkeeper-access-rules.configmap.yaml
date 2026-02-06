@@ -28,6 +28,26 @@ data:
               X-Hasura-Role: "public"
               X-Hasura-Allowed-Roles: "public"
 
+    # ==== Auth-service через Oathkeeper (публичный доступ) ====
+    # Portal использует opaque session cookie; auth-service работает по sessionId в теле.
+    # /auth/session/access дополнительно защищён x-internal-token (JWT не уходит в браузер).
+    - id: auth-service
+      match:
+        url: <https|http>://api.archpad.pro/auth<(/.*)?>
+        methods: ["GET", "POST", "OPTIONS"]
+      upstream:
+        url: http://auth-service.platform:3000
+        preserve_host: true
+        strip_path: /auth
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
     # ==== Swagger API документация для arch-repo-service (публичный доступ) ====
     - id: arch-repo-api-docs
       match:
