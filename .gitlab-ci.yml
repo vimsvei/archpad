@@ -13,6 +13,9 @@ variables:
   # Docker build settings
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
+  # Network hiccups during registry auth are common; allow longer timeouts.
+  DOCKER_CLIENT_TIMEOUT: "300"
+  DOCKER_HTTP_TIMEOUT: "300"
 
 # Шаблон для сборки Docker образа
 .build_docker_image:
@@ -81,7 +84,22 @@ variables:
         exit 1
       fi
     - 'echo "Logging in to registry: $REGISTRY_URL"'
-    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL"
+    - |
+      docker_login_with_retry() {
+        local tries=6
+        local delay=5
+        local i=1
+        while [ "$i" -le "$tries" ]; do
+          echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL" && return 0
+          echo "WARNING: docker login failed (attempt ${i}/${tries}); retrying in ${delay}s..." >&2
+          sleep "$delay"
+          delay=$((delay * 2))
+          i=$((i + 1))
+        done
+        echo "ERROR: docker login failed after ${tries} attempts" >&2
+        return 1
+      }
+      docker_login_with_retry
     # Определяем функцию для получения секретов из Vault для portal
     # Функция должна быть определена в before_script, чтобы быть доступной в script
     - |
@@ -307,7 +325,22 @@ variables:
         exit 1
       fi
     - 'echo "Logging in to registry: $REGISTRY_URL"'
-    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL"
+    - |
+      docker_login_with_retry() {
+        local tries=6
+        local delay=5
+        local i=1
+        while [ "$i" -le "$tries" ]; do
+          echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin "$REGISTRY_URL" && return 0
+          echo "WARNING: docker login failed (attempt ${i}/${tries}); retrying in ${delay}s..." >&2
+          sleep "$delay"
+          delay=$((delay * 2))
+          i=$((i + 1))
+        done
+        echo "ERROR: docker login failed after ${tries} attempts" >&2
+        return 1
+      }
+      docker_login_with_retry
     # Определяем функцию для получения секретов из Vault для portal
     # Функция должна быть определена в before_script, чтобы быть доступной в script
     - |
