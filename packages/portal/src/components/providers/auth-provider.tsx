@@ -2,7 +2,22 @@
 
 import * as React from "react"
 
+type UserProfile = {
+  id: string
+  keycloakId?: string | null
+  email?: string | null
+  code?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  middleName?: string | null
+  phone?: string | null
+  position?: string | null
+  department?: string | null
+  state?: string | null
+}
+
 type AuthUser = {
+  keycloakId: string | null
   email: string | null
   name: string | null
   given_name: string | null
@@ -10,6 +25,7 @@ type AuthUser = {
   preferred_username: string | null
   roles: string[] | null
   groups: string[] | null
+  profile: UserProfile | null
 }
 
 type AuthContextValue = {
@@ -24,7 +40,26 @@ type AuthContextValue = {
 const AuthContext = React.createContext<AuthContextValue | null>(null)
 
 function normalizeMeResponse(json: any): AuthUser {
+  const profileRaw = json?.profile
+  const profile: UserProfile | null =
+    profileRaw && typeof profileRaw === "object"
+      ? {
+          id: typeof profileRaw.id === "string" ? profileRaw.id : "",
+          keycloakId: typeof profileRaw.keycloakId === "string" ? profileRaw.keycloakId : null,
+          email: typeof profileRaw.email === "string" ? profileRaw.email : null,
+          code: typeof profileRaw.code === "string" ? profileRaw.code : null,
+          firstName: typeof profileRaw.firstName === "string" ? profileRaw.firstName : null,
+          lastName: typeof profileRaw.lastName === "string" ? profileRaw.lastName : null,
+          middleName: typeof profileRaw.middleName === "string" ? profileRaw.middleName : null,
+          phone: typeof profileRaw.phone === "string" ? profileRaw.phone : null,
+          position: typeof profileRaw.position === "string" ? profileRaw.position : null,
+          department: typeof profileRaw.department === "string" ? profileRaw.department : null,
+          state: typeof profileRaw.state === "string" ? profileRaw.state : null,
+        }
+      : null
+
   return {
+    keycloakId: typeof json?.keycloakId === "string" ? json.keycloakId : null,
     email: typeof json?.email === "string" ? json.email : null,
     name: typeof json?.name === "string" ? json.name : null,
     given_name: typeof json?.given_name === "string" ? json.given_name : null,
@@ -32,6 +67,7 @@ function normalizeMeResponse(json: any): AuthUser {
     preferred_username: typeof json?.preferred_username === "string" ? json.preferred_username : null,
     roles: Array.isArray(json?.roles) ? json.roles.filter((x: unknown) => typeof x === "string") : null,
     groups: Array.isArray(json?.groups) ? json.groups.filter((x: unknown) => typeof x === "string") : null,
+    profile,
   }
 }
 

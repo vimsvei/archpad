@@ -11,11 +11,9 @@ data:
       "ifResourceExists": "OVERWRITE",
       "roles": {
         "realm": [
-          { "name": "CHIEF_ARCHITECT" },
-          { "name": "ENTERPRISE_ARCHITECT" },
-          { "name": "SOLUTION_ARCHITECT" },
-          { "name": "SECURITY_ARCHITECT" },
-          { "name": "INFRASTRUCTURE_ARCHITECT" }
+          { "name": "ARCHITECT" },
+          { "name": "DIRECTORY_MANAGER" },
+          { "name": "VIEWER" }
         ]
       }
     }

@@ -1,7 +1,10 @@
+import "server-only"
+
 type LoginResponse = { sessionId: string }
 type AccessResponse = { accessToken: string }
 type MeResponse = {
   ok: true
+  keycloakId?: string | null
   email: string | null
   name: string | null
   given_name: string | null
@@ -9,6 +12,7 @@ type MeResponse = {
   preferred_username: string | null
   roles: string[] | null
   groups: string[] | null
+  profile?: unknown | null
 }
 
 function getAuthServiceBaseUrl(): string {
@@ -22,12 +26,21 @@ function getAuthServiceBaseUrl(): string {
   return url
 }
 
-async function postJson<T>(path: string, body: Record<string, unknown>): Promise<T> {
+function getInternalServiceToken(): string | null {
+  const t = process.env.INTERNAL_SERVICE_TOKEN?.trim()
+  return t ? t : null
+}
+
+async function postJson<T>(
+  path: string,
+  body: Record<string, unknown>,
+  options?: { headers?: Record<string, string> }
+): Promise<T> {
   const base = getAuthServiceBaseUrl()
   const url = new URL(path, base)
   const res = await fetch(url.toString(), {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...(options?.headers ?? {}) },
     body: JSON.stringify(body),
     cache: "no-store",
   })
@@ -44,7 +57,11 @@ export async function authServiceLogin(input: { username: string; password: stri
 }
 
 export async function authServiceSessionAccess(input: { sessionId: string }): Promise<AccessResponse> {
-  return postJson<AccessResponse>("/auth/session/access", input)
+  const token = getInternalServiceToken()
+  if (!token) throw new Error("INTERNAL_SERVICE_TOKEN must be set")
+  return postJson<AccessResponse>("/auth/session/access", input, {
+    headers: { "x-internal-token": token },
+  })
 }
 
 export async function authServiceMe(input: { sessionId: string }): Promise<MeResponse> {

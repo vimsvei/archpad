@@ -5,10 +5,13 @@ import {
   HttpCode,
   Post,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakService } from './keycloak.service';
 import { SessionService } from './session.service';
+import { TenantServiceClient } from './tenant-service.client';
+import { InternalTokenGuard } from './internal-token.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,6 +19,7 @@ export class AuthController {
   constructor(
     private readonly keycloak: KeycloakService,
     private readonly sessions: SessionService,
+    private readonly tenant: TenantServiceClient,
   ) {}
 
   @Post('login')
@@ -43,6 +47,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Get access token for session (server-side refresh)',
   })
+  @UseGuards(InternalTokenGuard)
   async sessionAccess(@Body() body: Record<string, unknown>) {
     const sessionId = String(body.sessionId ?? '').trim();
     if (!sessionId) throw new BadRequestException('Missing sessionId');
@@ -94,12 +99,19 @@ export class AuthController {
     const lastName = String(body.lastName ?? '').trim();
     const phone = String(body.phone ?? '').trim();
     if (!email || !password) return { error: 'Missing email/password' };
-    await this.keycloak.createUser({
+    const { userId: keycloakId } = await this.keycloak.createUser({
       email,
       password,
       firstName: firstName || undefined,
       lastName: lastName || undefined,
       phone: phone || undefined,
+    });
+
+    // Default authorization in Keycloak (idempotent)
+    await this.keycloak.ensureDefaultAccessForUser(keycloakId).catch(() => {});
+
+    await this.tenant.ensureUserProfile({
+      keycloakId,
     });
     // optional: send verify email if SMTP configured
     const clientId = (

@@ -13,6 +13,11 @@ type TokenResponse = {
   error_description?: string;
 };
 
+type RealmRoleRepresentation = {
+  id?: string;
+  name: string;
+};
+
 @Injectable()
 export class KeycloakService {
   constructor(private readonly vault: VaultConfigService) {}
@@ -331,13 +336,187 @@ export class KeycloakService {
     return match?.id ?? null;
   }
 
+  private async findGroupIdByName(name: string): Promise<string | null> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(`/admin/realms/${realm}/groups`, base);
+    url.searchParams.set('search', name);
+
+    const res = await fetch(url.toString(), {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    const arr = (await res.json().catch(() => [])) as Array<{
+      id?: string;
+      name?: string;
+    }>;
+    const match = arr.find((g) => (g.name || '') === name);
+    return match?.id ?? null;
+  }
+
+  private async createGroup(name: string): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(`/admin/realms/${realm}/groups`, base);
+    const res = await fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    });
+    // 201 expected; 409 if exists
+    if (!res.ok && res.status !== 409) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `create_group_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  private async addUserToGroup(userId: string, groupId: string): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(
+      `/admin/realms/${realm}/users/${userId}/groups/${groupId}`,
+      base,
+    );
+    const res = await fetch(url.toString(), {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${token}` },
+    });
+    // 204 expected; some proxies may return 409 if already a member
+    if (!res.ok && res.status !== 409) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `add_user_to_group_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  private async getRealmRole(name: string): Promise<RealmRoleRepresentation | null> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(`/admin/realms/${realm}/roles/${name}`, base);
+    const res = await fetch(url.toString(), {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `get_realm_role_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+    const json = (await res.json().catch(() => null)) as any;
+    if (!json || typeof json.name !== 'string') return null;
+    return json as RealmRoleRepresentation;
+  }
+
+  private async createRealmRole(name: string): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(`/admin/realms/${realm}/roles`, base);
+    const res = await fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    });
+    // 201 expected; 409 if exists
+    if (!res.ok && res.status !== 409) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `create_realm_role_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  async ensureDesiredRealmRoles(roleNames: string[]): Promise<void> {
+    for (const name of roleNames) {
+      const n = (name ?? '').trim();
+      if (!n) continue;
+      const existing = await this.getRealmRole(n);
+      if (existing) continue;
+      await this.createRealmRole(n);
+    }
+  }
+
+  async ensureDesiredGroups(groupNames: string[]): Promise<void> {
+    for (const name of groupNames) {
+      const n = (name ?? '').trim();
+      if (!n) continue;
+      const existing = await this.findGroupIdByName(n);
+      if (existing) continue;
+      await this.createGroup(n);
+    }
+  }
+
+  private async addRealmRolesToUser(
+    userId: string,
+    roles: RealmRoleRepresentation[],
+  ): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(
+      `/admin/realms/${realm}/users/${userId}/role-mappings/realm`,
+      base,
+    );
+    const res = await fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(roles),
+    });
+    // 204 expected; 409 possible if role mapping already exists
+    if (!res.ok && res.status !== 409) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `add_realm_roles_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  async ensureDefaultAccessForUser(userId: string): Promise<void> {
+    // Default group membership (keep existing "USER" group).
+    const groupId = await this.findGroupIdByName('USER');
+    if (groupId) {
+      await this.addUserToGroup(userId, groupId);
+    }
+
+    // Default realm role: VIEWER
+    const viewer = await this.getRealmRole('VIEWER');
+    if (viewer) {
+      await this.addRealmRolesToUser(userId, [viewer]);
+    }
+  }
+
+  private static extractUserIdFromLocation(location: string | null): string | null {
+    if (!location) return null;
+    // Typically: .../admin/realms/{realm}/users/{id}
+    const parts = location.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || '';
+    return last.trim() || null;
+  }
+
   async createUser(input: {
     email: string;
     password: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
-  }) {
+  }): Promise<{ userId: string; created: boolean }> {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
@@ -366,7 +545,9 @@ export class KeycloakService {
     });
 
     if (res.status === 409) {
-      throw new Error('user_already_exists');
+      const existingId = await this.findUserIdByEmail(input.email);
+      if (!existingId) throw new Error('user_already_exists');
+      return { userId: existingId, created: false };
     }
     if (!res.ok) {
       const text = await res.text().catch(() => '');
@@ -374,6 +555,16 @@ export class KeycloakService {
         `create_user_failed (${res.status}) ${text.slice(0, 200)}`,
       );
     }
+
+    const createdId = KeycloakService.extractUserIdFromLocation(
+      res.headers.get('location') ?? res.headers.get('Location'),
+    );
+    if (createdId) return { userId: createdId, created: true };
+
+    // Fallback: Keycloak does not always return Location (depending on proxy).
+    const fallback = await this.findUserIdByEmail(input.email);
+    if (!fallback) throw new Error('create_user_succeeded_but_id_not_found');
+    return { userId: fallback, created: true };
   }
 
   async sendExecuteActionsEmail(input: {

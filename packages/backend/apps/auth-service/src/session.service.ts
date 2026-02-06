@@ -4,9 +4,11 @@ import { randomUUID } from 'node:crypto';
 import { AuthSession } from './model/entities/auth-session.entity';
 import { KeycloakService } from './keycloak.service';
 import { decodeJwtPayload } from './jwt';
+import { TenantServiceClient } from './tenant-service.client';
 
 type SessionUser = {
   ok: true;
+  keycloakId: string | null;
   email: string | null;
   name: string | null;
   given_name: string | null;
@@ -16,11 +18,16 @@ type SessionUser = {
   groups: string[] | null;
 };
 
+type SessionMe = SessionUser & {
+  profile: any | null;
+};
+
 @Injectable()
 export class SessionService {
   constructor(
     private readonly em: EntityManager,
     private readonly keycloak: KeycloakService,
+    private readonly tenant: TenantServiceClient,
   ) {}
 
   private static nowPlusSeconds(
@@ -49,6 +56,7 @@ export class SessionService {
   private static normalizeMe(
     claims: Record<string, unknown> | null,
   ): SessionUser {
+    const keycloakId = claims && typeof claims.sub === 'string' ? claims.sub : null;
     const email = SessionService.extractEmailFromClaims(claims);
     const roles =
       claims && typeof claims.realm_access === 'object' && claims.realm_access
@@ -71,6 +79,7 @@ export class SessionService {
 
     return {
       ok: true,
+      keycloakId,
       email,
       name: claims && typeof claims.name === 'string' ? claims.name : null,
       given_name:
@@ -194,10 +203,16 @@ export class SessionService {
     return { accessToken: s.accessToken };
   }
 
-  async getMeForSession(sessionId: string): Promise<SessionUser> {
+  async getMeForSession(sessionId: string): Promise<SessionMe> {
     const { accessToken } = await this.getAccessTokenForSession(sessionId);
     const claims = decodeJwtPayload(accessToken);
     if (!claims) throw new Error('unauthorized');
-    return SessionService.normalizeMe(claims);
+    const me = SessionService.normalizeMe(claims);
+    const profile = me.keycloakId
+      ? await this.tenant
+          .getUserProfileByKeycloakId(me.keycloakId)
+          .catch(() => null)
+      : null;
+    return { ...me, profile };
   }
 }

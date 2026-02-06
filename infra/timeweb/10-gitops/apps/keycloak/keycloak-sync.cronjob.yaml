@@ -77,46 +77,6 @@ spec:
                   access_token="$(printf "%s" "$token_json" | jq -r '.access_token')"
                   [ -n "$access_token" ]
 
-                  # Sync roles.
-                  # NOTE: Keycloak partialImport has proven flaky (NPE/duplicate) across versions.
-                  # We sync desired roles idempotently via Admin API.
-                  if [ -f /config/partial-import.json ]; then
-                    jq -r '.roles.realm[]?.name // empty' /config/partial-import.json | while read -r role; do
-                      [ -n "$role" ] || continue
-                      if curl -fsS -H "Authorization: Bearer ${access_token}" \
-                        "${KC_BASE}/admin/realms/${REALM}/roles/${role}" >/dev/null 2>&1; then
-                        echo "role exists: $role"
-                        continue
-                      fi
-                      echo "creating role: $role"
-                      curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/roles" \
-                        -H "Authorization: Bearer ${access_token}" \
-                        -H "Content-Type: application/json" \
-                        -d "$(jq -cn --arg n "$role" '{name:$n}')" >/dev/null
-                    done
-                  fi
-
-                  # Sync groups (create if missing).
-                  if [ -f /config/groups.json ]; then
-                    jq -r '.[] | .name' /config/groups.json | while read -r name; do
-                      [ -n "$name" ] || continue
-                      # Search group by name (returns array).
-                      existing="$(curl -fsS \
-                        -H "Authorization: Bearer ${access_token}" \
-                        "${KC_BASE}/admin/realms/${REALM}/groups?search=$(printf %s "$name" | jq -sRr @uri)" \
-                        | jq -r --arg n "$name" '[.[] | select(.name == $n)][0].id // empty')"
-                      if [ -n "$existing" ]; then
-                        echo "group exists: $name"
-                        continue
-                      fi
-                      echo "creating group: $name"
-                      curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/groups" \
-                        -H "Authorization: Bearer ${access_token}" \
-                        -H "Content-Type: application/json" \
-                        -d "$(jq -cn --arg n "$name" '{name:$n}')" >/dev/null
-                    done
-                  fi
-
                   # Ensure portal client is confidential and has the configured secret.
                   if [ -n "${OIDC_CLIENT_SECRET:-}" ]; then
                     portal_id="$(curl -fsS \
@@ -148,16 +108,3 @@ spec:
                   else
                     echo "WARNING: OIDC_CLIENT_SECRET is not set; portal client secret not synced"
                   fi
-              volumeMounts:
-                - name: partial-import
-                  mountPath: /config/partial-import.json
-                  subPath: partial-import.json
-                  readOnly: true
-                - name: partial-import
-                  mountPath: /config/groups.json
-                  subPath: groups.json
-                  readOnly: true
-          volumes:
-            - name: partial-import
-              configMap:
-                name: keycloak-partial-import

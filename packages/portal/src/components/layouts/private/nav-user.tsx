@@ -48,7 +48,10 @@ function NavUserContent(
   const sessionObj = user
   const displayName =
     (typeof sessionObj?.name === "string" && sessionObj.name) ||
-    [sessionObj?.given_name ?? null, sessionObj?.family_name ?? null]
+    [
+      sessionObj?.given_name ?? sessionObj?.profile?.firstName ?? null,
+      sessionObj?.family_name ?? sessionObj?.profile?.lastName ?? null,
+    ]
       .filter((v): v is string => typeof v === "string" && v.length > 0)
       .join(" ") ||
     (typeof sessionObj?.email === "string" ? sessionObj.email.split("@")[0] : "")

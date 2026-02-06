@@ -13,6 +13,9 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { AuthSession } from './model/entities/auth-session.entity';
 import { SessionService } from './session.service';
 import { SchemaInitializerModule } from '@archpad/schema-initializer';
+import { TenantServiceClient } from './tenant-service.client';
+import { InternalTokenGuard } from './internal-token.guard';
+import { KeycloakDesiredStateService } from './keycloak-desired-state.service';
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { SchemaInitializerModule } from '@archpad/schema-initializer';
       secretsPaths: [
         'kv/data/archpad/demo/backend/auth-service',
         'kv/data/archpad/demo/backend/common',
+        'kv/data/archpad/demo/backend/service-token',
         'kv/data/archpad/demo/postgres/connect',
         'kv/data/archpad/demo/keycloak/connect',
         'kv/data/archpad/demo/keycloak/service',
@@ -109,7 +113,13 @@ import { SchemaInitializerModule } from '@archpad/schema-initializer';
     }),
   ],
   controllers: [AuthController, HealthController],
-  providers: [KeycloakService, SessionService],
+  providers: [
+    KeycloakService,
+    SessionService,
+    TenantServiceClient,
+    InternalTokenGuard,
+    KeycloakDesiredStateService,
+  ],
 })
 export class AuthServiceModule implements OnModuleInit {
   private readonly loggerContext = AuthServiceModule.name;

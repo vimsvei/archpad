@@ -8,6 +8,9 @@ import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
 import { BootstrapModule } from './bootstrap/bootstrap.module';
+import { InternalUserProfilesController } from './internal/internal-user-profiles.controller';
+import { InternalUserProfilesService } from './internal/internal-user-profiles.service';
+import { InternalTokenGuard } from './internal/internal-token.guard';
 
 @Module({
   imports: [
@@ -20,6 +23,7 @@ import { BootstrapModule } from './bootstrap/bootstrap.module';
       secretsPaths: [
         'kv/data/archpad/demo/backend/tenant-service',
         'kv/data/archpad/demo/backend/common',
+        'kv/data/archpad/demo/backend/service-token',
         'kv/data/archpad/demo/postgres/connect',
       ],
       enabled: process.env.NODE_ENV === 'development',
@@ -121,6 +125,8 @@ import { BootstrapModule } from './bootstrap/bootstrap.module';
     }),
     BootstrapModule,
   ],
+  controllers: [InternalUserProfilesController],
+  providers: [InternalUserProfilesService, InternalTokenGuard],
 })
 export class TenantServiceModule implements OnModuleInit {
   private readonly loggerContext = TenantServiceModule.name;
