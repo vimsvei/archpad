@@ -177,16 +177,25 @@ export class HasuraRelationshipNameInitializer
       for (const v of columnOverrides.values()) {
         rows.push(tx.create(HasuraSyncColumnOverride, v));
       }
-      for (const v of objectRelationshipOverrides.values()) {
-        rows.push(tx.create(HasuraSyncObjectRelationshipOverride, v));
-      }
-      for (const v of arrayRelationshipOverrides.values()) {
-        rows.push(tx.create(HasuraSyncArrayRelationshipOverride, v));
-      }
+      // IMPORTANT: `*_relationship_overrides` entities have `text[]` as part of composite PK.
+      // Persisting them as regular entities can trip MikroORM identity map (ArrayType PK),
+      // so we insert them via `em.insert()` to bypass entity factory/unit-of-work.
+      const objectRelRows = [...objectRelationshipOverrides.values()];
+      const arrayRelRows = [...arrayRelationshipOverrides.values()];
 
       if (rows.length) {
         tx.persist(rows);
         await tx.flush();
+      }
+      if (objectRelRows.length) {
+        for (const r of objectRelRows) {
+          await tx.insert(HasuraSyncObjectRelationshipOverride, r as any);
+        }
+      }
+      if (arrayRelRows.length) {
+        for (const r of arrayRelRows) {
+          await tx.insert(HasuraSyncArrayRelationshipOverride, r as any);
+        }
       }
 
       this.logger.log(
