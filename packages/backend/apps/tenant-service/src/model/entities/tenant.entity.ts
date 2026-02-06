@@ -15,6 +15,7 @@ export class Tenant extends NamedObject {
     fieldName: 'owner_id',
     updateRule: 'cascade',
     deleteRule: 'no action',
+    nullable: true,
   })
-  owner!: UserProfile;
+  owner?: UserProfile;
 }

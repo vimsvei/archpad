@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HasuraRelationshipNameInitializer } from './hasura-relationship-name-initializer.service';
+import { HasuraRelationshipNameInitializer } from '@archpad/hasura-sync-bootstrap';
 import { LoggerModule } from '@archpad/logger';
 import { SchemaInitializerModule } from '@archpad/schema-initializer';
 

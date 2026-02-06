@@ -29,6 +29,9 @@
       "@archpad/logger": [
         "libs/logger/src"
       ],
+      "@archpad/hasura-sync-bootstrap": [
+        "libs/hasura-sync-bootstrap/src"
+      ],
       "@archpad/models": [
         "libs/models/src"
       ],

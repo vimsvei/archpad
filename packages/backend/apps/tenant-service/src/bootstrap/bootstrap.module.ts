@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@archpad/logger';
 import { SchemaInitializerModule } from '@archpad/schema-initializer';
-import { HasuraRelationshipNameInitializer } from './hasura-relationship-name-initializer.service';
+import { HasuraRelationshipNameInitializer } from '@archpad/hasura-sync-bootstrap';
+import { DefaultTenantWorkspaceInitializer } from './default-tenant-workspace-initializer.service';
 
 @Module({
   imports: [
@@ -11,6 +12,9 @@ import { HasuraRelationshipNameInitializer } from './hasura-relationship-name-in
       skipSequenceCreation: true, // Let updateSchema handle sequences due to permissions
     }),
   ],
-  providers: [HasuraRelationshipNameInitializer],
+  providers: [
+    HasuraRelationshipNameInitializer,
+    DefaultTenantWorkspaceInitializer,
+  ],
 })
 export class BootstrapModule {}

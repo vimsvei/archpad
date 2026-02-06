@@ -7,7 +7,7 @@ import { LoggerModule, LoggerService } from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
-import { BootstrapModule } from './bootstrap.module';
+import { BootstrapModule } from './bootstrap/bootstrap.module';
 
 @Module({
   imports: [

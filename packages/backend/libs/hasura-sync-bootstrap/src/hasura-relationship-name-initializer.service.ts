@@ -1,6 +1,10 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { MikroORM, ReferenceKind } from '@mikro-orm/core';
+import { MikroORM, ReferenceKind, type EntityManager } from '@mikro-orm/core';
 import {
+  HasuraSyncArrayRelationshipOverride,
+  HasuraSyncColumnOverride,
+  HasuraSyncObjectRelationshipOverride,
+  HasuraSyncTableOverride,
   getHasuraProperties,
   getHasuraReferences,
   getHasuraTables,
@@ -22,10 +26,6 @@ type ResolvedHasuraReference = {
   collectionName: string;
 };
 
-function escapeSqlString(value: string): string {
-  return value.replace(/'/g, "''");
-}
-
 function toSimpleCamelCase(snake: string): string {
   return snake.replace(/_([a-z0-9])/g, (_, ch: string) => ch.toUpperCase());
 }
@@ -34,6 +34,12 @@ function upperFirst(s: string): string {
   return s.length ? s[0].toUpperCase() + s.slice(1) : s;
 }
 
+/**
+ * Creates and materializes `hasura_sync.*` registry tables from @archpad/models decorators.
+ *
+ * This is needed for Hasura metadata sync (custom table/column names and relationship overrides).
+ * Tenant DB previously missed this, so `hasura_sync` schema did not exist.
+ */
 @Injectable()
 export class HasuraRelationshipNameInitializer
   implements OnApplicationBootstrap
@@ -54,31 +60,129 @@ export class HasuraRelationshipNameInitializer
       references.length || tableUsages.length || hasuraProperties.length;
     if (!hasAny) return;
 
-    const conn = this.orm.em.getConnection();
     await this.ensureRegistry();
 
-    // Clear old overrides to avoid conflicts with stale data
-    await this.clearHasuraSyncOverrides(conn);
+    const em = this.orm.em.fork();
 
-    // 1) Relationships (object + collection names)
-    const resolved = this.resolveHasuraReferenceUsages(references);
-    if (resolved.length) {
-      const deduped = this.dedupeSameFkRelationship(resolved);
-      this.assertUniqueObjectNamesWithinFkTable(deduped);
-      this.assertUniqueCollectionNamesWithinPkTable(deduped);
-      for (const r of deduped) {
-        await this.upsertObjectRelationshipOverride(conn, r);
-        await this.upsertArrayRelationshipOverride(conn, r);
+    await em.transactional(async (tx) => {
+      // Clear old overrides to avoid conflicts with stale data
+      await this.clearHasuraSyncOverrides(tx);
+
+      // Accumulate rows with "last write wins" semantics (like SQL upsert).
+      const tableOverrides = new Map<
+        string,
+        Pick<
+          HasuraSyncTableOverride,
+          'tableSchema' | 'tableName' | 'customName' | 'camelCase' | 'updatedAt'
+        >
+      >();
+      const columnOverrides = new Map<
+        string,
+        Pick<
+          HasuraSyncColumnOverride,
+          | 'tableSchema'
+          | 'tableName'
+          | 'columnName'
+          | 'customName'
+          | 'updatedAt'
+        >
+      >();
+      const objectRelationshipOverrides = new Map<
+        string,
+        Pick<
+          HasuraSyncObjectRelationshipOverride,
+          | 'fkTableSchema'
+          | 'fkTableName'
+          | 'fkColumns'
+          | 'name'
+          | 'updatedAt'
+        >
+      >();
+      const arrayRelationshipOverrides = new Map<
+        string,
+        Pick<
+          HasuraSyncArrayRelationshipOverride,
+          | 'pkTableSchema'
+          | 'pkTableName'
+          | 'fkTableSchema'
+          | 'fkTableName'
+          | 'fkColumns'
+          | 'name'
+          | 'updatedAt'
+        >
+      >();
+
+      // 1) Relationships (object + collection names)
+      const resolved = this.resolveHasuraReferenceUsages(references);
+      if (resolved.length) {
+        const deduped = this.dedupeSameFkRelationship(resolved);
+        this.assertUniqueObjectNamesWithinFkTable(deduped);
+        this.assertUniqueCollectionNamesWithinPkTable(deduped);
+
+        for (const r of deduped) {
+          const objKey = `${r.fkSchema}\u0000${r.fkTable}\u0000${r.fkColumns.join(
+            '\u0001',
+          )}`;
+          objectRelationshipOverrides.set(objKey, {
+            fkTableSchema: r.fkSchema,
+            fkTableName: r.fkTable,
+            fkColumns: r.fkColumns,
+            name: r.objectName,
+            updatedAt: new Date(),
+          });
+
+          const arrKey = `${r.pkSchema}\u0000${r.pkTable}\u0000${r.fkSchema}\u0000${r.fkTable}\u0000${r.fkColumns.join(
+            '\u0001',
+          )}`;
+          arrayRelationshipOverrides.set(arrKey, {
+            pkTableSchema: r.pkSchema,
+            pkTableName: r.pkTable,
+            fkTableSchema: r.fkSchema,
+            fkTableName: r.fkTable,
+            fkColumns: r.fkColumns,
+            name: r.collectionName,
+            updatedAt: new Date(),
+          });
+        }
       }
-    }
 
-    // 2) Table + column naming (via TABLE/COLUMN comments)
-    if (tableUsages.length) {
-      await this.applyHasuraTableOverrides(conn, tableUsages);
-    }
-    if (hasuraProperties.length) {
-      await this.applyHasuraPropertyOverrides(conn, hasuraProperties);
-    }
+      // 2) Table + column naming (via TABLE/COLUMN comments)
+      if (tableUsages.length) {
+        await this.applyHasuraTableOverrides(tx, tableUsages, {
+          tableOverrides,
+          columnOverrides,
+        });
+      }
+      if (hasuraProperties.length) {
+        await this.applyHasuraPropertyOverrides(tx, hasuraProperties, {
+          columnOverrides,
+        });
+      }
+
+      const rows: any[] = [];
+      for (const v of tableOverrides.values()) {
+        rows.push(tx.create(HasuraSyncTableOverride, v));
+      }
+      for (const v of columnOverrides.values()) {
+        rows.push(tx.create(HasuraSyncColumnOverride, v));
+      }
+      for (const v of objectRelationshipOverrides.values()) {
+        rows.push(tx.create(HasuraSyncObjectRelationshipOverride, v));
+      }
+      for (const v of arrayRelationshipOverrides.values()) {
+        rows.push(tx.create(HasuraSyncArrayRelationshipOverride, v));
+      }
+
+      if (rows.length) {
+        tx.persist(rows);
+        await tx.flush();
+      }
+
+      this.logger.log(
+        `Materialized Hasura sync overrides: tables=${tableOverrides.size}, columns=${columnOverrides.size}, objectRels=${objectRelationshipOverrides.size}, arrayRels=${arrayRelationshipOverrides.size}`,
+        this.loggerContext,
+      );
+    });
   }
 
   private resolveHasuraReferenceUsages(
@@ -106,7 +210,7 @@ export class HasuraRelationshipNameInitializer
       let ownerMeta: any;
       try {
         ownerMeta = meta.get(u.entity.name);
-      } catch (error) {
+      } catch {
         this.logger.warn(
           `Skipping @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${String(
             u.propertyKey,
@@ -116,25 +220,11 @@ export class HasuraRelationshipNameInitializer
         continue;
       }
 
-      if (!ownerMeta) {
-        this.logger.warn(
-          `Skipping @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${String(
-            u.propertyKey,
-          )}: entity metadata not found (entity not discovered?)`,
-          this.loggerContext,
-        );
-        continue;
-      }
+      if (!ownerMeta) continue;
 
       const propName = String(u.propertyKey);
       const prop: any = ownerMeta.properties?.[propName];
-      if (!prop) {
-        this.logger.warn(
-          `Skipping @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${propName}: property metadata not found`,
-          this.loggerContext,
-        );
-        continue;
-      }
+      if (!prop) continue;
 
       const ref: string | undefined = prop.kind ?? prop.reference;
       if (
@@ -152,7 +242,6 @@ export class HasuraRelationshipNameInitializer
       }
 
       if (ref === ReferenceKind.ONE_TO_MANY) {
-        // Inverse-side support (warn): resolve owning side and FK columns.
         this.logger.warn(
           `@HasuraReference(${u.objectName},${u.collectionName}) placed on inverse side ${u.entity.name}.${propName}. Prefer placing it on the owning ManyToOne/OneToOne side.`,
           this.loggerContext,
@@ -164,17 +253,11 @@ export class HasuraRelationshipNameInitializer
         if (targetName) {
           try {
             targetMeta = meta.get(targetName);
-          } catch (error) {
+          } catch {
             // will warn below
           }
         }
-        if (!targetMeta) {
-          this.logger.warn(
-            `Skipping inverse-side @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${propName}: target entity metadata not found${targetName ? ` (${targetName})` : ''}`,
-            this.loggerContext,
-          );
-          continue;
-        }
+        if (!targetMeta) continue;
 
         const mappedBy: string | undefined = prop.mappedBy;
         const owningProp: any = mappedBy
@@ -184,14 +267,7 @@ export class HasuraRelationshipNameInitializer
           owningProp?.fieldNames ??
           owningProp?.joinColumns ??
           (owningProp?.fieldName ? [owningProp.fieldName] : []);
-
-        if (!fkColumns.length) {
-          this.logger.warn(
-            `Skipping inverse-side @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${propName}: FK columns not resolved via mappedBy="${mappedBy}"`,
-            this.loggerContext,
-          );
-          continue;
-        }
+        if (!fkColumns.length) continue;
 
         out.push({
           usage: u,
@@ -212,35 +288,21 @@ export class HasuraRelationshipNameInitializer
       if (targetName) {
         try {
           targetMeta = meta.get(targetName);
-        } catch (error) {
+        } catch {
           // will warn below
         }
       }
-      if (!targetMeta) {
-        this.logger.warn(
-          `Skipping @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${propName}: target entity metadata not found${targetName ? ` (${targetName})` : ''}`,
-          this.loggerContext,
-        );
-        continue;
-      }
+      if (!targetMeta) continue;
 
       const fkSchema = ownerMeta.schema ?? defaultSchema;
       const fkTable = ownerMeta.tableName;
       const pkSchema = targetMeta.schema ?? defaultSchema;
       const pkTable = targetMeta.tableName;
-
       const fkColumns: string[] =
         prop.fieldNames ??
         prop.joinColumns ??
         (prop.fieldName ? [prop.fieldName] : []);
-
-      if (!fkColumns.length) {
-        this.logger.warn(
-          `Skipping @HasuraReference(${u.objectName},${u.collectionName}) on ${u.entity.name}.${propName}: FK columns not resolved`,
-          this.loggerContext,
-        );
-        continue;
-      }
+      if (!fkColumns.length) continue;
 
       out.push({
         usage: u,
@@ -275,16 +337,9 @@ export class HasuraRelationshipNameInitializer
         out.push(list[0]);
         continue;
       }
-
       const chosen = list[0];
-      const variants = list
-        .map(
-          (x) =>
-            `${x.usage.entity.name}.${String(x.usage.propertyKey)}(objectName=${x.objectName}, collectionName=${x.collectionName})`,
-        )
-        .join('; ');
       this.logger.warn(
-        `Multiple @HasuraReference definitions for the same FK relationship (${k}). Using the first one. Definitions: ${variants}`,
+        `Multiple @HasuraReference definitions for the same FK relationship (${k}). Using the first one.`,
         this.loggerContext,
       );
       out.push(chosen);
@@ -303,31 +358,13 @@ export class HasuraRelationshipNameInitializer
       byFk.set(fkKey, byName);
       byName.set(i.objectName, [...(byName.get(i.objectName) ?? []), i]);
     }
-
-    const errors: string[] = [];
     for (const [fkKey, byName] of byFk.entries()) {
       for (const [name, list] of byName.entries()) {
         if (list.length <= 1) continue;
-        errors.push(
-          `Duplicate Hasura object relationship name "${name}" within FK table ${fkKey}:\n` +
-            list
-              .map(
-                (x) =>
-                  `- ${x.usage.entity.name}.${String(
-                    x.usage.propertyKey,
-                  )} (${x.fkTable}[${x.fkColumns.join(',')}] -> ${x.pkTable})`,
-              )
-              .join('\n'),
+        throw new Error(
+          `Hasura object relationship name collision within FK table ${fkKey}: "${name}"`,
         );
       }
-    }
-
-    if (errors.length) {
-      throw new Error(
-        `Hasura object relationship names must be unique within the same FK table.\n\n${errors.join(
-          '\n\n',
-        )}`,
-      );
     }
   }
 
@@ -345,37 +382,39 @@ export class HasuraRelationshipNameInitializer
         i,
       ]);
     }
-
-    const errors: string[] = [];
     for (const [pkKey, byName] of byPk.entries()) {
       for (const [name, list] of byName.entries()) {
         if (list.length <= 1) continue;
-        errors.push(
-          `Duplicate Hasura collection relationship name "${name}" for referenced table ${pkKey}:\n` +
-            list
-              .map(
-                (x) =>
-                  `- ${x.usage.entity.name}.${String(
-                    x.usage.propertyKey,
-                  )} (${x.fkTable}[${x.fkColumns.join(',')}])`,
-              )
-              .join('\n'),
+        throw new Error(
+          `Hasura collection relationship name collision within PK table ${pkKey}: "${name}"`,
         );
       }
-    }
-
-    if (errors.length) {
-      throw new Error(
-        `Hasura collection relationship names must be unique within the same referenced table.\n\n${errors.join(
-          '\n\n',
-        )}`,
-      );
     }
   }
 
   private async applyHasuraTableOverrides(
-    conn: any,
+    _em: EntityManager,
     tables: HasuraTableUsage[],
+    acc: {
+      tableOverrides: Map<
+        string,
+        Pick<
+          HasuraSyncTableOverride,
+          'tableSchema' | 'tableName' | 'customName' | 'camelCase' | 'updatedAt'
+        >
+      >;
+      columnOverrides: Map<
+        string,
+        Pick<
+          HasuraSyncColumnOverride,
+          | 'tableSchema'
+          | 'tableName'
+          | 'columnName'
+          | 'customName'
+          | 'updatedAt'
+        >
+      >;
+    },
   ) {
     const meta = this.orm.getMetadata();
     const defaultSchema =
@@ -414,11 +453,13 @@ export class HasuraRelationshipNameInitializer
       const schema = m.schema ?? defaultSchema;
       const table = m.tableName;
 
-      await this.upsertTableOverride(conn, {
-        schema,
-        table,
+      const tableKey = `${schema}\u0000${table}`;
+      acc.tableOverrides.set(tableKey, {
+        tableSchema: schema,
+        tableName: table,
         customName: t.options?.name ?? t.entity.name,
         camelCase: t.options?.camelCase ?? true,
+        updatedAt: new Date(),
       });
 
       if (t.options?.camelCase ?? true) {
@@ -428,11 +469,13 @@ export class HasuraRelationshipNameInitializer
           if (prop.reference === ReferenceKind.SCALAR) {
             const fieldNames: string[] = prop.fieldNames ?? [];
             for (const col of fieldNames) {
-              await this.upsertColumnOverride(conn, {
-                schema,
-                table,
-                column: col,
+              const colKey = `${schema}\u0000${table}\u0000${col}`;
+              acc.columnOverrides.set(colKey, {
+                tableSchema: schema,
+                tableName: table,
+                columnName: col,
                 customName: propName,
+                updatedAt: new Date(),
               });
             }
             continue;
@@ -467,11 +510,13 @@ export class HasuraRelationshipNameInitializer
                 continue;
               const cols: string[] = subProp.fieldNames ?? [];
               for (const col of cols) {
-                await this.upsertColumnOverride(conn, {
-                  schema,
-                  table,
-                  column: col,
+                const colKey = `${schema}\u0000${table}\u0000${col}`;
+                acc.columnOverrides.set(colKey, {
+                  tableSchema: schema,
+                  tableName: table,
+                  columnName: col,
                   customName: `${propName}${upperFirst(subName)}`,
+                  updatedAt: new Date(),
                 });
               }
             }
@@ -487,8 +532,21 @@ export class HasuraRelationshipNameInitializer
   }
 
   private async applyHasuraPropertyOverrides(
-    conn: any,
+    _em: EntityManager,
     fields: HasuraPropertyUsage[],
+    acc: {
+      columnOverrides: Map<
+        string,
+        Pick<
+          HasuraSyncColumnOverride,
+          | 'tableSchema'
+          | 'tableName'
+          | 'columnName'
+          | 'customName'
+          | 'updatedAt'
+        >
+      >;
+    },
   ) {
     const meta = this.orm.getMetadata();
     const defaultSchema =
@@ -568,11 +626,13 @@ export class HasuraRelationshipNameInitializer
         // hasura-sync-service fallback camelCase renaming.
         const custom =
           explicitName ?? (camelCase ? toSimpleCamelCase(col) : col);
-        await this.upsertColumnOverride(conn, {
-          schema,
-          table,
-          column: col,
+        const colKey = `${schema}\u0000${table}\u0000${col}`;
+        acc.columnOverrides.set(colKey, {
+          tableSchema: schema,
+          tableName: table,
+          columnName: col,
           customName: custom,
+          updatedAt: new Date(),
         });
       }
 
@@ -593,138 +653,27 @@ export class HasuraRelationshipNameInitializer
       .updateSchema({ safe: true, dropTables: false } as any);
   }
 
-  private async clearHasuraSyncOverrides(conn: any) {
+  private async clearHasuraSyncOverrides(em: EntityManager) {
     // Clear all override tables to avoid conflicts with stale data
-    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(`DELETE FROM hasura_sync.array_relationship_overrides;`);
-    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(
-      `DELETE FROM hasura_sync.object_relationship_overrides;`,
+    const deletedArray = await em.nativeDelete(
+      HasuraSyncArrayRelationshipOverride,
+      {},
     );
-    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(`DELETE FROM hasura_sync.table_overrides;`);
-    // noinspection SqlWithoutWhere,SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(`DELETE FROM hasura_sync.column_overrides;`);
+    const deletedObject = await em.nativeDelete(
+      HasuraSyncObjectRelationshipOverride,
+      {},
+    );
+    const deletedTables = await em.nativeDelete(HasuraSyncTableOverride, {});
+    const deletedColumns = await em.nativeDelete(HasuraSyncColumnOverride, {});
+
     this.logger.log(
-      'Cleared all Hasura sync override tables',
-      this.loggerContext,
-    );
-  }
-
-  private async upsertTableOverride(
-    conn: any,
-    args: {
-      schema: string;
-      table: string;
-      customName: string;
-      camelCase: boolean;
-    },
-  ) {
-    // noinspection SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(
-      `
-      INSERT INTO hasura_sync.table_overrides (table_schema, table_name, custom_name, camel_case)
-      VALUES ('${escapeSqlString(args.schema)}', '${escapeSqlString(
-        args.table,
-      )}', '${escapeSqlString(args.customName)}', ${args.camelCase ? 'true' : 'false'})
-      ON CONFLICT (table_schema, table_name)
-      DO UPDATE SET custom_name = EXCLUDED.custom_name, camel_case = EXCLUDED.camel_case, updated_at = now();
-      `,
-    );
-  }
-
-  private async upsertColumnOverride(
-    conn: any,
-    args: {
-      schema: string;
-      table: string;
-      column: string;
-      customName: string;
-    },
-  ) {
-    // noinspection SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(
-      `
-      INSERT INTO hasura_sync.column_overrides (table_schema, table_name, column_name, custom_name)
-      VALUES ('${escapeSqlString(args.schema)}', '${escapeSqlString(
-        args.table,
-      )}', '${escapeSqlString(args.column)}', '${escapeSqlString(
-        args.customName,
-      )}')
-      ON CONFLICT (table_schema, table_name, column_name)
-      DO UPDATE SET custom_name = EXCLUDED.custom_name, updated_at = now();
-      `,
-    );
-  }
-
-  private async upsertObjectRelationshipOverride(
-    conn: any,
-    r: ResolvedHasuraReference,
-  ) {
-    const cols = r.fkColumns.map((c) => `'${escapeSqlString(c)}'`).join(', ');
-    const fkSchema = escapeSqlString(r.fkSchema);
-    const fkTable = escapeSqlString(r.fkTable);
-    const name = escapeSqlString(r.objectName);
-
-    // noinspection SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(
-      `
-      INSERT INTO hasura_sync.object_relationship_overrides (
-        fk_table_schema, fk_table_name,
-        fk_columns,
-        name
-      )
-      VALUES (
-        '${fkSchema}', '${fkTable}',
-        ARRAY[${cols}]::text[],
-        '${name}'
-      )
-      ON CONFLICT (fk_table_schema, fk_table_name, fk_columns)
-      DO UPDATE SET name = EXCLUDED.name, updated_at = now();
-      `,
-    );
-    this.logger.log(
-      `Upserted Hasura object relationship override for ${r.fkSchema}.${r.fkTable}[${r.fkColumns.join(
-        ',',
-      )}] -> ${r.objectName}`,
-      this.loggerContext,
-    );
-  }
-
-  private async upsertArrayRelationshipOverride(
-    conn: any,
-    r: ResolvedHasuraReference,
-  ) {
-    const cols = r.fkColumns.map((c) => `'${escapeSqlString(c)}'`).join(', ');
-    const pkSchema = escapeSqlString(r.pkSchema);
-    const pkTable = escapeSqlString(r.pkTable);
-    const fkSchema = escapeSqlString(r.fkSchema);
-    const fkTable = escapeSqlString(r.fkTable);
-    const finalName = r.collectionName;
-    // noinspection SqlResolve,SqlNoDataSourceInspection
-    await conn.execute(
-      `
-      INSERT INTO hasura_sync.array_relationship_overrides (
-        pk_table_schema, pk_table_name,
-        fk_table_schema, fk_table_name,
-        fk_columns,
-        name
-      )
-      VALUES (
-        '${pkSchema}', '${pkTable}',
-        '${fkSchema}', '${fkTable}',
-        ARRAY[${cols}]::text[],
-        '${escapeSqlString(finalName)}'
-      )
-      ON CONFLICT (pk_table_schema, pk_table_name, fk_table_schema, fk_table_name, fk_columns)
-      DO UPDATE SET name = EXCLUDED.name, updated_at = now();
-      `,
-    );
-    this.logger.log(
-      `Upserted Hasura collection relationship override for ${r.pkSchema}.${r.pkTable} via FK ${r.fkTable}[${r.fkColumns.join(
-        ',',
-      )}] -> ${r.collectionName}`,
+      `Cleared Hasura sync override tables: array=${String(
+        deletedArray,
+      )}, object=${String(deletedObject)}, tables=${String(
+        deletedTables,
+      )}, columns=${String(deletedColumns)}`,
       this.loggerContext,
     );
   }
 }
+

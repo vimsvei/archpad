@@ -1,6 +1,7 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArchimateCode, HasuraTable, IdentifiedObject } from '@archpad/models';
+import {UserState} from "../enums/user-state.enum";
 
 @HasuraTable()
 @Entity({ tableName: 'user_profiles' })
@@ -35,4 +36,12 @@ export abstract class UserProfile extends IdentifiedObject {
   @ApiProperty({ description: 'Department', required: false })
   @Property({ type: 'string', nullable: true })
   department!: string;
+  
+  @ApiProperty({ type: 'string', enum: UserState,  description: 'Department', required: false })
+  @Enum({
+    items: () => UserState,
+    nativeEnumName: 'user_state',
+    default: UserState.ACTIVE,
+  })
+  state!: UserState;
 }

@@ -62,6 +62,15 @@
         "tsConfigPath": "libs/schema-initializer/tsconfig.lib.json"
       }
     },
+    "hasura-sync-bootstrap": {
+      "type": "library",
+      "root": "libs/hasura-sync-bootstrap",
+      "entryFile": "index",
+      "sourceRoot": "libs/hasura-sync-bootstrap/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/hasura-sync-bootstrap/tsconfig.lib.json"
+      }
+    },
     "vault-config": {
       "type": "library",
       "root": "libs/vault-config",
