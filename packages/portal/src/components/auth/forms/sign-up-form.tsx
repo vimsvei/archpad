@@ -105,12 +105,12 @@ export function SignUpForm() {
         <div className="grid gap-2">
           <Label htmlFor="phone">{t("auth.field.phone")}</Label>
           <PhoneInput
-            id="phone"
             defaultCountry="ru"
             preferredCountries={["ru", "us", "gb"]}
             value={form.phone}
             onChange={(phone) => dispatch(authFormsActions.setSignUpPhone(phone))}
             inputProps={{
+              id: "phone",
               name: "phone",
               autoComplete: "tel",
               "aria-label": t("auth.field.phone"),

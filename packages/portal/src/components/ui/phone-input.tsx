@@ -34,7 +34,6 @@ const PhoneInput = React.forwardRef<PhoneInputRefType, PhoneInputComponentProps>
           {...props}
           inputClassName={cn(inputBaseClasses, inputClassName)}
           inputProps={{
-            "data-slot": "input",
             ...inputProps,
           }}
         />

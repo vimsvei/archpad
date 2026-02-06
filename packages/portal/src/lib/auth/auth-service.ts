@@ -16,13 +16,16 @@ type MeResponse = {
 }
 
 function getAuthServiceBaseUrl(): string {
-  // In-cluster: use service DNS name. In dev: allow override.
+  // In-cluster: direct service URL. External: api.archpad.pro/rest/auth-service (Oathkeeper).
   const internal = process.env.AUTH_SERVICE_INTERNAL_URL?.trim()
   const external = process.env.AUTH_SERVICE_PUBLIC_URL?.trim()
   const defaultInternal = "http://auth-service.platform.svc:3000"
+  const defaultExternal = "https://api.archpad.pro/rest/auth-service"
   const url =
-    process.env.NODE_ENV === "production" ? internal || defaultInternal : internal || external || defaultInternal
-  if (!url) throw new Error("AUTH_SERVICE_INTERNAL_URL must be set")
+    process.env.NODE_ENV === "production"
+      ? internal || defaultInternal
+      : internal || external || defaultExternal
+  if (!url) throw new Error("AUTH_SERVICE_INTERNAL_URL or AUTH_SERVICE_PUBLIC_URL must be set")
   return url
 }
 

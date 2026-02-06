@@ -2,9 +2,11 @@
 
 ## Цепочка запросов
 
-1. **Браузер** → `POST /api/auth/register` (Portal, localhost или portal.archpad.pro)
-2. **Portal** (Next.js route) → `POST https://api.archpad.pro/auth/register` (auth-service через Oathkeeper)
-3. **Oathkeeper** (api.archpad.pro) → `http://auth-service.platform:3000/auth/register` (полный путь пробрасывается без strip_path)
+Единая схема REST: `api.archpad.pro/rest/<service>/<route>`.
+
+1. **Браузер** → `POST /api/auth/register` (Portal)
+2. **Portal** (Next.js route) → `POST https://api.archpad.pro/rest/auth-service/auth/register` (auth-service через Oathkeeper)
+3. **Oathkeeper**: strip `/rest/auth-service` → remainder `/auth/register` → `http://auth-service.platform:3000/auth/register`
 4. **auth-service** → Keycloak (создание пользователя) + tenant-service (ensureUserProfile)
 
 ## 401 на /api/auth/me — это нормально
@@ -84,6 +86,5 @@ kill %1 2>/dev/null
 
 В `packages/portal/.env.local`:
 
-- `AUTH_SERVICE_PUBLIC_URL=https://api.archpad.pro/auth` — для запросов к auth-service
-
-При локальной разработке запрос идёт с сервера Next.js на `api.archpad.pro` по интернету.
+- `AUTH_SERVICE_PUBLIC_URL=https://api.archpad.pro/rest/auth-service` — для запросов к auth-service через Oathkeeper
+- Локальный auth-service: `AUTH_SERVICE_PUBLIC_URL=http://localhost:3001`

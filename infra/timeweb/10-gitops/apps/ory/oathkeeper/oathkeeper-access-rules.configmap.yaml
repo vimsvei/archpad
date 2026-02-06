@@ -29,16 +29,16 @@ data:
               X-Hasura-Allowed-Roles: "public"
 
     # ==== Auth-service через Oathkeeper (публичный доступ) ====
-    # Portal использует opaque session cookie; auth-service работает по sessionId в теле.
-    # /auth/session/access дополнительно защищён x-internal-token (JWT не уходит в браузер).
-    # Без strip_path полный путь /auth/register пробрасывается в auth-service.
+    # Единая схема REST: api.archpad.pro/rest/<service>/<route>
+    # /rest/auth-service/auth/register → strip /rest/auth-service → remainder /auth/register → auth-service
     - id: auth-service
       match:
-        url: <https|http>://api.archpad.pro/auth<(/.*)?>
+        url: <https|http>://api.archpad.pro/rest/auth-service<(/.*)?>
         methods: ["GET", "POST", "OPTIONS"]
       upstream:
         url: http://auth-service.platform:3000
         preserve_host: true
+        strip_path: /rest/auth-service
       authenticators:
         - handler: anonymous
       authorizer:

@@ -43,7 +43,8 @@ ensure_empty() {
 }
 
 set_kv "NEXT_PUBLIC_URL" "http://localhost:3000"
-set_kv "AUTH_SERVICE_PUBLIC_URL" "http://localhost:3001"
+# Локальная разработка: auth-service на localhost:3001. Удалённый кластер: https://api.archpad.pro/rest/auth-service
+set_kv "AUTH_SERVICE_PUBLIC_URL" "https://api.archpad.pro/rest/auth-service"
 
 set_kv "NEXT_PUBLIC_HASURA_GRAPHQL_URL" "https://apim.archpad.pro/v1/graphql"
 ensure_empty "HASURA_INTERNAL_URL"
