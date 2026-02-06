@@ -125,8 +125,8 @@ export function SignUpForm() {
           />
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          <div className="grid gap-2">
+        <div className="safari-grid-fix grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="grid min-w-0 gap-2">
             <Label htmlFor="password">{t("auth.field.password")}</Label>
             <PasswordInput
               id="password"
@@ -139,7 +139,7 @@ export function SignUpForm() {
               required
             />
           </div>
-          <div className="grid gap-2">
+          <div className="grid min-w-0 gap-2">
             <Label htmlFor="passwordConfirm">{t("auth.field.password-confirm", "Repeat password")}</Label>
             <PasswordInput
               id="passwordConfirm"
@@ -151,7 +151,7 @@ export function SignUpForm() {
               aria-describedby={passwordsMismatch ? "password-mismatch" : undefined}
             />
           </div>
-          <div className="sm:col-span-2">
+          <div className="min-w-0 sm:col-span-2">
             <PasswordStrengthIndicator password={form.password} />
           </div>
           {passwordsMismatch && (

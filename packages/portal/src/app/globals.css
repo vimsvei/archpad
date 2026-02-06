@@ -183,3 +183,12 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+/* Safari/WebKit grid fix: explicit minmax(0,1fr) for responsive 2-column layout */
+@supports (-webkit-hyphens: none) or (-webkit-appearance: none) {
+  @media (min-width: 640px) {
+    .safari-grid-fix {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
