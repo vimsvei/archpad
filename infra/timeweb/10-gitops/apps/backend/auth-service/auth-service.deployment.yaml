@@ -35,6 +35,7 @@ spec:
           {{- $pg := secret "kv/data/archpad/demo/postgres/connect" }}
           {{- $svc := secret "kv/data/archpad/demo/keycloak/service" }}
           {{- $oidc := secret "kv/data/archpad/demo/oidc/portal" }}
+          {{- $smtp := secret "kv/data/archpad/demo/keycloak/smtp" }}
           export AUTH_DB="{{ $cfg.Data.data.AUTH_DB }}"
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
@@ -50,6 +51,21 @@ spec:
           export KEYCLOAK_SERVICE_CLIENT_SECRET="{{ $svc.Data.data.KEYCLOAK_SERVICE_CLIENT_SECRET }}"
           export OIDC_CLIENT_ID="{{ $oidc.Data.data.OIDC_CLIENT_ID }}"
           export OIDC_CLIENT_SECRET="{{ $oidc.Data.data.OIDC_CLIENT_SECRET }}"
+          {{- if $smtp.Data.data.SMTP_INTERNAL_URL }}
+          export SMTP_INTERNAL_URL="{{ $smtp.Data.data.SMTP_INTERNAL_URL }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_PORT }}
+          export SMTP_PORT="{{ $smtp.Data.data.SMTP_PORT }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_USER }}
+          export SMTP_USER="{{ $smtp.Data.data.SMTP_USER }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_PASSWORD }}
+          export SMTP_PASSWORD="{{ $smtp.Data.data.SMTP_PASSWORD }}"
+          {{- end }}
+          {{- if $smtp.Data.data.SMTP_FROM_ADDRESS }}
+          export SMTP_FROM_ADDRESS="{{ $smtp.Data.data.SMTP_FROM_ADDRESS }}"
+          {{- end }}
         vault.hashicorp.com/role: "platform"
     spec:
       affinity:
@@ -110,6 +126,12 @@ spec:
             # 100MB — разумно для контейнера, 5GB по умолчанию вызывает false positive.
             - name: DISK_THRESHOLD_BYTES
               value: "104857600"
+            # false = не отправлять VERIFY_EMAIL при регистрации, вход сразу без верификации (dev/demo).
+            # true = отправлять письмо (ссылка ведёт на portal/verify-email), пользователь должен перейти по ссылке.
+            - name: REGISTER_SEND_VERIFY_EMAIL
+              value: "false"
+            - name: PORTAL_PUBLIC_URL
+              value: "https://portal.archpad.pro"
           livenessProbe:
             httpGet:
               path: /healthz

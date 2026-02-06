@@ -21,6 +21,7 @@ export default async function SignUpPage() {
       title="Sign up"
       subtitleKey="auth.sign-up.subtitle"
       subtitle="Create a new account to get started"
+      footerSubmitButtonKey="auth.sign-up.submit"
     >
       <SignUpForm />
     </AuthFormWrapper>

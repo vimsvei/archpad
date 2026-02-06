@@ -150,7 +150,8 @@
 }
 
 .dark .phone-input-theme {
-  --react-international-phone-background-color: oklch(1 0 0 / 15%);
+  /* Match Input (dark:bg-input/30): 30% opacity of --input */
+  --react-international-phone-background-color: color-mix(in oklch, var(--input) 30%, transparent);
 }
 
 .phone-input-theme .react-international-phone-input:focus-visible {

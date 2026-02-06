@@ -2,18 +2,21 @@
 
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
-import {useTranslate} from "@tolgee/react";
+import { T, useTranslate } from "@tolgee/react"
 
 type AuthFormWrapperProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> & {
   title?: string;
   titleKey?: string;
   subtitle?: string;
   subtitleKey?: string;
+  /** i18n key for the submit button label — used in footer "By clicking {button}, you agree to..." */
+  footerSubmitButtonKey?: string | null;
   children: React.ReactNode;
 };
 
-export function AuthFormWrapper({className, title, titleKey, subtitle, subtitleKey, children, ...props}: AuthFormWrapperProps) {
-  const { t } = useTranslate();
+export function AuthFormWrapper({className, title, titleKey, subtitle, subtitleKey, footerSubmitButtonKey = "auth.common.continue", children, ...props}: AuthFormWrapperProps) {
+  const { t } = useTranslate()
+  const buttonLabel = footerSubmitButtonKey ? t(footerSubmitButtonKey, "continue") : t("auth.common.continue", "continue")
 
   const resolvedTitle = titleKey ? t(titleKey) : title
   const resolvedSubtitle = subtitleKey ? t(subtitleKey) : subtitle
@@ -54,8 +57,23 @@ export function AuthFormWrapper({className, title, titleKey, subtitle, subtitleK
             </CardContent>
           </Card>
           <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-            By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-            and <a href="#">Privacy Policy</a>.
+            <T
+              keyName="auth.footer.agree"
+              defaultValue="By clicking {button}, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+              params={{
+                button: buttonLabel,
+                terms: (content: React.ReactNode) => (
+                  <a href="#" className="underline underline-offset-4 hover:text-primary">
+                    {content}
+                  </a>
+                ),
+                privacy: (content: React.ReactNode) => (
+                  <a href="#" className="underline underline-offset-4 hover:text-primary">
+                    {content}
+                  </a>
+                ),
+              }}
+            />
           </div>
         </div>
       </div>

@@ -1,7 +1,12 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import process from 'node:process';
-import { LoggerModule, LoggerService } from '@archpad/logger';
+import {
+  LoggerModule,
+  LoggerService,
+  RequestLoggerInterceptor,
+} from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
@@ -16,6 +21,7 @@ import { SchemaInitializerModule } from '@archpad/schema-initializer';
 import { TenantServiceClient } from './tenant-service.client';
 import { InternalTokenGuard } from './internal-token.guard';
 import { KeycloakDesiredStateService } from './keycloak-desired-state.service';
+import { VerificationEmailService } from './verification-email.service';
 
 @Module({
   imports: [
@@ -32,6 +38,7 @@ import { KeycloakDesiredStateService } from './keycloak-desired-state.service';
         'kv/data/archpad/demo/postgres/connect',
         'kv/data/archpad/demo/keycloak/connect',
         'kv/data/archpad/demo/keycloak/service',
+        'kv/data/archpad/demo/keycloak/smtp',
         'kv/data/archpad/demo/oidc/portal',
       ],
       enabled: process.env.NODE_ENV === 'development',
@@ -114,7 +121,12 @@ import { KeycloakDesiredStateService } from './keycloak-desired-state.service';
   ],
   controllers: [AuthController, HealthController],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestLoggerInterceptor,
+    },
     KeycloakService,
+    VerificationEmailService,
     SessionService,
     TenantServiceClient,
     InternalTokenGuard,

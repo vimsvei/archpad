@@ -40,7 +40,11 @@ async function postJson<T>(
   options?: { headers?: Record<string, string> }
 ): Promise<T> {
   const base = getAuthServiceBaseUrl()
-  const url = new URL(path, base)
+  // path like /auth/register: with base .../rest/auth-service, new URL(path, base) treats
+  // path as absolute and yields .../auth/register (wrong). Use relative path so it appends.
+  const baseWithSlash = base.endsWith("/") ? base : `${base}/`
+  const relativePath = path.startsWith("/") ? path.slice(1) : path
+  const url = new URL(relativePath, baseWithSlash)
   const res = await fetch(url.toString(), {
     method: "POST",
     headers: { "content-type": "application/json", ...(options?.headers ?? {}) },
@@ -91,5 +95,11 @@ export async function authServiceRecovery(input: { email: string }): Promise<voi
 
 export async function authServiceVerify(input: { email: string }): Promise<void> {
   await postJson<{ ok: true }>("/auth/verify", input)
+}
+
+export async function authServiceVerifyEmailConfirm(input: {
+  token: string
+}): Promise<void> {
+  await postJson<{ ok: true }>("/auth/verify-email/confirm", input)
 }
 

@@ -10,6 +10,7 @@ type SignInFormState = {
 type SignUpFormState = {
   email: string
   password: string
+  passwordConfirm: string
   firstName: string
   lastName: string
   phone: string
@@ -67,6 +68,7 @@ const initialState: AuthFormsState = {
   signUp: {
     email: "",
     password: "",
+    passwordConfirm: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -129,6 +131,9 @@ export const authFormsSlice = createSlice({
     },
     setSignUpPassword(state, action: PayloadAction<string>) {
       state.signUp.password = action.payload
+    },
+    setSignUpPasswordConfirm(state, action: PayloadAction<string>) {
+      state.signUp.passwordConfirm = action.payload
     },
     setSignUpFirstName(state, action: PayloadAction<string>) {
       state.signUp.firstName = action.payload

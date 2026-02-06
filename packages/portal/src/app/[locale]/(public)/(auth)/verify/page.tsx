@@ -14,6 +14,7 @@ export default async function VerifyPage() {
       title="Verification"
       subtitleKey="auth.verification.subtitle"
       subtitle="Confirm your email to activate your account"
+      footerSubmitButtonKey="auth.common.submit-send-code"
     >
       <VerifyForm />
     </AuthFormWrapper>

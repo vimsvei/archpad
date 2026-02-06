@@ -88,3 +88,27 @@ kill %1 2>/dev/null
 
 - `AUTH_SERVICE_PUBLIC_URL=https://api.archpad.pro/rest/auth-service` — для запросов к auth-service через Oathkeeper
 - Локальный auth-service: `AUTH_SERVICE_PUBLIC_URL=http://localhost:3001`
+
+## "Invalid user credentials" при логине после регистрации
+
+Типичные причины:
+
+1. **Direct Access Grants отключён** — OIDC-клиент (archpad-portal и/или api) в Keycloak должен иметь включённую опцию "Direct access grants" (Resource Owner Password Credentials Grant). Keycloak Admin → Clients → выбрать клиент → Settings → Capability config.
+
+2. **Required actions блокируют логин** — если после регистрации вызывается `sendExecuteActionsEmail` с `VERIFY_EMAIL`, Keycloak может добавить required action и не пускать по ROPC до верификации. Проверить пользователя в Keycloak Admin → Users → Required actions.
+
+3. **Username = email** — при логине передаётся `email` как username; в Keycloak пользователь создаётся с `username: email`. Убедиться, что в форме логина передаётся тот же email.
+
+## "Account is not fully set up" при логине
+
+После регистрации (при `REGISTER_SEND_VERIFY_EMAIL=true`) auth-service добавляет required action `VERIFY_EMAIL` — пользователь должен перейти по ссылке из письма, иначе логин блокируется.
+
+**Верификация через Portal:** письмо отправляется auth-service (через nodemailer + SMTP из keycloak/smtp). Ссылка ведёт на **https://portal.archpad.pro/verify-email?token=...** — страница портала, а не Keycloak или Kratos.
+
+**Варианты:**
+
+1. **Перейти по ссылке из письма** — если SMTP настроен (keycloak/smtp в Vault), письмо приходит. Ссылка ведёт на `portal/verify-email`; после подтверждения — редирект на sign-in.
+
+2. **Разрешить вход без верификации** — в auth-service задать `REGISTER_SEND_VERIFY_EMAIL=false`. Тогда письмо не отправляется и пользователь может сразу войти. Подходит для dev/demo.
+
+3. **Сбросить required actions в Keycloak** — для уже созданного пользователя: Keycloak Admin → Users → пользователь → вкладка Details → Required user actions → удалить VERIFY_EMAIL.

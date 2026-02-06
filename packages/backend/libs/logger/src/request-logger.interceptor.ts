@@ -7,6 +7,7 @@ import {
 import { Observable, tap } from 'rxjs';
 import { randomUUID } from 'crypto';
 import { LoggerService } from './logger.service';
+import { maskSensitiveData } from './mask-sensitive.util';
 
 @Injectable()
 export class RequestLoggerInterceptor implements NestInterceptor {
@@ -14,7 +15,7 @@ export class RequestLoggerInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpCtx = context.switchToHttp();
-    const req = httpCtx.getRequest<Request & { id?: string }>();
+    const req = httpCtx.getRequest<Request & { id?: string; body?: unknown }>();
 
     const method = (req as any).method;
     const url = (req as any).url;
@@ -37,15 +38,23 @@ export class RequestLoggerInterceptor implements NestInterceptor {
 
     const startedAt = Date.now();
 
-    this.logger.log(
-      {
-        event: 'request_started',
-        method,
-        url,
-        requestId,
-      },
-      'HTTP',
-    );
+    // Log request with masked body (sensitive fields like password, token redacted)
+    const logPayload: Record<string, unknown> = {
+      event: 'request_started',
+      method,
+      url,
+      requestId,
+    };
+    const body = (req as any).body;
+    if (
+      body != null &&
+      typeof body === 'object' &&
+      ['POST', 'PUT', 'PATCH'].includes(String(method).toUpperCase())
+    ) {
+      logPayload.body = maskSensitiveData(body);
+    }
+
+    this.logger.log(logPayload, 'HTTP');
 
     return next.handle().pipe(
       tap({

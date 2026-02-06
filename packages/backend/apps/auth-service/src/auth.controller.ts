@@ -12,6 +12,7 @@ import { KeycloakService } from './keycloak.service';
 import { SessionService } from './session.service';
 import { TenantServiceClient } from './tenant-service.client';
 import { InternalTokenGuard } from './internal-token.guard';
+import { VerificationEmailService } from './verification-email.service';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,6 +21,7 @@ export class AuthController {
     private readonly keycloak: KeycloakService,
     private readonly sessions: SessionService,
     private readonly tenant: TenantServiceClient,
+    private readonly verificationEmail: VerificationEmailService,
   ) {}
 
   @Post('login')
@@ -99,12 +101,17 @@ export class AuthController {
     const lastName = String(body.lastName ?? '').trim();
     const phone = String(body.phone ?? '').trim();
     if (!email || !password) return { error: 'Missing email/password' };
+    const sendVerifyEmail =
+      (process.env.REGISTER_SEND_VERIFY_EMAIL ?? 'true').toLowerCase() !==
+      'false';
+
     const { userId: keycloakId } = await this.keycloak.createUser({
       email,
       password,
       firstName: firstName || undefined,
       lastName: lastName || undefined,
       phone: phone || undefined,
+      requireEmailVerification: sendVerifyEmail,
     });
 
     // Default authorization in Keycloak (idempotent)
@@ -113,27 +120,18 @@ export class AuthController {
     await this.tenant.ensureUserProfile({
       keycloakId,
     });
-    // optional: send verify email if SMTP configured
-    const clientId = (
-      process.env.OIDC_CLIENT_ID ||
-      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
-      'archpad-portal'
-    ).trim();
-    const portalBase =
-      (process.env.PORTAL_PUBLIC_URL || '').trim() ||
-      (process.env.NODE_ENV === 'production'
-        ? 'https://portal.archpad.pro'
-        : 'http://localhost:3000');
-    const redirectUri = `${portalBase}/sign-in?verified=1`;
-    await this.keycloak
-      .sendExecuteActionsEmail({
-        email,
-        actions: ['VERIFY_EMAIL'],
-        clientId,
-        redirectUri,
-        lifespanSeconds: 60 * 60 * 24, // 24h
-      })
-      .catch(() => {});
+    // Optional: send verify email via Portal link (portal/verify-email?token=...).
+    // When enabled, user has VERIFY_EMAIL required action and cannot login until verified.
+    // Set REGISTER_SEND_VERIFY_EMAIL=false to allow immediate login (e.g. dev/demo without SMTP).
+    if (sendVerifyEmail) {
+      await this.verificationEmail
+        .sendVerificationEmail({
+          userId: keycloakId,
+          email,
+          lifespanSeconds: 60 * 60 * 24, // 24h
+        })
+        .catch(() => {});
+    }
     return { ok: true };
   }
 
@@ -173,32 +171,36 @@ export class AuthController {
 
   @Post('verify')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Send VERIFY_EMAIL via Keycloak Admin API' })
+  @ApiOperation({ summary: 'Resend verification email (Portal link)' })
   async verify(@Body() body: Record<string, unknown>) {
     const email = String(body.email ?? '')
       .trim()
       .toLowerCase();
     if (!email) return { ok: true };
-    const clientId = (
-      process.env.OIDC_CLIENT_ID ||
-      process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID ||
-      'archpad-portal'
-    ).trim();
-    const portalBase =
-      (process.env.PORTAL_PUBLIC_URL || '').trim() ||
-      (process.env.NODE_ENV === 'production'
-        ? 'https://portal.archpad.pro'
-        : 'http://localhost:3000');
-    const redirectUri = `${portalBase}/sign-in?verified=1`;
-    await this.keycloak
-      .sendExecuteActionsEmail({
+    const userId = await this.keycloak.findUserIdByEmail(email);
+    if (!userId) return { ok: true };
+    await this.verificationEmail
+      .sendVerificationEmail({
+        userId,
         email,
-        actions: ['VERIFY_EMAIL'],
-        clientId,
-        redirectUri,
         lifespanSeconds: 60 * 60 * 24, // 24h
       })
       .catch(() => {});
     return { ok: true };
+  }
+
+  @Post('verify-email/confirm')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Confirm email via token from verification link' })
+  async verifyEmailConfirm(@Body() body: Record<string, unknown>) {
+    const token = String(body.token ?? '').trim();
+    if (!token) throw new BadRequestException('Missing token');
+    try {
+      await this.verificationEmail.confirmVerificationToken(token);
+      return { ok: true };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new UnauthorizedException(message || 'invalid_token');
+    }
   }
 }

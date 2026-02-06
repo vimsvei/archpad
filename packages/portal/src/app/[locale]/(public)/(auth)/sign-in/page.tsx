@@ -22,6 +22,7 @@ export default async function SignInPage() {
       title="Sign in"
       subtitleKey="auth.sign-in.subtitle"
       subtitle="Sign in with your email and password"
+      footerSubmitButtonKey="auth.sign-in.submit"
     >
       <SignInForm />
     </AuthFormWrapper>

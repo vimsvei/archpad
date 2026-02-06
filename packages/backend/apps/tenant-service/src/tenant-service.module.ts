@@ -1,9 +1,14 @@
 import { Module, OnModuleInit } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'node:process';
-import { LoggerModule, LoggerService } from '@archpad/logger';
+import {
+  LoggerModule,
+  LoggerService,
+  RequestLoggerInterceptor,
+} from '@archpad/logger';
 import { HealthCheckerModule } from 'archpad/health-checker';
 import { VaultConfigModule, VaultConfigService } from '@archpad/vault-config';
 import path from 'node:path';
@@ -126,7 +131,14 @@ import { InternalTokenGuard } from './internal/internal-token.guard';
     BootstrapModule,
   ],
   controllers: [InternalUserProfilesController],
-  providers: [InternalUserProfilesService, InternalTokenGuard],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestLoggerInterceptor,
+    },
+    InternalUserProfilesService,
+    InternalTokenGuard,
+  ],
 })
 export class TenantServiceModule implements OnModuleInit {
   private readonly loggerContext = TenantServiceModule.name;

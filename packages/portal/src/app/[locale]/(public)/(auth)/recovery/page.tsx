@@ -13,6 +13,7 @@ export default async function RecoveryPage() {
       title="Recovery"
       subtitleKey="auth.recovery.subtitle"
       subtitle="Enter your email to recover your account"
+      footerSubmitButtonKey="auth.common.submit-send-code"
     >
       <RecoveryForm />
     </AuthFormWrapper>

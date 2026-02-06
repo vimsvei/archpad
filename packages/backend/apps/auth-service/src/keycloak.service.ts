@@ -314,7 +314,7 @@ export class KeycloakService {
     return out;
   }
 
-  private async findUserIdByEmail(email: string): Promise<string | null> {
+  async findUserIdByEmail(email: string): Promise<string | null> {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
@@ -516,6 +516,7 @@ export class KeycloakService {
     firstName?: string;
     lastName?: string;
     phone?: string;
+    requireEmailVerification?: boolean;
   }): Promise<{ userId: string; created: boolean }> {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
@@ -533,6 +534,9 @@ export class KeycloakService {
       credentials: [
         { type: 'password', value: input.password, temporary: false },
       ],
+      ...(input.requireEmailVerification
+        ? { requiredActions: ['VERIFY_EMAIL'] }
+        : {}),
     };
 
     const res = await fetch(url.toString(), {
@@ -610,6 +614,56 @@ export class KeycloakService {
       const text = await res.text().catch(() => '');
       throw new Error(
         `execute_actions_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  /**
+   * Mark user's email as verified and remove VERIFY_EMAIL from required actions.
+   * Used when verification is completed via Portal link (our own flow).
+   */
+  async markEmailVerified(userId: string): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const getUserUrl = new URL(
+      `/admin/realms/${realm}/users/${userId}`,
+      base,
+    );
+    const getRes = await fetch(getUserUrl.toString(), {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (!getRes.ok) {
+      const text = await getRes.text().catch(() => '');
+      throw new Error(
+        `get_user_failed (${getRes.status}) ${text.slice(0, 200)}`,
+      );
+    }
+    const user = (await getRes.json()) as {
+      requiredActions?: string[];
+      [key: string]: unknown;
+    };
+    const requiredActions = Array.isArray(user.requiredActions)
+      ? user.requiredActions.filter((a) => a !== 'VERIFY_EMAIL')
+      : [];
+
+    const putUrl = new URL(`/admin/realms/${realm}/users/${userId}`, base);
+    const putRes = await fetch(putUrl.toString(), {
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...user,
+        emailVerified: true,
+        requiredActions,
+      }),
+    });
+    if (!putRes.ok) {
+      const text = await putRes.text().catch(() => '');
+      throw new Error(
+        `update_user_failed (${putRes.status}) ${text.slice(0, 200)}`,
       );
     }
   }
