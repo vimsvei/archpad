@@ -32,6 +32,8 @@ export async function POST(request: Request) {
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
     const status = message === "user_already_exists" ? 409 : 500
+    // Log for debugging: where did the request fail (network, Oathkeeper, auth-service, Keycloak, tenant-service)?
+    console.error("[register] authServiceRegister failed:", message, e)
     return NextResponse.json({ error: "register_failed", message }, { status })
   }
 }

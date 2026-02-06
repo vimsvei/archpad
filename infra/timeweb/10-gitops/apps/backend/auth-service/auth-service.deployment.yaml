@@ -106,6 +106,10 @@ spec:
               value: "production"
             - name: PORT
               value: "3000"
+            # В pod'е мало места; health check /health требует минимум свободного места.
+            # 100MB — разумно для контейнера, 5GB по умолчанию вызывает false positive.
+            - name: DISK_THRESHOLD_BYTES
+              value: "104857600"
           livenessProbe:
             httpGet:
               path: /healthz
