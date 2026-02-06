@@ -32,6 +32,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/components/providers/auth-provider"
+import { createContextLogger } from "@/lib/logger"
+
+const log = createContextLogger("nav-user")
 
 function NavUserContent(
   // { user }: {
@@ -61,7 +64,7 @@ function NavUserContent(
       await logout()
       router.push('/sign-in')
     } catch (error) {
-      console.error('Logout error:', error)
+      log.error("Logout error", undefined, error instanceof Error ? error.stack : undefined)
       router.push('/sign-in')
     }
   }

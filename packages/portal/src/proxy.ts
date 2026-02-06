@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ALL_LANGUAGES, DEFAULT_LANGUAGE } from '@/tolgee/shared'
+import { createContextLogger } from '@/lib/logger'
+
+const log = createContextLogger('portal.proxy')
 
 const LOCALE_COOKIE = 'archpad_locale'
 const SESSION_COOKIE = 'archpad_session'
@@ -29,16 +32,9 @@ function getLocaleFromRequest(request: NextRequest): string {
 export default function proxy(request: NextRequest) {
   // Логируем информацию о сборке образа при первом запросе (только один раз)
   if (typeof (globalThis as any).__build_info_logged === 'undefined') {
-    (globalThis as any).__build_info_logged = true;
-    const buildCommitSha = process.env.BUILD_COMMIT_SHA || 'unknown';
-    const buildVersion = process.env.BUILD_VERSION || 'unknown';
-    const buildBranch = process.env.BUILD_BRANCH || 'unknown';
-    console.log('========================================');
-    console.log('🚀 Portal Starting');
-    console.log(`📦 Build Commit: ${buildCommitSha}`);
-    console.log(`🏷️  Build Version: ${buildVersion}`);
-    console.log(`🌿 Build Branch: ${buildBranch}`);
-    console.log('========================================');
+    (globalThis as any).__build_info_logged = true
+    log.info('Portal starting')
+    log.info(`Build: commit=${process.env.BUILD_COMMIT_SHA || 'unknown'} version=${process.env.BUILD_VERSION || 'unknown'} branch=${process.env.BUILD_BRANCH || 'unknown'}`)
   }
 
   const { pathname } = request.nextUrl

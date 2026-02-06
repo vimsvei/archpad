@@ -1,5 +1,8 @@
 import { DevTools, Tolgee } from '@tolgee/web';
 import {FormatIcu} from "@tolgee/format-icu";
+import { createContextLogger } from '@/lib/logger';
+
+const log = createContextLogger('tolgee');
 
 // В Next.js переменные NEXT_PUBLIC_* встраиваются в бандл во время сборки
 // Но они также могут быть доступны в runtime через environment variables
@@ -25,27 +28,12 @@ function logTolgeeConfigOnce() {
   const apiKey = getTolgeeApiKey();
   const apiUrl = getTolgeeApiUrl();
   
-  if (typeof window === 'undefined') {
-    // Серверная часть - логируем только один раз
-    const apiKeyMasked = apiKey 
-      ? (apiKey.length > 20 
-          ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 10)}` 
-          : `${apiKey.substring(0, 10)}...`)
-      : 'NOT SET';
-    console.log('[Tolgee Config Server] apiKey:', apiKeyMasked);
-    console.log('[Tolgee Config Server] apiUrl:', apiUrl || 'NOT SET');
-    console.log('[Tolgee Config Server] NODE_ENV:', process.env.NODE_ENV);
-  } else {
-    // Клиентская часть (только для отладки в dev режиме)
-    if (process.env.NODE_ENV === 'development') {
-      const apiKeyMasked = apiKey 
-        ? (apiKey.length > 20 
-            ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 10)}` 
-            : `${apiKey.substring(0, 10)}...`)
-        : 'NOT SET';
-      console.log('[Tolgee Config Client] apiKey:', apiKeyMasked);
-      console.log('[Tolgee Config Client] apiUrl:', apiUrl || 'NOT SET');
-    }
+  const apiKeyMasked = apiKey
+    ? (apiKey.length > 20 ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 10)}` : `${apiKey.substring(0, 10)}...`)
+    : 'NOT SET';
+  const side = typeof window === 'undefined' ? 'Server' : 'Client';
+  if (typeof window === 'undefined' || process.env.NODE_ENV === 'development') {
+    log.info(`Config ${side}: apiKey=${apiKeyMasked} apiUrl=${apiUrl || 'NOT SET'} NODE_ENV=${process.env.NODE_ENV}`);
   }
 }
 
@@ -75,11 +63,8 @@ export function TolgeeBase() {
   logTolgeeConfigOnce();
   
   if (!apiKey || !apiUrl) {
-    console.warn('[Tolgee] Missing configuration:', {
-      apiKey: !!apiKey,
-      apiUrl: !!apiUrl
-    });
-    console.warn('[Tolgee] Translations will not work without API key and URL!');
+    log.warn({ apiKey: !!apiKey, apiUrl: !!apiUrl });
+    log.warn('Translations will not work without API key and URL!');
   }
   
   const tolgee = Tolgee()

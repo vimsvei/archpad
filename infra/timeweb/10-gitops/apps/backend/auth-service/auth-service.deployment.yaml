@@ -132,11 +132,18 @@ spec:
               value: "false"
             - name: PORTAL_PUBLIC_URL
               value: "https://portal.archpad.pro"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 18
           livenessProbe:
             httpGet:
               path: /healthz
               port: 3000
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -144,7 +151,6 @@ spec:
             httpGet:
               path: /healthz
               port: 3000
-            initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 5

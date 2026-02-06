@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 
 import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
 import { authServiceSessionAccess } from "@/lib/auth/auth-service"
+import { createContextLogger } from "@/lib/logger"
+
+const log = createContextLogger("api.rest")
 
 function getApiGatewayBaseUrl(): string {
   // Для серверных компонентов приоритет у внутренних адресов (в кластере).
@@ -104,20 +107,16 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     const authSource = sessionId ? "session" : incomingAuth ? "header" : "missing"
     const bodyLen = body?.byteLength ?? 0
 
-    console.info(
-      `[rest.proxy] req id=${requestId} method=${method} path=${inUrl.pathname}${
-        inUrl.search || ""
-      } target=${target.toString()} auth=${authPresent ? "present" : "missing"} cookie=${
-        cookiePresent ? "present" : "missing"
-      } authSource=${authSource} bodyBytes=${bodyLen}`
+    log.info(
+      `req id=${requestId} method=${method} path=${inUrl.pathname}${inUrl.search || ""} target=${target.toString()} auth=${authPresent ? "present" : "missing"} cookie=${cookiePresent ? "present" : "missing"} authSource=${authSource} bodyBytes=${bodyLen}`
     )
     if (!authPresent) {
       const cookieNames = cookieNamesFromHeader(request.headers.get("cookie"))
       if (cookieNames?.length) {
-        console.info(`[rest.proxy] req.cookies id=${requestId} ${cookieNames.join(",")}`)
+        log.info(`req.cookies id=${requestId} ${cookieNames.join(",")}`)
       }
     }
-    console.info(`[rest.proxy] req.headers id=${requestId} ${JSON.stringify(headersObj)}`)
+    log.info(`req.headers id=${requestId} ${JSON.stringify(headersObj)}`)
 
     if (body && bodyLen > 0) {
       const bodyText = new TextDecoder().decode(body)
@@ -125,7 +124,7 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
         typeof safeJsonParse(bodyText) === "string" ? (safeJsonParse(bodyText) as string) : JSON.stringify(safeJsonParse(bodyText)),
         2_000
       )
-      console.info(`[rest.proxy] req.body id=${requestId} ${bodyPreview}`)
+      log.info(`req.body id=${requestId} ${bodyPreview}`)
     }
   }
 
@@ -163,11 +162,9 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
           )
         : undefined
 
-    console.info(
-      `[rest.proxy] res id=${requestId} status=${res.status} ms=${duration} ct=${outCt ?? "-"}`
-    )
+    log.info(`res id=${requestId} status=${res.status} ms=${duration} ct=${outCt ?? "-"}`)
     if (responseBodyPreview) {
-      console.info(`[rest.proxy] res.body id=${requestId} ${responseBodyPreview}`)
+      log.info(`res.body id=${requestId} ${responseBodyPreview}`)
     }
   }
 

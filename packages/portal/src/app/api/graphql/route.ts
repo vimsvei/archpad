@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { clearSessionOnResponse, getSessionIdFromCookies } from "@/lib/auth/oauth"
 import { authServiceSessionAccess } from "@/lib/auth/auth-service"
+import { createContextLogger } from "@/lib/logger"
+
+const log = createContextLogger("api.graphql")
 
 type GraphQLRequestBody = {
   query: string
@@ -80,12 +83,7 @@ export async function POST(request: Request) {
       try {
         const ct = res.headers.get("content-type") ?? ""
         const preview = (await res.clone().text().catch(() => "")).slice(0, 2000)
-        console.error("[graphql.proxy] upstream error", {
-          status: res.status,
-          contentType: ct,
-          targetUrl,
-          body: preview,
-        })
+        log.error({ status: res.status, contentType: ct, targetUrl, body: preview })
       } catch {
         // ignore
       }
@@ -110,7 +108,7 @@ export async function POST(request: Request) {
       if (maybeCause instanceof Error) return maybeCause.message
       return maybeCause ? String(maybeCause) : undefined
     })()
-    console.error("[graphql.proxy] failed", { message, cause, base, targetUrl })
+    log.error({ message, cause, base, targetUrl }, undefined, e instanceof Error ? e.stack : undefined)
     return NextResponse.json(
       {
         error: "GraphQL proxy failed",

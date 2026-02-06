@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 
 import { authServiceRegister } from "@/lib/auth/auth-service"
+import { createContextLogger } from "@/lib/logger"
+
+const log = createContextLogger("api.auth.register")
 
 export const runtime = "nodejs"
 
@@ -32,8 +35,7 @@ export async function POST(request: Request) {
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e)
     const status = message === "user_already_exists" ? 409 : 500
-    // Log for debugging: where did the request fail (network, Oathkeeper, auth-service, Keycloak, tenant-service)?
-    console.error("[register] authServiceRegister failed:", message, e)
+    log.error(`authServiceRegister failed: ${message}`, undefined, e instanceof Error ? e.stack : undefined)
     return NextResponse.json({ error: "register_failed", message }, { status })
   }
 }
