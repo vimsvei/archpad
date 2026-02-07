@@ -1,18 +1,41 @@
-MIT No Attribution
+PROPRIETARY SOFTWARE LICENSE
+All Rights Reserved
 
-Copyright 2025 Aleksandr Zelentsov
+Copyright © 2025 Aleksandr Zelentsov (Sole Proprietor, Zelentsov.Solutions)
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so.
+1. OWNERSHIP
+   This software and associated documentation (the "Software") are the exclusive
+   property of Aleksandr Zelentsov (Sole Proprietor). The Software includes, without limitation:
+   source code, architecture, design, configuration, infrastructure manifests,
+   documentation, and any derivative works.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. RESTRICTIONS
+   You may NOT, without prior written permission from the copyright holder:
+   - use the Software for any purpose (commercial or non-commercial);
+   - copy, modify, adapt, or create derivative works;
+   - distribute, sublicense, sell, or transfer the Software;
+   - reverse engineer, decompile, or disassemble the Software (except to the
+     extent permitted by applicable law);
+   - remove or alter any proprietary notices.
+
+3. PERMITTED USE
+   You may view the Software solely for evaluation, security audit, or learning
+   purposes. Any other use requires a separate written license agreement.
+
+4. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+   OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+5. LICENSING INQUIRIES
+   For licensing, collaboration, or commercial use inquiries, contact:
+   contact@zelentsov.solutions
+
+6. GOVERNING LAW
+   This license is governed by the laws of the Russian Federation. Any disputes
+   shall be resolved in the courts of the copyright holder's jurisdiction.
