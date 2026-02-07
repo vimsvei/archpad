@@ -73,6 +73,7 @@ spec:
                         - hasura
                         - tolgee
                         - mailpit
+                        - keycloak
                         - oathkeeper
                 topologyKey: kubernetes.io/hostname
       serviceAccountName: portal

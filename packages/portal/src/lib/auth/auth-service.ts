@@ -58,7 +58,7 @@ async function postJson<T>(
       const base = getAuthServiceBaseUrl()
       const hint =
         base.includes("api.archpad.pro") && !process.env.AUTH_SERVICE_INTERNAL_URL
-          ? " Try AUTH_SERVICE_INTERNAL_URL=http://localhost:3001 with auth-service port-forward (see scripts/k8s-port-forward.sh)."
+          ? " Check AUTH_SERVICE_INTERNAL_URL or api.archpad.pro/rest/auth-service configuration."
           : ""
       message = `${message}${hint}`
     }

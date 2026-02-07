@@ -129,7 +129,7 @@ curl -X POST \
 # Проверка HASURA_INTERNAL_URL
 vault kv get kv/data/archpad/demo/hasura/endpoint
 
-# KEYCLOAK_INTERNAL_URL не хранится в Vault (смотрите манифесты Portal / LOCAL_DEVELOPMENT.md)
+# KEYCLOAK_INTERNAL_URL не хранится в Vault (смотрите манифесты Portal)
 
 # Проверка API_GATEWAY_INTERNAL_URL (если установлен)
 vault kv get kv/data/archpad/demo/frontend/portal | grep API_GATEWAY_INTERNAL_URL

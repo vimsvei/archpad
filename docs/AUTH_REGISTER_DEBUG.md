@@ -70,39 +70,7 @@ kill %1 2>/dev/null
 
 ## 403 Forbidden на /auth/session/access (GraphQL после логина)
 
-При локальной разработке (Portal → api.archpad.pro → auth-service) запросы к `/auth/session/access` могут возвращать 403 Forbidden, из-за чего GraphQL падает и происходит редирект на логин.
-
-**Решение:** обойти Oathkeeper через port-forward auth-service:
-
-1. Запустите port-forward: `./scripts/k8s-port-forward.sh` (auth-service форвардится по умолчанию на порт 3001).
-2. Добавьте в `packages/portal/.env.local`:
-   ```
-   AUTH_SERVICE_INTERNAL_URL=http://localhost:3001
-   ```
-3. Перезапустите Portal.
-
-Либо запустите `./scripts/dev-local.sh` — он поднимает port-forward; затем добавьте `AUTH_SERVICE_INTERNAL_URL=http://localhost:3001` в `.env.local`.
-
-## Локальная разработка: смотреть логи Next.js
-
-При `pnpm dev` в `packages/portal` смотрите вывод терминала. После добавления `console.error` там будет:
-
-```
-[register] authServiceRegister failed: <message> <stack>
-```
-
-Типичные сообщения:
-
-- `auth_service_failed (404)` — Oathkeeper или auth-service возвращает 404 (путь)
-- `auth_service_failed (500)` — ошибка внутри auth-service (Keycloak, tenant-service)
-- `fetch failed`, `ECONNREFUSED` — недоступен api.archpad.pro или auth-service
-
-## Проверка переменных окружения Portal
-
-В `packages/portal/.env.local`:
-
-- `AUTH_SERVICE_PUBLIC_URL=https://api.archpad.pro/rest/auth-service` — для запросов к auth-service через Oathkeeper
-- Локальный auth-service: `AUTH_SERVICE_PUBLIC_URL=http://localhost:3001`
+Запросы к `/auth/session/access` могут возвращать 403 Forbidden — проверьте настройки Oathkeeper и доступность auth-service через api.archpad.pro.
 
 ## "Invalid user credentials" при логине после регистрации
 

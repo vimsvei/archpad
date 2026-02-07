@@ -44,9 +44,7 @@ spec:
                         - hasura
                         - tolgee
                         - mailpit
-                        - kratos
-                        - hydra
-                        - oathkeeper
+                        - keycloak
                 topologyKey: kubernetes.io/hostname
       serviceAccountName: oathkeeper
       containers:

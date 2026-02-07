@@ -8,11 +8,13 @@
 
 ### Namespaces
 
-- **`platform`** - основные сервисы приложения (Portal, Hasura, Tolgee, Backend сервисы)
+- **`platform`** - основные сервисы приложения (Portal, Hasura, Tolgee, Backend сервисы, Mailpit, postgres-proxy)
 - **`secure`** - сервисы безопасности (Keycloak, Oathkeeper)
+- **`monitoring`** - Prometheus, Grafana, Loki, Promtail
 - **`vault`** - HashiCorp Vault для управления секретами
 - **`argocd`** - ArgoCD для GitOps
 - **`traefik`** - Traefik Ingress Controller
+- **`pgadmin`** - pgAdmin для администрирования БД
 
 ### Компоненты
 
@@ -29,6 +31,8 @@
 - **Hasura** - GraphQL API и управление БД
 - **Tolgee** - сервис интернационализации (i18n)
 - **Mailpit** - SMTP сервер для разработки (email testing)
+- **postgres-proxy** - TCP-прокси к PostgreSQL
+- **pgAdmin** - веб-интерфейс для администрирования БД
 
 #### Безопасность
 - **Keycloak** - Identity & Access Management (IdM/IAM)
@@ -211,7 +215,6 @@ kubectl logs -n traefik -l app.kubernetes.io/name=traefik --tail=100 | grep port
 ## Дополнительная документация
 
 - [Vault Setup](./VAULT_SETUP.md) - настройка Vault
-- [Local Development](./LOCAL_DEVELOPMENT.md) - локальная разработка
 - [GitLab CI](./GITLAB_CI.md) - настройка CI/CD
 - [ArgoCD Image Updater](./ARGOCD_IMAGE_UPDATER.md) - автоматическое обновление образов
 - [Resource Management](./RESOURCE_MANAGEMENT.md) - управление ресурсами кластера

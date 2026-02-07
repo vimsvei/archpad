@@ -7,8 +7,7 @@
 ## Быстрый старт
 
 1. [SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md) - Инструкции по первоначальной настройке
-2. [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Локальная разработка с удаленными сервисами
-3. [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание в Kubernetes
+2. [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание в Kubernetes
 
 ## Основная документация
 
@@ -28,33 +27,34 @@
 ### CI/CD и автоматизация
 
 - [GITLAB_CI.md](./GITLAB_CI.md) - Настройка GitLab CI/CD для сборки Docker образов
+- [GITLAB_CI_SETUP.md](./GITLAB_CI_SETUP.md) - Быстрый старт: переменные, Runner, обновление образов
 - [ARGOCD_IMAGE_UPDATER.md](./ARGOCD_IMAGE_UPDATER.md) - Автоматическое обновление образов через ArgoCD Image Updater
 
 ### Разработка
 
-- [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Локальная разработка с удаленными сервисами
 - [SERVICES_SETUP.md](./SERVICES_SETUP.md) - Настройка backend и frontend сервисов
 
 ### Мониторинг
 
 - [MONITORING.md](./MONITORING.md) - Обзор решений для мониторинга Kubernetes кластера
+- [GRAFANA_DASHBOARDS.md](./GRAFANA_DASHBOARDS.md) - Как добавлять дашборды в Grafana
 
 ## Структура документации
 
 ### По компонентам
 
 - **Frontend**: Portal (Next.js) - см. [COMPONENTS.md](./COMPONENTS.md#frontend)
-- **Backend**: arch-repo-service, tenant-service, hasura-sync-service - см. [COMPONENTS.md](./COMPONENTS.md#backend-services)
-- **Инфраструктура**: Hasura, Tolgee, Mailpit - см. [COMPONENTS.md](./COMPONENTS.md#инфраструктура)
+- **Backend**: arch-repo-service, tenant-service, auth-service, hasura-sync-service - см. [COMPONENTS.md](./COMPONENTS.md#backend-services)
+- **Инфраструктура**: Hasura, Tolgee, Mailpit, postgres-proxy, pgAdmin - см. [COMPONENTS.md](./COMPONENTS.md#инфраструктура)
 - **Безопасность**: Keycloak, Oathkeeper - см. [COMPONENTS.md](./COMPONENTS.md#безопасность)
+- **Мониторинг**: Prometheus, Grafana, Loki, Promtail - см. [COMPONENTS.md](./COMPONENTS.md#мониторинг), [GRAFANA_DASHBOARDS.md](./GRAFANA_DASHBOARDS.md)
 - **Управление секретами**: Vault - см. [VAULT_SETUP.md](./VAULT_SETUP.md)
 
 ### По задачам
 
 - **Первоначальная настройка**: [SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md)
-- **Локальная разработка**: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
 - **Развертывание**: [DEPLOYMENT.md](./DEPLOYMENT.md)
-- **Настройка CI/CD**: [GITLAB_CI.md](./GITLAB_CI.md)
+- **Настройка CI/CD**: [GITLAB_CI.md](./GITLAB_CI.md), [GITLAB_CI_SETUP.md](./GITLAB_CI_SETUP.md)
 - **Управление секретами**: [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md), [SECRETS.md](./SECRETS.md)
 - **Оптимизация ресурсов**: [RESOURCE_MANAGEMENT.md](./RESOURCE_MANAGEMENT.md)
 

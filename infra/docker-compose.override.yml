@@ -1,5 +1,0 @@
-services:
-  # Expose Postgres to localhost (for psql / DBeaver / TablePlus)
-  postgres:
-    ports:
-      - "${PG_PORT}:5432"

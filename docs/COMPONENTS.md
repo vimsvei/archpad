@@ -4,6 +4,46 @@
 
 Документация по всем компонентам системы, их настройке и использованию.
 
+## Структура проекта
+
+```
+archpad/
+├── packages/
+│   ├── contract/        # Общие типы и DTO (TypeScript)
+│   ├── backend/         # NestJS backend (arch-repo, tenant, auth, hasura-sync)
+│   └── portal/          # Next.js frontend
+├── infra/timeweb/       # ArgoCD манифесты для Kubernetes
+│   ├── 00-bootstrap/    # Namespaces, ArgoCD
+│   ├── 10-gitops/
+│   │   ├── apps/        # Приложения (см. ниже)
+│   │   └── dashboards/  # JSON-файлы дашбордов Grafana
+│   ├── projects/
+│   └── repo-creds/
+├── assets/              # i18n, примеры
+└── scripts/             # render-env.sh, setup-argocd-image-updater.sh
+```
+
+### Структура apps (infra/timeweb/10-gitops/apps/)
+
+| Каталог | Описание |
+|---------|----------|
+| `applications/` | App-of-apps, platform-applications |
+| `argocd/` | IngressRoute, middleware для ArgoCD |
+| `argocd-image-updater/` | ArgoCD Image Updater |
+| `backend/` | arch-repo, tenant, auth-service, hasura-sync, registry-secret-sync |
+| `frontend/` | Portal |
+| `hasura/` | Hasura GraphQL Engine |
+| `keycloak/` | Keycloak |
+| `mailpit/` | SMTP для разработки |
+| `monitoring/` | Grafana, Loki, Prometheus, Promtail |
+| `ory/` | Oathkeeper, secure-vault-role |
+| `pgadmin/` | pgAdmin |
+| `postgres-proxy/` | TCP-прокси к PostgreSQL |
+| `tls/` | cert-manager, ClusterIssuer |
+| `tolgee/` | Tolgee i18n |
+| `traefik/` | Traefik dashboard |
+| `vault/` | Vault |
+
 ## Frontend
 
 ### Portal
@@ -21,19 +61,36 @@ Next.js приложение, доступное через `https://portal.arch
 
 ### arch-repo-service
 
-Основной сервис для работы с проектами.
+Основной сервис для работы с проектами (репозиторий архитектурных артефактов).
 
 **Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#2-backend-services)
 
 **Особенности:**
 - Использует PostgreSQL для хранения данных
 - Доступен через Oathkeeper API Gateway
+- Образ: `archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service`
 
 ### tenant-service
 
-Сервис для работы с tenant'ами.
+Сервис для работы с tenant'ами, workspace'ами и профилями пользователей.
 
 **Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md#2-backend-services)
+
+**Особенности:**
+- Использует PostgreSQL
+- Образ: `archpad-cr.registry.twcstorage.ru/archpad/tenant-service`
+
+### auth-service
+
+Сервис аутентификации: прокси между Portal и Keycloak Admin API.
+
+**Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) (Keycloak, Portal)
+
+**Особенности:**
+- Регистрация, восстановление пароля, верификация email
+- Self-service операции через серверные эндпоинты Portal (`/api/auth/*`)
+- Токены хранятся в httpOnly cookies
+- Образ: `archpad-cr.registry.twcstorage.ru/archpad/auth-service`
 
 ### hasura-sync-service
 
@@ -44,6 +101,7 @@ Job для синхронизации схемы БД с Hasura.
 **Особенности:**
 - Запускается как Kubernetes Job
 - Выполняется автоматически при синхронизации ArgoCD (PreSync hook)
+- Образ: `archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service`
 
 ## Инфраструктура
 
@@ -78,6 +136,58 @@ SMTP сервер для разработки (email testing).
 - Веб-интерфейс доступен через `https://mail.archpad.pro`
 - SMTP доступен по `mailpit.platform.svc.cluster.local:1025`
 
+### postgres-proxy
+
+TCP-прокси для доступа к PostgreSQL через Ingress (для удалённого подключения к БД).
+
+**Особенности:**
+- Использует socat для TCP-туннелирования
+- Namespace: `platform`
+
+### pgAdmin
+
+Веб-интерфейс для администрирования PostgreSQL.
+
+**Особенности:**
+- Namespace: `pgadmin`
+- Доступен через IngressRoute
+
+## Мониторинг
+
+### Prometheus
+
+Сбор метрик с кластера, сервисов и приложений.
+
+**Особенности:**
+- Namespace: `monitoring`
+- ServiceMonitors для Hasura, Traefik и других сервисов
+
+### Grafana
+
+Дашборды для визуализации метрик и логов.
+
+**Особенности:**
+- Namespace: `monitoring`
+- Datasources: Prometheus, Loki
+- URL: https://monitoring.archpad.pro
+- Dashboards: см. [GRAFANA_DASHBOARDS.md](./GRAFANA_DASHBOARDS.md)
+
+### Loki
+
+Агрегация логов из подов кластера.
+
+**Особенности:**
+- Namespace: `monitoring`
+- Работает совместно с Promtail
+
+### Promtail
+
+Сбор логов с нод кластера и отправка в Loki.
+
+**Особенности:**
+- Namespace: `monitoring`
+- Запускается как DaemonSet
+
 ## Безопасность
 
 ### Keycloak + Oathkeeper
@@ -92,9 +202,11 @@ Keycloak и Oathkeeper развертываются в Kubernetes через Arg
 
 **Секреты:** См. [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) (разделы Keycloak и Oathkeeper)
 
+**Примечание:** Аутентификация идёт через **Keycloak** и **auth-service**; Oathkeeper выступает как API Gateway и валидирует JWT от Keycloak.
+
 ### Keycloak
 
-Identity & Access Management (IdM/IAM) для проекта: пользователи, роли, группы, OIDC/JWT.
+Identity & Access Management (IdM/IAM): пользователи, роли, группы, OIDC/JWT.
 
 **Особенности:**
 - Использует PostgreSQL для хранения данных
@@ -111,10 +223,10 @@ API Gateway / Authorization Proxy.
 - Проксирует запросы к backend сервисам
 - Доступен через `https://api.archpad.pro`
 - Внутренний доступ: `http://oathkeeper.secure.svc:4455`
- - Не использует БД напрямую
+- Не использует БД напрямую
 
 **Секреты в Vault:**
- - Путь: `/v1/kv/data/archpad/demo/ory/oathkeeper`
+- Путь: `/v1/kv/data/archpad/demo/ory/oathkeeper`
 
 ### Копирование TLS Secret
 
@@ -150,12 +262,12 @@ HashiCorp Vault для хранения секретов.
 Секрет `archpad-registry-secret` для доступа к Container Registry автоматически синхронизируется из Vault в Kubernetes через Job `registry-secret-sync`.
 
 **Как это работает:**
-1. Vault Agent Injector загружает секреты из Vault по пути `/v1/kv/data/container-register`
+1. Vault Agent Injector загружает секреты из Vault по пути `kv/data/archpad/container-register`
 2. Job `registry-secret-sync` создает или обновляет Kubernetes Secret `archpad-registry-secret`
 3. ServiceAccounts используют этот секрет через `imagePullSecrets` для загрузки образов
 
 **Обновление секрета:**
-1. Обновите секрет в Vault по пути `/v1/kv/data/container-register`
+1. Обновите секрет в Vault по пути `kv/data/archpad/container-register`
 2. ArgoCD автоматически пересоздаст Job при следующей синхронизации
 3. Job обновит Kubernetes Secret с новыми значениями
 
@@ -210,4 +322,3 @@ kubectl exec -n secure deploy/keycloak -- curl -fsS http://localhost:8080/realms
 - [VAULT_SECRETS_STRUCTURE.md](./VAULT_SECRETS_STRUCTURE.md) - структура секретов
 - [SECRETS.md](./SECRETS.md) - управление секретами
 - [Vault Setup](./VAULT_SETUP.md) - настройка Vault
-- [Local Development](./LOCAL_DEVELOPMENT.md) - локальная разработка

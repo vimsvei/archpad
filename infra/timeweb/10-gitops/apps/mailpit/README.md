@@ -9,16 +9,11 @@ Mailpit - это SMTP тестовый сервер для разработки,
 
 ## Использование
 
-### Для Kratos
+### Для Keycloak
 
-В секретах Vault (`/v1/kv/data/archpad/demo/ory/kratos`) установите:
-
-```json
-{
-  "SMTP_CONNECTION_URI": "smtp://mailpit.platform.svc.cluster.local:1025/?disable_starttls=true",
-  "SMTP_FROM_ADDRESS": "no-reply@archpad.pro"
-}
-```
+В секретах Vault Keycloak (email-конфигурация realm) установите SMTP:
+- `smtp://mailpit.platform.svc.cluster.local:1025` (без аутентификации)
+- From: `no-reply@archpad.pro`
 
 ### Для других сервисов
 

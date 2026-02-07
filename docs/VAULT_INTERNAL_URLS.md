@@ -108,7 +108,6 @@ curl -X POST \
 
 В production (внутри кластера) `KEYCLOAK_INTERNAL_URL` выставляется прямо в манифестах деплоя Portal как `http://keycloak.secure.svc:8080`.
 
-Для локальной разработки (port-forward) см. `LOCAL_DEVELOPMENT.md`.
 
 ### API_GATEWAY_INTERNAL_URL (опционально)
 

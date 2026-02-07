@@ -11,7 +11,7 @@
 
 ### Опциональные переменные
 
-- **`REGISTRY_URL`** - URL Container Registry (по умолчанию: `registry.timeweb.cloud`)
+- **`REGISTRY_URL`** - URL Container Registry (по умолчанию: `archpad-cr.registry.twcstorage.ru`)
 - **`REGISTRY_IMAGE_PREFIX`** - префикс для имен образов (по умолчанию: `archpad`)
 
 ## Настройка переменных в GitLab
@@ -92,7 +92,7 @@ build:arch-repo-service:
 
 ```yaml
 # В ArgoCD Application добавьте аннотацию:
-argocd-image-updater.argoproj.io/image-list: arch-repo-service=registry.timeweb.cloud/archpad/arch-repo-service
+argocd-image-updater.argoproj.io/image-list: arch-repo-service=archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service
 argocd-image-updater.argoproj.io/write-back-method: git
 ```
 
@@ -102,7 +102,7 @@ argocd-image-updater.argoproj.io/write-back-method: git
 
 ```yaml
 # infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.deployment.yaml
-image: registry.timeweb.cloud/archpad/arch-repo-service:abc12345
+image: archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service:abc12345
 ```
 
 Затем закоммитьте изменения, ArgoCD автоматически синхронизирует.
@@ -111,7 +111,7 @@ image: registry.timeweb.cloud/archpad/arch-repo-service:abc12345
 
 ```bash
 kubectl set image deployment/arch-repo-service \
-  arch-repo-service=registry.timeweb.cloud/archpad/arch-repo-service:abc12345 \
+  arch-repo-service=archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service:abc12345 \
   -n platform
 ```
 
@@ -119,7 +119,7 @@ kubectl set image deployment/arch-repo-service \
 
 После настройки:
 
-1. Сделайте коммит в `main` или `develop` ветку
+1. Сделайте коммит в `main` или ветку с версией `r/X.Y.Z`
 2. Pipeline автоматически запустится
 3. Проверьте логи сборки в GitLab CI/CD
 4. Убедитесь, что образы успешно загружены в Container Registry

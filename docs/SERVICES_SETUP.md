@@ -27,6 +27,7 @@
 # Применить все Application'ы для backend и frontend
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.app.yaml
+kubectl apply -f infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.app.yaml
 kubectl apply -f infra/timeweb/10-gitops/apps/frontend/portal/portal.app.yaml
 ```
@@ -66,7 +67,7 @@ kubectl logs -n traefik -l app.kubernetes.io/name=traefik --tail=100 | grep port
 5. **Deployment использует неправильный образ:**
 ```bash
 kubectl get deployment portal -n platform -o jsonpath='{.spec.template.spec.containers[0].image}'
-# Должно быть: archpad-cr.registry.twcstorage.ru/archpad/portal:latest
+# Должно быть: archpad-cr.registry.twcstorage.ru/archpad/portal:latest (или другой tag)
 ```
 
 ## Диагностика
@@ -126,6 +127,7 @@ find infra/timeweb/10-gitops/apps -path "*/backend/*" -o -path "*/frontend/*" | 
 kubectl patch application portal -n argocd --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
 kubectl patch application arch-repo-service -n argocd --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
 kubectl patch application tenant-service -n argocd --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
+kubectl patch application auth-service -n argocd --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
 kubectl patch application hasura-sync-service -n argocd --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
 ```
 

@@ -40,7 +40,7 @@ resources:
   - apps/vault/vault-setup-policy.configmap.yaml
   - apps/vault/vault-setup-policy.job.yaml
 
-  # Vault role для Ory компонентов (до Ory Applications)
+  # Vault role для secure namespace (Keycloak, Oathkeeper)
   - apps/ory/secure-vault-role.configmap.yaml
   - apps/ory/secure-vault-role.job.yaml
 

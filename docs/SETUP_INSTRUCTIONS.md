@@ -5,7 +5,7 @@
 1. ✅ Обновлен код для работы с новой структурой секретов Vault
 2. ✅ Созданы Kubernetes манифесты для всех сервисов
 3. ✅ Настроен GitLab CI/CD для сборки Docker образов
-4. ✅ Созданы скрипты для локальной разработки с удаленными Ory сервисами
+4. ✅ Созданы скрипты для локальной разработки с удаленными сервисами (Keycloak, Hasura, Tolgee)
 
 ## 📋 Следующие шаги
 
@@ -37,19 +37,23 @@
    ```bash
    # arch-repo-service
    # infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.deployment.yaml
-   image: registry.timeweb.cloud/archpad/arch-repo-service:abc12345
+   image: archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service:abc12345
    
    # tenant-service
    # infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.deployment.yaml
-   image: registry.timeweb.cloud/archpad/tenant-service:abc12345
+   image: archpad-cr.registry.twcstorage.ru/archpad/tenant-service:abc12345
+   
+   # auth-service
+   # infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.deployment.yaml
+   image: archpad-cr.registry.twcstorage.ru/archpad/auth-service:abc12345
    
    # hasura-sync-service
    # infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.job.yaml
-   image: registry.timeweb.cloud/archpad/hasura-sync-service:abc12345
+   image: archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service:abc12345
    
    # portal
    # infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml
-   image: registry.timeweb.cloud/archpad/portal:abc12345
+   image: archpad-cr.registry.twcstorage.ru/archpad/portal:abc12345
    ```
 
 3. **Обновите команды запуска:**
@@ -73,6 +77,14 @@
        set +a
        exec node dist/apps/tenant-service/apps/tenant-service/src/main.js
    
+   # auth-service
+   args:
+     - |
+       set -a
+       . /vault/secrets/auth-service
+       set +a
+       exec node dist/apps/auth-service/apps/auth-service/src/main.js
+   
    # hasura-sync-service
    args:
      - |
@@ -92,29 +104,7 @@
 
 4. **Закоммитьте изменения** - ArgoCD автоматически синхронизирует
 
-### 3. Локальная разработка
-
-#### Быстрый старт:
-
-1. **Создайте `.env.local`** (см. пример в `docs/LOCAL_DEVELOPMENT.md`)
-
-2. **Запустите:**
-   ```bash
-   ./scripts/dev-local.sh
-   ```
-
-3. **Откройте Portal:** http://localhost:3000
-
-#### Что работает:
-
-✅ **Hot reload** для Portal (Next.js)  
-✅ **Hot reload** для Backend (NestJS с `--watch`)  
-✅ **Ory из Kubernetes** через port-forward  
-✅ **Hasura, Tolgee** из Kubernetes через port-forward  
-
-Подробнее: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
-
-### 4. Проверка деплоя
+### 3. Проверка деплоя
 
 После обновления манифестов проверьте:
 
@@ -131,6 +121,7 @@
 3. **Логи:**
    ```bash
    kubectl logs -n platform -l app=arch-repo-service --tail=50
+   kubectl logs -n platform -l app=auth-service --tail=50
    kubectl logs -n platform -l app=portal --tail=50
    ```
 
@@ -154,16 +145,7 @@
 2. Проверьте, что секреты созданы в Vault
 3. Проверьте, что Vault роль `platform` обновлена с новыми ServiceAccount'ами
 
-### Проблема: Port-forward не работает
-
-**Решение:**
-1. Проверьте подключение к кластеру: `kubectl cluster-info`
-2. Проверьте, что сервисы запущены: `kubectl get svc -n platform`
-3. Проверьте, что порты не заняты: `lsof -i :8080`
-
 ## 📚 Дополнительная документация
-
-- [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) - Подробная инструкция по локальной разработке
 - [GITLAB_CI.md](./GITLAB_CI.md) - Настройка GitLab CI/CD
 - [SECRETS.md](./SECRETS.md) - Управление секретами
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Развертывание в Kubernetes

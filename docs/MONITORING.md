@@ -23,21 +23,21 @@
 
 **Вывод:** Kubernetes Dashboard можно использовать как **дополнение** для оперативного управления, но он **не заменяет** Prometheus + Grafana для полноценного мониторинга.
 
-**У вас уже есть:** Prometheus + Grafana + Loki + Tempo настроены локально в `infra/monitoring/` - их можно перенести в Kubernetes.
+**У вас уже есть:** Prometheus + Grafana + Loki + Promtail развернуты в кластере через ArgoCD (`infra/timeweb/10-gitops/apps/monitoring/`).
 
 ## Текущее состояние
 
-В проекте уже настроен локальный стек мониторинга для Docker Compose:
+В проекте настроен стек мониторинга в Kubernetes:
 
 - **Grafana** - визуализация метрик, логов и трейсов
 - **Prometheus** - сбор метрик
 - **Loki** - централизованные логи
 - **Tempo** - распределенный трейсинг
 - **OpenTelemetry Collector** - сбор трейсов
-- **Vector** - сбор логов из Docker контейнеров
+- **Vector** / **Promtail** - сбор логов из подов кластера
 - **Blackbox Exporter** - проверка доступности сервисов
 
-**См. `infra/monitoring/README.md` для локальной настройки.**
+**См. `infra/timeweb/10-gitops/apps/monitoring/` для манифестов.**
 
 ## Решения для мониторинга Kubernetes
 

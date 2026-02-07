@@ -18,7 +18,6 @@ Portal - это Next.js приложение, доступное через `por
 - `/v1/kv/data/archpad/demo/frontend/portal` - основные секреты Portal
 - `/v1/kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET` (берется из Hasura секрета)
 - `/v1/kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
-- `/v1/kv/data/archpad/demo/ory/kratos/endpoint` - `ORY_KRATOS_INTERNAL_URL`
 
 Подробнее см. [SECRETS.md](../../../../docs/SECRETS.md)
 
@@ -40,7 +39,7 @@ Portal доступен через:
 
 1. Обновить `image` в `portal.deployment.yaml`:
    ```yaml
-   image: registry.timeweb.cloud/archpad/portal:${GIT_COMMIT_SHA}
+   image: archpad-cr.registry.twcstorage.ru/archpad/portal:${GIT_COMMIT_SHA}
    ```
 
 2. Обновить команду запуска в `args`:

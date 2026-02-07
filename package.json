@@ -5,25 +5,8 @@
   "scripts": {
     "install:all": "pnpm install",
     "bootstrap": "pnpm -w install",
-    "dev:infra": "pnpm -C infra dev:infra",
-    "dev:app": "pnpm -C infra dev:app",
-    "dev:backend": "pnpm -C infra dev:backend",
-    "dev:all": "pnpm -C infra dev:all",
-
-    "dev:local": "bash ./scripts/dev-local.sh start",
-    "dev:local:stop": "bash ./scripts/dev-local.sh stop",
-
-    "caddy:trust": "bash ./scripts/caddy-local.sh trust",
-
-    "caddy:start": "bash ./scripts/caddy-local.sh start",
-    "caddy:stop": "bash ./scripts/caddy-local.sh stop",
-
     "build:all": "pnpm --filter @archpad/contract build && pnpm --filter @archpad/backend build:arch-repo && pnpm --filter @archpad/portal build",
-    "build:all:ci": "pnpm -w install --frozen-lockfile --prod=false --force && pnpm run build:all",
-    "down": "pnpm -C infra dev:down",
-    "logs": "pnpm -C infra logs",
-    "keycloak:sync": "pnpm -C infra keycloak:sync",
-    "certs:gen": "bash infra/traefik/generate/certs.sh"
+    "build:all:ci": "pnpm -w install --frozen-lockfile --prod=false --force && pnpm run build:all"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
 }
