@@ -31,6 +31,7 @@ spec:
           {{- $token := secret "kv/data/archpad/demo/backend/service-token" }}
           {{- $hasuraEndpoint := secret "kv/data/archpad/demo/hasura/endpoint" }}
           {{- $hasuraSecret := secret "kv/data/archpad/demo/hasura/secret" }}
+          {{- $tolgeeFront := secret "kv/data/archpad/demo/tolgee/front" }}
           # Экспортируем переменные окружения для Portal
           # Prefer explicit public Hasura URL from portal secret; fallback to internal Hasura endpoint (in-cluster).
           {{- if $portal.Data.data.NEXT_PUBLIC_HASURA_GRAPHQL_URL }}
@@ -40,7 +41,8 @@ spec:
           {{- end }}
           export HASURA_INTERNAL_URL="{{ $hasuraEndpoint.Data.data.HASURA_INTERNAL_URL }}"
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ $hasuraSecret.Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
-          export NEXT_PUBLIC_TOLGEE_API_URL="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
+          export NEXT_PUBLIC_TOLGEE_API_URL="{{ $tolgeeFront.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
+          export TOLGEE_API_URL="{{ $tolgeeFront.Data.data.TOLGEE_API_URL }}"
           export NEXT_PUBLIC_TOLGEE_API_KEY="{{ $portal.Data.data.NEXT_PUBLIC_TOLGEE_API_KEY }}"
           export NEXT_PUBLIC_URL="{{ $portal.Data.data.NEXT_PUBLIC_URL }}"
           export AUTH_SERVICE_INTERNAL_URL="http://auth-service.platform.svc:3000"
@@ -170,7 +172,7 @@ spec:
               echo "Portal starting..."
               cd /app/packages/portal
               # Экспортируем все переменные окружения для Next.js
-              export NEXT_PUBLIC_HASURA_GRAPHQL_URL HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY NEXT_PUBLIC_URL
+              export NEXT_PUBLIC_HASURA_GRAPHQL_URL HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY TOLGEE_API_URL NEXT_PUBLIC_URL
               [ -n "$API_GATEWAY_INTERNAL_URL" ] && export API_GATEWAY_INTERNAL_URL
               [ -n "$NEXT_PUBLIC_API_GRAPHQL_URI" ] && export NEXT_PUBLIC_API_GRAPHQL_URI
               [ -n "$NEXT_PUBLIC_API_REST_URI" ] && export NEXT_PUBLIC_API_REST_URI
@@ -183,6 +185,7 @@ spec:
                 HASURA_GRAPHQL_ADMIN_SECRET="$HASURA_GRAPHQL_ADMIN_SECRET" \
                 NEXT_PUBLIC_TOLGEE_API_URL="$NEXT_PUBLIC_TOLGEE_API_URL" \
                 NEXT_PUBLIC_TOLGEE_API_KEY="$NEXT_PUBLIC_TOLGEE_API_KEY" \
+                TOLGEE_API_URL="$TOLGEE_API_URL" \
                 NEXT_PUBLIC_URL="$NEXT_PUBLIC_URL" \
                 AUTH_SERVICE_INTERNAL_URL="$AUTH_SERVICE_INTERNAL_URL" \
                 INTERNAL_SERVICE_TOKEN="$INTERNAL_SERVICE_TOKEN" \

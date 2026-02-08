@@ -20,6 +20,10 @@ data:
     path "kv/data/archpad/demo/*" {
       capabilities = ["read", "list"]
     }
+    # tolgee/* (db, admin, front)
+    path "kv/data/archpad/demo/tolgee/*" {
+      capabilities = ["read", "list"]
+    }
     
     # Разрешаем доступ к container-register
     path "kv/data/archpad/container-register" {

@@ -104,7 +104,7 @@ GitLab CI/CD автоматически собирает Docker образы д�
 
 Для получения секретов во время сборки Portal:
 - Используйте root token (только для CI/CD!)
-- Или создайте отдельный токен с правами на чтение секретов из `kv/data/archpad/demo/frontend/portal` и `kv/data/archpad/demo/tolgee/api-key`
+- Или создайте отдельный токен с правами на чтение секретов из `kv/data/archpad/demo/frontend/portal`, `kv/data/archpad/demo/frontend/landing` и `kv/data/archpad/demo/tolgee/front`
 
 ## Как это работает
 
@@ -145,8 +145,8 @@ Pipeline автоматически:
 3. Next.js встраивает их в бандл
 
 **Секреты, получаемые из Vault:**
-- `NEXT_PUBLIC_TOLGEE_API_KEY` - из `kv/data/archpad/demo/tolgee/api-key`
-- `NEXT_PUBLIC_TOLGEE_API_URL` - из `kv/data/archpad/demo/frontend/portal`
+- `NEXT_PUBLIC_TOLGEE_API_KEY` - из `kv/data/archpad/demo/frontend/portal` (для portal) или `kv/data/archpad/demo/frontend/landing` (для landing)
+- `NEXT_PUBLIC_TOLGEE_API_URL` - из `kv/data/archpad/demo/tolgee/front`
 - `NEXT_PUBLIC_URL` - из `kv/data/archpad/demo/frontend/portal`
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - из `kv/data/archpad/demo/frontend/portal`
 - `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL` - из `kv/data/archpad/demo/frontend/portal`
@@ -237,7 +237,8 @@ docker pull archpad-cr.registry.twcstorage.ru/archpad/portal:latest
 1. Проверьте, что `VAULT_TOKEN` установлен и правильный
 2. Проверьте, что токен имеет права на чтение:
    - `kv/data/archpad/demo/frontend/portal`
-   - `kv/data/archpad/demo/tolgee/api-key`
+   - `kv/data/archpad/demo/frontend/landing`
+   - `kv/data/archpad/demo/tolgee/front`
 3. Проверьте, что Vault доступен из сети GitLab Runner
 
 ### Проблема: Переменные не применяются

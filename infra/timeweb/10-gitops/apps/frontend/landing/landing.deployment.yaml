@@ -25,9 +25,11 @@ spec:
         vault.hashicorp.com/agent-inject-secret-landing: "kv/data/archpad/demo/frontend/landing"
         vault.hashicorp.com/agent-inject-template-landing: |
           {{- $landing := secret "kv/data/archpad/demo/frontend/landing" }}
+          {{- $tolgeeFront := secret "kv/data/archpad/demo/tolgee/front" }}
           #!/usr/bin/env sh
-          export NEXT_PUBLIC_TOLGEE_API_URL="{{ $landing.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
           export NEXT_PUBLIC_TOLGEE_API_KEY="{{ $landing.Data.data.NEXT_PUBLIC_TOLGEE_API_KEY }}"
+          export NEXT_PUBLIC_TOLGEE_API_URL="{{ $tolgeeFront.Data.data.NEXT_PUBLIC_TOLGEE_API_URL }}"
+          export TOLGEE_API_URL="{{ $tolgeeFront.Data.data.TOLGEE_API_URL }}"
           {{- if $landing.Data.data.NEXT_PUBLIC_SITE_URL }}
           export NEXT_PUBLIC_SITE_URL="{{ $landing.Data.data.NEXT_PUBLIC_SITE_URL }}"
           {{- else }}
@@ -70,6 +72,7 @@ spec:
                 NEXT_PUBLIC_TOLGEE_API_URL="$NEXT_PUBLIC_TOLGEE_API_URL" \
                 NEXT_PUBLIC_TOLGEE_API_KEY="$NEXT_PUBLIC_TOLGEE_API_KEY" \
                 NEXT_PUBLIC_SITE_URL="$NEXT_PUBLIC_SITE_URL" \
+                TOLGEE_API_URL="$TOLGEE_API_URL" \
                 node server.js
           ports:
             - name: http

@@ -111,7 +111,7 @@ kv/data/archpad/demo/
 **Переменные:**
 - `NEXT_PUBLIC_URL` - Публичный URL Portal
 - `NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT` - Публичный URL Hasura GraphQL endpoint
-- `NEXT_PUBLIC_TOLGEE_API_URL` - Публичный URL Tolgee API
+- `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ Tolgee (URLs берутся из `kv/data/archpad/demo/tolgee/front`)
 - `NEXT_PUBLIC_API_GRAPHQL_ENDPOINT` - (опционально) Публичный URL API Gateway GraphQL endpoint
 - `NEXT_PUBLIC_API_REST_ENDPOINT` - (опционально) Публичный URL API Gateway REST endpoint
 - `NEXT_PUBLIC_KEYCLOAK_PUBLIC_URL` - Публичный URL Keycloak (например, `https://id.archpad.pro`)
@@ -124,7 +124,7 @@ kv/data/archpad/demo/
 **Дополнительные секреты:**
 - `kv/data/archpad/demo/hasura/endpoint` - `HASURA_INTERNAL_URL`
 - `kv/data/archpad/demo/hasura/secret` - `HASURA_GRAPHQL_ADMIN_SECRET`
-- `kv/data/archpad/demo/tolgee/api-key` - `NEXT_PUBLIC_TOLGEE_API_KEY`
+- `kv/data/archpad/demo/tolgee/front` - `NEXT_PUBLIC_TOLGEE_API_URL`, `TOLGEE_API_URL`
 
 **Примечание:** 
 - Переменные с префиксом `NEXT_PUBLIC_*` доступны в браузере
@@ -136,13 +136,16 @@ kv/data/archpad/demo/
 
 ---
 
-### 3.2. Tolgee API Key
-**Путь:** `kv/data/archpad/demo/tolgee/api-key`
+### 3.2. Tolgee Frontend (URLs)
+**Путь:** `kv/data/archpad/demo/tolgee/front`
 
 **Переменные:**
-- `NEXT_PUBLIC_TOLGEE_API_KEY` - API ключ для доступа к Tolgee API
+- `NEXT_PUBLIC_TOLGEE_API_URL` - Публичный URL Tolgee API (например `https://i18n.archpad.pro`)
+- `TOLGEE_API_URL` - Внутренний URL в K8s (например `http://tolgee.platform.svc:8080`)
 
-**Используется в:** Portal, GitLab CI
+**Используется в:** Portal, Landing, GitLab CI
+
+**Примечание:** API ключи (`NEXT_PUBLIC_TOLGEE_API_KEY`) хранятся в секретах portal и landing соответственно.
 
 ---
 
@@ -358,8 +361,9 @@ kv/data/archpad/demo/
 | `kv/data/archpad/demo/backend/arch-repo-service` | `PROJECT_DB` | arch-repo-service |
 | `kv/data/archpad/demo/backend/tenant-service` | `TENANT_DB` | tenant-service |
 | `kv/data/archpad/demo/backend/hasura-sync-service` | `HASURA_SOURCE`, `HASURA_SCHEMA` | hasura-sync-service |
-| `kv/data/archpad/demo/frontend/portal` | `NEXT_PUBLIC_*` переменные | Portal, GitLab CI |
-| `kv/data/archpad/demo/tolgee/api-key` | `NEXT_PUBLIC_TOLGEE_API_KEY` | Portal, GitLab CI |
+| `kv/data/archpad/demo/frontend/portal` | `NEXT_PUBLIC_*`, `NEXT_PUBLIC_TOLGEE_API_KEY` | Portal, GitLab CI |
+| `kv/data/archpad/demo/frontend/landing` | `NEXT_PUBLIC_TOLGEE_API_KEY`, `NEXT_PUBLIC_SITE_URL` | Landing, GitLab CI |
+| `kv/data/archpad/demo/tolgee/front` | `NEXT_PUBLIC_TOLGEE_API_URL`, `TOLGEE_API_URL` | Portal, Landing, GitLab CI |
 | `kv/data/archpad/demo/hasura/db` | `HASURA_DB`, `HASURA_DB_USER`, `HASURA_DB_PASSWORD` | Hasura |
 | `kv/data/archpad/demo/hasura/secret` | `HASURA_GRAPHQL_ADMIN_SECRET` | Hasura, Portal |
 | `kv/data/archpad/demo/hasura/endpoint` | `HASURA_INTERNAL_URL` | Hasura, Portal |
