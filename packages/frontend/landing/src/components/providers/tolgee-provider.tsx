@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CachePublicRecord, TolgeeProvider, TolgeeStaticData } from '@tolgee/react';
 import { TolgeeBase } from '@/tolgee/shared';
 
@@ -9,16 +9,23 @@ type TolgeeLandingProviderProps = {
   language: string;
   /**
    * Server-prefetched translations (loadRequired at request time).
-   * Avoids client fetch and CORS; works without build-time env vars.
+   * Data from Tolgee API, NOT from JSON files. Passed to avoid client fetch.
    */
   staticData?: TolgeeStaticData | CachePublicRecord[];
   children: React.ReactNode;
 };
 
-const tolgee = TolgeeBase().init({ defaultLanguage: 'en' });
-
 export function TolgeeLandingProvider({ language, staticData, children }: TolgeeLandingProviderProps) {
   const router = useRouter();
+
+  // Create tolgee with correct language from the start for SSR.
+  const tolgee = useMemo(() => {
+    const t = TolgeeBase().init({
+      defaultLanguage: language,
+      language,
+    });
+    return t;
+  }, []);
 
   useEffect(() => {
     void tolgee.changeLanguage(language);
@@ -27,7 +34,7 @@ export function TolgeeLandingProvider({ language, staticData, children }: Tolgee
       router.refresh();
     });
     return () => unsubscribe();
-  }, [language, router]);
+  }, [language, router, tolgee]);
 
   return (
     <TolgeeProvider
