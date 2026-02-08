@@ -1,0 +1,18 @@
+---
+id: "cta"
+titleKey: "landing.cta.title"
+bodyKey: "landing.cta.body"
+primaryKey: "site.cta.requestDemo"
+primaryHref: "/contact"
+secondaryKey: "site.cta.openDocs"
+secondaryHref: "/docs"
+---
+
+<Section id="cta">
+  <CTA
+    title={<T keyName={frontmatter.titleKey} />}
+    body={<T keyName={frontmatter.bodyKey} />}
+    primary={frontmatter.primaryKey && frontmatter.primaryHref ? { labelKey: frontmatter.primaryKey, href: frontmatter.primaryHref } : undefined}
+    secondary={frontmatter.secondaryKey && frontmatter.secondaryHref ? { labelKey: frontmatter.secondaryKey, href: frontmatter.secondaryHref } : undefined}
+  />
+</Section>

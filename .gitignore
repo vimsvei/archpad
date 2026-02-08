@@ -36,3 +36,7 @@ infra/timeweb/k8s_config/
 infra/vault/backups/
 **/backups/
 *.tar.gz
+
+# Velite output
+**/.velite
+**/public/static

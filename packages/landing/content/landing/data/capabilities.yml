@@ -1,0 +1,26 @@
+# Card data for landing capabilities - titles and bodies are Tolgee keys
+items:
+  - id: repository
+    icon: layers
+    titleKey: landing.capabilities.repository.title
+    bodyKey: landing.capabilities.repository.body
+  - id: traceability
+    icon: link
+    titleKey: landing.capabilities.traceability.title
+    bodyKey: landing.capabilities.traceability.body
+  - id: decisions
+    icon: file-text
+    titleKey: landing.capabilities.decisions.title
+    bodyKey: landing.capabilities.decisions.body
+  - id: risks
+    icon: shield
+    titleKey: landing.capabilities.risks.title
+    bodyKey: landing.capabilities.risks.body
+  - id: integrations
+    icon: plug
+    titleKey: landing.capabilities.integrations.title
+    bodyKey: landing.capabilities.integrations.body
+  - id: views
+    icon: eye
+    titleKey: landing.capabilities.views.title
+    bodyKey: landing.capabilities.views.body

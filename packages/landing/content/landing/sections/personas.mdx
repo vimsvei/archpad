@@ -1,0 +1,8 @@
+---
+id: "personas"
+titleKey: "landing.personas.title"
+---
+
+<Section id="personas" title={<T keyName={frontmatter.titleKey} />}>
+  <PersonaCards items={frontmatter.personas?.items ?? []} />
+</Section>

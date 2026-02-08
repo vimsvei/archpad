@@ -1,0 +1,37 @@
+# Landing page composition (section order + feature flags)
+slug: "/"
+layout: "landing"
+sections:
+  - id: hero
+    source: "landing/sections/hero.mdx"
+    enabled: true
+  - id: whatIs
+    source: "landing/sections/what-is-archpad.mdx"
+    enabled: true
+  - id: problems
+    source: "landing/sections/problems-solution.mdx"
+    enabled: true
+  - id: capabilities
+    source: "landing/sections/capabilities.mdx"
+    enabled: true
+  - id: howItWorks
+    source: "landing/sections/how-it-works.mdx"
+    enabled: true
+  - id: integrations
+    source: "landing/sections/integrations.mdx"
+    enabled: true
+  - id: personas
+    source: "landing/sections/personas.mdx"
+    enabled: true
+  - id: useCases
+    source: "landing/sections/use-cases.mdx"
+    enabled: true
+  - id: trust
+    source: "landing/sections/trust.mdx"
+    enabled: true
+  - id: faq
+    source: "landing/sections/faq.mdx"
+    enabled: true
+  - id: cta
+    source: "landing/sections/cta.mdx"
+    enabled: true

@@ -1,0 +1,27 @@
+---
+id: "hero"
+titleKey: "landing.hero.title"
+descriptionKey: "landing.hero.subtitle"
+variant: "default"
+cta:
+  primaryKey: "site.cta.openPortal"
+  primaryHref: "/app"
+  secondaryKey: "site.cta.requestDemo"
+  secondaryHref: "/contact"
+seo:
+  titleKey: "landing.hero.seoTitle"
+  descriptionKey: "landing.hero.seoDescription"
+---
+
+<Section id="hero" variant="hero">
+  <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-6xl">
+    <T keyName={frontmatter.titleKey} />
+  </h1>
+  <p className="mb-8 max-w-2xl text-xl text-muted-foreground">
+    <T keyName={frontmatter.descriptionKey} />
+  </p>
+  <ButtonGroup
+    primary={frontmatter.cta?.primaryKey && frontmatter.cta?.primaryHref ? { labelKey: frontmatter.cta.primaryKey, href: frontmatter.cta.primaryHref } : undefined}
+    secondary={frontmatter.cta?.secondaryKey && frontmatter.cta?.secondaryHref ? { labelKey: frontmatter.cta.secondaryKey, href: frontmatter.cta.secondaryHref } : undefined}
+  />
+</Section>

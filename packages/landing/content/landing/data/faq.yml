@@ -1,0 +1,9 @@
+items:
+  - qKey: landing.faq.q1
+    aKey: landing.faq.a1
+  - qKey: landing.faq.q2
+    aKey: landing.faq.a2
+  - qKey: landing.faq.q3
+    aKey: landing.faq.a3
+  - qKey: landing.faq.q4
+    aKey: landing.faq.a4
