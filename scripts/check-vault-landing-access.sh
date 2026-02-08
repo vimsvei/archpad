@@ -1,0 +1,63 @@
+#!/usr/bin/env sh
+# Проверка доступа landing SA к секретам Vault
+# Использование: ./scripts/check-vault-landing-access.sh
+
+set -e
+
+VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+JOB_NAME="vault-landing-check-$$"
+
+cleanup() {
+  kubectl delete job "$JOB_NAME" -n platform --ignore-not-found 2>/dev/null || true
+}
+trap cleanup EXIT
+
+echo "Creating one-off job to check Vault access for landing SA..."
+kubectl run "$JOB_NAME" -n platform --rm -i --restart=Never \
+  --serviceaccount=landing \
+  --image=alpine:3.19 \
+  -- sh -c '
+    apk add --no-cache curl jq >/dev/null 2>&1
+    VAULT_ADDR="${VAULT_ADDR:-http://vault.vault.svc:8200}"
+    JWT=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+    
+    echo "1. Authenticating to Vault (role=platform)..."
+    LOGIN=$(curl -sf -X POST "$VAULT_ADDR/v1/auth/kubernetes/login" \
+      -H "Content-Type: application/json" \
+      -d "{\"role\":\"platform\",\"jwt\":\"$JWT\"}" 2>/dev/null) || {
+      echo "ERROR: Vault login failed"
+      exit 1
+    }
+    TOKEN=$(echo "$LOGIN" | jq -r ".auth.client_token")
+    if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+      echo "ERROR: No token received. Response:"
+      echo "$LOGIN" | jq .
+      exit 1
+    fi
+    echo "   OK: Got Vault token"
+    
+    echo ""
+    echo "2. Reading kv/data/archpad/demo/frontend/landing..."
+    R1=$(curl -sf -H "X-Vault-Token: $TOKEN" "$VAULT_ADDR/v1/kv/data/archpad/demo/frontend/landing" 2>/dev/null) || R1=""
+    if [ -n "$R1" ] && echo "$R1" | jq -e '.data.data' >/dev/null 2>&1; then
+      echo "   OK: Secret exists"
+      echo "$R1" | jq -r '.data.data | keys[]'
+    else
+      echo "   FAIL: $R1"
+      exit 1
+    fi
+    
+    echo ""
+    echo "3. Reading kv/data/archpad/demo/tolgee/front..."
+    R2=$(curl -sf -H "X-Vault-Token: $TOKEN" "$VAULT_ADDR/v1/kv/data/archpad/demo/tolgee/front" 2>/dev/null) || R2=""
+    if [ -n "$R2" ] && echo "$R2" | jq -e '.data.data' >/dev/null 2>&1; then
+      echo "   OK: Secret exists"
+      echo "$R2" | jq -r '.data.data | keys[]'
+    else
+      echo "   FAIL: $R2"
+      exit 1
+    fi
+    
+    echo ""
+    echo "All checks passed. Landing SA has access to both secrets."
+  '
