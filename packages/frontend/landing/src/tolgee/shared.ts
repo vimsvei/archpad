@@ -90,8 +90,8 @@ export function TolgeeBase() {
       apiUrl: apiUrl || undefined,
       fallbackLanguage: FALLBACK_LANGUAGE,
       availableLanguages: ALL_LANGUAGES,
-      // Static JSON fallback — always works even when Tolgee API is unreachable (e.g. prod K8s).
-      // Exported from Tolgee; update: curl "https://i18n.archpad.pro/v2/projects/3/export?format=JSON&languages=ru-RU,en,es-ES,sr" -H "X-API-Key: $KEY" -o x.zip && unzip -o x.zip -d messages/
+      // Static JSON — fetched at Docker build from Tolgee API. Fallback when API unreachable (prod K8s).
+      // Update locally: pnpm fetch-tolgee (requires NEXT_PUBLIC_TOLGEE_API_KEY)
       staticData: {
         en: () => import('../../messages/en.json'),
         'ru-RU': () => import('../../messages/ru-RU.json'),

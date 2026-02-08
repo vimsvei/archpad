@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fetch-tolgee": "sh scripts/fetch-tolgee-messages.sh"
   },
   "dependencies": {
     "@archpad/logger": "workspace:*",

@@ -50,6 +50,16 @@ pnpm dev
 - `NEXT_PUBLIC_TOLGEE_API_URL` — URL Tolgee API
 - `NEXT_PUBLIC_SITE_URL` — базовый URL сайта (для Open Graph, по умолчанию `https://archpad.pro`)
 
+## Tolgee: переводы (messages/)
+
+Файлы `messages/*.json` **генерируются при сборке Docker-образа** из Tolgee API — не нужно синхронизировать вручную.
+
+- **CI/CD**: при `docker build` вызывается экспорт Tolgee (`/v2/projects/3/export`) и распаковка в `messages/`
+- **Локально**: `pnpm fetch-tolgee` — обновить messages (нужны `NEXT_PUBLIC_TOLGEE_API_KEY`, `NEXT_PUBLIC_TOLGEE_API_URL`)
+- **При локальной разработке** `loadRequired()` подтягивает актуальные переводы из Tolgee API при каждом запросе — staticData лишь fallback при недоступности API (prod K8s)
+
+Коммитить `messages/` в git не обязательно — они перезаписываются при каждой сборке. Оставлены как fallback для локальной разработки без API.
+
 ## Tolgee-ключи
 
 Добавьте в Tolgee ключи для лендинга:

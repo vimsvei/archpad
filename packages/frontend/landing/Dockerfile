@@ -34,7 +34,23 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
 # Copy source code
 COPY packages/frontend/landing ./packages/frontend/landing
-RUN mkdir -p packages/frontend/landing/public
+RUN mkdir -p packages/frontend/landing/public packages/frontend/landing/messages
+
+# Fetch Tolgee translations at build time (always fresh, no manual sync)
+RUN echo "Fetching Tolgee translations..." && \
+    if [ -n "$NEXT_PUBLIC_TOLGEE_API_KEY" ] && [ -n "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then \
+      apt-get update -qq && apt-get install -y -qq --no-install-recommends curl ca-certificates unzip >/dev/null && \
+      BASE="${NEXT_PUBLIC_TOLGEE_API_URL%/}" && \
+      curl -sf -H "X-API-Key: $NEXT_PUBLIC_TOLGEE_API_KEY" \
+        "$BASE/v2/projects/3/export?format=JSON&languages=ru-RU,en,es-ES,sr" \
+        -o /tmp/tolgee.zip && \
+      unzip -oq /tmp/tolgee.zip -d packages/frontend/landing/messages && \
+      rm /tmp/tolgee.zip && \
+      echo "Tolgee messages fetched: $(ls packages/frontend/landing/messages/)"; \
+    else \
+      echo "Skipping Tolgee fetch (no API key/URL; using committed messages)" && \
+      [ -f packages/frontend/landing/messages/en.json ] || { echo "ERROR: No messages/ found; set NEXT_PUBLIC_TOLGEE_API_KEY"; exit 1; }; \
+    fi
 
 # Build logger first (dependency of landing)
 RUN pnpm --filter @archpad/logger build
