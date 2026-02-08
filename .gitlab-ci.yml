@@ -976,12 +976,10 @@ build:main:portal:
     # Собираем только если изменены файлы в portal
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/portal/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/portal/**/*
         - packages/contract/**/*
 
@@ -991,7 +989,6 @@ cleanup:main:portal:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/portal/**/*
         - packages/contract/**/*
 
@@ -1003,11 +1000,9 @@ build:main:landing:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/landing/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/landing/**/*
 
 cleanup:main:landing:
@@ -1016,7 +1011,6 @@ cleanup:main:landing:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/landing/**/*
 
 # ============================================
