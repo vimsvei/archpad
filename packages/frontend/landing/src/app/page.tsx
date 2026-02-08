@@ -77,29 +77,52 @@ export default async function LandingPage() {
   // Uses createServerInstance from tolgee/server (Tolgee docs for App Router).
   const log = (await import('@archpad/logger')).createServerLogger('landing');
   let staticData: Awaited<ReturnType<Awaited<ReturnType<typeof getTolgee>>['loadRequired']>> | undefined;
-  try {
-    const { getTolgeeEnvInfo } = await import('@/tolgee/shared');
-    const envInfo = getTolgeeEnvInfo();
-    log.info({ event: 'Tolgee prefetch', locale: resolvedLocale, ...envInfo });
+  const { getTolgeeEnvInfo } = await import('@/tolgee/shared');
+  const envInfo = getTolgeeEnvInfo();
 
+  log.info({
+    event: 'Tolgee prefetch start',
+    locale: resolvedLocale,
+    apiUrlSource: envInfo.apiUrlSource,
+    isInternalUrl: envInfo.isInternalUrl,
+    apiUrl: envInfo.apiUrl ? `${envInfo.apiUrl.replace(/\/$/, '')}/...` : undefined,
+    hasApiKey: envInfo.hasApiKey,
+  });
+
+  try {
     const tolgee = await getTolgee();
     staticData = await tolgee.loadRequired();
 
     const count = Array.isArray(staticData) ? staticData.length : (staticData ? Object.keys(staticData).length : 0);
     if (count === 0) {
-      log.warn({ event: 'Tolgee loadRequired empty', locale: resolvedLocale, ...envInfo });
+      log.warn({
+        event: 'Tolgee loadRequired empty',
+        locale: resolvedLocale,
+        apiUrlSource: envInfo.apiUrlSource,
+        isInternalUrl: envInfo.isInternalUrl,
+        hint: 'Translations will come from staticData (messages/*.json)',
+      });
+    } else {
+      log.info({
+        event: 'Tolgee loadRequired OK',
+        locale: resolvedLocale,
+        keysCount: count,
+        apiUrlSource: envInfo.apiUrlSource,
+      });
     }
-    log.info({ event: 'Tolgee loadRequired OK', locale: resolvedLocale, keysCount: count });
   } catch (e) {
     const err = e instanceof Error ? e : new Error(String(e));
-    const { getTolgeeEnvInfo } = await import('@/tolgee/shared');
-    const envInfo = getTolgeeEnvInfo();
     log.error(
       {
         event: 'Tolgee loadRequired failed',
         message: err.message,
         locale: resolvedLocale,
-        ...envInfo,
+        apiUrlSource: envInfo.apiUrlSource,
+        isInternalUrl: envInfo.isInternalUrl,
+        apiUrl: envInfo.apiUrl,
+        hint: envInfo.isInternalUrl
+          ? 'Internal K8s URL may be unreachable: check network, DNS, Tolgee pod. Using staticData fallback.'
+          : 'Check Tolgee API reachability. Using staticData fallback.',
         stack: err.stack?.split('\n').slice(0, 5),
       },
       undefined,

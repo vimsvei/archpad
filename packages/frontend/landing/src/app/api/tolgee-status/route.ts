@@ -11,6 +11,8 @@ export async function GET() {
     ok: info.hasApiKey && Boolean(info.apiUrl),
     hasApiKey: info.hasApiKey,
     hasApiUrl: Boolean(info.apiUrl),
-    apiUrlKind: info.apiUrl?.includes('svc') ? 'internal' : info.apiUrl ? 'external' : null,
+    apiUrlSource: info.apiUrlSource,
+    isInternalUrl: info.isInternalUrl,
+    apiUrlPrefix: info.apiUrl ? `${info.apiUrl.replace(/\/$/, '').slice(0, 50)}...` : null,
   });
 }

@@ -20,11 +20,35 @@ function getTolgeeApiUrl(): string | undefined {
   return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 }
 
-/** For server-side logging only. Does not expose apiKey. */
-export function getTolgeeEnvInfo(): { apiUrl: string | undefined; hasApiKey: boolean } {
+/**
+ * For server-side logging only. Does not expose apiKey.
+ * apiUrlSource: which env var was used (for debugging prod API unreachable issues).
+ */
+export function getTolgeeEnvInfo(): {
+  apiUrl: string | undefined;
+  hasApiKey: boolean;
+  apiUrlSource: 'TOLGEE_API_URL' | 'TOLGEE_INTERNAL_API_URL' | 'NEXT_PUBLIC_TOLGEE_API_URL' | 'none';
+  isInternalUrl: boolean;
+} {
+  const url =
+    process.env.TOLGEE_API_URL ??
+    process.env.TOLGEE_INTERNAL_API_URL ??
+    process.env.NEXT_PUBLIC_TOLGEE_API_URL;
+
+  let source: 'TOLGEE_API_URL' | 'TOLGEE_INTERNAL_API_URL' | 'NEXT_PUBLIC_TOLGEE_API_URL' | 'none' = 'none';
+  if (process.env.TOLGEE_API_URL) source = 'TOLGEE_API_URL';
+  else if (process.env.TOLGEE_INTERNAL_API_URL) source = 'TOLGEE_INTERNAL_API_URL';
+  else if (process.env.NEXT_PUBLIC_TOLGEE_API_URL) source = 'NEXT_PUBLIC_TOLGEE_API_URL';
+
+  const isInternal =
+    !!url &&
+    (url.includes('.svc') || url.includes('tolgee:') || url.startsWith('http://tolgee'));
+
   return {
-    apiUrl: getTolgeeApiUrl(),
+    apiUrl: url,
     hasApiKey: Boolean(getTolgeeApiKey()),
+    apiUrlSource: source,
+    isInternalUrl: isInternal,
   };
 }
 
@@ -66,6 +90,14 @@ export function TolgeeBase() {
       apiUrl: apiUrl || undefined,
       fallbackLanguage: FALLBACK_LANGUAGE,
       availableLanguages: ALL_LANGUAGES,
+      // Static JSON fallback — always works even when Tolgee API is unreachable (e.g. prod K8s).
+      // Exported from Tolgee; update: curl "https://i18n.archpad.pro/v2/projects/3/export?format=JSON&languages=ru-RU,en,es-ES,sr" -H "X-API-Key: $KEY" -o x.zip && unzip -o x.zip -d messages/
+      staticData: {
+        en: () => import('../../messages/en.json'),
+        'ru-RU': () => import('../../messages/ru-RU.json'),
+        'es-ES': () => import('../../messages/es-ES.json'),
+        sr: () => import('../../messages/sr.json'),
+      },
     });
 
   if (process.env.NODE_ENV === 'development') {

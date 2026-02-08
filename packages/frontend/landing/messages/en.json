@@ -1,0 +1,153 @@
+{
+  "landing": {
+    "capabilities": {
+      "decisions": {
+        "body": "Document ADRs, context, and decision consequences.",
+        "title": "Architectural decisions"
+      },
+      "integrations": {
+        "body": "GraphQL API, OIDC, PostgreSQL, Tolgee, CI/CD.",
+        "title": "Integrations"
+      },
+      "repository": {
+        "body": "Store projects, decisions, and catalogs in one place. Versioning and change history.",
+        "title": "Repository"
+      },
+      "risks": {
+        "body": "Identify risks, gaps, and constraints in architecture.",
+        "title": "Risks and gaps"
+      },
+      "title": "Capabilities",
+      "traceability": {
+        "body": "Link artifacts together. From requirements to components and data.",
+        "title": "Traceability"
+      },
+      "views": {
+        "body": "Diagrams, reports, and export in various formats.",
+        "title": "Views"
+      }
+    },
+    "cta": {
+      "body": "Request a demo or open the documentation to learn more.",
+      "title": "Ready to try?"
+    },
+    "faq": {
+      "a1": "ArchPad is a platform for working with architectural artifacts: project repository, catalogs, decisions, and linked data model.",
+      "a2": "Register, create an organization, and upload data via Open Exchange or create structure manually.",
+      "a3": "Import from Open Exchange (JSON) is supported, as well as working with ArchiMate diagrams.",
+      "a4": "Yes. ArchPad provides GraphQL API, supports OIDC, Tolgee, and can be deployed in your infrastructure.",
+      "q1": "What is ArchPad?",
+      "q2": "How to get started?",
+      "q3": "What formats are supported?",
+      "q4": "Can it integrate with our stack?",
+      "title": "Frequently asked questions"
+    },
+    "hero": {
+      "seoDescription": "Working with architectural artifacts: repository, catalogs, linked data model",
+      "seoTitle": "ArchPad — platform for architectural artifacts",
+      "subtitle": "Project repository, catalogs, decisions — all in one place",
+      "title": "Unified environment for architecture"
+    },
+    "howItWorks": {
+      "s1": {
+        "body": "Import projects and catalogs from Open Exchange or create from scratch.",
+        "title": "Upload data"
+      },
+      "s2": {
+        "body": "Configure links between components, decisions, and catalogs.",
+        "title": "Link artifacts"
+      },
+      "s3": {
+        "body": "Traceability, impact analysis, risks, and compliance.",
+        "title": "Analyze"
+      },
+      "s4": {
+        "body": "Diagrams, reports, and data exchange with external systems.",
+        "title": "Export"
+      },
+      "title": "How it works"
+    },
+    "integrations": {
+      "graphql": "GraphQL API for data and metadata access.",
+      "lead": "ArchPad integrates with modern development stack and infrastructure.",
+      "oidc": "OIDC/OAuth2 for single sign-on and identity federation.",
+      "postgres": "PostgreSQL as the primary data store.",
+      "title": "Integrations",
+      "tolgee": "Tolgee for interface localization."
+    },
+    "personas": {
+      "cto": {
+        "body": "Overview of technologies, risks, and compliance with standards.",
+        "title": "CTO / Tech Lead"
+      },
+      "ea": {
+        "body": "Managing architectural landscape, application portfolio, and traceability.",
+        "title": "Enterprise Architect"
+      },
+      "grc": {
+        "body": "Architecture audit, compliance with requirements, and reporting.",
+        "title": "GRC / Compliance"
+      },
+      "sa": {
+        "body": "Documenting decisions, ADRs, and links between components.",
+        "title": "Solution Architect"
+      },
+      "title": "For whom"
+    },
+    "problems": {
+      "leftTitle": "Typical problems",
+      "p1": "Artifacts scattered across different systems",
+      "p2": "No unified model and traceability",
+      "p3": "Hard to keep up to date",
+      "p4": "Manual work for analysis and reporting",
+      "rightTitle": "How ArchPad helps",
+      "s1": "Unified project and catalog repository",
+      "s2": "Linked data model, traceability",
+      "s3": "Automation and synchronization",
+      "s4": "Ready-made views and export",
+      "title": "Problems and solutions"
+    },
+    "trust": {
+      "body": "Self-checks, backup, audit, and compliance with modern security standards.",
+      "title": "Reliability and security"
+    },
+    "useCases": {
+      "title": "Use cases"
+    },
+    "whatIs": {
+      "b1": "Project and decision repository",
+      "b2": "Catalogs with linked data model",
+      "b3": "Architectural diagrams and metamodel",
+      "b4": "Integrations with GraphQL, OIDC, Tolgee and more",
+      "p1": "ArchPad is a platform for working with architectural artifacts. Unified environment for storing, linking, and analyzing architecture data.",
+      "title": "What is ArchPad"
+    }
+  },
+  "site": {
+    "cta": {
+      "openDocs": "Documentation",
+      "openPortal": "Open application",
+      "requestDemo": "Request demo"
+    }
+  },
+  "useCases": {
+    "apm": {
+      "description": "Scenario description for application portfolio and landscape management.",
+      "outputs": {
+        "body": "Up-to-date landscape view, duplication reports, dependencies, and modernization plans.",
+        "title": "Results"
+      },
+      "problem": {
+        "body": "Application landscape grows, it's hard to track duplication, legacy systems, and links between components.",
+        "title": "Problem"
+      },
+      "solution": {
+        "b1": "Unified catalog of applications and components",
+        "b2": "Traceability from requirements to implementation",
+        "b3": "Impact and risk analysis",
+        "title": "Solution"
+      },
+      "title": "Application portfolio management"
+    }
+  }
+}
