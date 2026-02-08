@@ -36,6 +36,9 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 COPY packages/frontend/landing ./packages/frontend/landing
 RUN mkdir -p packages/frontend/landing/public
 
+# Build logger first (dependency of landing)
+RUN pnpm --filter @archpad/logger build
+
 # Build landing (Velite runs automatically during next build)
 RUN echo "Building landing with NEXT_PUBLIC_* variables:" && \
     echo "  NEXT_PUBLIC_TOLGEE_API_KEY: ${NEXT_PUBLIC_TOLGEE_API_KEY:+***SET***}" && \
