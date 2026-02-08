@@ -81,8 +81,8 @@ http://oathkeeper.secure.svc:4455
 **Файлы:**
 - `infra/timeweb/10-gitops/apps/ory/oathkeeper/oathkeeper.service.yaml`
 - `infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml`
-- `packages/portal/src/app/api/rest/[...path]/route.ts`
-- `packages/portal/src/app/api/public/solutions/[id]/route.ts`
+- `packages/frontend/portal/src/app/api/rest/[...path]/route.ts`
+- `packages/frontend/portal/src/app/api/public/solutions/[id]/route.ts`
 
 ---
 

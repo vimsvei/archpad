@@ -115,7 +115,7 @@ GitLab CI/CD автоматически собирает Docker образы д�
    - `latest`
 
 2. **Обновление версий** в package.json:
-   - Обновляет версии в `packages/portal/package.json`
+   - Обновляет версии в `packages/frontend/portal/package.json`
    - Обновляет версии в `packages/contract/package.json`
    - Обновляет версии в `packages/backend/package.json`
 

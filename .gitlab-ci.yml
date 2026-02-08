@@ -827,7 +827,7 @@ cleanup:auth-service:
 build:portal:
   extends: .build_docker_image
   variables:
-    DOCKERFILE_PATH: "packages/portal/Dockerfile"
+    DOCKERFILE_PATH: "packages/frontend/portal/Dockerfile"
     BUILD_CONTEXT: "."
 
 cleanup:portal:
@@ -839,7 +839,7 @@ cleanup:portal:
 build:landing:
   extends: .build_docker_image
   variables:
-    DOCKERFILE_PATH: "packages/landing/Dockerfile"
+    DOCKERFILE_PATH: "packages/frontend/landing/Dockerfile"
     BUILD_CONTEXT: "."
 
 cleanup:landing:
@@ -970,17 +970,19 @@ cleanup:main:hasura-sync-service:
 build:main:portal:
   extends: .build_docker_image_main
   variables:
-    DOCKERFILE_PATH: "packages/portal/Dockerfile"
+    DOCKERFILE_PATH: "packages/frontend/portal/Dockerfile"
     BUILD_CONTEXT: "."
   rules:
     # Собираем только если изменены файлы в portal
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - packages/portal/**/*
+        - packages/frontend/portal/**/*
+        - packages/frontend/lib/logger/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - packages/portal/**/*
+        - packages/frontend/portal/**/*
+        - packages/frontend/lib/logger/**/*
         - packages/contract/**/*
 
 cleanup:main:portal:
@@ -989,21 +991,24 @@ cleanup:main:portal:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - packages/portal/**/*
+        - packages/frontend/portal/**/*
+        - packages/frontend/lib/logger/**/*
         - packages/contract/**/*
 
 build:main:landing:
   extends: .build_docker_image_main
   variables:
-    DOCKERFILE_PATH: "packages/landing/Dockerfile"
+    DOCKERFILE_PATH: "packages/frontend/landing/Dockerfile"
     BUILD_CONTEXT: "."
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - packages/landing/**/*
+        - packages/frontend/landing/**/*
+        - packages/frontend/lib/logger/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - packages/landing/**/*
+        - packages/frontend/landing/**/*
+        - packages/frontend/lib/logger/**/*
 
 cleanup:main:landing:
   extends: .cleanup_registry_image
@@ -1011,7 +1016,8 @@ cleanup:main:landing:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - packages/landing/**/*
+        - packages/frontend/landing/**/*
+        - packages/frontend/lib/logger/**/*
 
 # ============================================
 # Version Update (обновление версий в package.json)
@@ -1113,8 +1119,8 @@ update:versions:
       }
       
       # Обновляем версии в package.json файлах
-      update_version "packages/portal/package.json"
-      update_version "packages/landing/package.json"
+      update_version "packages/frontend/portal/package.json"
+      update_version "packages/frontend/landing/package.json"
       update_version "packages/contract/package.json"
       update_version "packages/backend/package.json"
       
@@ -1125,8 +1131,8 @@ update:versions:
       
       echo ""
       echo "Checking file contents after update:"
-      echo "  packages/portal/package.json version: $(jq -r '.version // "not set"' packages/portal/package.json)"
-      echo "  packages/landing/package.json version: $(jq -r '.version // "not set"' packages/landing/package.json)"
+      echo "  packages/frontend/portal/package.json version: $(jq -r '.version // "not set"' packages/frontend/portal/package.json)"
+      echo "  packages/frontend/landing/package.json version: $(jq -r '.version // "not set"' packages/frontend/landing/package.json)"
       echo "  packages/contract/package.json version: $(jq -r '.version // "not set"' packages/contract/package.json)"
       echo "  packages/backend/package.json version: $(jq -r '.version // "not set"' packages/backend/package.json)"
       echo "  Expected version: $VERSION"
@@ -1134,7 +1140,7 @@ update:versions:
       # Добавляем измененные файлы
       echo ""
       echo "Staging package.json files..."
-      git add packages/*/package.json || true
+      git add packages/*/package.json packages/frontend/*/package.json packages/frontend/lib/*/package.json || true
       
       echo ""
       echo "Checking staged changes:"

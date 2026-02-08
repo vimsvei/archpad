@@ -173,7 +173,7 @@ spec:
               fi
               # Запускаем Next.js приложение с явной передачей переменных окружения
               echo "Portal starting..."
-              cd /app/packages/portal
+              cd /app/packages/frontend/portal
               # Экспортируем все переменные окружения для Next.js
               export NEXT_PUBLIC_HASURA_GRAPHQL_URL HASURA_INTERNAL_URL HASURA_GRAPHQL_ADMIN_SECRET NEXT_PUBLIC_TOLGEE_API_URL NEXT_PUBLIC_TOLGEE_API_KEY TOLGEE_API_URL NEXT_PUBLIC_URL
               [ -n "$API_GATEWAY_INTERNAL_URL" ] && export API_GATEWAY_INTERNAL_URL

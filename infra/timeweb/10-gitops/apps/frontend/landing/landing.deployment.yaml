@@ -70,7 +70,7 @@ spec:
               export TOLGEE_API_URL=$(echo "$TOLGEE_API_URL" | tr -d ' \t\n\r')
               export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$NEXT_PUBLIC_TOLGEE_API_URL" | tr -d ' \t\n\r')
               echo "Starting landing..." >&2
-              cd /app/packages/landing
+              cd /app/packages/frontend/landing
               exec env \
                 NEXT_PUBLIC_TOLGEE_API_URL="$NEXT_PUBLIC_TOLGEE_API_URL" \
                 NEXT_PUBLIC_TOLGEE_API_KEY="$NEXT_PUBLIC_TOLGEE_API_KEY" \

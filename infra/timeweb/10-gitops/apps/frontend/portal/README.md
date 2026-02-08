@@ -54,7 +54,7 @@ Portal доступен через:
    ```
 
 3. Настроить GitLab CI/CD pipeline для:
-   - Сборки Docker образа (используя `packages/portal/Dockerfile`)
+   - Сборки Docker образа (используя `packages/frontend/portal/Dockerfile`)
    - Тегирования по git commit SHA
    - Публикации в Container Registry TimeWeb
 
