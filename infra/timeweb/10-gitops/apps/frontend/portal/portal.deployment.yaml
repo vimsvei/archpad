@@ -110,6 +110,9 @@ spec:
               set -a
               . /vault/secrets/portal
               set +a
+              # Trim whitespace from Tolgee URLs (Vault may have leading/trailing spaces)
+              export TOLGEE_API_URL="${TOLGEE_API_URL// /}"
+              export NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL// /}"
               
               # Логируем все переменные окружения с маскированием
               echo "=========================================="
