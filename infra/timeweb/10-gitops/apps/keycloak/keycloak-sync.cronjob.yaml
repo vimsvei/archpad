@@ -42,7 +42,7 @@ spec:
               {{- end }}
             vault.hashicorp.com/role: "secure"
         spec:
-          serviceAccountName: keycloak-sync
+          serviceAccountName: keycloak
           restartPolicy: Never
           containers:
             - name: keycloak-sync
