@@ -1,8 +1,7 @@
 import ApplicationProvider from "@/components/providers/application-provider";
-import {TolgeeNextProvider} from "@/components/providers/tolgee-next-provider";
-import {ALL_LANGUAGES} from "@/tolgee/shared";
-import {notFound} from "next/navigation";
-import {NextIntlClientProvider} from "next-intl";
+import { TolgeeNextProvider } from "@/components/providers/tolgee-next-provider";
+import { ALL_LANGUAGES } from "@/tolgee/shared";
+import { notFound } from "next/navigation";
 import { ToasterHost } from "@/components/layouts/toaster-host";
 import { createServerLogger } from "@archpad/logger";
 
@@ -12,13 +11,10 @@ type RootLayoutProps = {
 };
 
 export default async function RootLayout({ children, params }: RootLayoutProps) {
-  
   const { locale } = await params;
   if (!ALL_LANGUAGES.includes(locale)) notFound();
-  
+
   const log = createServerLogger("portal");
-  // Server prefetch: load translations at request time (not build).
-  // Env vars from Vault at runtime; no CORS; Tolgee docs recommended.
   let staticData: Awaited<ReturnType<Awaited<ReturnType<typeof import('@/tolgee/server').getTolgee>>['loadRequired']>> | undefined;
   try {
     const { getTolgee } = await import('@/tolgee/server');
@@ -30,18 +26,15 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     const err = e instanceof Error ? e : new Error(String(e));
     log.error({ event: "Tolgee loadRequired failed", locale, message: err.message }, undefined, err.stack);
   }
-  
+
   return (
     <ApplicationProvider>
-      <NextIntlClientProvider locale={locale}>
-        <TolgeeNextProvider language={locale} staticData={staticData}>
-          {/*<main className="p-4 pb-8 flex items-center justify-center flex-col gap-8 min-h-screen">*/}
-          <main>
-            { children }
-            <ToasterHost />
-          </main>
-        </TolgeeNextProvider>
-      </NextIntlClientProvider>
+      <TolgeeNextProvider language={locale} staticData={staticData}>
+        <main>
+          {children}
+          <ToasterHost />
+        </main>
+      </TolgeeNextProvider>
     </ApplicationProvider>
-  )
+  );
 }

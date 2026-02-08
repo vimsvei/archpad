@@ -74,10 +74,12 @@ export default function proxy(request: NextRequest) {
   }
 
   // Internally, we still render from /[locale]/... by rewriting.
-  const locale = getLocaleFromRequest(request)
-  const url = request.nextUrl.clone()
-  url.pathname = `/${locale}${cleaned === '/' ? '' : cleaned}`
-  return NextResponse.rewrite(url)
+  const locale = getLocaleFromRequest(request);
+  const url = request.nextUrl.clone();
+  url.pathname = `/${locale}${cleaned === '/' ? '' : cleaned}`;
+  const res = NextResponse.rewrite(url);
+  res.cookies.set(LOCALE_COOKIE, locale, { path: '/', maxAge: 60 * 60 * 24 * 365 });
+  return res;
 }
 
 export const config = {
