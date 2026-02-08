@@ -8,12 +8,21 @@ const log = createContextLogger('tolgee');
 // Но они также могут быть доступны в runtime через environment variables
 // Используем функции для чтения в runtime, чтобы они читались каждый раз, а не замораживались при импорте
 function getTolgeeApiKey(): string | undefined {
-  // В Next.js переменные NEXT_PUBLIC_* доступны через process.env
-  // Они могут быть встроены в бандл (build time) или доступны в runtime
   return process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
 }
 
+/**
+ * Server: prefers TOLGEE_API_URL (internal K8s, e.g. http://tolgee.platform.svc:8080).
+ * Client: uses NEXT_PUBLIC_TOLGEE_API_URL (public, for fallback fetch).
+ */
 function getTolgeeApiUrl(): string | undefined {
+  if (typeof window === 'undefined') {
+    return (
+      process.env.TOLGEE_API_URL ??
+      process.env.TOLGEE_INTERNAL_API_URL ??
+      process.env.NEXT_PUBLIC_TOLGEE_API_URL
+    );
+  }
   return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 }
 

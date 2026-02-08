@@ -5,7 +5,18 @@ function getTolgeeApiKey(): string | undefined {
   return process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
 }
 
+/**
+ * Server: prefers TOLGEE_API_URL (internal K8s, e.g. http://tolgee.platform.svc:8080).
+ * Client: uses NEXT_PUBLIC_TOLGEE_API_URL (public, for fallback fetch).
+ */
 function getTolgeeApiUrl(): string | undefined {
+  if (typeof window === 'undefined') {
+    return (
+      process.env.TOLGEE_API_URL ??
+      process.env.TOLGEE_INTERNAL_API_URL ??
+      process.env.NEXT_PUBLIC_TOLGEE_API_URL
+    );
+  }
   return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 }
 

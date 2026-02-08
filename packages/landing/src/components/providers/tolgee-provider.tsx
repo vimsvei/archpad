@@ -2,17 +2,22 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { TolgeeProvider } from '@tolgee/react';
+import { CachePublicRecord, TolgeeProvider, TolgeeStaticData } from '@tolgee/react';
 import { TolgeeBase } from '@/tolgee/shared';
 
 type TolgeeLandingProviderProps = {
   language: string;
+  /**
+   * Server-prefetched translations (loadRequired at request time).
+   * Avoids client fetch and CORS; works without build-time env vars.
+   */
+  staticData?: TolgeeStaticData | CachePublicRecord[];
   children: React.ReactNode;
 };
 
 const tolgee = TolgeeBase().init({ defaultLanguage: 'en' });
 
-export function TolgeeLandingProvider({ language, children }: TolgeeLandingProviderProps) {
+export function TolgeeLandingProvider({ language, staticData, children }: TolgeeLandingProviderProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -25,7 +30,11 @@ export function TolgeeLandingProvider({ language, children }: TolgeeLandingProvi
   }, [language, router]);
 
   return (
-    <TolgeeProvider tolgee={tolgee} fallback={null}>
+    <TolgeeProvider
+      tolgee={tolgee}
+      fallback={null}
+      ssr={staticData ? { language, staticData } : undefined}
+    >
       {children}
     </TolgeeProvider>
   );

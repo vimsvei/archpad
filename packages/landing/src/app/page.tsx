@@ -76,6 +76,17 @@ export default async function LandingPage() {
     .filter((s: { enabled?: boolean }) => s.enabled !== false)
     .map((s: { id: string }) => s.id);
 
+  // Server prefetch: load translations at request time (not build).
+  // Env vars from Vault at runtime; no CORS; Tolgee docs recommended.
+  let staticData: Awaited<ReturnType<ReturnType<ReturnType<typeof import('@/tolgee/shared').TolgeeBase>['init']>['loadRequired']>> | undefined;
+  try {
+    const { TolgeeBase } = await import('@/tolgee/shared');
+    const tolgee = TolgeeBase().init({ language: resolvedLocale });
+    staticData = await tolgee.loadRequired();
+  } catch (e) {
+    console.warn('[landing] Tolgee loadRequired failed, falling back to client fetch:', e);
+  }
+
   const sectionsToRender =
     orderedIds.length > 0
       ? orderedIds
@@ -92,7 +103,7 @@ export default async function LandingPage() {
         });
 
   return (
-    <TolgeeLandingProvider language={resolvedLocale}>
+    <TolgeeLandingProvider language={resolvedLocale} staticData={staticData}>
       <main className="min-h-screen">
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container mx-auto flex h-16 items-center justify-between px-4">

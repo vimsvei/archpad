@@ -84,6 +84,8 @@ RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid 100
 COPY --from=builder /app/packages/landing/.next/standalone ./
 COPY --from=builder /app/packages/landing/.next/static ./packages/landing/.next/static
 COPY --from=builder /app/packages/landing/public ./packages/landing/public
+# Velite content (required for dynamic import @/.velite)
+COPY --from=builder /app/packages/landing/.velite ./packages/landing/.velite
 
 WORKDIR /app/packages/landing
 USER nextjs
