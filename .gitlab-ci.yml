@@ -861,13 +861,11 @@ build:main:arch-repo-service:
     # Собираем только если изменены файлы в arch-repo-service
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/arch-repo-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/arch-repo-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -878,7 +876,6 @@ cleanup:main:arch-repo-service:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/arch-repo-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -892,13 +889,11 @@ build:main:tenant-service:
     # Собираем только если изменены файлы в tenant-service
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/tenant-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/tenant-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -909,7 +904,6 @@ cleanup:main:tenant-service:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/tenant-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -922,13 +916,11 @@ build:main:auth-service:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/auth-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/auth-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -939,7 +931,6 @@ cleanup:main:auth-service:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/auth-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -953,13 +944,11 @@ build:main:hasura-sync-service:
     # Собираем только если изменены файлы в hasura-sync-service
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/hasura-sync-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/hasura-sync-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
@@ -970,7 +959,6 @@ cleanup:main:hasura-sync-service:
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
-        - .gitlab-ci.yml
         - packages/backend/apps/hasura-sync-service/**/*
         - packages/backend/libs/**/*
         - packages/contract/**/*
