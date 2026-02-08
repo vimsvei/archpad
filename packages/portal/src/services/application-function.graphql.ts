@@ -9,7 +9,7 @@ import type {
 } from "@/generated/operations"
 
 type HasuraApplicationFunctionRow =
-  | GetApplicationFunctionsQuery["FunctionEntity"][number]
+  | GetApplicationFunctionsQuery["FunctionGeneric"][number]
   | NonNullable<GetApplicationFunctionByPkQuery["FunctionGenericByPk"]>
 
 export type GetApplicationFunctionsParams = {

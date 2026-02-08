@@ -13,7 +13,7 @@ import { BusinessActor } from '@/model/archimate/business/business-actor.entity'
 import { Role } from '@/model/archimate/common/role.entity';
 import { BusinessProduct } from '@/model/archimate/business/business-product.entity';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
-import { PhysicalLocation } from '@/model/archimate/common/location.entity';
+import { Location } from '@/model/archimate/common/location.entity';
 import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
 import { Constraint } from '@/model/archimate/motivation/constraint.entity';
 import { Principle } from '@/model/archimate/motivation/principle.entity';
@@ -101,9 +101,9 @@ export class NamedObjectAutoRegistry {
         }),
         NamedObjectModule.register({
           tag: 'Локации',
-          entity: PhysicalLocation,
+          entity: Location,
           path: 'locations',
-          createDto: createNamedObjectZodDto('CreateDtoPhysicalLocation'),
+          createDto: createNamedObjectZodDto('CreateDtoLocation'),
         }),
         NamedObjectModule.register({
           tag: 'Стейкхолдеры',
