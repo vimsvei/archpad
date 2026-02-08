@@ -15,7 +15,8 @@ spec:
   failedJobsHistoryLimit: 2
   jobTemplate:
     spec:
-      backoffLimit: 1
+      # Больше ретраев при временной недоступности Vault Agent Injector (перезапуск и т.п.)
+      backoffLimit: 3
       template:
         metadata:
           annotations:
@@ -50,6 +51,11 @@ spec:
               args:
                 - |
                   apk add --no-cache curl jq >/dev/null
+                  # Ждём появления секретов от Vault Agent (init может завершиться с задержкой)
+                  for i in $(seq 1 15); do
+                    [ -f /vault/secrets/keycloak-admin ] && break
+                    sleep 2
+                  done
                   # Load admin creds from Vault Agent Injector
                   . /vault/secrets/keycloak-admin
                   # Load portal OIDC client id/secret (confidential client)
