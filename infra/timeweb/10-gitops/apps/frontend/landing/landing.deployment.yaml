@@ -67,8 +67,8 @@ spec:
               echo "Loading Vault secrets..." >&2
               . /vault/secrets/landing
               # Trim whitespace from Tolgee URLs (Vault may have leading/trailing spaces)
-              export TOLGEE_API_URL=$(echo "${TOLGEE_API_URL:-}" | tr -d ' \t\n\r')
-              export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "${NEXT_PUBLIC_TOLGEE_API_URL:-}" | tr -d ' \t\n\r')
+              export TOLGEE_API_URL=$(echo "$TOLGEE_API_URL" | tr -d ' \t\n\r')
+              export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$NEXT_PUBLIC_TOLGEE_API_URL" | tr -d ' \t\n\r')
               echo "Starting landing..." >&2
               cd /app/packages/landing
               exec env \
