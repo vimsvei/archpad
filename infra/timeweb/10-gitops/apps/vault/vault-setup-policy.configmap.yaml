@@ -24,6 +24,14 @@ data:
     path "kv/data/archpad/demo/tolgee/*" {
       capabilities = ["read", "list"]
     }
+    # keycloak/* (admin, db, connect, smtp)
+    path "kv/data/archpad/demo/keycloak/*" {
+      capabilities = ["read", "list"]
+    }
+    # oidc/* (portal client)
+    path "kv/data/archpad/demo/oidc/*" {
+      capabilities = ["read", "list"]
+    }
     
     # Разрешаем доступ к container-register
     path "kv/data/archpad/container-register" {

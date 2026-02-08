@@ -83,7 +83,7 @@ data:
       -H "X-Vault-Token: ${VAULT_TOKEN}" \
       -H "Content-Type: application/json" \
       -d '{
-        "bound_service_account_names": "oathkeeper,keycloak",
+        "bound_service_account_names": "oathkeeper,keycloak,keycloak-sync",
         "bound_service_account_namespaces": "secure",
         "policies": "archpad",
         "ttl": "1h"

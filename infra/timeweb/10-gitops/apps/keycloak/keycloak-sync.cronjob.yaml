@@ -42,7 +42,7 @@ spec:
               {{- end }}
             vault.hashicorp.com/role: "secure"
         spec:
-          serviceAccountName: keycloak
+          serviceAccountName: keycloak-sync
           restartPolicy: Never
           containers:
             - name: keycloak-sync
@@ -56,6 +56,10 @@ spec:
                     [ -f /vault/secrets/keycloak-admin ] && break
                     sleep 2
                   done
+                  if [ ! -f /vault/secrets/keycloak-admin ]; then
+                    echo "ERROR: /vault/secrets/keycloak-admin not found after 30s. Check: kubectl logs job/<name> -n secure -c vault-agent-init"
+                    exit 1
+                  fi
                   # Load admin creds from Vault Agent Injector
                   . /vault/secrets/keycloak-admin
                   # Load portal OIDC client id/secret (confidential client)
