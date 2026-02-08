@@ -19,7 +19,8 @@ archpad/
 ├── packages/
 │   ├── contract/     # Общие типы (TypeScript)
 │   ├── backend/      # NestJS: arch-repo, tenant, auth, hasura-sync
-│   └── portal/       # Next.js frontend
+│   ├── portal/       # Next.js frontend
+│   └── landing/      # Лендинг (Next.js + Velite + Tolgee)
 ├── infra/timeweb/    # ArgoCD манифесты для K8s
 ├── docs/             # Документация
 └── scripts/          # render-env.sh, setup-argocd-image-updater.sh
