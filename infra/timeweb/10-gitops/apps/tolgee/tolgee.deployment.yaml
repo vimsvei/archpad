@@ -26,9 +26,9 @@ spec:
         vault.hashicorp.com/agent-inject-template-tolgee-db: |
           {{- $tolgeeDb := secret "kv/data/archpad/demo/tolgee/db" }}
           {{- $postgresConnect := secret "kv/data/archpad/demo/postgres/connect" }}
-          # Формируем JDBC URL из компонентов
+          # Формируем JDBC URL из компонентов (POSTGRES_ENDPOINT = in-cluster postgres-proxy, работает с любой ноды)
           {{- $password := $tolgeeDb.Data.data.TOLGEE_DB_PASSWORD | urlquery }}
-          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_HOST }}
+          {{- $pgHost := $postgresConnect.Data.data.POSTGRES_ENDPOINT }}
           {{- $pgPort := $postgresConnect.Data.data.POSTGRES_PORT }}
           export SPRING_DATASOURCE_URL="jdbc:postgresql://{{ $pgHost }}:{{ $pgPort }}/{{ $tolgeeDb.Data.data.TOLGEE_DB }}"
           export SPRING_DATASOURCE_USERNAME="{{ $tolgeeDb.Data.data.TOLGEE_DB_USER }}"
