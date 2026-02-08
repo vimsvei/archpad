@@ -26,7 +26,36 @@ function getTolgeeApiUrl(): string | undefined {
   return process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 }
 
-// Флаг для логирования конфигурации только один раз
+/**
+ * For server-side logging only. Does not expose apiKey.
+ */
+export function getTolgeeEnvInfo(): {
+  apiUrl: string | undefined;
+  hasApiKey: boolean;
+  apiUrlSource: 'TOLGEE_API_URL' | 'TOLGEE_INTERNAL_API_URL' | 'NEXT_PUBLIC_TOLGEE_API_URL' | 'none';
+  isInternalUrl: boolean;
+} {
+  const url =
+    process.env.TOLGEE_API_URL ??
+    process.env.TOLGEE_INTERNAL_API_URL ??
+    process.env.NEXT_PUBLIC_TOLGEE_API_URL;
+
+  let source: 'TOLGEE_API_URL' | 'TOLGEE_INTERNAL_API_URL' | 'NEXT_PUBLIC_TOLGEE_API_URL' | 'none' = 'none';
+  if (process.env.TOLGEE_API_URL) source = 'TOLGEE_API_URL';
+  else if (process.env.TOLGEE_INTERNAL_API_URL) source = 'TOLGEE_INTERNAL_API_URL';
+  else if (process.env.NEXT_PUBLIC_TOLGEE_API_URL) source = 'NEXT_PUBLIC_TOLGEE_API_URL';
+
+  const isInternal =
+    !!url && (url.includes('.svc') || url.includes('tolgee:') || url.startsWith('http://tolgee'));
+
+  return {
+    apiUrl: url,
+    hasApiKey: Boolean(getTolgeeApiKey()),
+    apiUrlSource: source,
+    isInternalUrl: isInternal,
+  };
+}
+
 let configLogged = false;
 
 // Логирование для отладки (выполняется только один раз при первом вызове)
@@ -81,6 +110,16 @@ export function TolgeeBase() {
     .updateDefaults({
       apiKey: apiKey || undefined,
       apiUrl: apiUrl || undefined,
+      fallbackLanguage: { 'ru-RU': ['ru', 'en'], 'es-ES': ['es', 'en'] },
+      availableLanguages: ALL_LANGUAGES,
+      // Static JSON — fetched at Docker build from Tolgee API. Fallback when API unreachable (prod K8s).
+      // Locally: loadRequired() fetches fresh from API at every request.
+      staticData: {
+        en: () => import('../../messages/en.json'),
+        'ru-RU': () => import('../../messages/ru-RU.json'),
+        'es-ES': () => import('../../messages/es-ES.json'),
+        sr: () => import('../../messages/sr.json'),
+      },
     });
   
   // DevTools включаем только в development режиме

@@ -54,6 +54,24 @@ ENV NEXT_PUBLIC_API_REST_URI=$NEXT_PUBLIC_API_REST_URI
 COPY packages/frontend/portal ./packages/frontend/portal
 COPY packages/contract ./packages/contract
 
+# Fetch Tolgee translations at build time (always fresh, no manual sync)
+RUN echo "Fetching Tolgee translations..." && \
+    if [ -n "$NEXT_PUBLIC_TOLGEE_API_KEY" ] && [ -n "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then \
+      apt-get update -qq && apt-get install -y -qq --no-install-recommends curl ca-certificates unzip jq >/dev/null && \
+      BASE="${NEXT_PUBLIC_TOLGEE_API_URL%/}" && \
+      PROJECT_ID=$(curl -sf -H "X-API-Key: $NEXT_PUBLIC_TOLGEE_API_KEY" "$BASE/v2/api-keys/current" | jq -r '.projectId') && \
+      [ -n "$PROJECT_ID" ] && [ "$PROJECT_ID" != "null" ] || { echo "Failed to get Tolgee project ID"; exit 1; } && \
+      curl -sf -H "X-API-Key: $NEXT_PUBLIC_TOLGEE_API_KEY" \
+        "$BASE/v2/projects/$PROJECT_ID/export?format=JSON&languages=ru-RU,en,es-ES,sr" \
+        -o /tmp/tolgee.zip && \
+      unzip -oq /tmp/tolgee.zip -d packages/frontend/portal/messages && \
+      rm /tmp/tolgee.zip && \
+      echo "Tolgee messages fetched (project $PROJECT_ID): $(ls packages/frontend/portal/messages/)"; \
+    else \
+      echo "Skipping Tolgee fetch (no API key/URL; using committed messages)" && \
+      [ -f packages/frontend/portal/messages/en.json ] || { echo "ERROR: No messages/ found; set NEXT_PUBLIC_TOLGEE_API_KEY"; exit 1; }; \
+    fi
+
 # Build contract and logger first (dependencies of portal)
 RUN pnpm --filter @archpad/contract build
 RUN pnpm --filter @archpad/logger build

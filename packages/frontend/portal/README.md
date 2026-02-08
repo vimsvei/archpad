@@ -18,6 +18,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Tolgee: переводы (messages/)
+
+Файлы `messages/*.json` **генерируются при сборке Docker-образа** из Tolgee API.
+
+- **CI/CD**: при `docker build` вызывается экспорт Tolgee (project ID определяется по API key) и распаковка в `messages/`
+- **Локально**: `pnpm fetch-tolgee` — обновить messages (нужны `NEXT_PUBLIC_TOLGEE_API_KEY`, `NEXT_PUBLIC_TOLGEE_API_URL`, `jq`)
+- **При локальной разработке** `loadRequired()` подтягивает актуальные переводы из Tolgee API при каждом запросе — staticData лишь fallback при недоступности API (prod K8s)
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
