@@ -46,14 +46,14 @@ variables:
     - 'echo "Branch: $CI_COMMIT_REF_NAME"'
     - 'echo "Registry URL: $REGISTRY_URL"'
     - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
-    # Проверяем VAULT_TOKEN для portal (нужен для получения секретов во время сборки)
+    # Проверяем VAULT_TOKEN для portal и landing (нужен для получения секретов во время сборки)
     - |
       export SERVICE_NAME_CHECK="${CI_JOB_NAME#build:}"
-      if [ "$SERVICE_NAME_CHECK" = "portal" ] && [ -z "$VAULT_TOKEN" ]; then
+      if { [ "$SERVICE_NAME_CHECK" = "portal" ] || [ "$SERVICE_NAME_CHECK" = "landing" ]; } && [ -z "$VAULT_TOKEN" ]; then
         echo "=========================================="
         echo "WARNING: VAULT_TOKEN is not set"
         echo "=========================================="
-        echo "For portal builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
+        echo "For portal/landing builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
         echo "Please set VAULT_TOKEN in GitLab CI/CD Variables:"
         echo "  Settings → CI/CD → Variables → Add variable"
         echo "  Key: VAULT_TOKEN"
@@ -198,6 +198,38 @@ variables:
         echo "  NEXT_PUBLIC_API_GRAPHQL_URI: ${NEXT_PUBLIC_API_GRAPHQL_URI:+***SET***}"
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
       }
+    - |
+      get_vault_secrets_for_landing() {
+        local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
+        local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
+        
+        if [ -z "$VAULT_TOKEN" ]; then
+          echo "ERROR: VAULT_TOKEN is not set"
+          return 1
+        fi
+        
+        if ! command -v curl >/dev/null 2>&1; then apk add --no-cache curl >/dev/null 2>&1 || true; fi
+        if ! command -v jq >/dev/null 2>&1; then apk add --no-cache jq >/dev/null 2>&1 || true; fi
+        
+        local response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_SECRET_PATH}" 2>&1)
+        if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch landing secrets from Vault"
+          return 1
+        fi
+        
+        local tolgee_api_key_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_TOLGEE_API_KEY_PATH}" 2>&1)
+        if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then
+          echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"
+          return 1
+        fi
+        
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$tolgee_api_key_response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
+        export NEXT_PUBLIC_SITE_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_SITE_URL // "https://archpad.pro"')
+        
+        echo "✅ Successfully fetched secrets for landing"
+      }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:}"
     # Убеждаемся, что переменные установлены (из GitLab Variables или fallback)
@@ -251,6 +283,24 @@ variables:
           --build-arg NEXT_PUBLIC_API_GRAPHQL_URI="${NEXT_PUBLIC_API_GRAPHQL_URI}" \
           --build-arg NEXT_PUBLIC_API_REST_URI="${NEXT_PUBLIC_API_REST_URI}" \
           "$BUILD_CONTEXT"
+      elif [ "$SERVICE_NAME" = "landing" ]; then
+        echo "Building landing - fetching secrets from Vault..."
+        get_vault_secrets_for_landing
+        if [ -z "$NEXT_PUBLIC_TOLGEE_API_KEY" ] || [ -z "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
+          echo "ERROR: Required NEXT_PUBLIC_* variables are empty after fetching from Vault"
+          exit 1
+        fi
+        docker build \
+          -t "$IMAGE_TAG_VERSION" \
+          -t "$IMAGE_TAG_LATEST" \
+          -f "$DOCKERFILE_PATH" \
+          --build-arg BUILD_COMMIT_SHA="${CI_COMMIT_SHA}" \
+          --build-arg BUILD_VERSION="${VERSION}" \
+          --build-arg BUILD_BRANCH="${CI_COMMIT_REF_NAME}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
+          --build-arg NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL}" \
+          "$BUILD_CONTEXT"
       else
         docker build \
           -t "$IMAGE_TAG_VERSION" \
@@ -287,14 +337,14 @@ variables:
     - 'echo "Branch: $CI_COMMIT_REF_NAME"'
     - 'echo "Registry URL: $REGISTRY_URL"'
     - 'echo "Registry Image Prefix: $REGISTRY_IMAGE_PREFIX"'
-    # Проверяем VAULT_TOKEN для portal (нужен для получения секретов во время сборки)
+    # Проверяем VAULT_TOKEN для portal и landing (нужен для получения секретов во время сборки)
     - |
       export SERVICE_NAME_CHECK="${CI_JOB_NAME#build:main:}"
-      if [ "$SERVICE_NAME_CHECK" = "portal" ] && [ -z "$VAULT_TOKEN" ]; then
+      if { [ "$SERVICE_NAME_CHECK" = "portal" ] || [ "$SERVICE_NAME_CHECK" = "landing" ]; } && [ -z "$VAULT_TOKEN" ]; then
         echo "=========================================="
         echo "WARNING: VAULT_TOKEN is not set"
         echo "=========================================="
-        echo "For portal builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
+        echo "For portal/landing builds, VAULT_TOKEN is required to fetch NEXT_PUBLIC_* secrets from Vault."
         echo "Please set VAULT_TOKEN in GitLab CI/CD Variables:"
         echo "  Settings → CI/CD → Variables → Add variable"
         echo "  Key: VAULT_TOKEN"
@@ -443,6 +493,23 @@ variables:
         echo "  NEXT_PUBLIC_API_REST_URI: ${NEXT_PUBLIC_API_REST_URI:+***SET***}"
         # (portal auth is proxied via auth-service; no Keycloak vars required)
       }
+    - |
+      get_vault_secrets_for_landing() {
+        local VAULT_ADDR="${VAULT_ADDR:-https://vault.archpad.pro}"
+        local VAULT_SECRET_PATH="kv/data/archpad/demo/frontend/portal"
+        local VAULT_TOLGEE_API_KEY_PATH="kv/data/archpad/demo/tolgee/api-key"
+        if [ -z "$VAULT_TOKEN" ]; then echo "ERROR: VAULT_TOKEN is not set"; return 1; fi
+        if ! command -v curl >/dev/null 2>&1; then apk add --no-cache curl >/dev/null 2>&1 || true; fi
+        if ! command -v jq >/dev/null 2>&1; then apk add --no-cache jq >/dev/null 2>&1 || true; fi
+        local response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_SECRET_PATH}" 2>&1)
+        if [ $? -ne 0 ] || echo "$response" | jq -e '.errors' >/dev/null 2>&1; then echo "ERROR: Failed to fetch landing secrets from Vault"; return 1; fi
+        local tolgee_api_key_response=$(curl -s -H "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_TOLGEE_API_KEY_PATH}" 2>&1)
+        if [ $? -ne 0 ] || echo "$tolgee_api_key_response" | jq -e '.errors' >/dev/null 2>&1; then echo "ERROR: Failed to fetch NEXT_PUBLIC_TOLGEE_API_KEY from Vault"; return 1; fi
+        export NEXT_PUBLIC_TOLGEE_API_KEY=$(echo "$tolgee_api_key_response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_KEY // empty')
+        export NEXT_PUBLIC_TOLGEE_API_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_TOLGEE_API_URL // empty')
+        export NEXT_PUBLIC_SITE_URL=$(echo "$response" | jq -r '.data.data.NEXT_PUBLIC_SITE_URL // "https://archpad.pro"')
+        echo "✅ Successfully fetched secrets for landing"
+      }
   script:
     - export SERVICE_NAME="${CI_JOB_NAME#build:main:}"
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
@@ -494,6 +561,24 @@ variables:
           --build-arg NEXT_PUBLIC_HASURA_GRAPHQL_URL="${NEXT_PUBLIC_HASURA_GRAPHQL_URL}" \
           --build-arg NEXT_PUBLIC_API_GRAPHQL_URI="${NEXT_PUBLIC_API_GRAPHQL_URI}" \
           --build-arg NEXT_PUBLIC_API_REST_URI="${NEXT_PUBLIC_API_REST_URI}" \
+          "$BUILD_CONTEXT"
+      elif [ "$SERVICE_NAME" = "landing" ]; then
+        echo "Building landing - fetching secrets from Vault..."
+        get_vault_secrets_for_landing
+        if [ -z "$NEXT_PUBLIC_TOLGEE_API_KEY" ] || [ -z "$NEXT_PUBLIC_TOLGEE_API_URL" ]; then
+          echo "ERROR: Required NEXT_PUBLIC_* variables are empty after fetching from Vault"
+          exit 1
+        fi
+        docker build \
+          -t "$IMAGE_TAG_MAIN" \
+          -t "$IMAGE_TAG_LATEST" \
+          -f "$DOCKERFILE_PATH" \
+          --build-arg BUILD_COMMIT_SHA="${CI_COMMIT_SHA}" \
+          --build-arg BUILD_VERSION="main" \
+          --build-arg BUILD_BRANCH="${CI_COMMIT_REF_NAME}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_KEY="${NEXT_PUBLIC_TOLGEE_API_KEY}" \
+          --build-arg NEXT_PUBLIC_TOLGEE_API_URL="${NEXT_PUBLIC_TOLGEE_API_URL}" \
+          --build-arg NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL}" \
           "$BUILD_CONTEXT"
       else
         docker build \
@@ -808,6 +893,18 @@ cleanup:portal:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
+build:landing:
+  extends: .build_docker_image
+  variables:
+    DOCKERFILE_PATH: "packages/landing/Dockerfile"
+    BUILD_CONTEXT: "."
+
+cleanup:landing:
+  extends: .cleanup_registry_image
+  needs: ["build:landing"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
+
 # ============================================
 # Backend Services (main ветка)
 # ============================================
@@ -967,6 +1064,30 @@ cleanup:main:portal:
         - packages/portal/**/*
         - packages/contract/**/*
 
+build:main:landing:
+  extends: .build_docker_image_main
+  variables:
+    DOCKERFILE_PATH: "packages/landing/Dockerfile"
+    BUILD_CONTEXT: "."
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - .gitlab-ci.yml
+        - packages/landing/**/*
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - .gitlab-ci.yml
+        - packages/landing/**/*
+
+cleanup:main:landing:
+  extends: .cleanup_registry_image
+  needs: ["build:main:landing"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - .gitlab-ci.yml
+        - packages/landing/**/*
+
 # ============================================
 # Version Update (обновление версий в package.json)
 # ============================================
@@ -1068,6 +1189,7 @@ update:versions:
       
       # Обновляем версии в package.json файлах
       update_version "packages/portal/package.json"
+      update_version "packages/landing/package.json"
       update_version "packages/contract/package.json"
       update_version "packages/backend/package.json"
       
@@ -1079,6 +1201,7 @@ update:versions:
       echo ""
       echo "Checking file contents after update:"
       echo "  packages/portal/package.json version: $(jq -r '.version // "not set"' packages/portal/package.json)"
+      echo "  packages/landing/package.json version: $(jq -r '.version // "not set"' packages/landing/package.json)"
       echo "  packages/contract/package.json version: $(jq -r '.version // "not set"' packages/contract/package.json)"
       echo "  packages/backend/package.json version: $(jq -r '.version // "not set"' packages/backend/package.json)"
       echo "  Expected version: $VERSION"
@@ -1174,6 +1297,8 @@ update:versions:
       artifacts: false
     - job: build:portal
       artifacts: false
+    - job: build:landing
+      artifacts: false
 
 # ============================================
 # Deploy (информационный stage)
@@ -1209,6 +1334,7 @@ deploy:update-images:
     - 'echo "  - tenant-service:${VERSION}-${COMMIT_SHA} (latest)"'
     - 'echo "  - hasura-sync-service:${VERSION}-${COMMIT_SHA} (latest)"'
     - 'echo "  - portal:${VERSION}-${COMMIT_SHA} (latest)"'
+    - 'echo "  - landing:${VERSION}-${COMMIT_SHA} (latest)"'
     - echo ""
     - 'echo "📦 ArgoCD Image Updater will automatically detect new images and update Kubernetes manifests"'
     - 'echo "   See: docs/ARGOCD_IMAGE_UPDATER.md for details"'
