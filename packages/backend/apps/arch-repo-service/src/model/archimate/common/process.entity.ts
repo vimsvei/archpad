@@ -5,14 +5,14 @@ import { ArchimateCode, HasuraTable } from '@archpad/models';
 
 @HasuraTable()
 @Entity({
-  tableName: 'interfaces',
+  tableName: 'processes',
   abstract: true,
   discriminatorColumn: 'layer',
 })
-export abstract class InterfaceGeneric extends ArchimateElementGeneric {
+export abstract class Process extends ArchimateElementGeneric {
   @Enum({ items: () => LayerKind, nativeEnumName: 'layer_kind_enum' })
   layer!: LayerKind;
 
-  @ArchimateCode('INT')
+  @ArchimateCode('PRC')
   override code: string = undefined as any;
 }

@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
-import { PhysicalLocation } from '@/model/archimate/physical/physical-location.entity';
+import { Location } from '@/model/archimate/common/location.entity';
 import { Environment } from '@/model/enums/environment.enum';
 import { NetworkScope } from '@/model/enums/network-scope.enum';
 import { NetworkAbstractionLevel } from '@/model/enums/network-abstraction-level.enum.';
@@ -22,10 +22,10 @@ export class TechnologyPhysicalNetwork extends TechnologyNetwork {
   environment!: Environment;
 
   @ManyToOne({
-    entity: () => PhysicalLocation,
+    entity: () => Location,
     nullable: true,
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  location!: PhysicalLocation;
+  location!: Location;
 }

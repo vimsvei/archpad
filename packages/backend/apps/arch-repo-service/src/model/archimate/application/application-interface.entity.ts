@@ -1,4 +1,4 @@
-import { InterfaceGeneric } from '@/model/archimate/core/interface.generic';
+import { Interface } from '@/model/archimate/common/interface.entity';
 import { Collection, Entity, Enum, OneToMany } from '@mikro-orm/core';
 import { LayerKind } from '@/model/enums/layer-kind.enum';
 import { ApplicationFunctionInterfaceMap } from '@/model/maps/application-function-interface.map';
@@ -7,7 +7,7 @@ import { HasuraReference } from '@archpad/models';
 import { InterfaceMethodEnum } from '@/model/enums/interface-method.enum';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
-export class ApplicationInterface extends InterfaceGeneric {
+export class ApplicationInterface extends Interface {
   @Enum({
     items: () => InterfaceMethodEnum,
     nativeEnumName: 'interface_method_enum',

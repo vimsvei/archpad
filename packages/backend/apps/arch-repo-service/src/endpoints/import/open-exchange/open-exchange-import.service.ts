@@ -19,7 +19,7 @@ import { ApplicationComponentDataObjectMap } from '@/model/maps/application-comp
 import { ApplicationFunctionDataObjectMap } from '@/model/maps/application-function-data-object.map';
 import { DataAccessKind } from '@/model/enums/data-access-kind.enum';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
-import { BusinessRole } from '@/model/archimate/business/business-role.entity';
+import { Role } from '@/model/archimate/common/role.entity';
 import { BusinessActorRoleMap } from '@/model/maps/business-actor-role.map';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
@@ -166,8 +166,8 @@ export class OpenExchangeImportService {
     private readonly functionDataObjectMapRepo: EntityRepository<ApplicationFunctionDataObjectMap>,
     @InjectRepository(BusinessActor)
     private readonly businessActorRepo: EntityRepository<BusinessActor>,
-    @InjectRepository(BusinessRole)
-    private readonly businessRoleRepo: EntityRepository<BusinessRole>,
+    @InjectRepository(Role)
+    private readonly businessRoleRepo: EntityRepository<Role>,
     @InjectRepository(BusinessActorRoleMap)
     private readonly businessActorRoleMapRepo: EntityRepository<BusinessActorRoleMap>,
     @InjectRepository(SystemSoftware)
@@ -267,7 +267,7 @@ export class OpenExchangeImportService {
     const functionEntityByXmlId = new Map<string, ApplicationFunction>();
     const dataObjectEntityByXmlId = new Map<string, DataObject>();
     const businessActorEntityByXmlId = new Map<string, BusinessActor>();
-    const businessRoleEntityByXmlId = new Map<string, BusinessRole>();
+    const businessRoleEntityByXmlId = new Map<string, Role>();
     const systemSoftwareEntityByXmlId = new Map<string, SystemSoftware>();
     const networkEntityByXmlId = new Map<string, TechnologyLogicalNetwork>();
     const deviceEntityByXmlId = new Map<string, TechnologyDeviceNode>();
@@ -758,7 +758,7 @@ export class OpenExchangeImportService {
       requirements: ParsedElement[];
       assessments: ParsedElement[];
       businessActorEntityByXmlId: Map<string, BusinessActor>;
-      businessRoleEntityByXmlId: Map<string, BusinessRole>;
+      businessRoleEntityByXmlId: Map<string, Role>;
       systemSoftwareEntityByXmlId: Map<string, SystemSoftware>;
       networkEntityByXmlId: Map<string, TechnologyLogicalNetwork>;
       deviceEntityByXmlId: Map<string, TechnologyDeviceNode>;
@@ -788,11 +788,11 @@ export class OpenExchangeImportService {
     for (const e of input.businessRoles) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(BusinessRole, { name } as any)
+        ? await em.findOne(Role, { name } as any)
         : null;
       const entity =
         existing ??
-        em.create(BusinessRole, {
+        em.create(Role, {
           name,
           description: e.documentation,
           created,

@@ -5,7 +5,7 @@ import { TechnologyPhysicalNetwork } from '@/model/archimate/technology/technolo
 
 @HasuraTable()
 @Entity({ tableName: 'locations' })
-export class PhysicalLocation extends NamedObject {
+export class Location extends NamedObject {
   @ArchimateCode('LOCATION')
   override code: string = undefined as any;
 

@@ -5,14 +5,14 @@ import { ArchimateCode, HasuraTable } from '@archpad/models';
 
 @HasuraTable()
 @Entity({
-  tableName: 'services',
+  tableName: 'events',
   abstract: true,
   discriminatorColumn: 'layer',
 })
-export abstract class ServiceGeneric extends ArchimateElementGeneric {
+export abstract class Event extends ArchimateElementGeneric {
   @Enum({ items: () => LayerKind, nativeEnumName: 'layer_kind_enum' })
   layer!: LayerKind;
 
-  @ArchimateCode('SRV')
+  @ArchimateCode('EVENT')
   override code: string = undefined as any;
 }

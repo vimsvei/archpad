@@ -10,10 +10,10 @@ import { TechnologyDeviceNode } from '@/model/archimate/technology/technology-no
 import { DataObject } from '../../../model/archimate/application/data-object.entity';
 import { ApplicationEvent } from '../../../model/archimate/application/application-event.entity';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
-import { BusinessRole } from '@/model/archimate/business/business-role.entity';
+import { Role } from '@/model/archimate/common/role.entity';
 import { BusinessProduct } from '@/model/archimate/business/business-product.entity';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
-import { PhysicalLocation } from '@/model/archimate/physical/physical-location.entity';
+import { PhysicalLocation } from '@/model/archimate/common/location.entity';
 import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
 import { Constraint } from '@/model/archimate/motivation/constraint.entity';
 import { Principle } from '@/model/archimate/motivation/principle.entity';
@@ -83,7 +83,7 @@ export class NamedObjectAutoRegistry {
         }),
         NamedObjectModule.register({
           tag: 'Бизнес-роли',
-          entity: BusinessRole,
+          entity: Role,
           path: 'business-roles',
           createDto: createNamedObjectZodDto('CreateDtoBusinessRole'),
         }),
