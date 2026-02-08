@@ -15,11 +15,11 @@ import { updateADRField, selectADRFields } from "@/store/slices/solution-edit-sl
 import { MarkdownEditor } from "@/components/archimate/application-component/markdown-editor"
 
 type ADRTabProps = {
-  tr: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string) => string
   isSaving: boolean
 }
 
-export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) {
+export const ADRTab = React.memo(function ADRTab({ t, isSaving }: ADRTabProps) {
   const dispatch = useDispatch<AppDispatch>()
   const adrFields = useSelector(selectADRFields)
   const [tab, setTab] = React.useState<string>("context")
@@ -57,16 +57,16 @@ export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) 
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="context">
-            {tr("solution.context")}
+            {t("solution.context")}
           </TabsTrigger>
           <TabsTrigger value="decision">
-            {tr("solution.decision")}
+            {t("solution.decision")}
           </TabsTrigger>
           <TabsTrigger value="consequences">
-            {tr("solution.consequences")}
+            {t("solution.consequences")}
           </TabsTrigger>
           <TabsTrigger value="alternatives">
-            {tr("solution.alternatives")}
+            {t("solution.alternatives")}
           </TabsTrigger>
         </TabsList>
 
@@ -80,7 +80,7 @@ export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) 
                     value={adrFields.context}
                     onChange={handleContextChange}
                     disabled={isSaving}
-                    placeholder={tr("solution.context.placeholder")}
+                    placeholder={t("solution.context.placeholder")}
                     showToolbar={true}
                   />
                 </div>
@@ -97,7 +97,7 @@ export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) 
                     value={adrFields.decision}
                     onChange={handleDecisionChange}
                     disabled={isSaving}
-                    placeholder={tr("solution.decision.placeholder")}
+                    placeholder={t("solution.decision.placeholder")}
                     showToolbar={true}
                   />
                 </div>
@@ -114,7 +114,7 @@ export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) 
                     value={adrFields.consequences}
                     onChange={handleConsequencesChange}
                     disabled={isSaving}
-                    placeholder={tr("solution.consequences.placeholder")}
+                    placeholder={t("solution.consequences.placeholder")}
                     showToolbar={true}
                   />
                 </div>
@@ -131,7 +131,7 @@ export const ADRTab = React.memo(function ADRTab({ tr, isSaving }: ADRTabProps) 
                     value={adrFields.alternatives}
                     onChange={handleAlternativesChange}
                     disabled={isSaving}
-                    placeholder={tr("solution.alternatives.placeholder")}
+                    placeholder={t("solution.alternatives.placeholder")}
                     showToolbar={true}
                   />
                 </div>

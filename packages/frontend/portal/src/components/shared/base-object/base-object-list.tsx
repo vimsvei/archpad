@@ -5,7 +5,6 @@ import { Plus, RefreshCcw } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table"
 import { useTranslate } from "@tolgee/react"
-import { useTr } from "@/lib/i18n/use-tr"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -108,8 +107,6 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
   const items = (data as any)?.items ?? []
   const pageCount = (data as any)?.pageCount ?? 1
 
-  const tr = useTr()
-
   const selectionColumn = React.useMemo<ColumnDef<TItem>>(
     () => ({
       id: "select",
@@ -118,7 +115,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
       header: ({ table }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            aria-label={tr("table.select.all", "Select all")}
+            aria-label={t("table.select.all", "Select all")}
             checked={
               table.getIsAllRowsSelected()
                 ? true
@@ -133,14 +130,14 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            aria-label={tr("table.select.row", "Select row")}
+            aria-label={t("table.select.row", "Select row")}
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
           />
         </div>
       ),
     }),
-    [tr]
+    [t]
   )
 
   const columnsWithSelection = React.useMemo(
@@ -153,7 +150,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
       title={t(titleKey)}
       search={{
         value: search,
-        placeholder: tr("table.filter"),
+        placeholder: t("table.filter"),
         onChange: setSearch,
       }}
       actions={
@@ -163,14 +160,14 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.refresh")}
+                aria-label={t("action.refresh")}
                 onClick={() => void refetch()}
                 disabled={isFetching}
               >
                 <RefreshCcw />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.refresh")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.refresh")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -179,41 +176,41 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
                 columns={columns}
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={setColumnVisibility}
-                ariaLabel={tr("table.columns")}
+                ariaLabel={t("table.columns")}
               />
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("table.columns")}</TooltipContent>
+            <TooltipContent side="bottom">{t("table.columns")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button size="icon" aria-label={tr("action.create")}>
+                <Button size="icon" aria-label={t("action.create")}>
                   <Plus />
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.create")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.create")}</TooltipContent>
           </Tooltip>
         </>
       }
       create={{
         open,
         onOpenChange: setOpen,
-        title: tr("action.create"),
+        title: t("action.create"),
         description: t(titleKey),
         content: (
           <BaseObjectNewItem
-            submitLabel={tr("action.create")}
+            submitLabel={t("action.create")}
             requireCode={create.requireCode}
             disabled={create.isLoading}
             onSubmit={async (values) => {
               try {
                 setOpen(false)
                 await create.onCreate(values)
-                toast.success(tr("action.created"))
+                toast.success(t("action.created"))
               } catch (e: any) {
-                toast.error(e?.message ?? tr("action.create.failed"))
+                toast.error(e?.message ?? t("action.create.failed"))
               } finally {
                 void refetch()
               }
@@ -242,7 +239,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
           />
           {error ? (
             <div className="text-destructive mt-2 text-sm">
-              {(error as any)?.message ?? tr("action.load.failed")}
+              {(error as any)?.message ?? t("action.load.failed")}
             </div>
           ) : null}
         </>
@@ -253,7 +250,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
         onPageChange: setPage,
         pageSize,
         onPageSizeChange: setPageSize,
-        pageSizeLabel: tr("table.page.size"),
+        pageSizeLabel: t("table.page.size"),
       }}
     />
   )

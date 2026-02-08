@@ -15,7 +15,6 @@ import { parseDirectoryJSON } from "@/components/directories/parse-directory-jso
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTranslate } from "@tolgee/react"
-import { useTr } from "@/lib/i18n/use-tr"
 import {
   useDeleteDirectoryItemMutation,
   useCreateDirectoryItemMutation,
@@ -45,8 +44,6 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
   const [search, setSearch] = React.useState("")
   const [page, setPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState<PageSizeOption>(25)
-
-  const tr = useTr()
 
   const formatNowWithTz = React.useCallback(() => {
     try {
@@ -353,7 +350,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
       title={title}
       search={{
         value: search,
-        placeholder: tr("table.filter"),
+        placeholder: t("table.filter"),
         onChange: setSearch,
       }}
       actions={
@@ -371,14 +368,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.refresh")}
+                aria-label={t("action.refresh")}
                 onClick={() => void handleRefetch()}
                 disabled={isFetching}
               >
                 <RefreshCcw />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.refresh")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.refresh")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -386,14 +383,14 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               <Button
                 size="icon"
                 variant="outline"
-                aria-label={tr("action.repository")}
+                aria-label={t("action.repository")}
                 onClick={handleUploadClick}
                 disabled={isImporting || bulkCreateState.isLoading || bulkUpsertState.isLoading}
               >
                 <Upload />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.repository")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.repository")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -402,21 +399,21 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                 columns={columns}
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={setColumnVisibility}
-                ariaLabel={tr("table.columns")}
+                ariaLabel={t("table.columns")}
               />
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("table.columns")}</TooltipContent>
+            <TooltipContent side="bottom">{t("table.columns")}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
               <SheetTrigger asChild>
-                <Button size="icon" aria-label={tr("action.create")}>
+                <Button size="icon" aria-label={t("action.create")}>
                   <Plus />
                 </Button>
               </SheetTrigger>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.create")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.create")}</TooltipContent>
           </Tooltip>
         </>
       }
@@ -440,7 +437,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                     code: values.code ? values.code : undefined,
                   },
                 }).unwrap()
-                toast.success(`${tr("directory.item.created")} ${title}`, {
+                toast.success(`${t("directory.item.created")} ${title}`, {
                   description: formatNowWithTz(),
                   className:
                     "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
@@ -448,7 +445,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               } catch (e: any) {
                 setOpen(false)
                 toast.error(
-                  `${tr("directory.item.error", "Error")} ${title}`,
+                  `${t("directory.item.error", "Error")} ${title}`,
                   {
                     className:
                       "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",
@@ -490,7 +487,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         onPageChange: setPage,
         pageSize,
         onPageSizeChange: setPageSize,
-        pageSizeLabel: tr("table.page.size"),
+        pageSizeLabel: t("table.page.size"),
       }}
     />
   )

@@ -6,8 +6,6 @@ import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 import { useDispatch, useSelector } from "react-redux"
-import { useTr } from "@/lib/i18n/use-tr"
-
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
@@ -88,8 +86,6 @@ export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
-
-  const tr = useTr()
 
   // Redux state
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
@@ -194,7 +190,7 @@ export function EditItem({ id }: EditItemProps) {
   // Full save handler - saves all data including related items
   const handleSaveFull = React.useCallback(async () => {
     if (!isDraftValid) {
-      const errorMsg = tr("form.invalid")
+      const errorMsg = t("form.invalid")
       toast.error(errorMsg)
       dispatch(setSaveError(errorMsg))
       return
@@ -309,11 +305,11 @@ export function EditItem({ id }: EditItemProps) {
         },
       }).unwrap()
 
-      toast.success(tr("action.saved"))
+      toast.success(t("action.saved"))
       dispatch(updateBaseline())
       dispatch(setSaveError(null))
     } catch (e: any) {
-      const errorMessage = e?.message ?? tr("action.save.failed")
+      const errorMessage = e?.message ?? t("action.save.failed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       
@@ -323,7 +319,7 @@ export function EditItem({ id }: EditItemProps) {
     } finally {
       dispatch(setSaving(false))
     }
-  }, [id, editState, isDraftValid, dispatch, tr, updateComponentFull])
+  }, [id, editState, isDraftValid, dispatch, t, updateComponentFull])
 
   // Global save handler (alias for compatibility)
   const handleSave = handleSaveFull
@@ -557,16 +553,16 @@ export function EditItem({ id }: EditItemProps) {
     if (!config) return { title: "" }
     
     const titleKey = `${t("action.create")} ${t(config.tableKey)}`
-    const title = tr(titleKey) // show key if translation missing
+    const title = t(titleKey) // show key if translation missing
     return { title }
-  }, [createSheetType, t, tr])
+  }, [createSheetType, t, t])
 
   const handleCreateNamedObject = React.useCallback(() => {
     if (!createSheetType) return
 
     const config = getSheetConfig(createSheetType)
     if (!config?.canCreate) {
-      toast.error(tr("action.not-allowed"))
+      toast.error(t("action.not-allowed"))
       return
     }
 
@@ -574,7 +570,7 @@ export function EditItem({ id }: EditItemProps) {
     const name = createSheetDraft.name.trim()
     const description = createSheetDraft.description.trim()
     if (!name) {
-      toast.error(tr("action.validation.failed"))
+      toast.error(t("action.validation.failed"))
       return
     }
 
@@ -600,17 +596,17 @@ export function EditItem({ id }: EditItemProps) {
             } as any)
           )
 
-          toast.success(tr("action.created"))
+          toast.success(t("action.created"))
           setCreateSheetOpen(false)
         } catch (e: any) {
-          toast.error(e?.message ?? tr("action.create.failed"))
+          toast.error(e?.message ?? t("action.create.failed"))
         }
       })()
       return
     }
 
     // Generate temporary ID for new item (will be created on save)
-    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
     const tempItem = {
       id: tempId,
       code: code || "",
@@ -629,9 +625,9 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(addEvent(tempItem))
     }
 
-    toast.success(tr("action.created"))
+    toast.success(t("action.created"))
     setCreateSheetOpen(false)
-  }, [createSheetDraft, createSheetType, createSystemSoftware, dispatch, tr])
+  }, [createSheetDraft, createSheetType, createSystemSoftware, dispatch, t])
 
   // Handler for opening add existing items sheet
   const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
@@ -685,9 +681,9 @@ export function EditItem({ id }: EditItemProps) {
       itemsToAdd.forEach((item) => dispatch(addChild(item as any)))
     }
 
-    toast.success(tr("action.added"))
+    toast.success(t("action.added"))
     setSheetOpen(false)
-  }, [sheetType, sheetItems, sheetSelectedItems, dispatch, tr])
+  }, [sheetType, sheetItems, sheetSelectedItems, dispatch, t])
 
   // Get sheet title and icon based on type
   const sheetConfig = React.useMemo(() => {
@@ -697,13 +693,13 @@ export function EditItem({ id }: EditItemProps) {
     if (!config) return { title: "", icon: undefined }
     
     const titleKey = `${t('action.add')} ${t(config.tableKey)}`
-    const title = tr(titleKey) // show key if translation missing
+    const title = t(titleKey) // show key if translation missing
     
     return {
       title,
       icon: config.icon,
     }
-  }, [sheetType, t, tr])
+  }, [sheetType, t, t])
 
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {
@@ -715,20 +711,20 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back")}
+                aria-label={t("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-10">
           <div className="flex items-center justify-center gap-2">
             <Spinner className="h-6 w-6" />
-            <span className="text-muted-foreground">{tr("loading")}</span>
+            <span className="text-muted-foreground">{t("loading")}</span>
           </div>
         </Card>
       </div>
@@ -737,7 +733,7 @@ export function EditItem({ id }: EditItemProps) {
 
   // Show error state
   if (queryError || editState.error || (!isLoading && !isFetching && !fullData && !editState.baseline)) {
-    const errorMessage = editState.error || (queryError as any)?.message || tr("error.not-found")
+    const errorMessage = editState.error || (queryError as any)?.message || t("error.not-found")
     
     return (
       <div className="flex flex-col gap-4">
@@ -747,18 +743,18 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back")}
+                aria-label={t("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
         </div>
         <Card className="p-6">
-          <div className="text-destructive font-medium mb-2">{tr("error.title")}</div>
+          <div className="text-destructive font-medium mb-2">{t("error.title")}</div>
           <div className="text-muted-foreground">{errorMessage}</div>
           <Button 
             variant="outline" 
@@ -769,7 +765,7 @@ export function EditItem({ id }: EditItemProps) {
               window.location.reload()
             }}
           >
-            {tr("action.retry")}
+            {t("action.retry")}
           </Button>
         </Card>
       </div>
@@ -785,13 +781,13 @@ export function EditItem({ id }: EditItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label={tr("action.back")}
+                aria-label={t("action.back")}
                 onClick={handleBack}
               >
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
           <div className="flex items-start gap-3">
             <div className="grid place-items-center rounded-full bg-muted shrink-0 size-12">
@@ -809,7 +805,7 @@ export function EditItem({ id }: EditItemProps) {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              aria-label={tr("action.save")}
+              aria-label={t("action.save")}
               onClick={() => void handleSave()}
               disabled={!isDirty || !isDraftValid || editState.isSaving}
               variant={editState.saveError ? "destructive" : "default"}
@@ -817,49 +813,49 @@ export function EditItem({ id }: EditItemProps) {
               <Save />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{tr("action.save")}</TooltipContent>
+          <TooltipContent side="bottom">{t("action.save")}</TooltipContent>
         </Tooltip>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
           <TabsTrigger value="general">
-            {tr("tab.general")}
+            {t("tab.general")}
           </TabsTrigger>
           <TabsTrigger value="classification">
-            {tr("tab.classification")}
+            {t("tab.classification")}
           </TabsTrigger>
           <TabsTrigger value="stakeholders">
-            {tr("tab.stakeholders")}
+            {t("tab.stakeholders")}
           </TabsTrigger>
           <TabsTrigger value="application">
-            {tr("tab.application")}
+            {t("tab.application")}
           </TabsTrigger>
           <TabsTrigger value="technology">
-            {tr("tab.technology")}
+            {t("tab.technology")}
           </TabsTrigger>
           <TabsTrigger value="flows">
-            {tr("tab.flows")}
+            {t("tab.flows")}
           </TabsTrigger>
           <TabsTrigger value="solutions">
-            {tr("tab.solutions")}
+            {t("tab.solutions")}
           </TabsTrigger>
           <TabsTrigger value="schemas">
-            {tr("tab.schemas")}
+            {t("tab.schemas")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContents className="flex min-h-0 flex-1 flex-col">
           <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <GeneralTab
-              tr={tr}
+              t={t}
               isSaving={editState.isSaving}
             />
           </TabsContent>
 
           <TabsContent value="classification" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
             <ClassificationTab
-              tr={tr}
+              t={t}
               isSaving={editState.isSaving}
             />
           </TabsContent>
@@ -985,7 +981,7 @@ export function EditItem({ id }: EditItemProps) {
           <Card className="p-6">
             <div className="flex items-center gap-3">
               <Spinner className="h-6 w-6" />
-              <span className="text-lg">{tr("action.saving")}</span>
+              <span className="text-lg">{t("action.saving")}</span>
             </div>
           </Card>
         </div>

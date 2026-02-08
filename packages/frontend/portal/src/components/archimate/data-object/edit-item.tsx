@@ -6,8 +6,6 @@ import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 import { useDispatch, useSelector } from "react-redux"
-import { useTr } from "@/lib/i18n/use-tr"
-
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
@@ -47,7 +45,6 @@ type EditItemProps = {
 
 export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
-  const tr = useTr()
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -83,7 +80,7 @@ export function EditItem({ id }: EditItemProps) {
 
   const handleSave = React.useCallback(async () => {
     if (!isDraftValid) {
-      const msg = tr("form.invalid")
+      const msg = t("form.invalid")
       toast.error(msg)
       dispatch(setSaveError(msg))
       return
@@ -107,16 +104,16 @@ export function EditItem({ id }: EditItemProps) {
       }).unwrap()
 
       dispatch(updateBaseline())
-      toast.success(tr("action.saved"))
+      toast.success(t("action.saved"))
     } catch (e: any) {
-      const errorMessage = e?.message ?? tr("action.save.failed")
+      const errorMessage = e?.message ?? t("action.save.failed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       throw e
     } finally {
       dispatch(setSaving(false))
     }
-  }, [dispatch, editState.code, editState.description, editState.name, id, isDraftValid, tr, updateDataObject])
+  }, [dispatch, editState.code, editState.description, editState.name, id, isDraftValid, t, updateDataObject])
 
   const [tab, setTab] = React.useState<string>("general")
 
@@ -198,18 +195,18 @@ export function EditItem({ id }: EditItemProps) {
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={tr("action.back")} onClick={handleBack}>
+              <Button variant="ghost" size="icon" aria-label={t("action.back")} onClick={handleBack}>
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.data-objects")}</h1>
         </div>
         <Card className="p-10">
           <div className="flex items-center justify-center gap-2">
             <Spinner className="h-6 w-6" />
-            <span className="text-muted-foreground">{tr("loading")}</span>
+            <span className="text-muted-foreground">{t("loading")}</span>
           </div>
         </Card>
       </div>
@@ -217,22 +214,22 @@ export function EditItem({ id }: EditItemProps) {
   }
 
   if (queryError || editState.error || (!fullData && !editState.baseline)) {
-    const errorMessage = editState.error || (queryError as any)?.message || tr("error.not-found")
+    const errorMessage = editState.error || (queryError as any)?.message || t("error.not-found")
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={tr("action.back")} onClick={handleBack}>
+              <Button variant="ghost" size="icon" aria-label={t("action.back")} onClick={handleBack}>
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
           <h1 className="text-2xl font-semibold">{t("application.data-objects")}</h1>
         </div>
         <Card className="p-6">
-          <div className="text-destructive font-medium mb-2">{tr("error.title")}</div>
+          <div className="text-destructive font-medium mb-2">{t("error.title")}</div>
           <div className="text-muted-foreground">{errorMessage}</div>
           <Button
             variant="outline"
@@ -242,7 +239,7 @@ export function EditItem({ id }: EditItemProps) {
               window.location.reload()
             }}
           >
-            {tr("action.retry")}
+            {t("action.retry")}
           </Button>
         </Card>
       </div>
@@ -255,11 +252,11 @@ export function EditItem({ id }: EditItemProps) {
         <div className="flex items-start gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={tr("action.back")} onClick={handleBack}>
+              <Button variant="ghost" size="icon" aria-label={t("action.back")} onClick={handleBack}>
                 <ArrowLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">{tr("action.back")}</TooltipContent>
+            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
           </Tooltip>
 
           <div className="flex items-start gap-3">
@@ -279,7 +276,7 @@ export function EditItem({ id }: EditItemProps) {
           <TooltipTrigger asChild>
             <Button
               size="icon"
-              aria-label={tr("action.save")}
+              aria-label={t("action.save")}
               onClick={() => void handleSave()}
               disabled={!isDirty || !isDraftValid || editState.isSaving}
               variant={editState.saveError ? "destructive" : "default"}
@@ -287,13 +284,13 @@ export function EditItem({ id }: EditItemProps) {
               <Save />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{tr("action.save")}</TooltipContent>
+          <TooltipContent side="bottom">{t("action.save")}</TooltipContent>
         </Tooltip>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="relative w-fit">
-          <TabsTrigger value="general">{tr("tab.general")}</TabsTrigger>
+          <TabsTrigger value="general">{t("tab.general")}</TabsTrigger>
           <TabsTrigger value="attributes">Attributes</TabsTrigger>
           <TabsTrigger value="components">Components</TabsTrigger>
           <TabsTrigger value="functions">Functions</TabsTrigger>
@@ -333,7 +330,7 @@ export function EditItem({ id }: EditItemProps) {
           <Card className="p-6">
             <div className="flex items-center gap-3">
               <Spinner className="h-6 w-6" />
-              <span className="text-lg">{tr("action.saving")}</span>
+              <span className="text-lg">{t("action.saving")}</span>
             </div>
           </Card>
         </div>

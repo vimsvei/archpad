@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useTr } from "@/lib/i18n/use-tr"
+import { useTranslate } from "@tolgee/react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,7 +49,7 @@ export function DirectoryItemForm({
   onSubmit,
   onCancel,
 }: DirectoryItemFormProps) {
-  const tr = useTr()
+  const { t } = useTranslate()
   const isControlled = values !== undefined
 
   const [code, setCode] = React.useState(initialValues?.code ?? "")
@@ -118,7 +118,7 @@ export function DirectoryItemForm({
       }}
     >
       <div className="grid gap-2">
-        <Label htmlFor="directory-code">{tr(`${i18nPrefix}.code`, "Code")}</Label>
+        <Label htmlFor="directory-code">{t(`${i18nPrefix}.code`, "Code")}</Label>
         <Input
           id="directory-code"
           value={current.code}
@@ -134,7 +134,7 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-name">{tr(`${i18nPrefix}.name`, "Name")}</Label>
+        <Label htmlFor="directory-name">{t(`${i18nPrefix}.name`, "Name")}</Label>
         <Input
           id="directory-name"
           value={current.name}
@@ -150,7 +150,7 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-description">{tr(`${i18nPrefix}.description`, "Description")}</Label>
+        <Label htmlFor="directory-description">{t(`${i18nPrefix}.description`, "Description")}</Label>
         <Textarea
           id="directory-description"
           value={current.description}
@@ -164,10 +164,10 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-color">{tr(`${i18nPrefix}.color`, "Color")}</Label>
+        <Label htmlFor="directory-color">{t(`${i18nPrefix}.color`, "Color")}</Label>
         <div className="flex items-center gap-2">
           <Input
-            aria-label={tr(`${i18nPrefix}.color`, "Color")}
+            aria-label={t(`${i18nPrefix}.color`, "Color")}
             type="color"
             value={colorPickerValue}
             onChange={(e) => {
@@ -204,14 +204,14 @@ export function DirectoryItemForm({
           }}
           disabled={disabled}
         />
-        <Label htmlFor="directory-by-default">{tr(`${i18nPrefix}.by-default`, "By default")}</Label>
+        <Label htmlFor="directory-by-default">{t(`${i18nPrefix}.by-default`, "By default")}</Label>
       </div>
 
       {!hideActions ? (
         <div className="flex items-center justify-end gap-2">
           {onCancel ? (
             <Button type="button" variant="outline" onClick={onCancel} disabled={disabled}>
-              {tr("action.cancel")}
+              {t("action.cancel")}
             </Button>
           ) : null}
           <Button type="submit" disabled={!isValid || disabled}>

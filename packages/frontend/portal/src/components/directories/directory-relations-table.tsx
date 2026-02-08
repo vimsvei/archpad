@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTranslate } from "@tolgee/react"
-import { useTr } from "@/lib/i18n/use-tr"
 import {
   useCreateDirectoryLinkMutation,
   useDeleteDirectoryLinkMutation,
@@ -39,8 +38,6 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
     useGetDirectoryRelationsQuery({ slug: sourceDirectorySlug, sourceId: sourceItemId })
   const [createLink, { isLoading: isCreateLinkLoading }] = useCreateDirectoryLinkMutation()
   const [deleteLink, { isLoading: isDeleteLinkLoading }] = useDeleteDirectoryLinkMutation()
-
-  const tr = useTr()
 
   // NOTE: server-side directory links currently support linking items within the same directory kind.
   // Keep UI constrained to the current directory to avoid confusing cross-directory options.
@@ -107,17 +104,17 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
           </div>
 
           <div className="grid min-w-0 gap-2">
-            <Label>{tr("directory.item.relations.type")}</Label>
+            <Label>{t("directory.item.relations.type")}</Label>
             <Select value={linkType} onValueChange={(v) => setLinkType(v as DirectoryLinkType)}>
               <SelectTrigger className="w-full min-w-0">
-                <SelectValue placeholder={tr("directory.item.relations.type.placeholder")} />
+                <SelectValue placeholder={t("directory.item.relations.type.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={DirectoryLinkType.ASSOCIATION}>
-                  {tr(DirectoryLinkType.ASSOCIATION, "Association")}
+                  {t(DirectoryLinkType.ASSOCIATION, "Association")}
                 </SelectItem>
                 <SelectItem value={DirectoryLinkType.HIERARCHY}>
-                  {tr(DirectoryLinkType.HIERARCHY, "Hierarchy")}
+                  {t(DirectoryLinkType.HIERARCHY, "Hierarchy")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -127,7 +124,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
             <Button
               type="button"
               size="icon"
-              aria-label={tr("action.add")}
+              aria-label={t("action.add")}
               disabled={!targetItemId || isCreateLinkLoading}
               onClick={async () => {
                 if (!targetItemId) return
@@ -173,7 +170,7 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               <TableRow>
                 <TableHead>{t('directory.item.relations.target.directory')}</TableHead>
                 <TableHead>{t('directory.item.relations.target.item')}</TableHead>
-                <TableHead>{tr("directory.item.relations.type")}</TableHead>
+                <TableHead>{t("directory.item.relations.type")}</TableHead>
                 <TableHead className="w-[56px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -200,14 +197,14 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm overflow-hidden text-ellipsis">
                         <span className="block truncate">
-                          {tr(rel.type, rel.type === DirectoryLinkType.HIERARCHY ? "Hierarchy" : "Association")}
+                          {t(rel.type, rel.type === DirectoryLinkType.HIERARCHY ? "Hierarchy" : "Association")}
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
                           variant="outline"
                           size="icon"
-                          aria-label={tr("action.remove")}
+                          aria-label={t("action.remove")}
                           disabled={isDeleteLinkLoading}
                           onClick={async () => {
                             await deleteLink({

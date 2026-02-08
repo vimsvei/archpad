@@ -19,11 +19,11 @@ import { updateBasicFields, updateStateId, selectBasicFields } from "@/store/sli
 import { MarkdownEditor } from "./markdown-editor"
 
 type GeneralTabProps = {
-  tr: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string) => string
   isSaving: boolean
 }
 
-export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: GeneralTabProps) {
+export const GeneralTab = React.memo(function GeneralTab({ t, isSaving }: GeneralTabProps) {
   const dispatch = useDispatch<AppDispatch>()
   const basicFields = useSelector(selectBasicFields)
   const stateId = useSelector((state: RootState) => state.applicationComponentEdit.stateId)
@@ -58,7 +58,7 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
         <BaseObjectItem
           values={draft}
           onChange={handleDraftChange}
-          submitLabel={tr("action.save")}
+          submitLabel={t("action.save")}
           hideActions
           hideDescription
           disabled={isSaving}
@@ -69,14 +69,14 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
 
         {/* State field */}
         <div className="grid gap-2 flex-shrink-0">
-          <Label htmlFor="component-state">{tr("item.state")}</Label>
+          <Label htmlFor="component-state">{t("item.state")}</Label>
           <Select
             value={stateId ?? ""}
             onValueChange={handleStateChange}
             disabled={isSaving || isLoadingStates}
           >
             <SelectTrigger id="component-state" className="w-full">
-              <SelectValue placeholder={tr("select.placeholder")} />
+              <SelectValue placeholder={t("select.placeholder")} />
             </SelectTrigger>
             <SelectContent>
               {componentStates.map((state) => (
@@ -90,14 +90,14 @@ export const GeneralTab = React.memo(function GeneralTab({ tr, isSaving }: Gener
 
         {/* Description field - занимает все свободное пространство */}
         <div className="flex-1 flex flex-col min-h-0">
-          <Label htmlFor="description">{tr("item.description")}</Label>
+          <Label htmlFor="description">{t("item.description")}</Label>
           <div className="flex-1 min-h-0 mt-2">
             <MarkdownEditor
               key={basicFields.code}
               value={draft.description}
               onChange={handleDescriptionChange}
               disabled={isSaving}
-              placeholder={tr("description.placeholder")}
+              placeholder={t("description.placeholder")}
             />
           </div>
         </div>
