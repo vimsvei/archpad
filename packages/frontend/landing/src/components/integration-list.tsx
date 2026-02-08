@@ -19,7 +19,7 @@ export function IntegrationList({ items }: IntegrationListProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {items.map((item) => (
-        <Link key={item.name} href={item.href}>
+        <Link key={item.name} href={item.href} prefetch={false}>
           <Card className="h-full transition-colors hover:bg-accent/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">{item.name}</CardTitle>

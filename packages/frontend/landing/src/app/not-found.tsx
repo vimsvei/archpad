@@ -7,22 +7,23 @@ export default function NotFound() {
     <main className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold">
+          <Link href="/" prefetch={false} className="text-xl font-bold">
             ArchPad
           </Link>
           <nav className="flex items-center gap-2">
             <Link
               href="/"
+              prefetch={false}
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               На главную
             </Link>
-            <Link
-              href="/app"
+            <a
+              href="https://portal.archpad.pro"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Открыть приложение
-            </Link>
+            </a>
             <ModeToggle />
           </nav>
         </div>
@@ -37,10 +38,10 @@ export default function NotFound() {
         </p>
         <div className="flex gap-4">
           <Button asChild size="lg">
-            <Link href="/">На главную</Link>
+            <Link href="/" prefetch={false}>На главную</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/app">Открыть приложение</Link>
+            <a href="https://portal.archpad.pro">Открыть приложение</a>
           </Button>
         </div>
       </div>

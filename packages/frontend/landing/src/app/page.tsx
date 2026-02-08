@@ -87,13 +87,21 @@ export default async function LandingPage() {
 
     const count = Array.isArray(staticData) ? staticData.length : (staticData ? Object.keys(staticData).length : 0);
     if (count === 0) {
-      log.warn({ event: 'Tolgee loadRequired empty', locale: resolvedLocale });
+      log.warn({ event: 'Tolgee loadRequired empty', locale: resolvedLocale, ...envInfo });
     }
     log.info({ event: 'Tolgee loadRequired OK', locale: resolvedLocale, keysCount: count });
   } catch (e) {
     const err = e instanceof Error ? e : new Error(String(e));
+    const { getTolgeeEnvInfo } = await import('@/tolgee/shared');
+    const envInfo = getTolgeeEnvInfo();
     log.error(
-      { event: 'Tolgee loadRequired failed', message: err.message, locale: resolvedLocale, stack: err.stack?.split('\n').slice(0, 3) },
+      {
+        event: 'Tolgee loadRequired failed',
+        message: err.message,
+        locale: resolvedLocale,
+        ...envInfo,
+        stack: err.stack?.split('\n').slice(0, 5),
+      },
       undefined,
       err.stack
     );
@@ -126,7 +134,7 @@ export default async function LandingPage() {
               <a href="/" className="text-sm text-muted-foreground hover:text-foreground">
                 Главная
               </a>
-              <a href="/app" className="text-sm text-muted-foreground hover:text-foreground">
+              <a href="https://portal.archpad.pro" className="text-sm text-muted-foreground hover:text-foreground">
                 Открыть приложение
               </a>
               <LocaleToggle />

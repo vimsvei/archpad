@@ -19,7 +19,7 @@ export function UseCaseCards({ items }: UseCaseCardsProps) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <Link key={item.slug} href={`/use-cases/${item.slug}`}>
+        <Link key={item.slug} href={`/use-cases/${item.slug}`} prefetch={false}>
           <Card className="h-full transition-colors hover:bg-accent/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">

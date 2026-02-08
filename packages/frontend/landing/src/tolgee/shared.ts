@@ -46,6 +46,15 @@ export const LOCALES: Locale[] = [
 
 export const DEFAULT_LANGUAGE = 'ru-RU';
 
+/**
+ * Fallback: Tolgee project may use "ru" while we use "ru-RU" in UI.
+ * Same for es-ES -> es, etc.
+ */
+const FALLBACK_LANGUAGE: Record<string, string[]> = {
+  'ru-RU': ['ru', 'en'],
+  'es-ES': ['es', 'en'],
+};
+
 export function TolgeeBase() {
   const apiKey = getTolgeeApiKey();
   const apiUrl = getTolgeeApiUrl();
@@ -55,6 +64,8 @@ export function TolgeeBase() {
     .updateDefaults({
       apiKey: apiKey || undefined,
       apiUrl: apiUrl || undefined,
+      fallbackLanguage: FALLBACK_LANGUAGE,
+      availableLanguages: ALL_LANGUAGES,
     });
 
   if (process.env.NODE_ENV === 'development') {

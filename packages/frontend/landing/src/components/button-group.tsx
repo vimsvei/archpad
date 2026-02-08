@@ -14,14 +14,14 @@ export function ButtonGroup({ primary, secondary }: ButtonGroupProps) {
     <div className="flex flex-wrap gap-4">
       {primary && (
         <Button asChild size="lg">
-          <Link href={primary.href}>
+          <Link href={primary.href} prefetch={false}>
             <T keyName={primary.labelKey} />
           </Link>
         </Button>
       )}
       {secondary && (
         <Button asChild variant="outline" size="lg">
-          <Link href={secondary.href}>
+          <Link href={secondary.href} prefetch={false}>
             <T keyName={secondary.labelKey} />
           </Link>
         </Button>

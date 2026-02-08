@@ -21,14 +21,14 @@ export function CTA({ title, body, primary, secondary }: CTAProps) {
       <div className="flex flex-wrap justify-center gap-4">
         {primary && (
           <Button asChild size="lg">
-            <Link href={primary.href}>
+            <Link href={primary.href} prefetch={false}>
               <T keyName={primary.labelKey} />
             </Link>
           </Button>
         )}
         {secondary && (
           <Button asChild variant="outline" size="lg">
-            <Link href={secondary.href}>
+            <Link href={secondary.href} prefetch={false}>
               <T keyName={secondary.labelKey} />
             </Link>
           </Button>
