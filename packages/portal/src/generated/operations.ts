@@ -11845,7 +11845,7 @@ export type FunctionGeneric_Set_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** Streaming cursor of the table "FunctionGeneric" */
+/** Streaming cursor of the table "FunctionEntity" */
 export type FunctionGeneric_Stream_Cursor_Input = {
   /** Stream column input with initial value */
   initial_value: FunctionGeneric_Stream_Cursor_Value_Input;
@@ -14138,7 +14138,7 @@ export type ProcessGeneric_Set_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** Streaming cursor of the table "ProcessGeneric" */
+/** Streaming cursor of the table "ProcessEntity" */
 export type ProcessGeneric_Stream_Cursor_Input = {
   /** Stream column input with initial value */
   initial_value: ProcessGeneric_Stream_Cursor_Value_Input;
@@ -14394,7 +14394,7 @@ export type ServiceGeneric_Set_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** Streaming cursor of the table "ServiceGeneric" */
+/** Streaming cursor of the table "ServiceEntity" */
 export type ServiceGeneric_Stream_Cursor_Input = {
   /** Stream column input with initial value */
   initial_value: ServiceGeneric_Stream_Cursor_Value_Input;
