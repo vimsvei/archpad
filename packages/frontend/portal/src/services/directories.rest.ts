@@ -1,11 +1,20 @@
 /**
  * Directory REST API functions (arch-repo)
+ *
+ * Oathkeeper routes /rest/arch-repo-service/* to arch-repo-service, so we must
+ * include the service prefix in the path.
  */
 
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { DirectoryLinkType } from "@/@types/directory-link-type"
 import { restRequest } from "@/services/http/rest-service"
 import type { BulkDirectoryLinkInput } from "@archpad/contract"
+
+const ARCH_REPO = "arch-repo-service"
+
+function archRepoPath(segments: (string | number)[]): string[] {
+  return [ARCH_REPO, ...segments.map(String)]
+}
 
 export type CreateDirectoryItemInput = {
   code?: string
@@ -61,7 +70,7 @@ export async function createDirectoryItemRest(
   slug: DirectorySlug,
   input: CreateDirectoryItemInput
 ): Promise<DirectoryItem> {
-  const response = await restRequest<ArchRepoDirectoryItem>(slug, {
+  const response = await restRequest<ArchRepoDirectoryItem>(archRepoPath([slug]), {
     method: "POST",
     body: input,
   })
@@ -69,7 +78,7 @@ export async function createDirectoryItemRest(
 }
 
 export async function getDirectoryItemRest(slug: DirectorySlug, id: string): Promise<DirectoryItem> {
-  const response = await restRequest<ArchRepoDirectoryItem>([slug, id], {
+  const response = await restRequest<ArchRepoDirectoryItem>(archRepoPath([slug, id]), {
     method: "GET",
   })
   return mapToDirectoryItem(response)
@@ -80,7 +89,7 @@ export async function updateDirectoryItemRest(
   id: string,
   input: UpdateDirectoryItemInput
 ): Promise<DirectoryItem> {
-  const response = await restRequest<ArchRepoDirectoryItem>([slug, id], {
+  const response = await restRequest<ArchRepoDirectoryItem>(archRepoPath([slug, id]), {
     method: "PATCH",
     body: input,
   })
@@ -88,11 +97,11 @@ export async function updateDirectoryItemRest(
 }
 
 export async function deleteDirectoryItemRest(slug: DirectorySlug, id: string): Promise<void> {
-  await restRequest([slug, id], { method: "DELETE" })
+  await restRequest(archRepoPath([slug, id]), { method: "DELETE" })
 }
 
 export async function getDirectoryItemsRest(slug: DirectorySlug): Promise<DirectoryItem[]> {
-  const response = await restRequest<ArchRepoDirectoryItem[]>(slug, { method: "GET" })
+  const response = await restRequest<ArchRepoDirectoryItem[]>(archRepoPath([slug]), { method: "GET" })
   return response.map(mapToDirectoryItem)
 }
 
@@ -100,7 +109,7 @@ export async function bulkCreateDirectoryItemsRest(
   slug: DirectorySlug,
   inputs: CreateDirectoryItemInput[]
 ): Promise<DirectoryItem[]> {
-  const response = await restRequest<ArchRepoDirectoryItem[]>([slug, "bulk"], {
+  const response = await restRequest<ArchRepoDirectoryItem[]>(archRepoPath([slug, "bulk"]), {
     method: "POST",
     body: inputs,
   })
@@ -111,7 +120,7 @@ export async function bulkUpsertDirectoryItemsRest(
   slug: DirectorySlug,
   inputs: CreateDirectoryItemInput[]
 ): Promise<DirectoryItem[]> {
-  const response = await restRequest<ArchRepoDirectoryItem[]>([slug, "bulk", "upsert"], {
+  const response = await restRequest<ArchRepoDirectoryItem[]>(archRepoPath([slug, "bulk", "upsert"]), {
     method: "POST",
     body: inputs,
   })
@@ -123,7 +132,7 @@ export async function createDirectoryLinkRest(
   sourceId: string,
   input: { targetId: string; type: DirectoryLinkType }
 ): Promise<void> {
-  await restRequest([slug, sourceId, "links"], {
+  await restRequest(archRepoPath([slug, sourceId, "links"]), {
     method: "POST",
     body: input,
   })
@@ -133,7 +142,7 @@ export async function bulkCreateDirectoryLinksRest(
   slug: DirectorySlug,
   inputs: BulkDirectoryLinkInput[]
 ): Promise<void> {
-  await restRequest([slug, "links", "bulk"], {
+  await restRequest(archRepoPath([slug, "links", "bulk"]), {
     method: "POST",
     body: inputs,
   })
@@ -144,7 +153,7 @@ export async function deleteDirectoryLinkRest(
   sourceId: string,
   targetId: string
 ): Promise<void> {
-  await restRequest([slug, sourceId, "links", targetId], {
+  await restRequest(archRepoPath([slug, sourceId, "links", targetId]), {
     method: "DELETE",
   })
 }
