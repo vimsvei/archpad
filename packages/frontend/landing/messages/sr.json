@@ -46,7 +46,8 @@
       "seoDescription": "Rad sa arhitektonskim artefaktima: repozitorijum, katalozi, povezani model podataka",
       "seoTitle": "ArchPad — platforma za arhitektonske artifakte",
       "subtitle": "Repozitorijum projekata, katalozi, odluke — sve na jednom mestu",
-      "title": "Jedinstveno okruženje za arhitekturu"
+      "titleLine1": "Jedinstveno okruženje",
+      "titleLine2": "za arhitekturu"
     },
     "howItWorks": {
       "s1": {

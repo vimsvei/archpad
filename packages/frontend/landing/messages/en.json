@@ -46,7 +46,8 @@
       "seoDescription": "Working with architectural artifacts: repository, catalogs, linked data model",
       "seoTitle": "ArchPad — platform for architectural artifacts",
       "subtitle": "Project repository, catalogs, decisions — all in one place",
-      "title": "Unified environment for architecture"
+      "titleLine1": "Unified environment",
+      "titleLine2": "for architecture"
     },
     "howItWorks": {
       "s1": {

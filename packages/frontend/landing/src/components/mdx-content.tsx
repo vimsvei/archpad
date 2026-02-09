@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import * as runtime from 'react/jsx-runtime';
+import Image from 'next/image';
 import { T } from '@tolgee/react';
 import { Section } from '@/components/section';
 import { ButtonGroup } from '@/components/button-group';
@@ -15,6 +16,7 @@ import { PersonaCards } from '@/components/persona-cards';
 import { FAQAccordion } from '@/components/faq-accordion';
 
 const sharedComponents = {
+  Image,
   T,
   Section,
   ButtonGroup,

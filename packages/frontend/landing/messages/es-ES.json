@@ -46,7 +46,8 @@
       "seoDescription": "Trabajo con artefactos arquitectónicos: repositorio, catálogos, modelo de datos vinculado",
       "seoTitle": "ArchPad — plataforma para artefactos arquitectónicos",
       "subtitle": "Repositorio de proyectos, catálogos, decisiones — todo en un solo lugar",
-      "title": "Entorno unificado para la arquitectura"
+      "titleLine1": "Entorno unificado",
+      "titleLine2": "para la arquitectura"
     },
     "howItWorks": {
       "s1": {

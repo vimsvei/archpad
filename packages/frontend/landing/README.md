@@ -64,7 +64,7 @@ pnpm dev
 
 Добавьте в Tolgee ключи для лендинга:
 
-- `landing.hero.title`, `landing.hero.subtitle`
+- `landing.hero.titleLine1`, `landing.hero.titleLine2`, `landing.hero.subtitle`
 - `site.cta.openPortal`, `site.cta.requestDemo`, `site.cta.openDocs`
 - `landing.capabilities.*`, `landing.personas.*`, `landing.faq.*`
 - и др. по структуре в `content/`

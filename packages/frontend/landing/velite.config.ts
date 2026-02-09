@@ -6,6 +6,8 @@ const landingSections = defineCollection({
   schema: s.object({
     id: s.string(),
     titleKey: s.string().optional(),
+    titleLine1Key: s.string().optional(),
+    titleLine2Key: s.string().optional(),
     descriptionKey: s.string().optional(),
     variant: s.string().optional(),
     dataFile: s.string().optional(),
