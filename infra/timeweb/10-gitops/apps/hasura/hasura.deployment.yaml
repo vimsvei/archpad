@@ -20,6 +20,7 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-hasura-db: "kv/data/archpad/demo/hasura/db"
         vault.hashicorp.com/agent-inject-secret-hasura-secret: "kv/data/archpad/demo/hasura/secret"
+        vault.hashicorp.com/agent-inject-secret-hasura-settings: "kv/data/archpad/demo/hasura/settings"
         vault.hashicorp.com/agent-inject-secret-postgres-connect: "kv/data/archpad/demo/postgres/connect"
         vault.hashicorp.com/agent-inject-secret-backend-common: "kv/data/archpad/demo/backend/common"
         vault.hashicorp.com/agent-inject-secret-arch-repo-service: "kv/data/archpad/demo/backend/arch-repo-service"
@@ -40,6 +41,12 @@ spec:
         vault.hashicorp.com/agent-inject-template-hasura-secret: |
           {{- with secret "kv/data/archpad/demo/hasura/secret" }}
           export HASURA_GRAPHQL_ADMIN_SECRET="{{ .Data.data.HASURA_GRAPHQL_ADMIN_SECRET }}"
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-hasura-settings: |
+          {{- with secret "kv/data/archpad/demo/hasura/settings" }}
+          {{- if .Data.data.HASURA_GRAPHQL_UNAUTHORIZED_ROLE }}
+          export HASURA_GRAPHQL_UNAUTHORIZED_ROLE="{{ .Data.data.HASURA_GRAPHQL_UNAUTHORIZED_ROLE }}"
+          {{- end }}
           {{- end }}
         vault.hashicorp.com/agent-inject-template-hasura-sources: |
           {{- $common := secret "kv/data/archpad/demo/backend/common" }}
@@ -87,14 +94,13 @@ spec:
               . /vault/secrets/hasura-db
               . /vault/secrets/hasura-secret
               . /vault/secrets/hasura-sources
+              . /vault/secrets/hasura-settings
               exec graphql-engine serve
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           env:
-            - name: HASURA_GRAPHQL_UNAUTHORIZED_ROLE
-              value: "public"
             - name: HASURA_GRAPHQL_CORS_DOMAIN
               value: "*"
             - name: HASURA_GRAPHQL_ENABLED_APIS

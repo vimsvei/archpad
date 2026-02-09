@@ -259,7 +259,26 @@ export class HasuraClientService {
           `Applying ${label}: chunk ${i + 1}/${chunks.length} ops=${chunk.length} source=${this.source}`,
           HasuraClientService.name,
         );
-        await postChunk(chunk);
+        const res = await postChunk(chunk);
+        if (useBulkKeepGoing && Array.isArray(res)) {
+          const failed = res.filter((r: any) => r?.error);
+          if (failed.length > 0) {
+            this.logger.warn(
+              `bulk_keep_going ${label}: ${failed.length}/${res.length} ops reported failure`,
+              HasuraClientService.name,
+            );
+            failed.slice(0, 3).forEach((f: any, idx: number) => {
+              const err = f?.error;
+              const msg =
+                (typeof err === 'object' ? err?.message : err) ??
+                JSON.stringify(f);
+              this.logger.warn(
+                `  [${idx}] ${String(msg).slice(0, 150)}`,
+                HasuraClientService.name,
+              );
+            });
+          }
+        }
       } catch (e: any) {
         if (useBulkKeepGoing) {
           // bulk_keep_going should not throw for individual op failures; if we get here, it's a real error.
