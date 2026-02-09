@@ -8,6 +8,7 @@ import { DirectoryObject } from '@/model/abstract/directory-object.abstract';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { LoggerService } from '@archpad/logger';
 import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { ActionStamp } from '@archpad/models';
 
 export class BaseDirectoryService<
@@ -45,8 +46,11 @@ export class BaseDirectoryService<
     context: ArchpadRequestContext,
   ): Promise<Entity> {
     try {
+      const ctx = getArchpadRequestContext();
+      const tenantId = ctx?.tenantIds?.[0];
       const entity = this.repo.create({
         ...(dto as any),
+        ...(tenantId ? { tenantId } : {}),
         created: {
           by: context.userId,
         },
@@ -64,9 +68,12 @@ export class BaseDirectoryService<
     context: ArchpadRequestContext,
   ): Promise<Entity[]> {
     try {
+      const ctx = getArchpadRequestContext();
+      const tenantId = ctx?.tenantIds?.[0];
       const entities = dtos.map((dto) =>
         this.repo.create({
           ...(dto as any),
+          ...(tenantId ? { tenantId } : {}),
           created: {
             by: context.userId,
           },
@@ -117,6 +124,9 @@ export class BaseDirectoryService<
     const createdEntities: Entity[] = [];
     const resolved: Entity[] = [];
 
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+
     for (const dto of dtos) {
       const anyDto: any = dto as any;
       const code =
@@ -143,6 +153,7 @@ export class BaseDirectoryService<
 
         const entity = this.repo.create({
           ...(payload as any),
+          ...(tenantId ? { tenantId } : {}),
           created: {
             by: context.userId,
           },
@@ -156,6 +167,7 @@ export class BaseDirectoryService<
       // no code -> always create
       const entity = this.repo.create({
         ...(payload as any),
+        ...(tenantId ? { tenantId } : {}),
         created: {
           by: context.userId,
         },
@@ -212,10 +224,14 @@ export class BaseDirectoryService<
     const existing = await this.mapRepo.findOne({ source, target });
     if (existing) throw new ConflictException('Связь уже существует');
 
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+
     const link = new DirectoryItemsMap();
     link.source = source;
     link.target = target;
     link.type = dto.type;
+    if (tenantId) link.tenantId = tenantId;
     link.created = ActionStamp.now(context.userId);
 
     await this.mapRepo.getEntityManager().persistAndFlush(link);
@@ -301,6 +317,8 @@ export class BaseDirectoryService<
     const knex = em.getKnex();
     const inserted: any[] = [];
     const createdBy = context?.userId ?? null;
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
 
     const chunkSize = 500;
     for (let i = 0; i < pairs.length; i += chunkSize) {
@@ -312,6 +330,7 @@ export class BaseDirectoryService<
             source_id: p.sourceId,
             target_id: p.targetId,
             type: p.type,
+            ...(tenantId ? { tenant_id: tenantId } : {}),
             // `DirectoryItemsMap` extends `BaseObject` and has `created_at` NOT NULL,
             // but `onCreate` hooks don't run for raw knex inserts.
             created_at: knex.fn.now(),

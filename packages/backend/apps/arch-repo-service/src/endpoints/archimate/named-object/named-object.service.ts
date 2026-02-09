@@ -6,6 +6,7 @@ import {
   QueryOrder,
 } from '@mikro-orm/core';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 
 export type NamedObjectListQuery = {
   search?: string;
@@ -27,8 +28,11 @@ export class NamedObjectService<T extends NamedObject> {
   async create(data: RequiredEntityData<T>, context: ArchpadRequestContext) {
     // Most domain objects extend BaseObject and have `created` stamp.
     // We set `created.by` from request context for auditing.
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
     const entity = this.repo.create({
       ...(data as any),
+      ...(tenantId ? { tenantId } : {}),
       created: ActionStamp.now(context.userId) as any,
     } as RequiredEntityData<T>);
     await this.repo.getEntityManager().persistAndFlush(entity);
@@ -36,7 +40,10 @@ export class NamedObjectService<T extends NamedObject> {
   }
 
   findAll() {
-    return this.repo.findAll();
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<T> = tenantId ? ({ tenantId } as any) : ({} as any);
+    return this.repo.find(where);
   }
 
   async findAllPaginated(
@@ -52,9 +59,12 @@ export class NamedObjectService<T extends NamedObject> {
     );
     const offset = (page - 1) * pageSize;
 
-    const where: FilterQuery<T> = search
-      ? ({ name: { $ilike: `%${search}%` } } as any)
-      : ({} as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<T> = {
+      ...(tenantId ? { tenantId } : {}),
+      ...(search ? { name: { $ilike: `%${search}%` } } : {}),
+    } as FilterQuery<T>;
 
     const [items, total] = await (this.repo as any).findAndCount(where, {
       limit: pageSize,
@@ -68,11 +78,21 @@ export class NamedObjectService<T extends NamedObject> {
   }
 
   findOne(id: string) {
-    return this.repo.findOneOrFail({ id } as FilterQuery<T>);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<T> = tenantId
+      ? ({ id, tenantId } as FilterQuery<T>)
+      : ({ id } as FilterQuery<T>);
+    return this.repo.findOneOrFail(where);
   }
 
   async delete(id: string) {
-    const entity = await this.repo.findOneOrFail({ id } as FilterQuery<T>);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<T> = tenantId
+      ? ({ id, tenantId } as FilterQuery<T>)
+      : ({ id } as FilterQuery<T>);
+    const entity = await this.repo.findOneOrFail(where);
     await this.repo.getEntityManager().removeAndFlush(entity);
   }
 }

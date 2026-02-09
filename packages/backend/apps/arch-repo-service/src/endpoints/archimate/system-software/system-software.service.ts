@@ -11,6 +11,7 @@ import type {
   UpdateDtoSystemSoftware,
 } from '@/model/dto/system-software.dto';
 import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { ActionStamp } from '@archpad/models';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
@@ -48,9 +49,12 @@ export class SystemSoftwareService {
     );
     const offset = (page - 1) * pageSize;
 
-    const where: FilterQuery<SystemSoftware> = search
-      ? ({ name: { $ilike: `%${search}%` } } as any)
-      : ({} as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<SystemSoftware> = {
+      ...(tenantId ? { tenantId } : {}),
+      ...(search ? { name: { $ilike: `%${search}%` } } : {}),
+    } as FilterQuery<SystemSoftware>;
 
     const [items, total] = await (this.repo as any).findAndCount(where, {
       limit: pageSize,
@@ -70,7 +74,12 @@ export class SystemSoftwareService {
   }
 
   findOne(id: string) {
-    return this.repo.findOneOrFail({ id } as FilterQuery<SystemSoftware>);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<SystemSoftware> = tenantId
+      ? ({ id, tenantId } as FilterQuery<SystemSoftware>)
+      : ({ id } as FilterQuery<SystemSoftware>);
+    return this.repo.findOneOrFail(where);
   }
 
   async create(
@@ -78,6 +87,8 @@ export class SystemSoftwareService {
     context: ArchpadRequestContext,
   ): Promise<SystemSoftware> {
     const em = this.repo.getEntityManager();
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
 
     const entity = this.repo.create({
       code: dto.code,
@@ -85,6 +96,7 @@ export class SystemSoftwareService {
       description: dto.description,
       version: dto.version,
       kind: dto.kind ?? SystemSoftwareKind.OTHER,
+      ...(tenantId ? { tenantId } : {}),
       type: dto.typeId
         ? em.getReference(SoftwareTypeDirectory, dto.typeId)
         : undefined,

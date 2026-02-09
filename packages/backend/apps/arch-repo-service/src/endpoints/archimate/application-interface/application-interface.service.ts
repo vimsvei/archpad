@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import type { FilterQuery } from '@mikro-orm/core';
 import {
   EntityRepository,
-  FilterQuery,
   QueryOrder,
   RequiredEntityData,
 } from '@mikro-orm/core';
@@ -10,6 +10,7 @@ import { ApplicationInterface } from '@/model/archimate/application/application-
 import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { ActionStamp } from '@archpad/models';
 
 export type ApplicationInterfaceListQuery = {
@@ -48,9 +49,12 @@ export class ApplicationInterfaceService {
     );
     const offset = (page - 1) * pageSize;
 
-    const where: FilterQuery<ApplicationInterface> = search
-      ? ({ name: { $ilike: `%${search}%` } } as any)
-      : ({} as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<ApplicationInterface> = {
+      ...(tenantId ? { tenantId } : {}),
+      ...(search ? { name: { $ilike: `%${search}%` } } : {}),
+    } as FilterQuery<ApplicationInterface>;
 
     const [items, total] = await (this.interfaceRepo as any).findAndCount(
       where,
@@ -67,7 +71,12 @@ export class ApplicationInterfaceService {
   }
 
   findOne(id: string) {
-    return this.interfaceRepo.findOneOrFail({ id } as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<ApplicationInterface> = tenantId
+      ? ({ id, tenantId } as any)
+      : ({ id } as any);
+    return this.interfaceRepo.findOneOrFail(where);
   }
 
   async createWithComponent(
@@ -80,12 +89,15 @@ export class ApplicationInterfaceService {
     context: ArchpadRequestContext,
   ) {
     const em = this.interfaceRepo.getEntityManager();
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
 
     return em.transactional(async () => {
       const iface = this.interfaceRepo.create({
         code: dto.code,
         name: dto.name,
         description: dto.description,
+        ...(tenantId ? { tenantId } : {}),
         created: ActionStamp.now(context.userId),
       } as RequiredEntityData<ApplicationInterface>);
 
@@ -94,6 +106,7 @@ export class ApplicationInterfaceService {
         dto.componentId,
       );
       const map = this.mapRepo.create({
+        ...(tenantId ? { tenantId } : {}),
         component: componentRef,
         interface: iface,
       } as any);

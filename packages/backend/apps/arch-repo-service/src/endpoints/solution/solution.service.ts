@@ -69,9 +69,12 @@ export class SolutionService {
     );
     const offset = (page - 1) * pageSize;
 
-    const where: FilterQuery<Solution> = search
-      ? ({ name: { $ilike: `%${search}%` } } as any)
-      : ({} as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<Solution> = {
+      ...(tenantId ? { tenantId } : {}),
+      ...(search ? { name: { $ilike: `%${search}%` } } : {}),
+    } as FilterQuery<Solution>;
 
     const [items, total] = await (this.repo as any).findAndCount(where, {
       limit: pageSize,
@@ -91,7 +94,12 @@ export class SolutionService {
   }
 
   findOne(id: string) {
-    return this.repo.findOneOrFail({ id } as FilterQuery<Solution>);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<Solution> = tenantId
+      ? ({ id, tenantId } as FilterQuery<Solution>)
+      : ({ id } as FilterQuery<Solution>);
+    return this.repo.findOneOrFail(where);
   }
 
   async create(

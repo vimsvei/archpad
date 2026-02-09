@@ -34,6 +34,7 @@ import type {
   UpdateDtoApplicationComponent,
 } from '@/model/dto/application-component.dto';
 import { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import { getArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { ActionStamp } from '@archpad/models';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 
@@ -89,9 +90,12 @@ export class ApplicationComponentService {
     );
     const offset = (page - 1) * pageSize;
 
-    const where: FilterQuery<ApplicationComponent> = search
-      ? ({ name: { $ilike: `%${search}%` } } as any)
-      : ({} as any);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<ApplicationComponent> = {
+      ...(tenantId ? { tenantId } : {}),
+      ...(search ? { name: { $ilike: `%${search}%` } } : {}),
+    } as FilterQuery<ApplicationComponent>;
 
     // MikroORM doesn't have "findAndCount" used elsewhere in this codebase,
     // but it's a stable API and avoids two separate queries.
@@ -113,7 +117,12 @@ export class ApplicationComponentService {
   }
 
   findOne(id: string) {
-    return this.repo.findOneOrFail({ id } as FilterQuery<ApplicationComponent>);
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
+    const where: FilterQuery<ApplicationComponent> = tenantId
+      ? ({ id, tenantId } as FilterQuery<ApplicationComponent>)
+      : ({ id } as FilterQuery<ApplicationComponent>);
+    return this.repo.findOneOrFail(where);
   }
 
   async create(
@@ -121,11 +130,14 @@ export class ApplicationComponentService {
     context: ArchpadRequestContext,
   ): Promise<ApplicationComponent> {
     const em = this.repo.getEntityManager();
+    const ctx = getArchpadRequestContext();
+    const tenantId = ctx?.tenantIds?.[0];
 
     const entity = this.repo.create({
       code: dto.code,
       name: dto.name,
       description: dto.description,
+      ...(tenantId ? { tenantId } : {}),
       state: dto.stateId
         ? em.getReference(ComponentStateDirectory, dto.stateId)
         : undefined,
