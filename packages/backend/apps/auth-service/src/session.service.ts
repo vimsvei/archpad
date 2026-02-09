@@ -20,6 +20,7 @@ type SessionUser = {
 
 type SessionMe = SessionUser & {
   profile: any | null;
+  tenantId?: string | null;
 };
 
 @Injectable()
@@ -213,6 +214,10 @@ export class SessionService {
           .getUserProfileByKeycloakId(me.keycloakId)
           .catch(() => null)
       : null;
-    return { ...me, profile };
+    const tenantId =
+      profile && typeof profile === 'object' && typeof profile.tenantId === 'string'
+        ? profile.tenantId
+        : null;
+    return { ...me, profile, tenantId };
   }
 }
