@@ -49,78 +49,8 @@ data:
       mutators:
         - handler: noop
 
-    # ==== Swagger API документация для arch-repo-service (публичный доступ) ====
-    - id: arch-repo-api-docs
-      match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service/<api-docs.*>
-        methods: ["GET", "OPTIONS"]
-      upstream:
-        url: http://arch-repo-service.platform:3000
-        preserve_host: false
-        strip_path: /rest/arch-repo-service
-      authenticators:
-        - handler: anonymous
-      authorizer:
-        handler: allow
-      mutators:
-        - handler: header
-          config:
-            headers: {}
-
-    - id: arch-repo-api-json
-      match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service/<api-json.*>
-        methods: ["GET", "OPTIONS"]
-      upstream:
-        url: http://arch-repo-service.platform:3000
-        preserve_host: false
-        strip_path: /rest/arch-repo-service
-      authenticators:
-        - handler: anonymous
-      authorizer:
-        handler: allow
-      mutators:
-        - handler: header
-          config:
-            headers: {}
-
-    # ==== Swagger API документация для tenant-service (публичный доступ) ====
-    - id: tenant-service-api-docs
-      match:
-        url: <https|http>://api.archpad.pro/rest/tenant-service/<api-docs.*>
-        methods: ["GET", "OPTIONS"]
-      upstream:
-        url: http://tenant-service.platform:3000
-        preserve_host: false
-        strip_path: /rest/tenant-service
-      authenticators:
-        - handler: anonymous
-      authorizer:
-        handler: allow
-      mutators:
-        - handler: header
-          config:
-            headers: {}
-
-    - id: tenant-service-api-json
-      match:
-        url: <https|http>://api.archpad.pro/rest/tenant-service/<api-json.*>
-        methods: ["GET", "OPTIONS"]
-      upstream:
-        url: http://tenant-service.platform:3000
-        preserve_host: false
-        strip_path: /rest/tenant-service
-      authenticators:
-        - handler: anonymous
-      authorizer:
-        handler: allow
-      mutators:
-        - handler: header
-          config:
-            headers: {}
-
-    # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
-    # api-docs и api-json обрабатываются отдельными правилами выше (более специфичные)
+    # ==== Arch-repo-service через Oathkeeper ====
+    # JWT first; anonymous fallback для публичных путей (api-docs, api-json)
     - id: arch-repo-api
       match:
         url: <https|http>://api.archpad.pro/rest/arch-repo-service<(/.*)?>
@@ -131,6 +61,7 @@ data:
         strip_path: /rest/arch-repo-service
       authenticators:
         - handler: jwt
+        - handler: anonymous
       authorizer:
         handler: allow
       mutators:
@@ -139,8 +70,8 @@ data:
             headers:
               X-Archpad-User-Id: "{{ .Subject }}"
 
-    # ==== Tenant-service через Oathkeeper (требует авторизации) ====
-    # api-docs и api-json обрабатываются отдельными правилами выше
+    # ==== Tenant-service через Oathkeeper ====
+    # JWT first; anonymous fallback для публичных путей (api-docs, api-json)
     - id: tenant-service-api
       match:
         url: <https|http>://api.archpad.pro/rest/tenant-service<(/.*)?>
@@ -151,6 +82,7 @@ data:
         strip_path: /rest/tenant-service
       authenticators:
         - handler: jwt
+        - handler: anonymous
       authorizer:
         handler: allow
       mutators:
