@@ -1,10 +1,11 @@
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 
-import { DEFAULT_LANGUAGE } from '@/tolgee/shared'
+export default async function RootPage() {
+  const c = await cookies()
+  if (c.get("archpad_session")?.value) {
+    redirect("/dashboard")
+  }
 
-export default function RootPage() {
-  // All app routes live under /[locale]/..., so "/" must redirect to a locale.
-  redirect(`/${DEFAULT_LANGUAGE}`)
+  redirect("/sign-in")
 }
-
-

@@ -2,7 +2,7 @@ import { DirectoriesLayout } from "@/components/layouts/private/directory/direct
 
 type DirectoryLayoutProps = {
   children: React.ReactNode
-  params: Promise<{ locale: string; directorySlug: string }>
+  params: Promise<{ directorySlug: string }>
 }
 
 export default async function DirectoryLayout({ children, params }: DirectoryLayoutProps) {

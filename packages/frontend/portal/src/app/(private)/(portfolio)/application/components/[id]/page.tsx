@@ -1,7 +1,7 @@
 import { EditItem } from "@/components/archimate/application-component/edit-item"
 
 type ApplicationComponentEditRouteProps = {
-  params: Promise<{ locale: string; id: string }>
+  params: Promise<{ id: string }>
 }
 
 export default async function ApplicationComponentEditRoute({ params }: ApplicationComponentEditRouteProps) {

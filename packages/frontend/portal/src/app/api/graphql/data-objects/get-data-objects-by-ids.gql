@@ -1,0 +1,8 @@
+query GetDataObjectsByIds($ids: [uuid!]!) {
+  DataObject(where: { id: { _in: $ids } }) {
+    id
+    code
+    name
+    description
+  }
+}

@@ -1,7 +1,7 @@
 import { DirectoryListPage } from "@/components/directories/directory-list-page"
 
 type DirectoryListRouteProps = {
-  params: Promise<{ locale: string; directorySlug: string }>
+  params: Promise<{ directorySlug: string }>
 }
 
 export default async function DirectoryListRoute({ params }: DirectoryListRouteProps) {

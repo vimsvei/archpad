@@ -1,7 +1,7 @@
 import { DirectoryEditPage } from "@/components/directories/directory-edit-page"
 
 type DirectoryEditRouteProps = {
-  params: Promise<{ locale: string; directorySlug: string; id: string }>
+  params: Promise<{ directorySlug: string; id: string }>
 }
 
 export default async function DirectoryEditRoute({ params }: DirectoryEditRouteProps) {

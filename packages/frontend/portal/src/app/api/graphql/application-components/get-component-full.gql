@@ -72,7 +72,7 @@ query GetComponentFull($id: uuid!) {
     where: { componentChildId: { _eq: $id } }
     order_by: { order: asc_nulls_last }
   ) {
-    componentParent {
+    parent {
       id
       code
       name
@@ -83,7 +83,7 @@ query GetComponentFull($id: uuid!) {
     where: { componentParentId: { _eq: $id } }
     order_by: { order: asc_nulls_last }
   ) {
-    componentChild {
+    child {
       id
       code
       name

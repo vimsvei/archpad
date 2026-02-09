@@ -3,7 +3,7 @@ import { SolutionViewPage } from "@/components/archimate/solution/view-page"
 import { getSolutionPublicServer } from "@/services/solution.public.server"
 
 type SolutionViewRouteProps = {
-  params: Promise<{ locale: string; id: string }>
+  params: Promise<{ id: string }>
 }
 
 /**

@@ -1,7 +1,7 @@
 import { EditItem } from "@/components/archimate/system-software/edit-item"
 
 type SystemSoftwareEditRouteProps = {
-  params: Promise<{ locale: string; id: string }>
+  params: Promise<{ id: string }>
 }
 
 export default async function SystemSoftwareEditRoute({ params }: SystemSoftwareEditRouteProps) {
