@@ -224,6 +224,7 @@ API Gateway / Authorization Proxy.
 - Доступен через `https://api.archpad.pro`
 - Внутренний доступ: `http://oathkeeper.secure.svc:4455`
 - Не использует БД напрямую
+- Для Hasura: подставляет `X-Hasura-Role` и `X-Hasura-Allowed-Roles` из Keycloak groups (первая группа в нижнем регистре); fallback `public` при отсутствии групп
 
 **Секреты в Vault:**
 - Путь: `/v1/kv/data/archpad/demo/ory/oathkeeper`

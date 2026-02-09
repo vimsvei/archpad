@@ -118,3 +118,40 @@ spec:
                   else
                     echo "WARNING: OIDC_CLIENT_SECRET is not set; portal client secret not synced"
                   fi
+
+                  # Ensure "groups" client scope exists and is assigned to archpad-portal.
+                  # Oathkeeper uses groups claim for X-Hasura-Role and X-Hasura-Allowed-Roles.
+                  if [ -z "${portal_id:-}" ]; then
+                    portal_id="$(curl -fsS -H "Authorization: Bearer ${access_token}" \
+                      "${KC_BASE}/admin/realms/${REALM}/clients?clientId=${PORTAL_CLIENT_ID}" \
+                      | jq -r '.[0].id // empty')"
+                  fi
+                  groups_scope_id="$(curl -fsS -H "Authorization: Bearer ${access_token}" \
+                    "${KC_BASE}/admin/realms/${REALM}/client-scopes" \
+                    | jq -r '.[] | select(.name=="groups") | .id // empty')"
+                  if [ -z "$groups_scope_id" ]; then
+                    groups_scope_id="$(curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/client-scopes" \
+                      -H "Authorization: Bearer ${access_token}" \
+                      -H "Content-Type: application/json" \
+                      -d '{"name":"groups","protocol":"openid-connect","description":"User groups for Hasura/Oathkeeper"}' \
+                      | jq -r '.id')"
+                    echo "groups client scope created: ${groups_scope_id}"
+                  fi
+                  # Add group membership mapper if not present
+                  existing_mapper="$(curl -fsS -H "Authorization: Bearer ${access_token}" \
+                    "${KC_BASE}/admin/realms/${REALM}/client-scopes/${groups_scope_id}/protocol-mappers/models" \
+                    | jq -r '.[] | select(.name=="groups") | .id // empty')"
+                  if [ -z "$existing_mapper" ]; then
+                    curl -fsS -X POST "${KC_BASE}/admin/realms/${REALM}/client-scopes/${groups_scope_id}/protocol-mappers/models" \
+                      -H "Authorization: Bearer ${access_token}" \
+                      -H "Content-Type: application/json" \
+                      -d '{"name":"groups","protocol":"oidc","protocolMapper":"oidc-group-membership-mapper","config":{"full.path":"false","id.token.claim":"true","access.token.claim":"true","claim.name":"groups","userinfo.token.claim":"true"}}' >/dev/null
+                    echo "groups mapper added to groups scope"
+                  fi
+                  # Add groups scope as default for archpad-portal
+                  if [ -n "$portal_id" ]; then
+                    curl -fsS -X PUT \
+                      -H "Authorization: Bearer ${access_token}" \
+                      "${KC_BASE}/admin/realms/${REALM}/clients/${portal_id}/default-client-scopes/${groups_scope_id}" >/dev/null 2>&1 || true
+                    echo "groups scope assigned to ${PORTAL_CLIENT_ID}"
+                  fi
