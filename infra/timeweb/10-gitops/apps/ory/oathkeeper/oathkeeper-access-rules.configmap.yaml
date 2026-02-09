@@ -120,11 +120,10 @@ data:
             headers: {}
 
     # ==== Arch-repo-service через Oathkeeper (требует авторизации) ====
-    # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
-    # Используем negative lookahead, чтобы не матчить api-docs/api-json
+    # api-docs и api-json обрабатываются отдельными правилами выше (более специфичные)
     - id: arch-repo-api
       match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service/(?!api-docs|api-json).+
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service<(/.*)?>
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
       upstream:
         url: http://arch-repo-service.platform:3000
@@ -141,10 +140,10 @@ data:
               X-Archpad-User-Id: "{{ .Subject }}"
 
     # ==== Tenant-service через Oathkeeper (требует авторизации) ====
-    # Исключаем /api-docs и /api-json из этого правила (они обрабатываются отдельно выше)
+    # api-docs и api-json обрабатываются отдельными правилами выше
     - id: tenant-service-api
       match:
-        url: <https|http>://api.archpad.pro/rest/tenant-service/(?!api-docs|api-json).+
+        url: <https|http>://api.archpad.pro/rest/tenant-service<(/.*)?>
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
       upstream:
         url: http://tenant-service.platform:3000

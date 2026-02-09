@@ -1,0 +1,18 @@
+code,name,description,osi_approved,gpl_compatible,commercial_use_allowed,color
+MIT,MIT License,Короткая разрешительная лицензия: свободное использование/изменение/распространение при сохранении уведомления об авторских правах.,True,True,True,#2ECC71
+BSD-2-Clause,BSD 2-Clause License,Разрешительная лицензия с минимальными условиями; сохраняются уведомления об авторских правах и отказ от гарантий.,True,True,True,#2ECC71
+BSD-3-Clause,BSD 3-Clause License,"Разрешительная лицензия: как BSD-2, плюс запрет использовать имена авторов/контрибьюторов для продвижения.",True,True,True,#2ECC71
+Apache-2.0,Apache License 2.0,Разрешительная лицензия с явным патентным грантом и требованиями к уведомлениям/NOTICE; совместима с GPLv3 (но не с GPLv2-only).,True,True,True,#2ECC71
+GPL-2.0-only,GNU General Public License v2.0 only,Сильный копилефт: производные работы при распространении должны лицензироваться под GPLv2.,True,True,True,#E74C3C
+GPL-3.0-only,GNU General Public License v3.0 only,"Сильный копилефт: как GPL, плюс защита от «тивоизации» и расширенные патентные условия.",True,True,True,#E74C3C
+LGPL-2.1-only,GNU Lesser General Public License v2.1 only,Слабый копилефт для библиотек: допускает линковку с закрытым ПО при соблюдении условий (в т.ч. возможности замены/релинковки).,True,True,True,#E67E22
+LGPL-3.0-only,GNU Lesser General Public License v3.0 only,Слабый копилефт (версия 3): обновлённые условия совместимости/патентов относительно LGPL-2.1.,True,True,True,#E67E22
+AGPL-3.0-only,GNU Affero General Public License v3.0 only,"Сильный копилефт, распространяющий обязанности по предоставлению исходников и на сетевое использование (SaaS).",True,True,True,#E74C3C
+MPL-2.0,Mozilla Public License 2.0,Файловый копилефт: изменения в MPL-файлах должны оставаться открытыми; допускает комбинирование с проприетарным кодом.,True,True,True,#F1C40F
+EPL-2.0,Eclipse Public License 2.0,Слабый копилефт: условия распространяются на модификации EPL-компонентов; ориентирована на корпоративное использование и патенты.,True,False,True,#E67E22
+CDDL-1.0,Common Development and Distribution License 1.0,Файловый копилефт (на базе MPL 1.1); известна несовместимость с GPL при объединении кода в один производный продукт.,True,False,True,#E67E22
+ISC,ISC License,"Простая разрешительная лицензия, функционально близка к MIT, с очень коротким текстом.",True,True,True,#2ECC71
+Zlib,zlib License,Разрешительная лицензия: свободное использование и распространение при сохранении уведомлений и без искажения авторства.,True,True,True,#2ECC71
+BSL-1.0,Boost Software License 1.0,Очень либеральная лицензия без копилефта; позволяет коммерческое использование и распространение без раскрытия исходников.,True,True,True,#2ECC71
+PostgreSQL,PostgreSQL License,"Разрешительная лицензия BSD‑типа, используемая проектом PostgreSQL.",True,True,True,#2ECC71
+EUPL-1.2,European Union Public License 1.2,Копилефт-лицензия ЕС с механизмом совместимости (в т.ч. с GPL при соблюдении условий).,True,True,True,#E67E22
