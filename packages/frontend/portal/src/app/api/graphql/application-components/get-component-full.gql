@@ -1,5 +1,5 @@
-query GetComponentFull($id: uuid!) {
-  component: ApplicationComponentByPk(id: $id) {
+query GetComponentFull($where: ApplicationComponent_bool_exp!, $componentId: uuid!) {
+  component: ApplicationComponent(where: $where, limit: 1) {
     id
     code
     name
@@ -14,7 +14,7 @@ query GetComponentFull($id: uuid!) {
     updatedAt
     updatedBy
   }
-  functions: ApplicationComponentFunctionMap(where: { componentId: { _eq: $id } }) {
+  functions: ApplicationComponentFunctionMap(where: { componentId: { _eq: $componentId } }) {
     function {
       id
       code
@@ -22,7 +22,7 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
-  dataObjects: ApplicationComponentDataObjectMap(where: { componentId: { _eq: $id } }) {
+  dataObjects: ApplicationComponentDataObjectMap(where: { componentId: { _eq: $componentId } }) {
     dataObject {
       id
       code
@@ -30,7 +30,7 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
-  interfaces: ApplicationComponentInterfaceMap(where: { componentId: { _eq: $id } }) {
+  interfaces: ApplicationComponentInterfaceMap(where: { componentId: { _eq: $componentId } }) {
     interface {
       id
       code
@@ -38,7 +38,7 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
-  events: ApplicationComponentEventMap(where: { componentId: { _eq: $id } }) {
+  events: ApplicationComponentEventMap(where: { componentId: { _eq: $componentId } }) {
     event {
       id
       code
@@ -46,7 +46,7 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
-  systemSoftware: ApplicationComponentSystemSoftwareMap(where: { componentId: { _eq: $id } }) {
+  systemSoftware: ApplicationComponentSystemSoftwareMap(where: { componentId: { _eq: $componentId } }) {
     kind
     systemSoftware {
       id
@@ -54,14 +54,14 @@ query GetComponentFull($id: uuid!) {
       name
     }
   }
-  technologyNodes: ApplicationComponentTechnologyNodeMap(where: { componentId: { _eq: $id } }) {
+  technologyNodes: ApplicationComponentTechnologyNodeMap(where: { componentId: { _eq: $componentId } }) {
     node {
       id
       code
       name
     }
   }
-  technologyNetworks: ApplicationComponentTechnologyLogicalNetworkMap(where: { componentId: { _eq: $id } }) {
+  technologyNetworks: ApplicationComponentTechnologyLogicalNetworkMap(where: { componentId: { _eq: $componentId } }) {
     logicalNetwork {
       id
       code
@@ -69,7 +69,7 @@ query GetComponentFull($id: uuid!) {
     }
   }
   parentComponents: ApplicationComponentHierarchyMap(
-    where: { componentChildId: { _eq: $id } }
+    where: { componentChildId: { _eq: $componentId } }
     order_by: { order: asc_nulls_last }
   ) {
     parent {
@@ -80,7 +80,7 @@ query GetComponentFull($id: uuid!) {
     }
   }
   childComponents: ApplicationComponentHierarchyMap(
-    where: { componentParentId: { _eq: $id } }
+    where: { componentParentId: { _eq: $componentId } }
     order_by: { order: asc_nulls_last }
   ) {
     child {
@@ -90,7 +90,7 @@ query GetComponentFull($id: uuid!) {
       description
     }
   }
-  incomingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, targetComponentId: { _eq: $id } }) {
+  incomingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, targetComponentId: { _eq: $componentId } }) {
     id
     code
     name
@@ -106,7 +106,7 @@ query GetComponentFull($id: uuid!) {
       name
     }
   }
-  outgoingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, sourceComponentId: { _eq: $id } }) {
+  outgoingFlows: FlowGeneric(where: { layer: { _eq: "Application" }, sourceComponentId: { _eq: $componentId } }) {
     id
     code
     name
@@ -122,7 +122,7 @@ query GetComponentFull($id: uuid!) {
       name
     }
   }
-  stakeholders: ApplicationComponentStakeholderMap(where: { componentId: { _eq: $id } }) {
+  stakeholders: ApplicationComponentStakeholderMap(where: { componentId: { _eq: $componentId } }) {
     stakeholder {
       id
       code

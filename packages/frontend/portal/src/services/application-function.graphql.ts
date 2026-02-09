@@ -1,16 +1,13 @@
 import type { ApplicationFunction, Paginated } from "@/@types/application-function"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
+import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
-  GetApplicationFunctionByPkQuery,
-  GetApplicationFunctionByPkQueryVariables,
   GetApplicationFunctionsQuery,
   GetApplicationFunctionsQueryVariables,
 } from "@/generated/operations"
 
-type HasuraApplicationFunctionRow =
-  | GetApplicationFunctionsQuery["FunctionGeneric"][number]
-  | NonNullable<GetApplicationFunctionByPkQuery["FunctionGenericByPk"]>
+type HasuraApplicationFunctionRow = GetApplicationFunctionsQuery["FunctionGeneric"][number]
 
 export type GetApplicationFunctionsParams = {
   search?: string
@@ -39,7 +36,8 @@ export async function getApplicationFunctionsGraphql(
   const offset = (page - 1) * pageSize
 
   const search = (params.search ?? "").trim()
-  const where: GetApplicationFunctionsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const baseWhere: GetApplicationFunctionsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const where = mergeTenantWhere(baseWhere)
 
   const query = await loadGql("application-functions/get-application-functions.gql")
   const data = await graphqlRequest<GetApplicationFunctionsQuery, GetApplicationFunctionsQueryVariables>(query, {
@@ -64,10 +62,11 @@ export async function getApplicationFunctionsGraphql(
 
 export async function getApplicationFunctionGraphql(id: string): Promise<ApplicationFunction> {
   const query = await loadGql("application-functions/get-application-function-by-pk.gql")
-  const data = await graphqlRequest<GetApplicationFunctionByPkQuery, GetApplicationFunctionByPkQueryVariables>(query, {
-    id,
-  })
-  const row = data.FunctionGenericByPk
+  const where = mergeTenantWhere({ id: { _eq: id } })
+  type Res = { FunctionGeneric: HasuraApplicationFunctionRow[] }
+  const data = await graphqlRequest<Res, { where: unknown }>(query, { where })
+  const rows = data.FunctionGeneric
+  const row = Array.isArray(rows) ? rows[0] : null
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }

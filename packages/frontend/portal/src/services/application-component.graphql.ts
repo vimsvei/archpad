@@ -1,6 +1,7 @@
 import type { ApplicationComponent, Paginated } from "@/@types/application-component"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
+import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetComponentsQuery,
   GetComponentsQueryVariables,
@@ -36,7 +37,8 @@ export async function getApplicationComponentsGraphql(
   const offset = (page - 1) * pageSize
 
   const search = (params.search ?? "").trim()
-  const where: GetComponentsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const baseWhere: GetComponentsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const where = mergeTenantWhere(baseWhere)
 
   const query = await loadGql("application-components/get-components.gql")
   const data = await graphqlRequest<GetComponentsQuery, GetComponentsQueryVariables>(query, {
@@ -114,10 +116,10 @@ export type ApplicationComponentFull = {
 
 export async function getApplicationComponentFullGraphql(id: string): Promise<ApplicationComponentFull> {
   const query = await loadGql("application-components/get-component-full.gql")
-  // TODO: Generate types for GetComponentFullQuery when codegen is run
-  // For now using any, will be replaced with proper types
-  const data = await graphqlRequest<any, { id: string }>(query, { id })
-  const component = data.component
+  const where = mergeTenantWhere({ id: { _eq: id } })
+  const data = await graphqlRequest<any, { where: unknown; componentId: string }>(query, { where, componentId: id })
+  const componentRows = data.component
+  const component = Array.isArray(componentRows) ? componentRows[0] : componentRows
   if (!component) throw new Error("Item not found")
 
   return {

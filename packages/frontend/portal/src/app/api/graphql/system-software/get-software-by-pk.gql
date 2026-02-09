@@ -1,5 +1,5 @@
-query GetSystemSoftwareByPk($id: uuid!) {
-  SystemSoftwareByPk(id: $id) {
+query GetSystemSoftwareByPk($where: SystemSoftware_bool_exp!) {
+  SystemSoftware(where: $where, limit: 1) {
     id
     code
     name

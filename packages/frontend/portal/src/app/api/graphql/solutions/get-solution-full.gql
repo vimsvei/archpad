@@ -1,5 +1,5 @@
-query GetSolutionFull($id: uuid!) {
-  solution: SolutionByPk(id: $id) {
+query GetSolutionFull($where: Solution_bool_exp!, $solutionId: uuid!) {
+  solution: Solution(where: $where, limit: 1) {
     id
     code
     name
@@ -62,11 +62,11 @@ query GetSolutionFull($id: uuid!) {
       role
     }
   }
-  solutionDataObjects: SolutionDataObjectMap(where: { solutionId: { _eq: $id } }) {
+  solutionDataObjects: SolutionDataObjectMap(where: { solutionId: { _eq: $solutionId } }) {
     componentId
     dataObjectId
   }
-  technologyNodes: SolutionTechnologyNodeMap(where: { solutionId: { _eq: $id } }) {
+  technologyNodes: SolutionTechnologyNodeMap(where: { solutionId: { _eq: $solutionId } }) {
     node {
       id
       code

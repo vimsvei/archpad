@@ -1,5 +1,5 @@
-query GetFunctionsByIds($ids: [uuid!]!) {
-  FunctionGeneric(where: { id: { _in: $ids } }, order_by: { name: asc }) {
+query GetFunctionsByIds($where: FunctionGeneric_bool_exp!) {
+  FunctionGeneric(where: $where, order_by: { name: asc }) {
     id
     code
     name

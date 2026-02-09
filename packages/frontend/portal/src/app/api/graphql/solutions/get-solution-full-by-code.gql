@@ -1,5 +1,5 @@
-query GetSolutionFullByCode($code: String!) {
-  solution: Solution(where: { code: { _eq: $code } }, limit: 1) {
+query GetSolutionFullByCode($where: Solution_bool_exp!) {
+  solution: Solution(where: $where, limit: 1) {
     id
     code
     name
@@ -62,11 +62,11 @@ query GetSolutionFullByCode($code: String!) {
       role
     }
   }
-  solutionDataObjects: SolutionDataObjectMap(where: { solution: { code: { _eq: $code } } }) {
+  solutionDataObjects: SolutionDataObjectMap(where: { solution: $where }) {
     componentId
     dataObjectId
   }
-  technologyNodes: SolutionTechnologyNodeMap(where: { solution: { code: { _eq: $code } } }) {
+  technologyNodes: SolutionTechnologyNodeMap(where: { solution: $where }) {
     node {
       id
       code

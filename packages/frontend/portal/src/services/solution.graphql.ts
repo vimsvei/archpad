@@ -1,6 +1,7 @@
 import type { Solution, Paginated } from "@/@types/solution"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
+import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetSolutionsQuery,
   GetSolutionsQueryVariables,
@@ -46,7 +47,8 @@ export async function getSolutionsGraphql(
   const offset = (page - 1) * pageSize
 
   const search = (params.search ?? "").trim()
-  const where: GetSolutionsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const baseWhere: GetSolutionsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const where = mergeTenantWhere(baseWhere)
 
   const query = await loadGql("solutions/get-solutions.gql")
   const data = await graphqlRequest<GetSolutionsQuery, GetSolutionsQueryVariables>(query, {
@@ -119,15 +121,18 @@ export async function getSolutionFullGraphql(idOrCode: string): Promise<Solution
   if (isUuid) {
     // Use query by id
     const query = await loadGql("solutions/get-solution-full.gql")
-    const variables: GetSolutionFullQueryVariables = { id: idOrCode }
-    data = await graphqlRequest<GetSolutionFullQuery, GetSolutionFullQueryVariables>(query, variables)
-    solution = data.solution
+    const where = mergeTenantWhere({ id: { _eq: idOrCode } })
+    const variables = { where, solutionId: idOrCode }
+    data = await graphqlRequest<GetSolutionFullQuery, { where: unknown; solutionId: string }>(query, variables)
+    solution = Array.isArray((data as any).solution) ? (data as any).solution[0] : (data as any).solution
   } else {
     // Use query by code
     const query = await loadGql("solutions/get-solution-full-by-code.gql")
-    const variables: GetSolutionFullByCodeQueryVariables = { code: idOrCode }
-    data = await graphqlRequest<GetSolutionFullByCodeQuery, GetSolutionFullByCodeQueryVariables>(query, variables)
-    solution = Array.isArray(data.solution) ? data.solution[0] : data.solution
+    const baseWhere = { code: { _eq: idOrCode } }
+    const where = mergeTenantWhere(baseWhere)
+    const variables = { where }
+    data = await graphqlRequest<GetSolutionFullByCodeQuery, { where: unknown }>(query, variables)
+    solution = Array.isArray((data as any).solution) ? (data as any).solution[0] : (data as any).solution
   }
   
   if (!solution) throw new Error("Item not found")
@@ -149,9 +154,10 @@ export async function getSolutionFullGraphql(idOrCode: string): Promise<Solution
   const dataObjectIds = [...new Set(dataObjectPairs.map((p: { dataObjectId: string }) => p.dataObjectId).filter(Boolean))] as string[]
   if (dataObjectIds.length > 0) {
     const dataObjectsQuery = await loadGql("data-objects/get-data-objects-by-ids.gql")
-    const dataObjectsData = await graphqlRequest<{ DataObject: Array<{ id: string; code: string; name: string; description?: string | null }> }, { ids: string[] }>(
+    const where = mergeTenantWhere({ id: { _in: dataObjectIds } })
+    const dataObjectsData = await graphqlRequest<{ DataObject: Array<{ id: string; code: string; name: string; description?: string | null }> }, { where: unknown }>(
       dataObjectsQuery,
-      { ids: dataObjectIds }
+      { where }
     )
     const byId = new Map(dataObjectsData.DataObject?.map((d) => [d.id, d]) ?? [])
     // Preserve order from solutionDataObjects

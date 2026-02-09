@@ -1,5 +1,5 @@
-query GetDataObjectByPk($id: uuid!) {
-  DataObjectByPk(id: $id) {
+query GetDataObjectByPk($where: DataObject_bool_exp!) {
+  DataObject(where: $where, limit: 1) {
     id
     code
     name

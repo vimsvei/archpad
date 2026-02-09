@@ -1,6 +1,7 @@
 import type { DataObject, Paginated } from "@/@types/data-object"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
+import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetDataObjectByPkQuery,
   GetDataObjectByPkQueryVariables,
@@ -39,7 +40,8 @@ export async function getDataObjectsGraphql(
   const offset = (page - 1) * pageSize
 
   const search = (params.search ?? "").trim()
-  const where: GetDataObjectsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const baseWhere: GetDataObjectsQueryVariables["where"] = search ? { name: { _ilike: `%${search}%` } } : {}
+  const where = mergeTenantWhere(baseWhere)
 
   const query = await loadGql("data-objects/get-data-objects.gql")
   const data = await graphqlRequest<GetDataObjectsQuery, GetDataObjectsQueryVariables>(query, {
@@ -64,8 +66,9 @@ export async function getDataObjectsGraphql(
 
 export async function getDataObjectGraphql(id: string): Promise<DataObject> {
   const query = await loadGql("data-objects/get-data-object-by-pk.gql")
-  const data = await graphqlRequest<GetDataObjectByPkQuery, GetDataObjectByPkQueryVariables>(query, { id })
-  const row = data.DataObjectByPk
+  const where = mergeTenantWhere({ id: { _eq: id } })
+  const data = await graphqlRequest<{ DataObject: HasuraDataObjectRow[] }, { where: unknown }>(query, { where })
+  const row = Array.isArray(data.DataObject) ? data.DataObject[0] : null
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }
@@ -87,8 +90,10 @@ export type DataObjectFull = DataObject & {
 
 export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFull> {
   const query = await loadGql("data-objects/get-data-object-full.gql")
-  const data = await graphqlRequest<any, { id: string }>(query, { id })
-  const row = data.dataObject
+  const where = mergeTenantWhere({ id: { _eq: id } })
+  const data = await graphqlRequest<any, { where: unknown; dataObjectId: string }>(query, { where, dataObjectId: id })
+  const rows = data.dataObject
+  const row = Array.isArray(rows) ? rows[0] : rows
   if (!row) throw new Error("Item not found")
 
   const base = mapRow(row)
@@ -111,7 +116,8 @@ export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFu
   let functionsById = new Map<string, { id: string; code: string; name: string; description?: string | null }>()
   if (functionIds.length > 0) {
     const functionsQuery = await loadGql("application-functions/get-functions-by-ids.gql")
-    const functionsData = await graphqlRequest<any, { ids: string[] }>(functionsQuery, { ids: functionIds })
+    const where = mergeTenantWhere({ id: { _in: functionIds } })
+    const functionsData = await graphqlRequest<any, { where: unknown }>(functionsQuery, { where })
     const functions = Array.isArray(functionsData.FunctionGeneric) ? functionsData.FunctionGeneric : []
     functionsById = new Map(
       functions.map((f: any) => [

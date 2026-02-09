@@ -2,6 +2,7 @@ import type { SystemSoftware, Paginated } from "@/@types/system-software"
 import { SystemSoftwareKind } from "@archpad/contract"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
+import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetSystemSoftwareByPkQuery,
   GetSystemSoftwareByPkQueryVariables,
@@ -75,8 +76,9 @@ export async function getSystemSoftwareGraphql(
 
 export async function getSystemSoftwareByPkGraphql(id: string): Promise<SystemSoftware> {
   const query = await loadGql("system-software/get-software-by-pk.gql")
-  const data = await graphqlRequest<GetSystemSoftwareByPkQuery, GetSystemSoftwareByPkQueryVariables>(query, { id })
-  const row = data.SystemSoftwareByPk
+  const where = mergeTenantWhere({ id: { _eq: id } })
+  const data = await graphqlRequest<{ SystemSoftware: HasuraSystemSoftwareRow[] }, { where: unknown }>(query, { where })
+  const row = Array.isArray(data.SystemSoftware) ? data.SystemSoftware[0] : null
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }

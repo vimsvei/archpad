@@ -1,5 +1,5 @@
-query GetDataObjectsByIds($ids: [uuid!]!) {
-  DataObject(where: { id: { _in: $ids } }) {
+query GetDataObjectsByIds($where: DataObject_bool_exp!) {
+  DataObject(where: $where) {
     id
     code
     name
