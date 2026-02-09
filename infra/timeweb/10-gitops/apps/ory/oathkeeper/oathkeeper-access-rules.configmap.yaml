@@ -49,11 +49,45 @@ data:
       mutators:
         - handler: noop
 
-    # ==== Arch-repo-service через Oathkeeper ====
-    # JWT first; anonymous fallback для публичных путей (api-docs, api-json)
+    # ==== Swagger arch-repo-service (публичный доступ) ====
+    - id: arch-repo-api-docs
+      match:
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service</api-docs.*>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://arch-repo-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/arch-repo-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
+    - id: arch-repo-api-json
+      match:
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service</api-json.*>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://arch-repo-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/arch-repo-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
+    # ==== Arch-repo-service API (требует JWT, user ID из токена Keycloak) ====
     - id: arch-repo-api
       match:
-        url: <https|http>://api.archpad.pro/rest/arch-repo-service<(/.*)?>
+        url: <https|http>://api.archpad.pro/rest/arch-repo-service</(architecture-styles|critical-levels|license-types|node-types|software-types|protocol-types|component-states|failure-handlings|failover-types|recovery-times|redundancy-types|monitoring-levels|scaling-types|security-zones|solutions|application-components|application-interfaces|application-functions|data-objects|application-events|system-software|import|directories|technology-networks|technology-host-nodes|technology-cluster-nodes|technology-device-nodes|business-actors|business-roles|business-products|capabilities|locations|stakeholders|motivation)(/.*)?>
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
       upstream:
         url: http://arch-repo-service.platform:3000
@@ -61,7 +95,6 @@ data:
         strip_path: /rest/arch-repo-service
       authenticators:
         - handler: jwt
-        - handler: anonymous
       authorizer:
         handler: allow
       mutators:
@@ -70,11 +103,45 @@ data:
             headers:
               X-Archpad-User-Id: "{{ .Subject }}"
 
-    # ==== Tenant-service через Oathkeeper ====
-    # JWT first; anonymous fallback для публичных путей (api-docs, api-json)
+    # ==== Swagger tenant-service (публичный доступ) ====
+    - id: tenant-service-api-docs
+      match:
+        url: <https|http>://api.archpad.pro/rest/tenant-service</api-docs.*>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://tenant-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/tenant-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
+    - id: tenant-service-api-json
+      match:
+        url: <https|http>://api.archpad.pro/rest/tenant-service</api-json.*>
+        methods: ["GET", "OPTIONS"]
+      upstream:
+        url: http://tenant-service.platform:3000
+        preserve_host: false
+        strip_path: /rest/tenant-service
+      authenticators:
+        - handler: anonymous
+      authorizer:
+        handler: allow
+      mutators:
+        - handler: header
+          config:
+            headers: {}
+
+    # ==== Tenant-service API (требует JWT, user ID из токена Keycloak) ====
     - id: tenant-service-api
       match:
-        url: <https|http>://api.archpad.pro/rest/tenant-service<(/.*)?>
+        url: <https|http>://api.archpad.pro/rest/tenant-service</(tenants|workspaces|internal)(/.*)?>
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
       upstream:
         url: http://tenant-service.platform:3000
@@ -82,7 +149,6 @@ data:
         strip_path: /rest/tenant-service
       authenticators:
         - handler: jwt
-        - handler: anonymous
       authorizer:
         handler: allow
       mutators:
