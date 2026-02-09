@@ -93,6 +93,12 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
   const accept = request.headers.get("accept")
   if (accept) headers.set("accept", accept)
   if (auth) headers.set("authorization", auth)
+  // Tenant-service internal endpoints require x-internal-token (server-to-server).
+  const pathStr = path.join("/")
+  if (pathStr.startsWith("tenant-service/internal/")) {
+    const internalToken = process.env.INTERNAL_SERVICE_TOKEN?.trim()
+    if (internalToken) headers.set("x-internal-token", internalToken)
+  }
 
   const method = request.method.toUpperCase()
   const body =

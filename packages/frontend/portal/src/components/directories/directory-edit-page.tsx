@@ -27,6 +27,8 @@ import {
   useGetDirectoryItemQuery,
   useUpdateDirectoryItemMutation,
 } from "@/store/apis/directory-api"
+import { useUserDisplayNames } from "@/hooks/use-user-display-names"
+import { formatDateTime } from "@/lib/datetime/format-date-time"
 
 type DirectoryEditPageProps = {
   directorySlug: DirectorySlug
@@ -71,6 +73,10 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
   })
   const [confirmOpen, setConfirmOpen] = React.useState(false)
   const [tab, setTab] = React.useState<"general" | "relations">("general")
+
+  const createdBy = item?.created?.by
+  const updatedBy = item?.updated?.by
+  const displayNames = useUserDisplayNames([createdBy, updatedBy])
 
   React.useEffect(() => {
     if (!item) return
@@ -272,7 +278,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
       <div className="flex min-h-0 flex-1 flex-col">
         {tab === "general" ? (
           <Card className="flex min-h-0 flex-1 flex-col p-6">
-            <div className="min-h-0 flex-1 overflow-auto">
+            <div className="flex min-h-0 flex-1 flex-col overflow-auto">
               <DirectoryItemForm
                 formId={formId}
                 values={draft}
@@ -280,6 +286,7 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 i18nPrefix="item"
                 submitLabel={t("action.save")}
                 hideActions
+                descriptionFillsSpace
                 disabled={updateState.isLoading}
                 onSubmit={async (values) => {
                   try {
@@ -297,6 +304,22 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
                 }}
               />
             </div>
+            {tab === "general" && (item?.created || item?.updated) ? (
+              <div className="mt-4 flex shrink-0 flex-col gap-1 border-t pt-4 text-muted-foreground text-sm">
+                {item?.created?.at ? (
+                  <p>
+                    {t("directory.item.created.by", "Создана")}: {displayNames[createdBy ?? ""] ?? "—"}{" "}
+                    {t("directory.item.created.at", "в")} {formatDateTime(item.created.at) ?? "—"}
+                  </p>
+                ) : null}
+                {item?.updated?.at ? (
+                  <p>
+                    {t("directory.item.updated.by", "Последнее изменение")}: {displayNames[updatedBy ?? ""] ?? "—"}{" "}
+                    {t("directory.item.updated.at", "в")} {formatDateTime(item.updated.at) ?? "—"}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </Card>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col">

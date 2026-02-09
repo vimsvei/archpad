@@ -43,7 +43,13 @@ export class InternalUserProfilesController {
   async byKeycloakId(@Param('keycloakId') keycloakId: string) {
     const p = await this.users.findByKeycloakId(keycloakId);
     if (!p) throw new NotFoundException('not_found');
-    return p;
+    const displayName = p.code || p.keycloakId || '—';
+    return {
+      id: p.id,
+      code: p.code,
+      keycloakId: p.keycloakId,
+      displayName,
+    };
   }
 }
 

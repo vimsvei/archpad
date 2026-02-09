@@ -33,6 +33,8 @@ type DirectoryItemFormProps = {
   submitLabel: string
   disabled?: boolean
   hideActions?: boolean
+  /** When true, description textarea fills available space (e.g. in edit card). */
+  descriptionFillsSpace?: boolean
   onSubmit: (values: DirectoryItemFormValues) => void | Promise<void>
   onCancel?: () => void
 }
@@ -46,6 +48,7 @@ export function DirectoryItemForm({
   submitLabel,
   disabled,
   hideActions,
+  descriptionFillsSpace,
   onSubmit,
   onCancel,
 }: DirectoryItemFormProps) {
@@ -102,7 +105,7 @@ export function DirectoryItemForm({
   return (
     <form
       id={formId}
-      className="flex flex-col gap-4"
+      className={descriptionFillsSpace ? "flex min-h-0 flex-1 flex-col gap-4" : "flex flex-col gap-4"}
       onSubmit={(e) => {
         e.preventDefault()
         if (disabled) return
@@ -150,20 +153,6 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-description">{t(`${i18nPrefix}.description`, "Description")}</Label>
-        <Textarea
-          id="directory-description"
-          value={current.description}
-          onChange={(e) => {
-            const next = e.target.value
-            if (isControlled) emitChange({ ...current, description: next })
-            else setDescription(next)
-          }}
-          disabled={disabled}
-        />
-      </div>
-
-      <div className="grid gap-2">
         <Label htmlFor="directory-color">{t(`${i18nPrefix}.color`, "Color")}</Label>
         <div className="flex items-center gap-2">
           <Input
@@ -191,6 +180,25 @@ export function DirectoryItemForm({
             disabled={disabled}
           />
         </div>
+      </div>
+
+      <div
+        className={
+          descriptionFillsSpace ? "flex min-h-0 flex-1 flex-col gap-2" : "grid gap-2"
+        }
+      >
+        <Label htmlFor="directory-description">{t(`${i18nPrefix}.description`, "Description")}</Label>
+        <Textarea
+          id="directory-description"
+          value={current.description}
+          onChange={(e) => {
+            const next = e.target.value
+            if (isControlled) emitChange({ ...current, description: next })
+            else setDescription(next)
+          }}
+          disabled={disabled}
+          className={descriptionFillsSpace ? "min-h-[120px] flex-1 resize-none" : "min-h-[80px]"}
+        />
       </div>
 
       <div className="flex items-center gap-2">
