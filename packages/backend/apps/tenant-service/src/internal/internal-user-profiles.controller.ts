@@ -47,6 +47,7 @@ export class InternalUserProfilesController {
     const p = await this.users.findByKeycloakId(keycloakId);
     if (!p) throw new NotFoundException('not_found');
     const displayName = p.code || p.keycloakId || '—';
+    const tenantId = await this.users.findTenantIdByUserProfileId(p.id);
     return {
       id: p.id,
       code: p.code,
@@ -55,6 +56,7 @@ export class InternalUserProfilesController {
       middleName: p.middleName,
       position: p.position,
       department: p.department,
+      tenantId: tenantId ?? undefined,
     };
   }
 

@@ -198,6 +198,15 @@ export class InternalUserProfilesService {
     return this.orm.em.findOne(UserProfile, { keycloakId: kc });
   }
 
+  async findTenantIdByUserProfileId(profileId: string): Promise<string | null> {
+    const id = String(profileId ?? '').trim();
+    if (!id) return null;
+    const map = await this.orm.em.findOne(TenantUserProfileMap, {
+      user: { id },
+    });
+    return map?.tenantId ?? null;
+  }
+
   async updateProfileByKeycloakId(
     keycloakId: string,
     input: { middleName?: string; position?: string; department?: string },
