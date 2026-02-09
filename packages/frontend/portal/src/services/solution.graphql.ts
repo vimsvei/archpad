@@ -137,15 +137,28 @@ export async function getSolutionFullGraphql(idOrCode: string): Promise<Solution
     componentId: f.componentId,
     functionId: f.functionId,
   }))
-  const dataObjectPairs = (solution.dataObjects || []).map((d: any) => ({
+  // solutionDataObjects is at root level (Solution no longer has dataObjects relation)
+  const solutionDataObjects = (data as any).solutionDataObjects || []
+  const dataObjectPairs = solutionDataObjects.map((d: any) => ({
     componentId: d.componentId,
     dataObjectId: d.dataObjectId,
   }))
 
-  // Fetch ApplicationFunction and DataObject details via separate queries
-  // For now, return empty arrays - these will be populated by additional queries if needed
-  // TODO: Implement additional GraphQL queries to fetch ApplicationFunction and DataObject details
-  // using the componentId/functionId and componentId/dataObjectId pairs
+  // Fetch DataObject details for solution data objects
+  let dataObjects: Array<{ id: string; code: string; name: string; description?: string | null }> = []
+  const dataObjectIds = [...new Set(dataObjectPairs.map((p: { dataObjectId: string }) => p.dataObjectId).filter(Boolean))] as string[]
+  if (dataObjectIds.length > 0) {
+    const dataObjectsQuery = await loadGql("data-objects/get-data-objects-by-ids.gql")
+    const dataObjectsData = await graphqlRequest<{ DataObject: Array<{ id: string; code: string; name: string; description?: string | null }> }, { ids: string[] }>(
+      dataObjectsQuery,
+      { ids: dataObjectIds }
+    )
+    const byId = new Map(dataObjectsData.DataObject?.map((d) => [d.id, d]) ?? [])
+    // Preserve order from solutionDataObjects
+    dataObjects = solutionDataObjects
+      .map((s: { dataObjectId: string }) => byId.get(s.dataObjectId))
+      .filter(Boolean) as Array<{ id: string; code: string; name: string; description?: string | null }>
+  }
 
   return {
     id: solution.id,
@@ -164,7 +177,7 @@ export async function getSolutionFullGraphql(idOrCode: string): Promise<Solution
     updatedBy: solution.updatedBy ?? null,
     components: (solution.components || []).map((x: any) => x.component).filter(Boolean),
     functions: [], // TODO: Populate from ApplicationComponentFunctionMap using functionPairs
-    dataObjects: [], // TODO: Populate from ApplicationComponentDataObjectMap using dataObjectPairs
+    dataObjects,
     flows: (solution.flows || []).map((flow: any) => ({
       id: flow.flow?.id,
       code: flow.flow?.code,

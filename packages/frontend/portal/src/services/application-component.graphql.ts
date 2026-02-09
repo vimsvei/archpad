@@ -142,8 +142,8 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
     })).filter((x: any) => x.id),
     technologyNodes: (data.technologyNodes || []).map((x: any) => x.node).filter(Boolean),
     technologyNetworks: (data.technologyNetworks || []).map((x: any) => x.logicalNetwork).filter(Boolean),
-    parents: (data.parentComponents || []).map((x: any) => x.componentParent).filter(Boolean),
-    children: (data.childComponents || []).map((x: any) => x.componentChild).filter(Boolean),
+    parents: (data.parentComponents || []).map((x: any) => x.parent).filter(Boolean),
+    children: (data.childComponents || []).map((x: any) => x.child).filter(Boolean),
     stakeholders: (data.stakeholders || []).map((x: any) => ({
       stakeholderId: x.stakeholder?.id ?? "",
       stakeholderName: x.stakeholder?.name ?? "",

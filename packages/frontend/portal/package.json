@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "env:render": "ROOT_ENV_PATH=../../.env ../../scripts/render-env.sh",
-    "gql:codegen": "NODE_ENV=development graphql-codegen --config codegen.ts",
+    "gql:codegen": "graphql-codegen --config codegen.ts",
     "icons:generate": "svgr --out-dir src/components/icons -- src/assets/icon",
     "images:generate": "svgr --out-dir src/components/images -- src/assets/images",
     "fetch-tolgee": "sh scripts/fetch-tolgee-messages.sh"

@@ -42,7 +42,11 @@ export function DirectoriesPreloader() {
         dispatch(setMultipleDirectories(allDirectories))
         dispatch(setInitialLoadComplete(true))
       } catch (error) {
-        console.error("Failed to load directories:", error)
+        // 401 is expected when not authenticated; avoid noisy error logs
+        const is401 = error instanceof Error && error.message.includes("401")
+        if (!is401) {
+          console.error("Failed to load directories:", error)
+        }
         // Mark all as not loading
         slugs.forEach((slug) => {
           dispatch(setLoading({ slug, loading: false }))

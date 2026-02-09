@@ -82,7 +82,11 @@ export function useDirectoryItems(
         const itemsArray = Array.isArray(data) ? data : []
         dispatch(setDirectoryItems({ slug, items: itemsArray }))
       } catch (error) {
-        console.error(`Failed to load directory ${slug}:`, error)
+        // 401 is expected when not authenticated; avoid noisy error logs
+        const is401 = error instanceof Error && error.message.includes("401")
+        if (!is401) {
+          console.error(`Failed to load directory ${slug}:`, error)
+        }
         dispatch(setLoading({ slug, loading: false }))
         // Remove from triggered set to allow retry on error
         loadTriggeredRef.current.delete(loadKey)
@@ -104,7 +108,10 @@ export function useDirectoryItems(
       const data = await DirectoryHasura.getDirectoryItemsGraphql(slug)
       dispatch(setDirectoryItems({ slug, items: data }))
     } catch (error) {
-      console.error(`Failed to refetch directory ${slug}:`, error)
+      const is401 = error instanceof Error && error.message.includes("401")
+      if (!is401) {
+        console.error(`Failed to refetch directory ${slug}:`, error)
+      }
       dispatch(setLoading({ slug, loading: false }))
       throw error // Re-throw to allow caller to handle
     }

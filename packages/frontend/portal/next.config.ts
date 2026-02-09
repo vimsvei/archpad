@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
     "127.0.0.1",
     "portal.archpad.pro",
     "*.archpad.pro",
+    // Local network IP (add your machine's IP when accessing via 192.168.x.x)
+    "192.168.1.119",
   ],
 };
 
