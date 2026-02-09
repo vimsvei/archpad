@@ -197,5 +197,23 @@ export class InternalUserProfilesService {
     if (!kc) return null;
     return this.orm.em.findOne(UserProfile, { keycloakId: kc });
   }
+
+  async updateProfileByKeycloakId(
+    keycloakId: string,
+    input: { middleName?: string; position?: string; department?: string },
+  ): Promise<UserProfile> {
+    const kc = String(keycloakId ?? '').trim();
+    if (!kc) throw new Error('missing_keycloak_id');
+    const profile = await this.orm.em.findOne(UserProfile, { keycloakId: kc });
+    if (!profile) throw new Error('profile_not_found');
+    const middleName = cleanOptionalString(input.middleName);
+    const position = cleanOptionalString(input.position);
+    const department = cleanOptionalString(input.department);
+    if (middleName !== undefined) profile.middleName = middleName;
+    if (position !== undefined) profile.position = position;
+    if (department !== undefined) profile.department = department;
+    await this.orm.em.flush();
+    return profile;
+  }
 }
 

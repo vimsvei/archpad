@@ -22,3 +22,14 @@ export class EnsureUserProfileResponseDto {
   keycloakId!: string;
 }
 
+export class UpdateProfileRequestDto {
+  @ApiProperty({ required: false, nullable: true })
+  middleName?: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  position?: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  department?: string;
+}
+

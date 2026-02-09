@@ -6,10 +6,13 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LogOut, Send, Settings2,
+  LogOut,
+  Send,
+  Settings2,
   Sparkles,
 } from "lucide-react"
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation"
+import { useTranslate } from "@tolgee/react"
 
 import {
   Avatar,
@@ -36,17 +39,11 @@ import { createServerLogger } from "@archpad/logger"
 
 const log = createServerLogger("nav-user")
 
-function NavUserContent(
-  // { user }: {
-  // user: {
-  //   name: string
-  //   email: string
-  //   avatar: string
-  // } }
-) {
+function NavUserContent() {
   const { isMobile } = useSidebar()
   const { user, logout } = useAuth()
   const router = useRouter()
+  const { t } = useTranslate()
 
   const sessionObj = user
   const displayName =
@@ -108,39 +105,39 @@ function NavUserContent(
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/account")}>
                 <BadgeCheck />
-                Account
+                {t("nav.user.account")}
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Settings2 />
                 Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                {t("nav.user.notifications")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Send />
-                Feedback
+                {t("nav.user.feedback")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
-              Log out
+              {t("nav.user.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

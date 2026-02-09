@@ -445,7 +445,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
               } catch (e: any) {
                 setOpen(false)
                 toast.error(
-                  `${t("directory.item.error", "Error")} ${title}`,
+                  `${t("directory.item.error")} ${title}`,
                   {
                     className:
                       "border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950 dark:text-red-50",

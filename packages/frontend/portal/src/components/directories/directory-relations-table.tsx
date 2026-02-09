@@ -111,10 +111,10 @@ export function DirectoryRelationsTable({ sourceDirectorySlug, sourceItemId }: D
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={DirectoryLinkType.ASSOCIATION}>
-                  {t(DirectoryLinkType.ASSOCIATION, "Association")}
+                  {t(DirectoryLinkType.ASSOCIATION)}
                 </SelectItem>
                 <SelectItem value={DirectoryLinkType.HIERARCHY}>
-                  {t(DirectoryLinkType.HIERARCHY, "Hierarchy")}
+                  {t(DirectoryLinkType.HIERARCHY)}
                 </SelectItem>
               </SelectContent>
             </Select>

@@ -67,6 +67,13 @@ export function PrivateBreadcrumbs() {
       return [{ label: "Dashboard" }]
     }
 
+    if (segments[0] === "account") {
+      return [
+        { href: "/dashboard", label: "Dashboard" },
+        { label: t("nav.user.account") },
+      ]
+    }
+
     if (segments[0] === "directories") {
       const slug = segments[1]
       const id = segments[2]

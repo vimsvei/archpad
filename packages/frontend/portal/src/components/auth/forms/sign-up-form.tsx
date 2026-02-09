@@ -140,7 +140,7 @@ export function SignUpForm() {
             />
           </div>
           <div className="grid min-w-0 gap-2">
-            <Label htmlFor="passwordConfirm">{t("auth.field.password-confirm", "Repeat password")}</Label>
+            <Label htmlFor="passwordConfirm">{t("auth.field.password-confirm")}</Label>
             <PasswordInput
               id="passwordConfirm"
               name="passwordConfirm"
@@ -156,7 +156,7 @@ export function SignUpForm() {
           </div>
           {passwordsMismatch && (
             <p id="password-mismatch" className="text-destructive text-sm sm:col-span-2" role="alert">
-              {t("auth.field.password-mismatch", "Passwords do not match")}
+              {t("auth.field.password-mismatch")}
             </p>
           )}
         </div>

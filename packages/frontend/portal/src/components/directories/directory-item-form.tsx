@@ -121,7 +121,7 @@ export function DirectoryItemForm({
       }}
     >
       <div className="grid gap-2">
-        <Label htmlFor="directory-code">{t(`${i18nPrefix}.code`, "Code")}</Label>
+        <Label htmlFor="directory-code">{t(`${i18nPrefix}.code`)}</Label>
         <Input
           id="directory-code"
           value={current.code}
@@ -137,7 +137,7 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-name">{t(`${i18nPrefix}.name`, "Name")}</Label>
+        <Label htmlFor="directory-name">{t(`${i18nPrefix}.name`)}</Label>
         <Input
           id="directory-name"
           value={current.name}
@@ -153,10 +153,10 @@ export function DirectoryItemForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="directory-color">{t(`${i18nPrefix}.color`, "Color")}</Label>
+        <Label htmlFor="directory-color">{t(`${i18nPrefix}.color`)}</Label>
         <div className="flex items-center gap-2">
           <Input
-            aria-label={t(`${i18nPrefix}.color`, "Color")}
+            aria-label={t(`${i18nPrefix}.color`)}
             type="color"
             value={colorPickerValue}
             onChange={(e) => {
@@ -187,7 +187,7 @@ export function DirectoryItemForm({
           descriptionFillsSpace ? "flex min-h-0 flex-1 flex-col gap-2" : "grid gap-2"
         }
       >
-        <Label htmlFor="directory-description">{t(`${i18nPrefix}.description`, "Description")}</Label>
+        <Label htmlFor="directory-description">{t(`${i18nPrefix}.description`)}</Label>
         <Textarea
           id="directory-description"
           value={current.description}
@@ -212,7 +212,7 @@ export function DirectoryItemForm({
           }}
           disabled={disabled}
         />
-        <Label htmlFor="directory-by-default">{t(`${i18nPrefix}.by-default`, "By default")}</Label>
+        <Label htmlFor="directory-by-default">{t(`${i18nPrefix}.by-default`)}</Label>
       </div>
 
       {!hideActions ? (

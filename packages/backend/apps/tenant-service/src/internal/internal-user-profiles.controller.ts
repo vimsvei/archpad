@@ -3,8 +3,10 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   NotFoundException,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +15,7 @@ import { InternalTokenGuard } from './internal-token.guard';
 import {
   EnsureUserProfileRequestDto,
   EnsureUserProfileResponseDto,
+  UpdateProfileRequestDto,
 } from './user-profiles.dto';
 import { InternalUserProfilesService } from './internal-user-profiles.service';
 
@@ -49,6 +52,34 @@ export class InternalUserProfilesController {
       code: p.code,
       keycloakId: p.keycloakId,
       displayName,
+      middleName: p.middleName,
+      position: p.position,
+      department: p.department,
+    };
+  }
+
+  @Patch('me')
+  @ApiOperation({
+    summary: 'Update current user profile (editable fields). Internal only.',
+    description:
+      'Updates profile for user identified by X-Archpad-User-Id (from Oathkeeper).',
+  })
+  async updateMe(
+    @Headers('x-archpad-user-id') userId: string,
+    @Body() body: UpdateProfileRequestDto,
+  ) {
+    const keycloakId = (userId ?? '').trim();
+    if (!keycloakId) throw new BadRequestException('missing_x_archpad_user_id');
+    const p = await this.users.updateProfileByKeycloakId(keycloakId, body);
+    const displayName = p.code || p.keycloakId || '—';
+    return {
+      id: p.id,
+      code: p.code,
+      keycloakId: p.keycloakId,
+      displayName,
+      middleName: p.middleName,
+      position: p.position,
+      department: p.department,
     };
   }
 }

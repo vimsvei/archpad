@@ -92,7 +92,7 @@ function VerifyEmailContent() {
                 <Link href="/sign-in">{t("auth.common.back-to-sign-in")}</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/verify">{t("auth.verification.resend", "Request new verification email")}</Link>
+                <Link href="/verify">{t("auth.verification.resend")}</Link>
               </Button>
             </div>
           </div>

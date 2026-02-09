@@ -115,7 +115,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
       header: ({ table }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            aria-label={t("table.select.all", "Select all")}
+            aria-label={t("table.select.all")}
             checked={
               table.getIsAllRowsSelected()
                 ? true
@@ -130,7 +130,7 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            aria-label={t("table.select.row", "Select row")}
+            aria-label={t("table.select.row")}
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
           />

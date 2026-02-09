@@ -308,14 +308,14 @@ export function DirectoryEditPage({ directorySlug, id }: DirectoryEditPageProps)
               <div className="mt-4 flex shrink-0 flex-col gap-1 border-t pt-4 text-muted-foreground text-sm">
                 {item?.created?.at ? (
                   <p>
-                    {t("directory.item.created.by", "Создана")}: {displayNames[createdBy ?? ""] ?? "—"}{" "}
-                    {t("directory.item.created.at", "в")} {formatDateTime(item.created.at) ?? "—"}
+                    {t("directory.item.created.by")}: {displayNames[createdBy ?? ""] ?? "—"}{" "}
+                    {t("directory.item.created.at")} {formatDateTime(item.created.at) ?? "—"}
                   </p>
                 ) : null}
                 {item?.updated?.at ? (
                   <p>
-                    {t("directory.item.updated.by", "Последнее изменение")}: {displayNames[updatedBy ?? ""] ?? "—"}{" "}
-                    {t("directory.item.updated.at", "в")} {formatDateTime(item.updated.at) ?? "—"}
+                    {t("directory.item.updated.by")}: {displayNames[updatedBy ?? ""] ?? "—"}{" "}
+                    {t("directory.item.updated.at")} {formatDateTime(item.updated.at) ?? "—"}
                   </p>
                 ) : null}
               </div>

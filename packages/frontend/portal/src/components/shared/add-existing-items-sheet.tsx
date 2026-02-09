@@ -102,7 +102,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
     const count = selectedItems.size
     // Protect UI from malformed ICU strings in translations (Tolgee will throw).
     try {
-      return t("sheet.selected.count", "Выбрано: {count}", { count })
+      return t("sheet.selected.count", { count })
     } catch {
       return `Выбрано: ${count}`
     }
@@ -128,7 +128,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t("search.placeholder", "Поиск...")}
+              placeholder={t("search.placeholder")}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-9 pr-9"
@@ -140,7 +140,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                 size="icon"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
                 onClick={() => onSearchChange("")}
-                aria-label={t("action.clear", "Очистить")}
+                aria-label={t("action.clear")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -157,8 +157,8 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={t("action.clear.all", "Очистить всё")}
-                title={t("action.clear.all", "Очистить всё")}
+                aria-label={t("action.clear.all")}
+                title={t("action.clear.all")}
                 onClick={() => {
                   selectedItems.forEach((id) => onToggleItem(id))
                 }}
@@ -179,8 +179,8 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
             ) : items.length === 0 ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
                 {searchQuery.trim()
-                  ? t("search.no-results", "Ничего не найдено")
-                  : t("search.no-items", "Нет элементов")}
+                  ? t("search.no-results")
+                  : t("search.no-items")}
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -240,7 +240,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-end gap-2">
                 <div className="text-muted-foreground text-sm whitespace-nowrap">
-                  {t("table.page.size", "Строк на странице")}
+                  {t("table.page.size")}
                 </div>
                 <Select
                   value={String(pagination.pageSize)}
