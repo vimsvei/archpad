@@ -13,9 +13,12 @@ export class ActionStamp {
   @Property({ type: 'uuid', nullable: true })
   by: string | null = null;
 
+  private static readonly UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   protected constructor(by?: string | null) {
     const v = typeof by === 'string' ? by.trim() : '';
-    this.by = v.length ? v : null;
+    this.by = v.length && ActionStamp.UUID_REGEX.test(v) ? v : null;
   }
 
   static now(by?: string | null) {
