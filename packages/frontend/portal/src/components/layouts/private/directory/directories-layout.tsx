@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
+import { NotebookText } from "lucide-react"
 import { useTranslate } from "@tolgee/react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -52,6 +53,7 @@ export function DirectoriesLayout({ children, currentDirectorySlug }: Directorie
                         : "text-foreground"
                     )}
                   >
+                    <NotebookText className="mr-2 shrink-0 size-4 text-green-600 dark:text-green-500" />
                     <span className="truncate">{t(meta.titleKey)}</span>
                   </Link>
                 )

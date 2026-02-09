@@ -113,7 +113,7 @@ export function startOpenExchangeImport(file: File, options?: { clearBeforeImpor
     const jobId: string = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       const clear = options?.clearBeforeImport ? "1" : "0"
-      xhr.open("POST", `/api/rest/import/open-exchange/jobs?clear=${encodeURIComponent(clear)}`)
+      xhr.open("POST", `/api/rest/arch-repo-service/import/open-exchange/jobs?clear=${encodeURIComponent(clear)}`)
       xhr.responseType = "json"
 
       xhr.upload.onprogress = (evt) => {
@@ -144,7 +144,7 @@ export function startOpenExchangeImport(file: File, options?: { clearBeforeImpor
 
     // Poll job status
     while (true) {
-      const res = await fetch(`/api/rest/import/open-exchange/jobs/${encodeURIComponent(jobId)}`, {
+      const res = await fetch(`/api/rest/arch-repo-service/import/open-exchange/jobs/${encodeURIComponent(jobId)}`, {
         method: "GET",
         credentials: "include",
         cache: "no-store",

@@ -177,11 +177,11 @@ export const menu: TMenu = [
             icon: Upload,
             url: '/upload/repository',
           },
-          {
-            title: 'management.settings.upload.directories',
-            icon: Upload,
-            url: '/upload/directories',
-          },
+          // {
+          //   title: 'management.settings.upload.directories',
+          //   icon: Upload,
+          //   url: '/upload/directories',
+          // },
         ]
       }
     ]
