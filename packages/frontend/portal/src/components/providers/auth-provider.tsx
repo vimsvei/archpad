@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { setCurrentTenantId } from "@/lib/tenant-context"
 
 type UserProfile = {
   id: string
@@ -26,6 +27,7 @@ type AuthUser = {
   roles: string[] | null
   groups: string[] | null
   profile: UserProfile | null
+  tenantId: string | null
 }
 
 type AuthContextValue = {
@@ -68,6 +70,7 @@ function normalizeMeResponse(json: any): AuthUser {
     roles: Array.isArray(json?.roles) ? json.roles.filter((x: unknown) => typeof x === "string") : null,
     groups: Array.isArray(json?.groups) ? json.groups.filter((x: unknown) => typeof x === "string") : null,
     profile,
+    tenantId: typeof json?.tenantId === "string" ? json.tenantId : null,
   }
 }
 
@@ -87,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (res.status === 401 || res.status === 403) {
         setUser(null)
+        setCurrentTenantId(null)
         return
       }
       if (!res.ok) {
@@ -97,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(normalizeMeResponse(json))
     } catch (e: unknown) {
       setUser(null)
+      setCurrentTenantId(null)
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setIsLoading(false)
@@ -106,6 +111,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     void refresh()
   }, [refresh])
+
+  React.useEffect(() => {
+    setCurrentTenantId(user?.tenantId ?? null)
+  }, [user?.tenantId])
 
   const login: AuthContextValue["login"] = React.useCallback(async (input) => {
     setError(null)
@@ -135,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {})
     } finally {
       setUser(null)
+      setCurrentTenantId(null)
     }
   }, [])
 

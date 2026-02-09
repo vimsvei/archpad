@@ -59,6 +59,18 @@ function cookieNamesFromHeader(cookieHeader: string | null): string[] | undefine
   return Array.from(new Set(names)).sort()
 }
 
+const TENANT_COOKIE_NAME = "archpad_tenant_id"
+
+function getTenantIdFromCookies(request: Request): string | null {
+  const cookieHeader = request.headers.get("cookie")
+  if (!cookieHeader) return null
+  const match = cookieHeader.match(
+    new RegExp(`(?:^|;)\\s*${TENANT_COOKIE_NAME}\\s*=\\s*([^;]+)`, "i")
+  )
+  const val = match?.[1]?.trim()
+  return val && /^[a-f0-9-]{36}$/i.test(val) ? val : null
+}
+
 async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] }> }) {
   const { path = [] } = await ctx.params
   const isDev = process.env.NODE_ENV === "development"
@@ -93,6 +105,8 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
   const accept = request.headers.get("accept")
   if (accept) headers.set("accept", accept)
   if (auth) headers.set("authorization", auth)
+  const tenantId = getTenantIdFromCookies(request)
+  if (tenantId) headers.set("x-archpad-tenant-ids", tenantId)
   // Tenant-service internal endpoints require x-internal-token (server-to-server).
   const pathStr = path.join("/")
   if (pathStr.startsWith("tenant-service/internal/")) {

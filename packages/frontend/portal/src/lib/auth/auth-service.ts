@@ -13,6 +13,7 @@ type MeResponse = {
   roles: string[] | null
   groups: string[] | null
   profile?: unknown | null
+  tenantId?: string | null
 }
 
 function getAuthServiceBaseUrl(): string {
