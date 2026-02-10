@@ -18,6 +18,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/argocd-image-updater
     directory:
       recurse: false
+      exclude: argocd-image-updater.app.yaml
   syncPolicy:
     automated:
       prune: true

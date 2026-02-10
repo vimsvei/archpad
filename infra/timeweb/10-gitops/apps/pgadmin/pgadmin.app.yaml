@@ -16,6 +16,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/pgadmin
     directory:
       recurse: false
+      exclude: pgadmin.app.yaml
   syncPolicy:
     automated:
       prune: true

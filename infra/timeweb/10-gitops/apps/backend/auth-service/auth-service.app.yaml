@@ -20,6 +20,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/backend/auth-service
     directory:
       recurse: false
+      exclude: auth-service.app.yaml
   syncPolicy:
     automated:
       prune: true

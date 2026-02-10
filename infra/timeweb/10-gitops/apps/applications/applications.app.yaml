@@ -28,3 +28,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      # Server-Side Apply avoids "metadata.resourceVersion: Invalid value: 0" when
+      # updating existing Application CRs (API server handles resourceVersion).
+      - ServerSideApply=true

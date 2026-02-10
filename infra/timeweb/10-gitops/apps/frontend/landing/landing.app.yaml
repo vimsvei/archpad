@@ -20,6 +20,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/frontend/landing
     directory:
       recurse: false
+      exclude: landing.app.yaml
   syncPolicy:
     automated:
       prune: true

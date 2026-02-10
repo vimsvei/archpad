@@ -22,6 +22,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/backend/tenant-service
     directory:
       recurse: false
+      exclude: tenant-service.app.yaml
   syncPolicy:
     automated:
       prune: true

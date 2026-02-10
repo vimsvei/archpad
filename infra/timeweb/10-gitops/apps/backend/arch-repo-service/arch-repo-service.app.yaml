@@ -22,6 +22,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/backend/arch-repo-service
     directory:
       recurse: false
+      exclude: arch-repo-service.app.yaml
   syncPolicy:
     automated:
       prune: true

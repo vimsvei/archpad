@@ -22,6 +22,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/frontend/portal
     directory:
       recurse: false
+      exclude: portal.app.yaml
   syncPolicy:
     automated:
       prune: true

@@ -16,6 +16,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/tolgee
     directory:
       recurse: false
+      exclude: tolgee.app.yaml
   syncPolicy:
     automated:
       prune: true

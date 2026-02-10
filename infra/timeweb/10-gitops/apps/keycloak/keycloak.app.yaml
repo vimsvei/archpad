@@ -16,6 +16,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/keycloak
     directory:
       recurse: false
+      exclude: keycloak.app.yaml
   syncPolicy:
     automated:
       prune: true

@@ -19,7 +19,8 @@ spec:
       # prometheus управляется отдельным Application (`apps/monitoring/prometheus/prometheus.app.yaml`).
       # Если не исключить папку, monitoring и prometheus начинают "драться" за одни и те же ресурсы,
       # что приводит к SharedResourceWarning и бесконечной Syncing/OutOfSync.
-      exclude: "prometheus/**"
+      # Не применять свой же манифест (управляется platform-applications).
+      exclude: "{prometheus/**,monitoring.app.yaml}"
   syncPolicy:
     automated:
       prune: true

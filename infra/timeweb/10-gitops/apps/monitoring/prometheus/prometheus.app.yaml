@@ -16,6 +16,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/monitoring/prometheus
     directory:
       recurse: false
+      exclude: prometheus.app.yaml
   syncPolicy:
     automated:
       prune: true

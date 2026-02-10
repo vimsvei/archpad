@@ -16,6 +16,7 @@ spec:
     path: infra/timeweb/10-gitops/apps/hasura
     directory:
       recurse: false
+      exclude: hasura.app.yaml
   syncPolicy:
     automated:
       prune: true
