@@ -34,6 +34,11 @@ export type ImportJob = {
       dataObjects: number;
       applicationFlows: number;
       componentFunctionLinks: number;
+      businessActors: number;
+      businessRoles: number;
+      systemSoftware: number;
+      communicationNetworks: number;
+      technologyNodes: number; // Device + Node
     };
   };
 };

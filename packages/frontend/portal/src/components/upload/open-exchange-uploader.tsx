@@ -155,13 +155,27 @@ export function OpenExchangeUploader() {
         {state?.result?.created ? (
           <div className="mt-4 rounded-md bg-muted p-3 text-sm">
             <div className="font-medium">{t("upload.open-exchange.summary.title")}</div>
-            <div className="mt-1 text-muted-foreground">
-              {t("upload.open-exchange.summary.line", {
-                components: state.result.created.applicationComponents,
-                functions: state.result.created.applicationFunctions,
-                links: state.result.created.componentFunctionLinks,
-                flows: state.result.created.applicationFlows,
-              })}
+            <div className="mt-1 text-muted-foreground space-y-0.5">
+              <div>
+                {t("upload.open-exchange.summary.line", {
+                  components: state.result.created.applicationComponents,
+                  functions: state.result.created.applicationFunctions,
+                  links: state.result.created.componentFunctionLinks,
+                  flows: state.result.created.applicationFlows,
+                })}
+              </div>
+              {(state.result.created.businessActors !== undefined ||
+                state.result.created.systemSoftware !== undefined) && (
+                <div>
+                  {t("upload.open-exchange.summary.cross-layer", {
+                    businessActors: state.result.created.businessActors ?? 0,
+                    businessRoles: state.result.created.businessRoles ?? 0,
+                    systemSoftware: state.result.created.systemSoftware ?? 0,
+                    communicationNetworks: state.result.created.communicationNetworks ?? 0,
+                    technologyNodes: state.result.created.technologyNodes ?? 0,
+                  })}
+                </div>
+              )}
             </div>
           </div>
         ) : null}

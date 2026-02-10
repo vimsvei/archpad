@@ -13,6 +13,8 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { NamedObjectAutoRegistry } from './endpoints/archimate/named-object/named-object.autoregistry';
 import { ApplicationComponentModule } from './endpoints/archimate/application-component/application-component.module';
 import { SystemSoftwareModule } from './endpoints/archimate/system-software/system-software.module';
+import { TechnologyNodeDefaultsModule } from './endpoints/archimate/technology-node-defaults/technology-node-defaults.module';
+import { TechnologyNodeModule } from './endpoints/archimate/technology-node/technology-node.module';
 import { DirectoriesModule } from './endpoints/directories/directories.module';
 import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootstrap.module';
 import { ApplicationInterfaceModule } from './endpoints/archimate/application-interface/application-interface.module';
@@ -166,6 +168,8 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     ApplicationInterfaceModule,
     SolutionModule,
     SystemSoftwareModule,
+    TechnologyNodeDefaultsModule,
+    TechnologyNodeModule,
     DirectoriesModule,
     OpenExchangeImportModule,
     HealthCheckerModule,

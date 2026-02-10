@@ -3,10 +3,7 @@ import { NamedObjectModule } from './named-object.module';
 import { ApplicationComponent } from '../../../model/archimate/application/application-component.entity';
 import { createNamedObjectZodDto } from '../../../model/dto/named-object.dto-factory';
 import { ApplicationFunction } from '../../../model/archimate/application/application-function.entity';
-import { TechnologyNetwork } from '../../../model/archimate/technology/technology-network.entity';
-import { TechnologyHostNode } from '../../../model/archimate/technology/technology-node.entity';
 import { TechnologyClusterNode } from '../../../model/archimate/technology/technology-node-cluster.entity';
-import { TechnologyDeviceNode } from '@/model/archimate/technology/technology-node-device.entity';
 import { DataObject } from '../../../model/archimate/application/data-object.entity';
 import { ApplicationEvent } from '../../../model/archimate/application/application-event.entity';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
@@ -58,23 +55,12 @@ export class NamedObjectAutoRegistry {
           createDto: createNamedObjectZodDto('CreateDtoTechnologyNetwork'),
         }),
         NamedObjectModule.register({
-          tag: 'Узлы',
-          entity: TechnologyHostNode,
-          path: 'technology-host-nodes',
-          createDto: createNamedObjectZodDto('CreateDtoTechnologyHostNode'),
-        }),
-        NamedObjectModule.register({
           tag: 'Кластеры',
           entity: TechnologyClusterNode,
           path: 'technology-cluster-nodes',
           createDto: createNamedObjectZodDto('CreateDtoTechnologyClusterNode'),
         }),
-        NamedObjectModule.register({
-          tag: 'Устройства',
-          entity: TechnologyDeviceNode,
-          path: 'technology-device-nodes',
-          createDto: createNamedObjectZodDto('CreateDtoTechnologyDeviceNode'),
-        }),
+        // TechnologyDeviceNode and TechnologyHostNode are registered in TechnologyNodeModule (create requires default type + OS)
         NamedObjectModule.register({
           tag: 'Бизнес-акторы',
           entity: BusinessActor,

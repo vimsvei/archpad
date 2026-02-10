@@ -258,6 +258,11 @@ export class OpenExchangeImportService {
         dataObjects: 0,
         applicationFlows: 0,
         componentFunctionLinks: 0,
+        businessActors: 0,
+        businessRoles: 0,
+        systemSoftware: 0,
+        communicationNetworks: 0,
+        technologyNodes: 0,
       },
     };
 
@@ -309,6 +314,7 @@ export class OpenExchangeImportService {
         networkEntityByXmlId,
         deviceEntityByXmlId,
         hostEntityByXmlId,
+        result,
         dedupe: !options?.clear,
       });
 
@@ -763,6 +769,7 @@ export class OpenExchangeImportService {
       networkEntityByXmlId: Map<string, TechnologyLogicalNetwork>;
       deviceEntityByXmlId: Map<string, TechnologyDeviceNode>;
       hostEntityByXmlId: Map<string, TechnologyHostNode>;
+      result: NonNullable<ImportJob['result']>;
       dedupe: boolean;
     },
   ) {
@@ -782,7 +789,10 @@ export class OpenExchangeImportService {
           created,
         } as any);
       input.businessActorEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.businessActors += 1;
+      }
     }
 
     for (const e of input.businessRoles) {
@@ -798,7 +808,10 @@ export class OpenExchangeImportService {
           created,
         } as any);
       input.businessRoleEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.businessRoles += 1;
+      }
     }
 
     // Technology layer: SystemSoftware
@@ -819,7 +832,10 @@ export class OpenExchangeImportService {
           created,
         } as any);
       input.systemSoftwareEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.systemSoftware += 1;
+      }
     }
 
     // Technology layer: CommunicationNetwork -> TechnologyLogicalNetwork
@@ -840,7 +856,10 @@ export class OpenExchangeImportService {
           created,
         } as any);
       input.networkEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.communicationNetworks += 1;
+      }
     }
 
     // Technology layer: Device -> TechnologyDeviceNode
@@ -868,7 +887,10 @@ export class OpenExchangeImportService {
         } as any);
 
       input.deviceEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.technologyNodes += 1;
+      }
     }
 
     // Technology layer: Node -> TechnologyHostNode
@@ -898,7 +920,10 @@ export class OpenExchangeImportService {
         } as any);
 
       input.hostEntityByXmlId.set(e.id, entity);
-      if (!existing) await em.persist(entity);
+      if (!existing) {
+        await em.persist(entity);
+        input.result.created.technologyNodes += 1;
+      }
     }
 
     // Motivation layer
