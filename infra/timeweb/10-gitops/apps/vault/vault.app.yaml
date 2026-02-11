@@ -19,6 +19,17 @@ spec:
       namespace: vault
       jsonPointers:
         - /spec/template/spec/containers/0/env
+    # MutatingWebhookConfiguration: Kubernetes автоматически заполняет caBundle при создании webhook
+    # (сертификат из service webhook). Также может добавлять port, reinvocationPolicy.
+    # Ресурс cluster-scoped, namespace не указываем.
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      name: vault-agent-injector-cfg
+      jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
+        - /webhooks/0/clientConfig/service/port
+        - /webhooks/0/reinvocationPolicy
+        - /webhooks/0/namespaceSelector
   source:
     # Используем Git репозиторий напрямую, так как Helm репозиторий HashiCorp недоступен (403)
     # ArgoCD может работать с Helm чартами из Git репозиториев
