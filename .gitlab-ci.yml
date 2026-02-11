@@ -1,6 +1,7 @@
 stages:
   - build
   - cleanup
+  - update-deploy-tags
   - version
   - deploy
 
@@ -855,7 +856,7 @@ cleanup:landing:
 # ArgoCD подтягивает изменения и деплоит новый образ.
 
 .update_deploy_image_main:
-  stage: build
+  stage: update-deploy-tags
   image: alpine:3.19
   before_script:
     - apk add --no-cache git
