@@ -1,54 +1,718 @@
 {
+  "action": {
+    "add": "Dodati",
+    "signIn": "Prijavi se",
+    "add.description": "Pronađite i izaberite elemente za dodavanje",
+    "added": "Dodato",
+    "back": "Nazad",
+    "cancel": "Otkaži",
+    "clear": "Obriši",
+    "clear.all": "Obriši sve",
+    "clearAll": "Obriši sve",
+    "collapseAll": "Skupi sve",
+    "create": "Kreiraj",
+    "create.description": "Popunite polja i kreirajte",
+    "create.failed": "Neuspešno kreiranje",
+    "created": "Kreirano",
+    "delete": "Obriši",
+    "delete.failed": "Neuspešno brisanje",
+    "deleted": "Obrisano",
+    "discard": "Ne čuvaj",
+    "edit": "Izmeni",
+    "expandAll": "Proširi sve",
+    "load": {
+      "failed": "Neuspešno učitavanje"
+    },
+    "loading": "Učitavanje...",
+    "not-allowed": "Akcija nije dozvoljena",
+    "not-implemented": "Funkcija još nije implementirana",
+    "refresh": "Ažuriraj",
+    "remove": "Ukloni",
+    "retry": "Pokušaj ponovo",
+    "save": "Sačuvaj",
+    "save.failed": "Neuspešno čuvanje",
+    "saved": "Sačuvano",
+    "saving": "Čuvanje...",
+    "update": "Ažuriraj",
+    "updated": "Ažurirano",
+    "upload": "Učitaj iz fajla",
+    "validation": {
+      "failed": "Popunite obavezna polja"
+    }
+  },
+  "admin-level": "Administracija",
+  "application": {
+    "component": "Komponenta",
+    "components": "Komponente",
+    "data-object": "Objekat podataka",
+    "data-objects": "Objekti podataka",
+    "event": "Događaj",
+    "events": "Događaji",
+    "function": "Funkcija aplikacije",
+    "functions": "Funkcije aplikacije",
+    "interfaces": "Interfejsi"
+  },
+  "architecture": {
+    "layer": "Arhitektonski sloj",
+    "layer.application": "Aplikacije",
+    "layer.business": "Biznis",
+    "layer.implementation": "Implementacija i migracija",
+    "layer.motivation": "Motivacija",
+    "layer.strategy": "Strategije",
+    "layer.technologies": "Tehnologije"
+  },
+  "auth": {
+    "common": {
+      "back-to-sign-in": "Nazad na prijavu",
+      "continue": "nastavak",
+      "email-verified": "E-pošta potvrđena",
+      "password-updated": "Lozinka ažurirana",
+      "submit-confirm": "Potvrdi",
+      "submit-send-code": "Pošalji kod"
+    },
+    "field": {
+      "email": "Elektronska pošta",
+      "first-name": "Ime",
+      "last-name": "Prezime",
+      "password": "Lozinka",
+      "password-confirm": "Potvrda lozinke",
+      "password-mismatch": "Lozinke se ne poklapaju",
+      "phone": "Telefon"
+    },
+    "footer": {
+      "agree": "Klikom na {button} prihvatate naše <terms>Uslove korišćenja</terms> i <privacy>Politiku privatnosti</privacy>. "
+    },
+    "forgot_password": "Zaboravili ste lozinku?",
+    "recovery": {
+      "code": "Kod za oporavak",
+      "subtitle": "Unesite svoju elektronsku adresu za oporavak naloga",
+      "title": "Oporavak"
+    },
+    "settings": {
+      "save": "Sačuvaj",
+      "tab": {
+        "password": "Lozinka",
+        "profile": "Profil"
+      }
+    },
+    "sign-in": {
+      "footer": {
+        "no-account": "Nemate nalog?",
+        "sign-up": "Registrujte se"
+      },
+      "forgot": "Zaboravili ste lozinku?",
+      "submit": "Prijavi se",
+      "subtitle": "Prijavite se pomoću e-pošte i lozinke",
+      "title": "Prijava"
+    },
+    "sign-up": {
+      "accept-tos": "Prihvatam uslove korišćenja",
+      "footer": {
+        "have-account": "Već imate nalog?",
+        "sign-in": "Prijavi se"
+      },
+      "submit": "Kreiraj nalog",
+      "subtitle": "Kreirajte novi nalog",
+      "title": "Registracija"
+    },
+    "sign_in": {
+      "footer": {
+        "no_account": "Nemate nalog?",
+        "sign_up": "Registrujte se"
+      },
+      "subtitle": "Prijavite se na svoj Archpad nalog",
+      "title": "Dobrodošli"
+    },
+    "sign_up": {
+      "footer": {
+        "have_account": "Već ste registrovani"
+      },
+      "title": "Registrujte se"
+    },
+    "verification": {
+      "code": "Kod za potvrdu",
+      "resend": "Pošalji ponovo",
+      "subtitle": "Potvrdite e-poštu da biste aktivirali nalog",
+      "title": "Potvrda"
+    },
+    "verify": {
+      "subtitle": "Potvrdite adresu elektronske pošte",
+      "title": "Potvrda pošte"
+    }
+  },
+  "business": {
+    "actors": "Akteri",
+    "products": "Proizvodi",
+    "roles": "Biznis uloge"
+  },
+  "create": {
+    "item": "Kreiraj"
+  },
+  "dashboards": "Kontrolne table",
+  "dashboards.main": "Glavna",
+  "description": {
+    "placeholder": "Dodajte opis"
+  },
+  "dialog": {
+    "unsaved-changes": {
+      "description": "Komponenta \"{component}\" ima ne sačuvane izmene. Sačuvati izmene pre izlaska?",
+      "title": "Ne sačuvane izmene"
+    },
+    "unsaved": {
+      "description": "Sačuvati izmene pre izlaska?",
+      "title": "Ne sačuvane izmene"
+    }
+  },
+  "directories": {
+    "no-directories": "Nema direktorijuma",
+    "title": "Direktorijumi"
+  },
+  "directory": {
+    "architecture": {
+      "style": "Stil arhitekture aplikacije"
+    },
+    "component": {
+      "state": "Stanje komponente"
+    },
+    "critical": {
+      "level": "Nivo kritičnosti"
+    },
+    "failover": {
+      "type": "Tip obrade otkaza"
+    },
+    "failure": {
+      "handling": "Način obrade otkaza"
+    },
+    "item": {
+      "created": "Dodat zapis u direktorijum",
+      "created.at": "u",
+      "created.by": "Kreirano od",
+      "error": "Greška pri kreiranju zapisa u direktorijum",
+      "updated.at": "u",
+      "updated.by": "Ažurirano od",
+      "relations": "Veze",
+      "relations.target.directory": "Povezani direktorijum",
+      "relations.target.item": "Pozicija direktorijuma",
+      "relations.type": "Tip veze",
+      "relations.type.add": "Dodati",
+      "relations.type.association": "Asocijacija",
+      "relations.type.hierarchy": "Roditelj -> Dete",
+      "relations.type.placeholder": "Izaberite tip veze"
+    },
+    "license": {
+      "type": "Tip licence"
+    },
+    "monitoring": {
+      "level": "Nivo praćenja"
+    },
+    "node": {
+      "type": "Tip mrežnog čvora"
+    },
+    "protocol": {
+      "type": "Mrežni protokol"
+    },
+    "recovery": {
+      "time": "Brzina oporavka"
+    },
+    "redundancy": {
+      "type": "Tip redundantnosti"
+    },
+    "rows": "Redova",
+    "scaling": {
+      "type": "Tip skaliranja"
+    },
+    "security": {
+      "zone": "Zone bezbednosti"
+    },
+    "software": {
+      "type": "Tip sistemskog softvera"
+    },
+    "solution": {
+      "state": "Stanje u rešenju"
+    },
+    "stakeholder": {
+      "role": "Uloge aktera"
+    }
+  },
+  "error": {
+    "not-found": "Nije pronađeno",
+    "title": "Greška"
+  },
+  "flow": {
+    "direction": "Smer",
+    "incoming": "Dolazni",
+    "outgoing": "Odlazni",
+    "source": "Izvor",
+    "target": "Prijamnik"
+  },
+  "form": {
+    "invalid": "Popunite obavezna polja"
+  },
+  "hierarchy": {
+    "children": "Sastoji se od",
+    "parent": "Ulazi u sastav"
+  },
+  "implementation": {
+    "plateau": "Plato"
+  },
+  "item": {
+    "action": {
+      "view": "Pregled"
+    },
+    "by-default": "podrazumevano",
+    "code": "Kod",
+    "code.placeholder": "Unesite kod",
+    "color": "Boja",
+    "description": "Opis",
+    "name": "Naziv",
+    "state": "Stanje"
+  },
+  "loading": "Učitavanje...",
+  "management": "Upravljanje",
+  "management.directories": "Direktorijumi",
+  "management.settings": "Podešavanja",
+  "management.settings.tenants": "Prostori",
+  "management.settings.upload.directories": "Učitavanje direktorijuma",
+  "management.settings.upload.repository": "Učitavanje repozitorijuma",
+  "management.state.schemas": "Šeme stanja",
+  "motivation": {
+    "motivation-items": "Elementi motivacije",
+    "stakeholders": "Akteri"
+  },
+  "my": {
+    "space": "Moj prostor"
+  },
+  "nav": {
+    "user": {
+      "account": "Profil",
+      "feedback": "Povratne informacije",
+      "logout": "Odjavi se",
+      "notifications": "Obaveštenja"
+    }
+  },
+  "portfolio": "Portfelj",
+  "portfolio.flows": "Tokovi",
+  "portfolio.solutions": "Rešenja",
+  "profile": {
+    "field": {
+      "code": "Kod",
+      "department": "Odeljenje",
+      "email": "Elektronska pošta",
+      "family-name": "Prezime",
+      "given-name": "Ime",
+      "login": "Korisničko ime",
+      "middle-name": "Srednje ime",
+      "position": "Pozicija"
+    },
+    "not-found": "Profil nije pronađen",
+    "title": "Profil"
+  },
+  "relation": {
+    "flow": "Tok",
+    "flows": "Tokovi"
+  },
+  "repository": {
+    "draw-io": {
+      "clear-repo": {
+        "done": "Očišćeno",
+        "entity": "Obrisano {deleted} {entity}"
+      },
+      "client": {
+        "selected": "Fajl: {fileName}"
+      },
+      "error": "Greška: {message}",
+      "progress": "Napredak",
+      "stage": {
+        "clear-repo": "Čišćenje",
+        "completed": "Uvoz završen",
+        "create-entities": "Kreiranje entiteta",
+        "create-flows": "Kreiranje tokova",
+        "create-links": "Kreiranje veza",
+        "parse": "Parsiranje XML",
+        "started": "Uvoz pokrenut"
+      }
+    },
+    "open-exchange": {
+      "clear-repo": {
+        "count": "Izvršavanje {count} operacija čišćenja",
+        "entity": "{entity}: obrisano {deleted} redova"
+      },
+      "client": {
+        "job-created": "Zadatak kreiran: {jobId}",
+        "poll-failed": "Greška pri proveri statusa zadatka: {message}",
+        "selected": "Izabran fajl: {fileName}"
+      },
+      "error": "Greška uvoza: {message}",
+      "progress": "Napredak",
+      "stage": {
+        "clear-repo": "Čišćenje repozitorijuma…",
+        "completed": "Uvoz završen: {components} komponenti, {functions} funkcija, {links} veza, {flows} tokova",
+        "create-data-access": "Kreiranje pristupa podacima…",
+        "create-entities": "Kreiranje entiteta: {components} komponenti, {functions} funkcija, {dataObjects} objekata podataka",
+        "create-flows": "Kreiranje tokova…",
+        "create-links": "Kreiranje veza…",
+        "create-technology-links": "Kreiranje tehnoloških veza…",
+        "parse": "Parsiranje XML-a…",
+        "started": "Uvoz pokrenut: {fileName}"
+      }
+    }
+  },
+  "search": {
+    "no-items": "Nema elemenata",
+    "no-results": "Ništa nije pronađeno",
+    "placeholder": "Pretraga..."
+  },
+  "select": {
+    "placeholder": "Izaberite"
+  },
+  "sheet": {
+    "selected": {
+      "count": "Izabrano: {count}"
+    }
+  },
+  "solution": {
+    "alternatives": "Alternative",
+    "alternatives.placeholder": "Dodajte alternative...",
+    "comments": "Komentari",
+    "comments.description": "Odeljak komentara je u razvoju",
+    "consequences": "Posledice",
+    "consequences.placeholder": "Dodajte posledice...",
+    "context": "Kontekst",
+    "context.placeholder": "Dodajte kontekst...",
+    "decision": "Odluka",
+    "decision-status": "Status Odluke",
+    "decision.placeholder": "Dodajte odluku...",
+    "implementation": "Implementacija",
+    "implementation-status": "Status Implementacije",
+    "implemented": "Implementirano",
+    "in-progres": "U Toku",
+    "life-cycle": {
+      "accepted": "Prihvaćeno",
+      "deprecated": "Zastarelo",
+      "proposed": "Predloženo",
+      "rejected": "Odbijeno",
+      "superseded": "Zamenjeno"
+    },
+    "not-started": "Nije Pokrenuto",
+    "rolled_back": "Vraćeno",
+    "solution": "Rešenje",
+    "solutions": "Rešenja"
+  },
+  "stakeholder": {
+    "role": {
+      "agile-coach": "Agile trener",
+      "analytics-owner": "Vlasnik analitike",
+      "application-architect": "Arhitekta aplikacija",
+      "availability-manager": "Menadžer dostupnosti",
+      "build-engineer": "Inženjer build-a",
+      "business-owner": "Vlasnik poslovanja",
+      "capacity-manager": "Menadžer kapaciteta",
+      "change-manager": "Menadžer promena",
+      "ciso": "CISO",
+      "cloud-architect": "Cloud arhitekta",
+      "compliance-officer": "Službenik za usklađenost",
+      "configuration-manager": "Menadžer konfiguracije",
+      "continuity-manager": "Menadžer kontinuiteta",
+      "customer-representative": "Predstavnik kupca",
+      "data-architect": "Arhitekta podataka",
+      "data-engineer": "Inženjer podataka",
+      "data-owner": "Vlasnik podataka",
+      "data-steward": "Upravnik podataka",
+      "development-lead": "Vodja razvoja",
+      "devops-engineer": "DevOps inženjer",
+      "domain-architect": "Domenski arhitekta",
+      "domain-owner": "Vlasnik domena",
+      "end-user-representative": "Predstavnik krajnjeg korisnika",
+      "engineering-manager": "Menadžer inženjeringa",
+      "enterprise-architect": "Poslovni arhitekta",
+      "executive-sponsor": "Izvršni pokrovitelj",
+      "external-auditor": "Spoljni auditor",
+      "external-vendor": "Spoljni dobavljač",
+      "finops-owner": "Vlasnik FinOps",
+      "iam-administrator": "IAM administrator",
+      "incident-manager": "Menadžer incidenata",
+      "infrastructure-architect": "Arhitekta infrastrukture",
+      "integration-architect": "Arhitekta integracija",
+      "integration-engineer": "Inženjer integracija",
+      "internal-auditor": "Interni auditor",
+      "legal-counsel": "Pravni savetnik",
+      "ml-owner": "Vlasnik ML",
+      "network-architect": "Mrežni arhitekta",
+      "observability-owner": "Vlasnik opservabilnosti",
+      "operations-engineer": "Inženjer operacija",
+      "platform-architect": "Arhitekta platforme",
+      "portfolio-manager": "Menadžer portfolija",
+      "privacy-officer": "Službenik za privatnost",
+      "problem-manager": "Menadžer problema",
+      "process-owner": "Vlasnik procesa",
+      "procurement-specialist": "Stručnjak za nabavke",
+      "product-manager": "Menadžer proizvoda",
+      "product-owner": "Vlasnik proizvoda",
+      "program-manager": "Menadžer programa",
+      "project-manager": "Menadžer projekta",
+      "qa-engineer": "Inženjer QA",
+      "qa-lead": "Vodja QA",
+      "regulator": "Regulator",
+      "release-manager": "Menadžer izdanja",
+      "release-train-engineer": "Release Train Engineer",
+      "risk-manager": "Menadžer rizika",
+      "scrum-master": "Scrum master",
+      "security-architect": "Arhitekta bezbednosti",
+      "security-engineer": "Inženjer bezbednosti",
+      "security-officer": "Službenik za bezbednost",
+      "service-manager": "Menadžer usluge",
+      "service-owner": "Vlasnik usluge",
+      "soc-analyst": "SOC analitičar",
+      "software-engineer": "Inženjer softvera",
+      "solution-architect": "Arhitekta rešenja",
+      "sre": "SRE",
+      "support-engineer": "Inženjer podrške",
+      "tech-lead": "Tech lead",
+      "technical-writer": "Tehnički pisac",
+      "ux-designer": "UX dizajner",
+      "ux-researcher": "UX istraživač",
+      "vendor-manager": "Menadžer dobavljača"
+    }
+  },
+  "strategy": {
+    "capability": "Mogućnosti",
+    "resource": "Resursi"
+  },
   "tab": {
-    "relations": "Relacije",
+    "adr": "ADR",
+    "application": "Interna struktura",
+    "application.architecture": "Arhitektura",
+    "applications": "Aplikacije",
     "business": "Biznis",
     "business.actors": "Aktori",
     "business.processes": "Procesi",
-    "business.roles": "Uloge"
+    "business.roles": "Uloge",
+    "classification": "Klasifikacija",
+    "components": "Komponente",
+    "data-objects": "Objekti podataka",
+    "description": "Opis",
+    "events": "Događaji",
+    "flows": "Tokovi",
+    "flows.source": "Izlazni tokovi",
+    "flows.target": "Ulazni tokovi",
+    "functions": "Funkcije",
+    "general": "Opšte",
+    "hierarchy": "Struktura",
+    "interfaces": "Interfejsi",
+    "properties": "Svojstva",
+    "relations": "Struktura i veze",
+    "schemas": "Šeme",
+    "schemas.application": "Aplikacije",
+    "schemas.description": "Šeme za rešenje {solution}",
+    "schemas.description.empty": "Odeljak šema je u razvoju",
+    "schemas.technology": "Tehnologije",
+    "schemas.title": "Šeme",
+    "solutions": "Rešenja",
+    "stakeholders": "Akteri",
+    "technology": "Infrastruktura",
+    "technology.networks": "Mreže",
+    "technology.nodes": "Čvorovi",
+    "technology.system-software": "Sistemski softver"
   },
-  "action": {
-    "expandAll": "Proširi sve",
-    "collapseAll": "Skupi sve",
-    "remove": "Ukloni"
+  "table": {
+    "by-default": "Podrazumevano",
+    "code": "Kod",
+    "color": "Boja",
+    "columns": "Kolone",
+    "component": {
+      "children": {
+        "no-results": "Komponenta {component} nema podređenih komponenti",
+        "no-results.description": "Dodajte podređenu komponentu sa liste dostupnih elemenata za komponentu {component}"
+      },
+      "data-objects": {
+        "no-results": "Komponenta {component} nema objekata podataka",
+        "no-results.description": "Kreirajte novi objekat podataka ili dodajte postojeći sa liste za komponentu {component}"
+      },
+      "events": {
+        "no-results": "Komponenta {component} nema događaja",
+        "no-results.description": "Kreirajte novi događaj ili dodajte postojeći sa liste za komponentu {component}"
+      },
+      "flows": {
+        "no-results": "Komponenta {component} nema tokova",
+        "no-results.description": "Kreirajte novi tok za komponentu {component}"
+      },
+      "functions": {
+        "no-results": "Komponenta {component} nema funkcija",
+        "no-results.description": "Kreirajte novu funkciju ili dodajte postojeću sa liste za komponentu {component}"
+      },
+      "interfaces": {
+        "no-results": "Komponenta {component} nema interfejsa",
+        "no-results.description": "Kreirajte novi interfejs ili dodajte postojeći sa liste za komponentu {component}"
+      },
+      "networks": {
+        "no-results": "Komponenta {component} nema mreža",
+        "no-results.description": "Dodajte mrežu sa liste dostupnih elemenata za komponentu {component}"
+      },
+      "nodes": {
+        "no-results": "Komponenta {component} nema čvorova",
+        "no-results.description": "Dodajte čvor sa liste dostupnih elemenata za komponentu {component}"
+      },
+      "parents": {
+        "no-results": "Komponenta {component} nema nadređenih komponenti",
+        "no-results.description": "Dodajte nadređenu komponentu sa liste dostupnih elemenata za komponentu {component}"
+      },
+      "stakeholders": {
+        "no-results": "Komponenta {component} nema aktera",
+        "no-results.description": "Kreirajte novog aktera ili dodajte postojećeg sa liste za komponentu {component}"
+      },
+      "system-software": {
+        "no-results": "Komponenta {component} nema sistemskog softvera",
+        "no-results.description": "Dodajte sistemski softver sa liste dostupnih elemenata za komponentu {component}"
+      }
+    },
+    "components": {
+      "no-results": "Komponente aplikacije nisu pronađene",
+      "no-results.description": "Kreirajte novu komponentu aplikacije ili dodajte postojeću sa liste"
+    },
+    "created": "Kreirano",
+    "data-objects": {
+      "no-results": "Objekti podataka nisu pronađeni",
+      "no-results.description": "Kreirajte novi objekat podataka ili dodajte postojeći sa liste"
+    },
+    "description": "Opis",
+    "directory": {
+      "no-results": "Elementi direktorijuma nisu pronađeni",
+      "no-results.description": "Kreirajte novi element ili dodajte postojeći sa liste"
+    },
+    "filter": "Filter...",
+    "functions": {
+      "no-results": "Funkcije aplikacije nisu pronađene",
+      "no-results.description": "Kreirajte novu funkciju aplikacije ili dodajte postojeću sa liste"
+    },
+    "item": {
+      "actions": "Akcije"
+    },
+    "license": {
+      "type": "Tip licence"
+    },
+    "name": "Naziv",
+    "no-results": "Ništa nije pronađeno",
+    "page": {
+      "size": "Redova na stranici"
+    },
+    "select": {
+      "all": "Izaberi sve",
+      "row": "Izaberi red"
+    },
+    "software": {
+      "no-results": "Sistemski softver nije pronađen",
+      "no-results.description": "Dodajte sistemski softver sa liste dostupnih elemenata",
+      "type": "Tip softvera"
+    },
+    "solution": {
+      "stakeholders": {
+        "no-results": "Rešenje {solution} nema aktera",
+        "no-results.description": "Kreirajte novog aktera ili dodajte postojećeg sa liste za rešenje {solution}"
+      }
+    },
+    "solutions": {
+      "no-results": "Rešenja nisu pronađena",
+      "no-results.description": "Kreirajte novo rešenje ili dodajte postojeće sa liste"
+    },
+    "stakeholder": {
+      "name": "Naziv",
+      "role": "Uloga"
+    },
+    "state": "Status",
+    "updated": "Ažurirano",
+    "version": "Verzija",
+    "version.placeholder": "Unesite verziju"
   },
-  "upload.repository.title": "Otpremanje repozitorijuma",
-  "upload.repository.tab.open-exchange": "Open Exchange XML",
-  "upload.repository.tab.draw-io": "Draw.io dijagram",
-  "upload.open-exchange.subtitle": "Otpremite XML u Open Exchange (Archimate) formatu.",
-  "upload.open-exchange.dropzone.title": "Prevucite fajl ili kliknite",
-  "upload.open-exchange.dropzone.hint": ".xml",
-  "upload.open-exchange.clear-before.label": "Očistiti repozitorijum pre uvoza",
-  "upload.open-exchange.action.start": "Pokreni uvoz",
-  "upload.open-exchange.job-id": "Zadatak",
-  "upload.open-exchange.logs.title": "Log uvoza",
-  "upload.open-exchange.logs.count": "{count} unosa",
-  "upload.open-exchange.logs.empty": "Log prazan",
-  "upload.open-exchange.summary.title": "Rezultat",
-  "upload.open-exchange.summary.line": "Komponente {components}, funkcije {functions}, veze {links}, akteri {actorRoleLinks}, tokovi {flows}",
-  "upload.open-exchange.summary.cross-layer": "Aktori {businessActors}, uloge {businessRoles}, softver {systemSoftware}, mreže {communicationNetworks}, čvorovi {technologyNodes}",
-  "upload.draw-io.title": "Draw.io dijagram",
-  "upload.draw-io.subtitle": "Otpremite ArchiMate dijagram u Draw.io formatu (.drawio ili .xml).",
-  "upload.draw-io.dropzone.title": "Prevucite fajl ili kliknite",
-  "upload.draw-io.dropzone.hint": ".drawio, .xml",
-  "upload.draw-io.clear-before.label": "Očistiti pre uvoza",
-  "upload.draw-io.action.start": "Pokreni uvoz",
-  "upload.draw-io.job-id": "Zadatak",
-  "upload.draw-io.logs.title": "Log",
-  "upload.draw-io.logs.count": "{count} unosa",
-  "upload.draw-io.logs.empty": "Prazan",
-  "upload.draw-io.summary.title": "Rezultat",
-  "upload.draw-io.summary.line": "Komponente {components}, funkcije {functions}, podaci {dataObjects}, softver {systemSoftware}, veze {links}, hijerarhija {hierarchy}, tokovi {flows}",
-  "repository.open-exchange.progress": "Napredak",
-  "repository.draw-io.progress": "Napredak",
-  "repository.draw-io.stage.parse": "Parsiranje XML",
-  "repository.draw-io.stage.create-entities": "Kreiranje entiteta",
-  "repository.draw-io.stage.clear-repo": "Čišćenje",
-  "repository.draw-io.stage.create-links": "Kreiranje veza",
-  "repository.draw-io.stage.create-flows": "Kreiranje tokova",
-  "repository.draw-io.stage.completed": "Uvoz završen",
-  "repository.draw-io.stage.started": "Uvoz pokrenut",
-  "repository.draw-io.clear-repo.entity": "Obrisano {deleted} {entity}",
-  "repository.draw-io.clear-repo.done": "Očišćeno",
-  "repository.draw-io.client.selected": "Fajl: {fileName}",
-  "repository.draw-io.error": "Greška: {message}"
+  "tabs": {
+    "description": "Opis",
+    "general": "Opšte",
+    "relations": "Veze"
+  },
+  "technologies": {
+    "location": "Lokacije",
+    "networks": "Mreže",
+    "nodes": "Mrežni čvorovi",
+    "system-software": "Sistemski softver"
+  },
+  "under-construction": {
+    "description": "Molimo pokušajte kasnije",
+    "title": "Odeljak je u razvoju"
+  },
+  "upload": {
+    "draw-io": {
+      "action": {
+        "start": "Pokreni uvoz"
+      },
+      "clear-before": {
+        "label": "Očistiti pre uvoza"
+      },
+      "dropzone": {
+        "hint": ".drawio, .xml",
+        "title": "Prevucite fajl ili kliknite"
+      },
+      "job-id": "Zadatak",
+      "logs": {
+        "count": "{count} unosa",
+        "empty": "Prazan",
+        "title": "Log"
+      },
+      "subtitle": "Otpremite ArchiMate dijagram u Draw.io formatu (.drawio ili .xml).",
+      "summary": {
+        "line": "Komponente {components}, funkcije {functions}, podaci {dataObjects}, softver {systemSoftware}, veze {links}, hijerarhija {hierarchy}, tokovi {flows}",
+        "title": "Rezultat"
+      },
+      "title": "Draw.io dijagram"
+    },
+    "open-exchange": {
+      "action": {
+        "start": "Pokreni uvoz"
+      },
+      "clear-before": {
+        "label": "Očistiti repozitorijum pre uvoza"
+      },
+      "clear-repo": {
+        "count": "Tabela za brisanje: {count}"
+      },
+      "client": {
+        "job-created": "Kreiran posao: {jobId}",
+        "poll-failed": "Neuspešno dobijanje statusa posla: {message}",
+        "selected": "Izabran fajl: {fileName}"
+      },
+      "dropzone": {
+        "hint": "Prihvata .xml fajlove (Archimate 3.0 / 3.1)",
+        "title": "Prevucite fajl ili kliknite"
+      },
+      "error": "Greška uvoza: {message}",
+      "job-id": "Zadatak",
+      "logs": {
+        "count": "{count} unosa",
+        "empty": "Log prazan",
+        "title": "Log uvoza"
+      },
+      "progress": "Napredak",
+      "stage": {
+        "clear-repo": "Brisanje repozitorijuma pre uvoza",
+        "completed": "Uvoz završen (komponente: {components}, funkcije: {functions}, veze: {links}, tokovi: {flows})",
+        "create-data-access": "Kreiranje veza pristupa podacima (Access)",
+        "create-entities": "Kreiranje objekata (komponente: {components}, funkcije: {functions}, objekti podataka: {dataObjects})",
+        "create-flows": "Kreiranje tokova (Flow)",
+        "create-links": "Kreiranje veza komponenta ↔ funkcija (Assignment)",
+        "parse": "Čitanje i raščlanjivanje XML",
+        "started": "Pokretanje uvoza fajla: {fileName}"
+      },
+      "subtitle": "Otpremite XML u Open Exchange (Archimate) formatu.",
+      "summary": {
+        "cross-layer": "Aktori {businessActors}, uloge {businessRoles}, softver {systemSoftware}, mreže {communicationNetworks}, čvorovi {technologyNodes}",
+        "line": "Komponente {components}, funkcije {functions}, veze {links}, akteri {actorRoleLinks}, tokovi {flows}",
+        "title": "Rezultat"
+      }
+    },
+    "repository": {
+      "tab": {
+        "draw-io": "Draw.io dijagram",
+        "open-exchange": "Open Exchange XML"
+      },
+      "title": "Otpremanje repozitorijuma"
+    }
+  }
 }

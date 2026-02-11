@@ -1,54 +1,718 @@
 {
+  "action": {
+    "add": "Añadir",
+    "signIn": "Iniciar sesión",
+    "add.description": "Busque y seleccione elementos para añadir",
+    "added": "Añadido",
+    "back": "Atrás",
+    "cancel": "Cancelar",
+    "clear": "Limpiar",
+    "clear.all": "Limpiar todo",
+    "clearAll": "Limpiar todo",
+    "collapseAll": "Contraer todo",
+    "create": "Crear",
+    "create.description": "Complete los campos y cree",
+    "create.failed": "No se pudo crear",
+    "created": "Creado",
+    "delete": "Eliminar",
+    "delete.failed": "No se pudo eliminar",
+    "deleted": "Eliminado",
+    "discard": "No guardar",
+    "edit": "Editar",
+    "expandAll": "Expandir todo",
+    "load": {
+      "failed": "No se pudo cargar"
+    },
+    "loading": "Cargando...",
+    "not-allowed": "Acción no permitida",
+    "not-implemented": "Función aún no implementada",
+    "refresh": "Actualizar",
+    "remove": "Eliminar",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "save.failed": "No se pudo guardar",
+    "saved": "Guardado",
+    "saving": "Guardando...",
+    "update": "Actualizar",
+    "updated": "Actualizado",
+    "upload": "Cargar desde archivo",
+    "validation": {
+      "failed": "Complete los campos obligatorios"
+    }
+  },
+  "admin-level": "Administración",
+  "application": {
+    "component": "Componente",
+    "components": "Componentes",
+    "data-object": "Objeto de datos",
+    "data-objects": "Objetos de datos",
+    "event": "Evento",
+    "events": "Eventos",
+    "function": "Función de aplicación",
+    "functions": "Funciones de aplicación",
+    "interfaces": "Interfaces"
+  },
+  "architecture": {
+    "layer": "Capa de arquitectura",
+    "layer.application": "Aplicaciones",
+    "layer.business": "Negocio",
+    "layer.implementation": "Implementación y migración",
+    "layer.motivation": "Motivación",
+    "layer.strategy": "Estrategias",
+    "layer.technologies": "Tecnologías"
+  },
+  "auth": {
+    "common": {
+      "back-to-sign-in": "Volver al inicio de sesión",
+      "continue": "continuar",
+      "email-verified": "Correo verificado",
+      "password-updated": "Contraseña actualizada",
+      "submit-confirm": "Confirmar",
+      "submit-send-code": "Enviar código"
+    },
+    "field": {
+      "email": "Correo electrónico",
+      "first-name": "Nombre",
+      "last-name": "Apellido",
+      "password": "Contraseña",
+      "password-confirm": "Confirmar contraseña",
+      "password-mismatch": "Las contraseñas no coinciden",
+      "phone": "Teléfono"
+    },
+    "footer": {
+      "agree": "Al hacer clic en {button}, acepta nuestros <terms>Términos de servicio</terms> y <privacy>Política de privacidad</privacy>. "
+    },
+    "forgot_password": "¿Olvidó su contraseña?",
+    "recovery": {
+      "code": "Código de recuperación",
+      "subtitle": "Ingrese su correo electrónico para recuperar su cuenta",
+      "title": "Recuperación"
+    },
+    "settings": {
+      "save": "Guardar",
+      "tab": {
+        "password": "Contraseña",
+        "profile": "Perfil"
+      }
+    },
+    "sign-in": {
+      "footer": {
+        "no-account": "¿No tiene una cuenta?",
+        "sign-up": "Registrarse"
+      },
+      "forgot": "¿Olvidó su contraseña?",
+      "submit": "Iniciar sesión",
+      "subtitle": "Inicie sesión con correo electrónico y contraseña",
+      "title": "Iniciar sesión"
+    },
+    "sign-up": {
+      "accept-tos": "Acepto los términos de uso",
+      "footer": {
+        "have-account": "¿Ya tiene una cuenta?",
+        "sign-in": "Iniciar sesión"
+      },
+      "submit": "Crear cuenta",
+      "subtitle": "Cree una nueva cuenta",
+      "title": "Registrarse"
+    },
+    "sign_in": {
+      "footer": {
+        "no_account": "¿No tiene una cuenta?",
+        "sign_up": "Registrarse"
+      },
+      "subtitle": "Inicie sesión en su cuenta Archpad",
+      "title": "Bienvenido de nuevo"
+    },
+    "sign_up": {
+      "footer": {
+        "have_account": "¿Ya tiene una cuenta?"
+      },
+      "title": "Registrarse"
+    },
+    "verification": {
+      "code": "Código de verificación",
+      "resend": "Reenviar",
+      "subtitle": "Verifique su correo electrónico para activar su cuenta",
+      "title": "Verificación"
+    },
+    "verify": {
+      "subtitle": "Verifique su dirección de correo electrónico",
+      "title": "Verificación"
+    }
+  },
+  "business": {
+    "actors": "Actores",
+    "products": "Productos",
+    "roles": "Roles de negocio"
+  },
+  "create": {
+    "item": "Crear"
+  },
+  "dashboards": "Paneles",
+  "dashboards.main": "Principal",
+  "description": {
+    "placeholder": "Añadir descripción"
+  },
+  "dialog": {
+    "unsaved-changes": {
+      "description": "El componente \"{component}\" tiene cambios sin guardar. ¿Guardar cambios antes de salir?",
+      "title": "Cambios sin guardar"
+    },
+    "unsaved": {
+      "description": "¿Guardar cambios antes de salir?",
+      "title": "Cambios sin guardar"
+    }
+  },
+  "directories": {
+    "no-directories": "Sin directorios",
+    "title": "Directorios"
+  },
+  "directory": {
+    "architecture": {
+      "style": "Estilo de arquitectura de aplicación"
+    },
+    "component": {
+      "state": "Estado del componente"
+    },
+    "critical": {
+      "level": "Nivel de criticidad"
+    },
+    "failover": {
+      "type": "Tipo de conmutación por error"
+    },
+    "failure": {
+      "handling": "Método de manejo de fallos"
+    },
+    "item": {
+      "created": "Elemento de directorio añadido",
+      "created.at": "a",
+      "created.by": "Creado por",
+      "error": "Error al crear elemento de directorio",
+      "updated.at": "a",
+      "updated.by": "Actualizado por",
+      "relations": "Relaciones",
+      "relations.target.directory": "Directorio relacionado",
+      "relations.target.item": "Elemento de directorio",
+      "relations.type": "Tipo de relación",
+      "relations.type.add": "Añadir",
+      "relations.type.association": "Asociación",
+      "relations.type.hierarchy": "Padre -> Hijo",
+      "relations.type.placeholder": "Seleccione el tipo de relación"
+    },
+    "license": {
+      "type": "Tipo de licencia"
+    },
+    "monitoring": {
+      "level": "Nivel de monitoreo"
+    },
+    "node": {
+      "type": "Tipo de nodo de red"
+    },
+    "protocol": {
+      "type": "Protocolo de red"
+    },
+    "recovery": {
+      "time": "Velocidad de recuperación"
+    },
+    "redundancy": {
+      "type": "Tipo de redundancia"
+    },
+    "rows": "Filas",
+    "scaling": {
+      "type": "Tipo de escalado"
+    },
+    "security": {
+      "zone": "Zonas de seguridad"
+    },
+    "software": {
+      "type": "Tipo de software del sistema"
+    },
+    "solution": {
+      "state": "Estado en solución"
+    },
+    "stakeholder": {
+      "role": "Roles de partes interesadas"
+    }
+  },
+  "error": {
+    "not-found": "No encontrado",
+    "title": "Error"
+  },
+  "flow": {
+    "direction": "Dirección",
+    "incoming": "Entrantes",
+    "outgoing": "Salientes",
+    "source": "Origen",
+    "target": "Destino"
+  },
+  "form": {
+    "invalid": "Complete los campos obligatorios"
+  },
+  "hierarchy": {
+    "children": "Compuesto de",
+    "parent": "Parte de"
+  },
+  "implementation": {
+    "plateau": "Meseta"
+  },
+  "item": {
+    "action": {
+      "view": "Ver"
+    },
+    "by-default": "por defecto",
+    "code": "Código",
+    "code.placeholder": "Ingrese el código",
+    "color": "Color",
+    "description": "Descripción",
+    "name": "Nombre",
+    "state": "Estado"
+  },
+  "loading": "Cargando...",
+  "management": "Gestión",
+  "management.directories": "Directorios",
+  "management.settings": "Configuración",
+  "management.settings.tenants": "Espacios",
+  "management.settings.upload.directories": "Carga de directorios",
+  "management.settings.upload.repository": "Carga de repositorio",
+  "management.state.schemas": "Esquemas de estado",
+  "motivation": {
+    "motivation-items": "Elementos de motivación",
+    "stakeholders": "Partes interesadas"
+  },
+  "my": {
+    "space": "Mi espacio"
+  },
+  "nav": {
+    "user": {
+      "account": "Perfil",
+      "feedback": "Retroalimentación",
+      "logout": "Cerrar sesión",
+      "notifications": "Notificaciones"
+    }
+  },
+  "portfolio": "Portafolio",
+  "portfolio.flows": "Flujos",
+  "portfolio.solutions": "Soluciones",
+  "profile": {
+    "field": {
+      "code": "Código",
+      "department": "Departamento",
+      "email": "Correo electrónico",
+      "family-name": "Apellido",
+      "given-name": "Nombre",
+      "login": "Usuario",
+      "middle-name": "Segundo nombre",
+      "position": "Puesto"
+    },
+    "not-found": "Perfil no encontrado",
+    "title": "Perfil"
+  },
+  "relation": {
+    "flow": "Flujo",
+    "flows": "Flujos"
+  },
+  "repository": {
+    "draw-io": {
+      "clear-repo": {
+        "done": "Listo",
+        "entity": "Eliminados {deleted} {entity}"
+      },
+      "client": {
+        "selected": "Archivo: {fileName}"
+      },
+      "error": "Error: {message}",
+      "progress": "Progreso",
+      "stage": {
+        "clear-repo": "Limpiando",
+        "completed": "Completado",
+        "create-entities": "Creando entidades",
+        "create-flows": "Creando flujos",
+        "create-links": "Creando enlaces",
+        "parse": "Parseando XML",
+        "started": "Iniciado"
+      }
+    },
+    "open-exchange": {
+      "clear-repo": {
+        "count": "Realizando {count} operaciones de limpieza",
+        "entity": "{entity}: {deleted} filas eliminadas"
+      },
+      "client": {
+        "job-created": "Tarea creada: {jobId}",
+        "poll-failed": "Error al obtener estado de la tarea: {message}",
+        "selected": "Archivo seleccionado: {fileName}"
+      },
+      "error": "Error de importación: {message}",
+      "progress": "Progreso",
+      "stage": {
+        "clear-repo": "Limpiando repositorio…",
+        "completed": "Importación completada: {components} componentes, {functions} funciones, {links} enlaces, {flows} flujos",
+        "create-data-access": "Creando acceso a datos…",
+        "create-entities": "Creando entidades: {components} componentes, {functions} funciones, {dataObjects} objetos de datos",
+        "create-flows": "Creando flujos…",
+        "create-links": "Creando enlaces…",
+        "create-technology-links": "Creando enlaces tecnológicos…",
+        "parse": "Analizando XML…",
+        "started": "Importación iniciada: {fileName}"
+      }
+    }
+  },
+  "search": {
+    "no-items": "Sin elementos",
+    "no-results": "No se encontró nada",
+    "placeholder": "Buscar..."
+  },
+  "select": {
+    "placeholder": "Seleccionar"
+  },
+  "sheet": {
+    "selected": {
+      "count": "Seleccionado: {count}"
+    }
+  },
+  "solution": {
+    "alternatives": "Alternativas",
+    "alternatives.placeholder": "Añadir alternativas...",
+    "comments": "Comentarios",
+    "comments.description": "La sección de comentarios está en desarrollo",
+    "consequences": "Consecuencias",
+    "consequences.placeholder": "Añadir consecuencias...",
+    "context": "Contexto",
+    "context.placeholder": "Añadir contexto...",
+    "decision": "Decisión",
+    "decision-status": "Estado de Decisión",
+    "decision.placeholder": "Añadir decisión...",
+    "implementation": "Implementación",
+    "implementation-status": "Estado de Implementación",
+    "implemented": "Implementado",
+    "in-progres": "En Progreso",
+    "life-cycle": {
+      "accepted": "Aceptado",
+      "deprecated": "Obsoleto",
+      "proposed": "Propuesto",
+      "rejected": "Rechazado",
+      "superseded": "Reemplazado"
+    },
+    "not-started": "No Iniciado",
+    "rolled_back": "Revertido",
+    "solution": "Solución",
+    "solutions": "Soluciones"
+  },
+  "stakeholder": {
+    "role": {
+      "agile-coach": "Coach Ágil",
+      "analytics-owner": "Propietario de analítica",
+      "application-architect": "Arquitecto de aplicaciones",
+      "availability-manager": "Gestor de disponibilidad",
+      "build-engineer": "Ingeniero de compilación",
+      "business-owner": "Propietario del negocio",
+      "capacity-manager": "Gestor de capacidad",
+      "change-manager": "Gestor de cambios",
+      "ciso": "CISO",
+      "cloud-architect": "Arquitecto en la nube",
+      "compliance-officer": "Oficial de cumplimiento",
+      "configuration-manager": "Gestor de configuración",
+      "continuity-manager": "Gestor de continuidad",
+      "customer-representative": "Representante del cliente",
+      "data-architect": "Arquitecto de datos",
+      "data-engineer": "Ingeniero de datos",
+      "data-owner": "Propietario de datos",
+      "data-steward": "Administrador de datos",
+      "development-lead": "Líder de desarrollo",
+      "devops-engineer": "Ingeniero DevOps",
+      "domain-architect": "Arquitecto de dominio",
+      "domain-owner": "Propietario del dominio",
+      "end-user-representative": "Representante del usuario final",
+      "engineering-manager": "Gerente de ingeniería",
+      "enterprise-architect": "Arquitecto empresarial",
+      "executive-sponsor": "Patrocinador ejecutivo",
+      "external-auditor": "Auditor externo",
+      "external-vendor": "Proveedor externo",
+      "finops-owner": "Propietario FinOps",
+      "iam-administrator": "Administrador IAM",
+      "incident-manager": "Gestor de incidentes",
+      "infrastructure-architect": "Arquitecto de infraestructura",
+      "integration-architect": "Arquitecto de integración",
+      "integration-engineer": "Ingeniero de integración",
+      "internal-auditor": "Auditor interno",
+      "legal-counsel": "Asesor legal",
+      "ml-owner": "Propietario de ML",
+      "network-architect": "Arquitecto de red",
+      "observability-owner": "Propietario de observabilidad",
+      "operations-engineer": "Ingeniero de operaciones",
+      "platform-architect": "Arquitecto de plataforma",
+      "portfolio-manager": "Gerente de cartera",
+      "privacy-officer": "Oficial de privacidad",
+      "problem-manager": "Gestor de problemas",
+      "process-owner": "Propietario del proceso",
+      "procurement-specialist": "Especialista en adquisiciones",
+      "product-manager": "Gerente de producto",
+      "product-owner": "Propietario del producto",
+      "program-manager": "Gerente de programa",
+      "project-manager": "Gerente de proyecto",
+      "qa-engineer": "Ingeniero de QA",
+      "qa-lead": "Líder de QA",
+      "regulator": "Regulador",
+      "release-manager": "Gestor de versiones",
+      "release-train-engineer": "Release Train Engineer",
+      "risk-manager": "Gestor de riesgos",
+      "scrum-master": "Scrum Master",
+      "security-architect": "Arquitecto de seguridad",
+      "security-engineer": "Ingeniero de seguridad",
+      "security-officer": "Oficial de seguridad",
+      "service-manager": "Gestor de servicios",
+      "service-owner": "Propietario del servicio",
+      "soc-analyst": "Analista SOC",
+      "software-engineer": "Ingeniero de software",
+      "solution-architect": "Arquitecto de soluciones",
+      "sre": "SRE",
+      "support-engineer": "Ingeniero de soporte",
+      "tech-lead": "Tech Lead",
+      "technical-writer": "Escritor técnico",
+      "ux-designer": "Diseñador UX",
+      "ux-researcher": "Investigador UX",
+      "vendor-manager": "Gerente de proveedores"
+    }
+  },
+  "strategy": {
+    "capability": "Capacidades",
+    "resource": "Recursos"
+  },
   "tab": {
-    "relations": "Relaciones",
+    "adr": "ADR",
+    "application": "Estructura interna",
+    "application.architecture": "Arquitectura",
+    "applications": "Aplicaciones",
     "business": "Negocio",
     "business.actors": "Actores",
     "business.processes": "Procesos",
-    "business.roles": "Roles"
+    "business.roles": "Roles",
+    "classification": "Clasificación",
+    "components": "Componentes",
+    "data-objects": "Objetos de datos",
+    "description": "Descripción",
+    "events": "Eventos",
+    "flows": "Flujos",
+    "flows.source": "Flujos salientes",
+    "flows.target": "Flujos entrantes",
+    "functions": "Funciones",
+    "general": "General",
+    "hierarchy": "Estructura",
+    "interfaces": "Interfaces",
+    "properties": "Propiedades",
+    "relations": "Estructura y relaciones",
+    "schemas": "Esquemas",
+    "schemas.application": "Aplicaciones",
+    "schemas.description": "Esquemas para la solución {solution}",
+    "schemas.description.empty": "La sección de esquemas está en desarrollo",
+    "schemas.technology": "Tecnologías",
+    "schemas.title": "Esquemas",
+    "solutions": "Soluciones",
+    "stakeholders": "Partes interesadas",
+    "technology": "Infraestructura",
+    "technology.networks": "Redes",
+    "technology.nodes": "Nodos",
+    "technology.system-software": "Software del sistema"
   },
-  "action": {
-    "expandAll": "Expandir todo",
-    "collapseAll": "Contraer todo",
-    "remove": "Eliminar"
+  "table": {
+    "by-default": "Por defecto",
+    "code": "Código",
+    "color": "Color",
+    "columns": "Columnas",
+    "component": {
+      "children": {
+        "no-results": "El componente {component} no tiene componentes secundarios",
+        "no-results.description": "Añada un componente secundario de la lista de elementos disponibles para el componente {component}"
+      },
+      "data-objects": {
+        "no-results": "El componente {component} no tiene objetos de datos",
+        "no-results.description": "Cree un nuevo objeto de datos o añada uno existente de la lista para el componente {component}"
+      },
+      "events": {
+        "no-results": "El componente {component} no tiene eventos",
+        "no-results.description": "Cree un nuevo evento o añada uno existente de la lista para el componente {component}"
+      },
+      "flows": {
+        "no-results": "El componente {component} no tiene flujos",
+        "no-results.description": "Cree un nuevo flujo para el componente {component}"
+      },
+      "functions": {
+        "no-results": "El componente {component} no tiene funciones",
+        "no-results.description": "Cree una nueva función o añada una existente de la lista para el componente {component}"
+      },
+      "interfaces": {
+        "no-results": "El componente {component} no tiene interfaces",
+        "no-results.description": "Cree una nueva interfaz o añada una existente de la lista para el componente {component}"
+      },
+      "networks": {
+        "no-results": "El componente {component} no tiene redes",
+        "no-results.description": "Añada una red de la lista de elementos disponibles para el componente {component}"
+      },
+      "nodes": {
+        "no-results": "El componente {component} no tiene nodos",
+        "no-results.description": "Añada un nodo de la lista de elementos disponibles para el componente {component}"
+      },
+      "parents": {
+        "no-results": "El componente {component} no tiene componentes principales",
+        "no-results.description": "Añada un componente principal de la lista de elementos disponibles para el componente {component}"
+      },
+      "stakeholders": {
+        "no-results": "El componente {component} no tiene partes interesadas",
+        "no-results.description": "Cree una nueva parte interesada o añada una existente de la lista para el componente {component}"
+      },
+      "system-software": {
+        "no-results": "El componente {component} no tiene software del sistema",
+        "no-results.description": "Añada software del sistema de la lista de elementos disponibles para el componente {component}"
+      }
+    },
+    "components": {
+      "no-results": "Componentes de aplicación no encontrados",
+      "no-results.description": "Cree un nuevo componente de aplicación o añada uno existente de la lista"
+    },
+    "created": "Creado",
+    "data-objects": {
+      "no-results": "Objetos de datos no encontrados",
+      "no-results.description": "Cree un nuevo objeto de datos o añada uno existente de la lista"
+    },
+    "description": "Descripción",
+    "directory": {
+      "no-results": "Elementos de directorio no encontrados",
+      "no-results.description": "Cree un nuevo elemento o añada uno existente de la lista"
+    },
+    "filter": "Filtrar...",
+    "functions": {
+      "no-results": "Funciones de aplicación no encontradas",
+      "no-results.description": "Cree una nueva función de aplicación o añada una existente de la lista"
+    },
+    "item": {
+      "actions": "Acciones"
+    },
+    "license": {
+      "type": "Tipo de licencia"
+    },
+    "name": "Nombre",
+    "no-results": "No se encontró nada",
+    "page": {
+      "size": "Filas por página"
+    },
+    "select": {
+      "all": "Seleccionar todo",
+      "row": "Seleccionar fila"
+    },
+    "software": {
+      "no-results": "Software del sistema no encontrado",
+      "no-results.description": "Añada software del sistema de la lista de elementos disponibles",
+      "type": "Tipo de software"
+    },
+    "solution": {
+      "stakeholders": {
+        "no-results": "La solución {solution} no tiene partes interesadas",
+        "no-results.description": "Cree una nueva parte interesada o añada una existente de la lista para la solución {solution}"
+      }
+    },
+    "solutions": {
+      "no-results": "Soluciones no encontradas",
+      "no-results.description": "Cree una nueva solución o añada una existente de la lista"
+    },
+    "stakeholder": {
+      "name": "Nombre",
+      "role": "Rol"
+    },
+    "state": "Estado",
+    "updated": "Actualizado",
+    "version": "Versión",
+    "version.placeholder": "Ingrese la versión"
   },
-  "upload.repository.title": "Subir repositorio",
-  "upload.repository.tab.open-exchange": "Open Exchange XML",
-  "upload.repository.tab.draw-io": "Diagrama Draw.io",
-  "upload.open-exchange.subtitle": "Sube XML en formato Open Exchange (Archimate).",
-  "upload.open-exchange.dropzone.title": "Arrastra el archivo o haz clic",
-  "upload.open-exchange.dropzone.hint": ".xml",
-  "upload.open-exchange.clear-before.label": "Limpiar repositorio antes de importar",
-  "upload.open-exchange.action.start": "Iniciar importación",
-  "upload.open-exchange.job-id": "Tarea",
-  "upload.open-exchange.logs.title": "Log de importación",
-  "upload.open-exchange.logs.count": "{count} entradas",
-  "upload.open-exchange.logs.empty": "Log vacío",
-  "upload.open-exchange.summary.title": "Resultado",
-  "upload.open-exchange.summary.line": "Componentes {components}, funciones {functions}, enlaces {links}, roles {actorRoleLinks}, flujos {flows}",
-  "upload.open-exchange.summary.cross-layer": "Actores {businessActors}, roles {businessRoles}, software {systemSoftware}, redes {communicationNetworks}, nodos {technologyNodes}",
-  "upload.draw-io.title": "Diagrama Draw.io",
-  "upload.draw-io.subtitle": "Sube diagrama ArchiMate en formato Draw.io (.drawio o .xml).",
-  "upload.draw-io.dropzone.title": "Arrastra el archivo o haz clic",
-  "upload.draw-io.dropzone.hint": ".drawio, .xml",
-  "upload.draw-io.clear-before.label": "Limpiar antes de importar",
-  "upload.draw-io.action.start": "Iniciar importación",
-  "upload.draw-io.job-id": "Tarea",
-  "upload.draw-io.logs.title": "Log",
-  "upload.draw-io.logs.count": "{count} entradas",
-  "upload.draw-io.logs.empty": "Vacío",
-  "upload.draw-io.summary.title": "Resultado",
-  "upload.draw-io.summary.line": "Componentes {components}, funciones {functions}, datos {dataObjects}, software {systemSoftware}, enlaces {links}, jerarquías {hierarchy}, flujos {flows}",
-  "repository.open-exchange.progress": "Progreso",
-  "repository.draw-io.progress": "Progreso",
-  "repository.draw-io.stage.parse": "Parseando XML",
-  "repository.draw-io.stage.create-entities": "Creando entidades",
-  "repository.draw-io.stage.clear-repo": "Limpiando",
-  "repository.draw-io.stage.create-links": "Creando enlaces",
-  "repository.draw-io.stage.create-flows": "Creando flujos",
-  "repository.draw-io.stage.completed": "Completado",
-  "repository.draw-io.stage.started": "Iniciado",
-  "repository.draw-io.clear-repo.entity": "Eliminados {deleted} {entity}",
-  "repository.draw-io.clear-repo.done": "Listo",
-  "repository.draw-io.client.selected": "Archivo: {fileName}",
-  "repository.draw-io.error": "Error: {message}"
+  "tabs": {
+    "description": "Descripción",
+    "general": "General",
+    "relations": "Relaciones"
+  },
+  "technologies": {
+    "location": "Ubicaciones",
+    "networks": "Redes",
+    "nodes": "Nodos de red",
+    "system-software": "Software del sistema"
+  },
+  "under-construction": {
+    "description": "Por favor, vuelva más tarde",
+    "title": "Sección en desarrollo"
+  },
+  "upload": {
+    "draw-io": {
+      "action": {
+        "start": "Iniciar importación"
+      },
+      "clear-before": {
+        "label": "Limpiar antes de importar"
+      },
+      "dropzone": {
+        "hint": ".drawio, .xml",
+        "title": "Arrastra el archivo o haz clic"
+      },
+      "job-id": "Tarea",
+      "logs": {
+        "count": "{count} entradas",
+        "empty": "Vacío",
+        "title": "Log"
+      },
+      "subtitle": "Sube diagrama ArchiMate en formato Draw.io (.drawio o .xml).",
+      "summary": {
+        "line": "Componentes {components}, funciones {functions}, datos {dataObjects}, software {systemSoftware}, enlaces {links}, jerarquías {hierarchy}, flujos {flows}",
+        "title": "Resultado"
+      },
+      "title": "Diagrama Draw.io"
+    },
+    "open-exchange": {
+      "action": {
+        "start": "Iniciar importación"
+      },
+      "clear-before": {
+        "label": "Limpiar repositorio antes de importar"
+      },
+      "clear-repo": {
+        "count": "Tablas a limpiar: {count}"
+      },
+      "client": {
+        "job-created": "Trabajo creado: {jobId}",
+        "poll-failed": "No se pudo obtener el estado del trabajo: {message}",
+        "selected": "Archivo seleccionado: {fileName}"
+      },
+      "dropzone": {
+        "hint": "Se admite Open Exchange (ArchiMate) XML",
+        "title": "Arrastra el archivo o haz clic"
+      },
+      "error": "Error de importación: {message}",
+      "job-id": "Tarea",
+      "logs": {
+        "count": "{count} entradas",
+        "empty": "Log vacío",
+        "title": "Log de importación"
+      },
+      "progress": "Progreso",
+      "stage": {
+        "clear-repo": "Limpiando repositorio antes de importar",
+        "completed": "Importación completada (componentes: {components}, funciones: {functions}, enlaces: {links}, flujos: {flows})",
+        "create-data-access": "Creando relaciones de acceso a datos (Access)",
+        "create-entities": "Creando entidades (componentes: {components}, funciones: {functions}, objetos de datos: {dataObjects})",
+        "create-flows": "Creando flujos (Flow)",
+        "create-links": "Creando relaciones componente ↔ función (Assignment)",
+        "parse": "Leyendo y analizando XML",
+        "started": "Iniciando importación del archivo: {fileName}"
+      },
+      "subtitle": "Sube XML en formato Open Exchange (Archimate).",
+      "summary": {
+        "cross-layer": "Actores {businessActors}, roles {businessRoles}, software {systemSoftware}, redes {communicationNetworks}, nodos {technologyNodes}",
+        "line": "Componentes {components}, funciones {functions}, enlaces {links}, roles {actorRoleLinks}, flujos {flows}",
+        "title": "Resultado"
+      }
+    },
+    "repository": {
+      "tab": {
+        "draw-io": "Diagrama Draw.io",
+        "open-exchange": "Open Exchange XML"
+      },
+      "title": "Subir repositorio"
+    }
+  }
 }

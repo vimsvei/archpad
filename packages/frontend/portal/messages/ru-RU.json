@@ -1,54 +1,718 @@
 {
+  "action": {
+    "add": "Добавить",
+    "signIn": "Войти",
+    "add.description": "Найдите и выберите элементы для добавления",
+    "added": "Добавлено",
+    "back": "Назад",
+    "cancel": "Отмена",
+    "clear": "Очистить",
+    "clear.all": "Очистить всё",
+    "clearAll": "Очистить всё",
+    "collapseAll": "Свернуть все",
+    "create": "Создать",
+    "create.description": "Заполните поля и создайте",
+    "create.failed": "Не удалось создать",
+    "created": "Создано",
+    "delete": "Удалить",
+    "delete.failed": "Не удалось удалить",
+    "deleted": "Удалено",
+    "discard": "Не сохранять",
+    "edit": "Изменить",
+    "expandAll": "Раскрыть все",
+    "load": {
+      "failed": "Не удалось загрузить"
+    },
+    "loading": "Загрузка...",
+    "not-allowed": "Действие запрещено",
+    "not-implemented": "Функция ещё не реализована",
+    "refresh": "Обновить",
+    "remove": "Удалить",
+    "retry": "Повторить",
+    "save": "Сохранить",
+    "save.failed": "Не удалось сохранить",
+    "saved": "Сохранено",
+    "saving": "Сохранение...",
+    "update": "Обновить",
+    "updated": "Обновлено",
+    "upload": "Загрузить из файла",
+    "validation": {
+      "failed": "Заполните обязательные поля"
+    }
+  },
+  "admin-level": "Администрирование",
+  "application": {
+    "component": "Компонент",
+    "components": "Компоненты",
+    "data-object": "Объект данных",
+    "data-objects": "Объекты данных",
+    "event": "Событие",
+    "events": "События",
+    "function": "Функцию приложения",
+    "functions": "Функции приложения",
+    "interfaces": "Интерфейсы"
+  },
+  "architecture": {
+    "layer": "Архитектурные слои",
+    "layer.application": "Приложения",
+    "layer.business": "Бизнес",
+    "layer.implementation": "Реализации и миграции",
+    "layer.motivation": "Мотивация",
+    "layer.strategy": "Стратегии",
+    "layer.technologies": "Технологии"
+  },
+  "auth": {
+    "common": {
+      "back-to-sign-in": "Вернуться ко входу",
+      "continue": "Продолжить",
+      "email-verified": "Email подтверждён",
+      "password-updated": "Пароль обновлён",
+      "submit-confirm": "Подтвердить",
+      "submit-send-code": "Отправить код"
+    },
+    "field": {
+      "email": "Электронная почта",
+      "first-name": "Имя",
+      "last-name": "Фамилия",
+      "password": "Пароль",
+      "password-confirm": "Подтверждение пароля",
+      "password-mismatch": "Пароли не совпадают",
+      "phone": "Телефон"
+    },
+    "footer": {
+      "agree": "Нажимая «{button}», вы соглашаетесь с нашими <terms>Условиями использования</terms> и <privacy>Политикой конфиденциальности</privacy>. "
+    },
+    "forgot_password": "Забыли пароль",
+    "recovery": {
+      "code": "Код восстановления",
+      "subtitle": "Введите свой адрес электронной почты для восстановления доступа к учетной записи",
+      "title": "Восстановление доступа"
+    },
+    "settings": {
+      "save": "Сохранить",
+      "tab": {
+        "password": "Пароль",
+        "profile": "Профиль"
+      }
+    },
+    "sign-in": {
+      "footer": {
+        "no-account": "Нет аккаунта?",
+        "sign-up": "Зарегистрироваться"
+      },
+      "forgot": "Забыли пароль?",
+      "submit": "Войти",
+      "subtitle": "Войдите с помощью email и пароля",
+      "title": "Вход"
+    },
+    "sign-up": {
+      "accept-tos": "Я принимаю условия использования",
+      "footer": {
+        "have-account": "Уже есть аккаунт?",
+        "sign-in": "Войти"
+      },
+      "submit": "Создать аккаунт",
+      "subtitle": "Создайте новый аккаунт",
+      "title": "Регистрация"
+    },
+    "sign_in": {
+      "footer": {
+        "no_account": "Нет учетной записи?",
+        "sign_up": "Зарегистрируйтесь"
+      },
+      "subtitle": "Войдите в свою учетную запись Archpad",
+      "title": "Добро пожаловать"
+    },
+    "sign_up": {
+      "footer": {
+        "have_account": "Уже зарегистрированы"
+      },
+      "title": "Зарегистрируйся"
+    },
+    "verification": {
+      "code": "Код подтверждения",
+      "resend": "Отправить повторно",
+      "subtitle": "Подтвердите email, чтобы активировать аккаунт",
+      "title": "Подтверждение"
+    },
+    "verify": {
+      "subtitle": "Подтвердите адрес электронной почты",
+      "title": "Подтверждение почты"
+    }
+  },
+  "business": {
+    "actors": "Исполнители",
+    "products": "Продукты",
+    "roles": "Бизнес-роли"
+  },
+  "create": {
+    "item": "Создать"
+  },
+  "dashboards": "Дашборды",
+  "dashboards.main": "Главный",
+  "description": {
+    "placeholder": "Добавьте описание"
+  },
+  "dialog": {
+    "unsaved-changes": {
+      "description": "У компонента \"{component}\" есть несохраненные изменения. Сохранить изменения перед выходом?",
+      "title": "Несохраненные изменения"
+    },
+    "unsaved": {
+      "description": "Сохранить изменения перед выходом?",
+      "title": "Несохраненные изменения"
+    }
+  },
+  "directories": {
+    "no-directories": "Нет справочников",
+    "title": "Справочники"
+  },
+  "directory": {
+    "architecture": {
+      "style": "Архитектурный стиль"
+    },
+    "component": {
+      "state": "Состояние компонента"
+    },
+    "critical": {
+      "level": "Уровень критичности"
+    },
+    "failover": {
+      "type": "Тип обработки отказов"
+    },
+    "failure": {
+      "handling": "Способ обработки отказов"
+    },
+    "item": {
+      "created": "Добавлена запись в справочник",
+      "created.at": "в",
+      "created.by": "Создана",
+      "error": "Ошибка при создании записи в справочник",
+      "updated.at": "в",
+      "updated.by": "Обновлена",
+      "relations": "Связи",
+      "relations.target.directory": "Связанный справочник",
+      "relations.target.item": "Позиция справочника",
+      "relations.type": "Тип связи",
+      "relations.type.add": "Добавить",
+      "relations.type.association": "Ассоциация",
+      "relations.type.hierarchy": "Родитель -> Потомок",
+      "relations.type.placeholder": "Выберите тип связи"
+    },
+    "license": {
+      "type": "Тип лицензии"
+    },
+    "monitoring": {
+      "level": "Уровень мониторинга"
+    },
+    "node": {
+      "type": "Тип сетевого узла"
+    },
+    "protocol": {
+      "type": "Сетевой протокол"
+    },
+    "recovery": {
+      "time": "Скорость восстановления"
+    },
+    "redundancy": {
+      "type": "Тип избыточности"
+    },
+    "rows": "Строк",
+    "scaling": {
+      "type": "Тип масштабирования"
+    },
+    "security": {
+      "zone": "Зоны безопасности"
+    },
+    "software": {
+      "type": "Тип системного ПО"
+    },
+    "solution": {
+      "state": "Состояние в решении"
+    },
+    "stakeholder": {
+      "role": "Роли стейкхолдера"
+    }
+  },
+  "error": {
+    "not-found": "Не найдено",
+    "title": "Ошибка"
+  },
+  "flow": {
+    "direction": "Направление",
+    "incoming": "Входящие",
+    "outgoing": "Исходящие",
+    "source": "Источник",
+    "target": "Приемник"
+  },
+  "form": {
+    "invalid": "Заполните обязательные поля"
+  },
+  "hierarchy": {
+    "children": "Состоит из",
+    "parent": "Входит в состав"
+  },
+  "implementation": {
+    "plateau": "Плато"
+  },
+  "item": {
+    "action": {
+      "view": "Просмотр"
+    },
+    "by-default": "по умолчанию",
+    "code": "Код",
+    "code.placeholder": "Введите код",
+    "color": "Цвет",
+    "description": "Описание",
+    "name": "Наименование",
+    "state": "Состояние"
+  },
+  "loading": "Загрузка...",
+  "management": "Управление",
+  "management.directories": "Справочники",
+  "management.settings": "Настройки",
+  "management.settings.tenants": "Пространства",
+  "management.settings.upload.directories": "Загрузка справочников",
+  "management.settings.upload.repository": "Загрузка репозитория",
+  "management.state.schemas": "Схемы состояний",
+  "motivation": {
+    "motivation-items": "Элементы мотивации",
+    "stakeholders": "Стейкхолдеры"
+  },
+  "my": {
+    "space": "Мое пространство"
+  },
+  "nav": {
+    "user": {
+      "account": "Профиль",
+      "feedback": "Обратная связь",
+      "logout": "Выйти",
+      "notifications": "Уведомления"
+    }
+  },
+  "portfolio": "Портфолио",
+  "portfolio.flows": "Потоки",
+  "portfolio.solutions": "Решения",
+  "profile": {
+    "field": {
+      "code": "Код",
+      "department": "Подразделение",
+      "email": "Электронная почта",
+      "family-name": "Фамилия",
+      "given-name": "Имя",
+      "login": "Логин",
+      "middle-name": "Отчество",
+      "position": "Должность"
+    },
+    "not-found": "Профиль не найден",
+    "title": "Профиль"
+  },
+  "relation": {
+    "flow": "Поток",
+    "flows": "Потоки"
+  },
+  "repository": {
+    "draw-io": {
+      "clear-repo": {
+        "done": "Очистка завершена",
+        "entity": "Удалено {deleted} записей {entity}"
+      },
+      "client": {
+        "selected": "Файл выбран: {fileName}"
+      },
+      "error": "Ошибка: {message}",
+      "progress": "Прогресс",
+      "stage": {
+        "clear-repo": "Очистка репозитория",
+        "completed": "Импорт завершён",
+        "create-entities": "Создание сущностей",
+        "create-flows": "Создание потоков",
+        "create-links": "Создание связей",
+        "parse": "Парсинг XML",
+        "started": "Импорт запущен"
+      }
+    },
+    "open-exchange": {
+      "clear-repo": {
+        "count": "Выполнение {count} операций очистки",
+        "entity": "{entity}: удалено {deleted} строк"
+      },
+      "client": {
+        "job-created": "Задача создана: {jobId}",
+        "poll-failed": "Ошибка получения статуса задачи: {message}",
+        "selected": "Выбран файл: {fileName}"
+      },
+      "error": "Ошибка импорта: {message}",
+      "progress": "Импорт репозитория. Осталось...",
+      "stage": {
+        "clear-repo": "Очистка репозитория…",
+        "completed": "Импорт завершён: {components} компонентов, {functions} функций, {links} связей, {flows} потоков",
+        "create-data-access": "Создание доступа к данным…",
+        "create-entities": "Создание сущностей: {components} компонентов, {functions} функций, {dataObjects} объектов данных",
+        "create-flows": "Создание потоков…",
+        "create-links": "Создание связей…",
+        "create-technology-links": "Создание технологических связей…",
+        "parse": "Парсинг XML…",
+        "started": "Импорт запущен: {fileName}"
+      }
+    }
+  },
+  "search": {
+    "no-items": "Нет элементов",
+    "no-results": "Ничего не найдено",
+    "placeholder": "Поиск..."
+  },
+  "select": {
+    "placeholder": "Выберите"
+  },
+  "sheet": {
+    "selected": {
+      "count": "Выбрано: {count}"
+    }
+  },
+  "solution": {
+    "alternatives": "Альтернативы",
+    "alternatives.placeholder": "Добавьте альтернативы...",
+    "comments": "Комментарии",
+    "comments.description": "Раздел комментариев находится в разработке",
+    "consequences": "Последствия",
+    "consequences.placeholder": "Добавьте последствия...",
+    "context": "Контекст",
+    "context.placeholder": "Добавьте контекст...",
+    "decision": "Решение",
+    "decision-status": "Статус решения",
+    "decision.placeholder": "Добавьте решение...",
+    "implementation": "Реализация",
+    "implementation-status": "Статус реализации",
+    "implemented": "Реализовано",
+    "in-progres": "В процессе",
+    "life-cycle": {
+      "accepted": "Принято",
+      "deprecated": "Устарело",
+      "proposed": "Предложено",
+      "rejected": "Отклонено",
+      "superseded": "Заменено"
+    },
+    "not-started": "Не начато",
+    "rolled_back": "Откат",
+    "solution": "Решение",
+    "solutions": "Решения"
+  },
+  "stakeholder": {
+    "role": {
+      "agile-coach": "Agile-коуч",
+      "analytics-owner": "Владелец аналитики",
+      "application-architect": "Архитектор приложений",
+      "availability-manager": "Менеджер доступности",
+      "build-engineer": "Инженер сборки",
+      "business-owner": "Владелец бизнеса",
+      "capacity-manager": "Менеджер мощностей",
+      "change-manager": "Менеджер изменений",
+      "ciso": "CISO",
+      "cloud-architect": "Облачный архитектор",
+      "compliance-officer": "Специалист по комплаенсу",
+      "configuration-manager": "Менеджер конфигураций",
+      "continuity-manager": "Менеджер непрерывности",
+      "customer-representative": "Представитель заказчика",
+      "data-architect": "Архитектор данных",
+      "data-engineer": "Инженер данных",
+      "data-owner": "Владелец данных",
+      "data-steward": "Администратор данных",
+      "development-lead": "Руководитель разработки",
+      "devops-engineer": "DevOps-инженер",
+      "domain-architect": "Доменный архитектор",
+      "domain-owner": "Владелец домена",
+      "end-user-representative": "Представитель конечного пользователя",
+      "engineering-manager": "Менеджер разработки",
+      "enterprise-architect": "Корпоративный архитектор",
+      "executive-sponsor": "Исполнительный спонсор",
+      "external-auditor": "Внешний аудитор",
+      "external-vendor": "Внешний поставщик",
+      "finops-owner": "Владелец FinOps",
+      "iam-administrator": "Администратор IAM",
+      "incident-manager": "Менеджер инцидентов",
+      "infrastructure-architect": "Инфраструктурный архитектор",
+      "integration-architect": "Архитектор интеграций",
+      "integration-engineer": "Инженер интеграций",
+      "internal-auditor": "Внутренний аудитор",
+      "legal-counsel": "Юрист",
+      "ml-owner": "Владелец ML",
+      "network-architect": "Сетевой архитектор",
+      "observability-owner": "Владелец наблюдаемости",
+      "operations-engineer": "Инженер эксплуатации",
+      "platform-architect": "Платформенный архитектор",
+      "portfolio-manager": "Портфельный менеджер",
+      "privacy-officer": "Специалист по защите данных",
+      "problem-manager": "Менеджер проблем",
+      "process-owner": "Владелец процесса",
+      "procurement-specialist": "Специалист по закупкам",
+      "product-manager": "Менеджер продукта",
+      "product-owner": "Владелец продукта",
+      "program-manager": "Менеджер программы",
+      "project-manager": "Менеджер проекта",
+      "qa-engineer": "Инженер QA",
+      "qa-lead": "Руководитель QA",
+      "regulator": "Регулятор",
+      "release-manager": "Менеджер релизов",
+      "release-train-engineer": "Release Train Engineer",
+      "risk-manager": "Менеджер рисков",
+      "scrum-master": "Scrum Master",
+      "security-architect": "Архитектор информационной безопасности",
+      "security-engineer": "Инженер ИБ",
+      "security-officer": "Специалист по ИБ",
+      "service-manager": "Менеджер сервиса",
+      "service-owner": "Владелец сервиса",
+      "soc-analyst": "Аналитик SOC",
+      "software-engineer": "Инженер-разработчик",
+      "solution-architect": "Архитектор решений",
+      "sre": "SRE",
+      "support-engineer": "Инженер поддержки",
+      "tech-lead": "Технический лидер",
+      "technical-writer": "Технический писатель",
+      "ux-designer": "UX-дизайнер",
+      "ux-researcher": "UX-исследователь",
+      "vendor-manager": "Менеджер поставщиков"
+    }
+  },
+  "strategy": {
+    "capability": "Возможности",
+    "resource": "Ресурсы"
+  },
   "tab": {
-    "relations": "Связи",
+    "adr": "ADR",
+    "application": "Внутренняя структура",
+    "application.architecture": "Архитектура",
+    "applications": "Приложения",
     "business": "Бизнес",
     "business.actors": "Исполнители",
-    "business.processes": "Процессы",
-    "business.roles": "Роли"
+    "business.processes": "Бизнес-процессы",
+    "business.roles": "Бизнес-роли",
+    "classification": "Классификация",
+    "components": "Компоненты",
+    "data-objects": "Объекты данных",
+    "description": "Описание",
+    "events": "События",
+    "flows": "Потоки",
+    "flows.source": "Исходящие потоки",
+    "flows.target": "Входящие потоки",
+    "functions": "Функции",
+    "general": "Общие",
+    "hierarchy": "Структура",
+    "interfaces": "Интерфейсы",
+    "properties": "Свойства",
+    "relations": "Структура и связи",
+    "schemas": "Схемы",
+    "schemas.application": "Приложения",
+    "schemas.description": "Схемы для решения {solution}",
+    "schemas.description.empty": "Раздел схем находится в разработке",
+    "schemas.technology": "Технологии",
+    "schemas.title": "Схемы",
+    "solutions": "Решения",
+    "stakeholders": "Стейкхолдеры",
+    "technology": "Инфраструктура",
+    "technology.networks": "Сети",
+    "technology.nodes": "Узлы",
+    "technology.system-software": "Системное ПО"
   },
-  "action": {
-    "expandAll": "Раскрыть все",
-    "collapseAll": "Свернуть все",
-    "remove": "Удалить"
+  "table": {
+    "by-default": "По умолчанию",
+    "code": "Код",
+    "color": "Цвет",
+    "columns": "Колонки",
+    "component": {
+      "children": {
+        "no-results": "У компонента {component} нет дочерних компонентов",
+        "no-results.description": "Добавьте дочерний компонент из списка доступных элементов для компонента {component}"
+      },
+      "data-objects": {
+        "no-results": "У компонента {component} нет объектов данных",
+        "no-results.description": "Создайте новый объект данных или добавьте существующий из списка для компонента {component}"
+      },
+      "events": {
+        "no-results": "У компонента {component} нет событий",
+        "no-results.description": "Создайте новое событие или добавьте существующее из списка для компонента {component}"
+      },
+      "flows": {
+        "no-results": "У компонента {component} нет потоков",
+        "no-results.description": "Создайте новый поток для компонента {component}"
+      },
+      "functions": {
+        "no-results": "У компонента {component} нет функций",
+        "no-results.description": "Создайте новую функцию или добавьте существующую из списка для компонента {component}"
+      },
+      "interfaces": {
+        "no-results": "У компонента {component} нет интерфейсов",
+        "no-results.description": "Создайте новый интерфейс или добавьте существующий из списка для компонента {component}"
+      },
+      "networks": {
+        "no-results": "У компонента {component} нет сетей",
+        "no-results.description": "Добавьте сеть из списка доступных элементов для компонента {component}"
+      },
+      "nodes": {
+        "no-results": "У компонента {component} нет узлов",
+        "no-results.description": "Добавьте узел из списка доступных элементов для компонента {component}"
+      },
+      "parents": {
+        "no-results": "У компонента {component} нет родительских компонентов",
+        "no-results.description": "Добавьте родительский компонент из списка доступных элементов для компонента {component}"
+      },
+      "stakeholders": {
+        "no-results": "У компонента {component} нет стейкхолдеров",
+        "no-results.description": "Создайте нового стейкхолдера или добавьте существующего из списка для компонента {component}"
+      },
+      "system-software": {
+        "no-results": "У компонента {component} нет системного ПО",
+        "no-results.description": "Добавьте системное ПО из списка доступных элементов для компонента {component}"
+      }
+    },
+    "components": {
+      "no-results": "Компоненты приложения не найдены",
+      "no-results.description": "Создайте новый компонент приложения или добавьте существующий из списка"
+    },
+    "created": "Создано",
+    "data-objects": {
+      "no-results": "Объекты данных не найдены",
+      "no-results.description": "Создайте новый объект данных или добавьте существующий из списка"
+    },
+    "description": "Описание",
+    "directory": {
+      "no-results": "Элементы справочника не найдены",
+      "no-results.description": "Создайте новый элемент или добавьте существующий из списка"
+    },
+    "filter": "Фильтр...",
+    "functions": {
+      "no-results": "Функции приложения не найдены",
+      "no-results.description": "Создайте новую функцию приложения или добавьте существующую из списка"
+    },
+    "item": {
+      "actions": "Действия"
+    },
+    "license": {
+      "type": "Тип лицензии"
+    },
+    "name": "Наименование",
+    "no-results": "Ничего не найдено",
+    "page": {
+      "size": "Строк на странице"
+    },
+    "select": {
+      "all": "Выбрать все",
+      "row": "Выбрать строку"
+    },
+    "software": {
+      "no-results": "Системное ПО не найдено",
+      "no-results.description": "Добавьте системное ПО из списка доступных элементов",
+      "type": "Тип ПО"
+    },
+    "solution": {
+      "stakeholders": {
+        "no-results": "У решения {solution} нет стейкхолдеров",
+        "no-results.description": "Создайте нового стейкхолдера или добавьте существующего из списка для решения {solution}"
+      }
+    },
+    "solutions": {
+      "no-results": "Решения не найдены",
+      "no-results.description": "Создайте новое решение или добавьте существующее из списка"
+    },
+    "stakeholder": {
+      "name": "Наименование",
+      "role": "Роль"
+    },
+    "state": "Статус",
+    "updated": "Обновлено",
+    "version": "Версия",
+    "version.placeholder": "Введите версию"
   },
-  "upload.repository.title": "Загрузка репозитория",
-  "upload.repository.tab.open-exchange": "Open Exchange XML",
-  "upload.repository.tab.draw-io": "Загрузка схемы Draw.io",
-  "upload.open-exchange.subtitle": "Загрузите XML в формате Open Exchange (Archimate).",
-  "upload.open-exchange.dropzone.title": "Перетащите файл или нажмите для выбора",
-  "upload.open-exchange.dropzone.hint": ".xml",
-  "upload.open-exchange.clear-before.label": "Очистить репозиторий перед импортом",
-  "upload.open-exchange.action.start": "Запустить импорт",
-  "upload.open-exchange.job-id": "Задача",
-  "upload.open-exchange.logs.title": "Лог импорта",
-  "upload.open-exchange.logs.count": "{count} записей",
-  "upload.open-exchange.logs.empty": "Лог пуст",
-  "upload.open-exchange.summary.title": "Результат импорта",
-  "upload.open-exchange.summary.line": "Компонентов {components}, функций {functions}, связей {links}, акторов {actorRoleLinks}, потоков {flows}",
-  "upload.open-exchange.summary.cross-layer": "Акторы {businessActors}, роли {businessRoles}, ПО {systemSoftware}, сети {communicationNetworks}, узлы {technologyNodes}",
-  "upload.draw-io.title": "Загрузка схемы Draw.io",
-  "upload.draw-io.subtitle": "Загрузите схему ArchiMate в формате Draw.io (.drawio или .xml).",
-  "upload.draw-io.dropzone.title": "Перетащите файл или нажмите для выбора",
-  "upload.draw-io.dropzone.hint": ".drawio, .xml",
-  "upload.draw-io.clear-before.label": "Очистить репозиторий перед импортом",
-  "upload.draw-io.action.start": "Запустить импорт",
-  "upload.draw-io.job-id": "Задача",
-  "upload.draw-io.logs.title": "Лог импорта",
-  "upload.draw-io.logs.count": "{count} записей",
-  "upload.draw-io.logs.empty": "Лог пуст",
-  "upload.draw-io.summary.title": "Результат импорта",
-  "upload.draw-io.summary.line": "Компонентов {components}, функций {functions}, данных {dataObjects}, ПО {systemSoftware}, связей {links}, иерархий {hierarchy}, потоков {flows}",
-  "repository.open-exchange.progress": "Прогресс",
-  "repository.draw-io.progress": "Прогресс",
-  "repository.draw-io.stage.parse": "Парсинг XML",
-  "repository.draw-io.stage.create-entities": "Создание сущностей",
-  "repository.draw-io.stage.clear-repo": "Очистка репозитория",
-  "repository.draw-io.stage.create-links": "Создание связей",
-  "repository.draw-io.stage.create-flows": "Создание потоков",
-  "repository.draw-io.stage.completed": "Импорт завершён",
-  "repository.draw-io.stage.started": "Импорт запущен",
-  "repository.draw-io.clear-repo.entity": "Удалено {deleted} записей {entity}",
-  "repository.draw-io.clear-repo.done": "Очистка завершена",
-  "repository.draw-io.client.selected": "Файл выбран: {fileName}",
-  "repository.draw-io.error": "Ошибка: {message}"
+  "tabs": {
+    "description": "Описание",
+    "general": "Общие",
+    "relations": "Связи"
+  },
+  "technologies": {
+    "location": "Площадки",
+    "networks": "Сети",
+    "nodes": "Сетевые узлы",
+    "system-software": "Системное ПО"
+  },
+  "under-construction": {
+    "description": "Попробуйте заглянуть сюда позднее",
+    "title": "Раздел находится в разработке"
+  },
+  "upload": {
+    "draw-io": {
+      "action": {
+        "start": "Запустить импорт"
+      },
+      "clear-before": {
+        "label": "Очистить репозиторий перед импортом"
+      },
+      "dropzone": {
+        "hint": ".drawio, .xml",
+        "title": "Перетащите файл или нажмите для выбора"
+      },
+      "job-id": "Задача",
+      "logs": {
+        "count": "{count} записей",
+        "empty": "Лог пуст",
+        "title": "Лог импорта"
+      },
+      "subtitle": "Загрузите схему ArchiMate в формате Draw.io (.drawio или .xml).",
+      "summary": {
+        "line": "Компонентов {components}, функций {functions}, данных {dataObjects}, ПО {systemSoftware}, связей {links}, иерархий {hierarchy}, потоков {flows}",
+        "title": "Результат импорта"
+      },
+      "title": "Загрузка схемы Draw.io"
+    },
+    "open-exchange": {
+      "action": {
+        "start": "Начать импорт"
+      },
+      "clear-before": {
+        "label": "Очистить репозиторий перед импортом (удалить существующие данные)"
+      },
+      "clear-repo": {
+        "count": "Таблиц для очистки: {count}"
+      },
+      "client": {
+        "job-created": "Создан job: {jobId}",
+        "poll-failed": "Не удалось получить статус job: {message}",
+        "selected": "Выбран файл: {fileName}"
+      },
+      "dropzone": {
+        "hint": "Поддерживается Open Exchange (ArchiMate) XML",
+        "title": "Перетащите файл или нажмите для выбора"
+      },
+      "error": "Ошибка импорта: {message}",
+      "job-id": "Задача",
+      "logs": {
+        "count": "Записей: {count}",
+        "empty": "Логи появятся после старта импорта",
+        "title": "Журнал импорта"
+      },
+      "progress": "Прогресс",
+      "stage": {
+        "clear-repo": "Очистка репозитория перед импортом",
+        "completed": "Импорт завершён (components: {components}, functions: {functions}, links: {links}, flows: {flows})",
+        "create-data-access": "Создание связей доступа к данным (Access)",
+        "create-entities": "Создание объектов (components: {components}, functions: {functions}, dataObjects: {dataObjects})",
+        "create-flows": "Создание потоков (Flow)",
+        "create-links": "Создание связей компонент ↔ функция (Assignment)",
+        "parse": "Чтение и разбор XML",
+        "started": "Старт импорта файла: {fileName}"
+      },
+      "subtitle": "Загрузите XML в формате Open Exchange (Archimate).",
+      "summary": {
+        "cross-layer": "Акторы {businessActors}, роли {businessRoles}, ПО {systemSoftware}, сети {communicationNetworks}, узлы {technologyNodes}",
+        "line": "Компонентов {components}, функций {functions}, связей {links}, акторов {actorRoleLinks}, потоков {flows}",
+        "title": "Результат импорта"
+      }
+    },
+    "repository": {
+      "tab": {
+        "draw-io": "Загрузка схемы Draw.io",
+        "open-exchange": "Open Exchange XML"
+      },
+      "title": "Импорт репозитория"
+    }
+  }
 }

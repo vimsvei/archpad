@@ -1,54 +1,712 @@
 {
+  "action": {
+    "add": "Add",
+    "signIn": "Sign in",
+    "add.description": "Find and select items to add",
+    "added": "Added",
+    "back": "Back",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "clear.all": "Clear all",
+    "clearAll": "Clear all",
+    "collapseAll": "Collapse all",
+    "create": "Create",
+    "create.description": "Fill in the fields and create",
+    "create.failed": "Failed to create",
+    "created": "Created",
+    "delete": "Delete",
+    "delete.failed": "Failed to delete",
+    "deleted": "Deleted",
+    "discard": "Don't save",
+    "edit": "Edit",
+    "expandAll": "Expand all",
+    "load": {
+      "failed": "Failed to load"
+    },
+    "loading": "Loading...",
+    "not-allowed": "Action not allowed",
+    "not-implemented": "Feature not yet implemented",
+    "refresh": "Update",
+    "remove": "Remove",
+    "retry": "Retry",
+    "save": "Save",
+    "save.failed": "Failed to save",
+    "saved": "Saved",
+    "saving": "Saving...",
+    "update": "Update",
+    "updated": "Updated",
+    "upload": "Upload from file",
+    "validation": {
+      "failed": "Fill in required fields"
+    }
+  },
+  "admin-level": "Administration",
+  "application": {
+    "component": "Component",
+    "components": "Components",
+    "data-object": "Data object",
+    "data-objects": "Data objects",
+    "event": "Event",
+    "events": "Events",
+    "function": "Application function",
+    "functions": "Application functions",
+    "interfaces": "Interfaces"
+  },
+  "architecture": {
+    "layer": "Architecture Layer",
+    "layer.application": "Applications",
+    "layer.business": "Business",
+    "layer.implementation": "Implementation and migration",
+    "layer.motivation": "Motivation",
+    "layer.strategy": "Strategies",
+    "layer.technologies": "Technologies"
+  },
+  "auth": {
+    "common": {
+      "back-to-sign-in": "Back to sign in",
+      "continue": "continue",
+      "email-verified": "Email verified",
+      "password-updated": "Password updated",
+      "submit-confirm": "Confirm",
+      "submit-send-code": "Send code"
+    },
+    "field": {
+      "email": "Email",
+      "first-name": "First name",
+      "last-name": "Last name",
+      "password": "Password",
+      "password-confirm": "Confirm password",
+      "password-mismatch": "Passwords do not match",
+      "phone": "Phone"
+    },
+    "footer": {
+      "agree": "By clicking {button}, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>. "
+    },
+    "forgot_password": "Forgot your password?",
+    "recovery": {
+      "code": "Recovery code",
+      "subtitle": "Enter your email to recover your account",
+      "title": "Recovery"
+    },
+    "settings": {
+      "save": "Save",
+      "tab": {
+        "password": "Password",
+        "profile": "Profile"
+      }
+    },
+    "sign-in": {
+      "footer": {
+        "no-account": "Don't have an account?",
+        "sign-up": "Sign up"
+      },
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "subtitle": "Sign in with email and password",
+      "title": "Sign in"
+    },
+    "sign-up": {
+      "accept-tos": "I accept the terms of use",
+      "footer": {
+        "have-account": "Already have an account?",
+        "sign-in": "Sign in"
+      },
+      "submit": "Create account",
+      "subtitle": "Create a new account",
+      "title": "Sign up"
+    },
+    "sign_in": {
+      "footer": {
+        "no_account": "Don't have an account?",
+        "sign_up": "Sign up"
+      },
+      "subtitle": "Login to your Archpad account",
+      "title": "Welcome back"
+    },
+    "sign_up": {
+      "footer": {
+        "have_account": "Already have an account?"
+      },
+      "title": "Sign Up"
+    },
+    "verification": {
+      "code": "Verification code",
+      "resend": "Resend",
+      "subtitle": "Verify your email to activate your account",
+      "title": "Verification"
+    },
+    "verify": {
+      "subtitle": "Verify your email address",
+      "title": "Verification"
+    }
+  },
+  "business": {
+    "actors": "Actors",
+    "products": "Products",
+    "roles": "Business roles"
+  },
+  "create": {
+    "item": "Create"
+  },
+  "dashboards": "Dashboards",
+  "dashboards.main": "Main",
+  "description": {
+    "placeholder": "Add description"
+  },
+  "dialog": {
+    "unsaved-changes": {
+      "description": "Component \"{component}\" has unsaved changes. Save changes before leaving?",
+      "title": "Unsaved changes"
+    },
+    "unsaved": {
+      "description": "Save changes before leaving?",
+      "title": "Unsaved changes"
+    }
+  },
+  "directories": {
+    "no-directories": "No directories",
+    "title": "Directories"
+  },
+  "directory": {
+    "architecture": {
+      "style": "Application architecture style"
+    },
+    "component": {
+      "state": "Component state"
+    },
+    "critical": {
+      "level": "Criticality level"
+    },
+    "failover": {
+      "type": "Failover type"
+    },
+    "failure": {
+      "handling": "Failure handling method"
+    },
+    "item": {
+      "created": "Directory item added",
+      "created.at": "at",
+      "created.by": "Created by",
+      "error": "Error creating directory item",
+      "updated.at": "at",
+      "updated.by": "Updated by",
+      "relations": "Relations",
+      "relations.target.directory": "Related directory",
+      "relations.target.item": "Directory item",
+      "relations.type": "Relation type",
+      "relations.type.add": "Add",
+      "relations.type.association": "Association",
+      "relations.type.hierarchy": "Parent -> Child",
+      "relations.type.placeholder": "Select relation type"
+    },
+    "license": {
+      "type": "License type"
+    },
+    "monitoring": {
+      "level": "Monitoring level"
+    },
+    "node": {
+      "type": "Network node type"
+    },
+    "protocol": {
+      "type": "Network protocol"
+    },
+    "recovery": {
+      "time": "Recovery speed"
+    },
+    "redundancy": {
+      "type": "Redundancy type"
+    },
+    "security": {
+      "zone": "Security zones"
+    },
+    "rows": "Rows",
+    "scaling": {
+      "type": "Scaling type"
+    },
+    "software": {
+      "type": "System software type"
+    },
+    "solution": {
+      "state": "State in solution"
+    },
+    "stakeholder": {
+      "role": "Stakeholder roles"
+    }
+  },
+  "error": {
+    "not-found": "Not found",
+    "title": "Error"
+  },
+  "flow": {
+    "direction": "Direction",
+    "incoming": "Incoming",
+    "outgoing": "Outgoing",
+    "source": "Source",
+    "target": "Target"
+  },
+  "form": {
+    "invalid": "Fill in required fields"
+  },
+  "hierarchy": {
+    "children": "Consists of",
+    "parent": "Part of"
+  },
+  "implementation": {
+    "plateau": "Plateau"
+  },
+  "item": {
+    "action": {
+      "view": "View"
+    },
+    "by-default": "by default",
+    "code": "Code",
+    "code.placeholder": "Enter code",
+    "color": "Color",
+    "description": "Description",
+    "name": "Name",
+    "state": "State"
+  },
+  "loading": "Loading...",
+  "management": "Management",
+  "management.directories": "Directories",
+  "management.settings": "Settings",
+  "management.settings.upload.repository": "Repository upload",
+  "motivation": {
+    "motivation-items": "Motivation items",
+    "stakeholders": "Stakeholders"
+  },
+  "nav": {
+    "user": {
+      "account": "Profile",
+      "feedback": "Feedback",
+      "logout": "Log out",
+      "notifications": "Notifications"
+    }
+  },
+  "portfolio": "Portfolio",
+  "portfolio.flows": "Flows",
+  "portfolio.solutions": "Solutions",
+  "profile": {
+    "field": {
+      "code": "Code",
+      "department": "Department",
+      "email": "Email",
+      "family-name": "Family name",
+      "given-name": "First name",
+      "login": "Username",
+      "middle-name": "Middle name",
+      "position": "Position"
+    },
+    "not-found": "Profile not found",
+    "title": "Profile"
+  },
+  "relation": {
+    "flow": "Flow",
+    "flows": "Flows"
+  },
+  "repository": {
+    "draw-io": {
+      "clear-repo": {
+        "done": "Clear done",
+        "entity": "Deleted {deleted} {entity}"
+      },
+      "client": {
+        "selected": "File selected: {fileName}"
+      },
+      "error": "Error: {message}",
+      "progress": "Progress",
+      "stage": {
+        "clear-repo": "Clearing repository",
+        "completed": "Import completed",
+        "create-entities": "Creating entities",
+        "create-flows": "Creating flows",
+        "create-links": "Creating links",
+        "parse": "Parsing XML",
+        "started": "Import started"
+      }
+    },
+    "open-exchange": {
+      "clear-repo": {
+        "count": "Performing {count} cleanup operations",
+        "entity": "{entity}: deleted {deleted} rows"
+      },
+      "client": {
+        "job-created": "Job created: {jobId}",
+        "poll-failed": "Failed to fetch job status: {message}",
+        "selected": "Selected file: {fileName}"
+      },
+      "error": "Import error: {message}",
+      "progress": "Progress",
+      "stage": {
+        "clear-repo": "Clearing repository…",
+        "completed": "Import completed: {components} components, {functions} functions, {links} links, {flows} flows",
+        "create-data-access": "Creating data access…",
+        "create-entities": "Creating entities: {components} components, {functions} functions, {dataObjects} data objects",
+        "create-flows": "Creating flows…",
+        "create-links": "Creating links…",
+        "create-technology-links": "Creating technology links…",
+        "parse": "Parsing XML…",
+        "started": "Import started: {fileName}"
+      }
+    }
+  },
+  "search": {
+    "no-items": "No items",
+    "no-results": "Nothing found",
+    "placeholder": "Search..."
+  },
+  "select": {
+    "placeholder": "Select"
+  },
+  "sheet": {
+    "selected": {
+      "count": "Selected: {count}"
+    }
+  },
+  "solution": {
+    "alternatives": "Alternatives",
+    "alternatives.placeholder": "Add alternatives...",
+    "comments": "Comments",
+    "comments.description": "Comments section is under development",
+    "consequences": "Consequences",
+    "consequences.placeholder": "Add consequences...",
+    "context": "Context",
+    "context.placeholder": "Add context...",
+    "decision": "Decision",
+    "decision-status": "Decision Status",
+    "decision.placeholder": "Add decision...",
+    "implementation": "Implementation",
+    "implementation-status": "Implementation Status",
+    "implemented": "Implemented",
+    "in-progres": "In Progress",
+    "life-cycle": {
+      "accepted": "Accepted",
+      "deprecated": "Deprecated",
+      "proposed": "Proposed",
+      "rejected": "Rejected",
+      "superseded": "Superseded"
+    },
+    "not-started": "Not Started",
+    "rolled_back": "Rolled Back",
+    "solution": "Solution",
+    "solutions": "Solutions"
+  },
+  "stakeholder": {
+    "role": {
+      "agile-coach": "Agile Coach",
+      "analytics-owner": "Analytics Owner",
+      "application-architect": "Application Architect",
+      "availability-manager": "Availability Manager",
+      "build-engineer": "Build Engineer",
+      "business-owner": "Business Owner",
+      "capacity-manager": "Capacity Manager",
+      "change-manager": "Change Manager",
+      "ciso": "CISO",
+      "cloud-architect": "Cloud Architect",
+      "compliance-officer": "Compliance Officer",
+      "configuration-manager": "Configuration Manager",
+      "continuity-manager": "Continuity Manager",
+      "customer-representative": "Customer Representative",
+      "data-architect": "Data Architect",
+      "data-engineer": "Data Engineer",
+      "data-owner": "Data Owner",
+      "data-steward": "Data Steward",
+      "development-lead": "Development Lead",
+      "devops-engineer": "DevOps Engineer",
+      "domain-architect": "Domain Architect",
+      "domain-owner": "Domain Owner",
+      "end-user-representative": "End User Representative",
+      "engineering-manager": "Engineering Manager",
+      "enterprise-architect": "Enterprise Architect",
+      "executive-sponsor": "Executive Sponsor",
+      "external-auditor": "External Auditor",
+      "external-vendor": "External Vendor",
+      "finops-owner": "FinOps Owner",
+      "iam-administrator": "IAM Administrator",
+      "incident-manager": "Incident Manager",
+      "infrastructure-architect": "Infrastructure Architect",
+      "integration-architect": "Integration Architect",
+      "integration-engineer": "Integration Engineer",
+      "internal-auditor": "Internal Auditor",
+      "legal-counsel": "Legal Counsel",
+      "ml-owner": "ML Owner",
+      "network-architect": "Network Architect",
+      "observability-owner": "Observability Owner",
+      "operations-engineer": "Operations Engineer",
+      "platform-architect": "Platform Architect",
+      "portfolio-manager": "Portfolio Manager",
+      "privacy-officer": "Privacy Officer",
+      "problem-manager": "Problem Manager",
+      "process-owner": "Process Owner",
+      "procurement-specialist": "Procurement Specialist",
+      "product-manager": "Product Manager",
+      "product-owner": "Product Owner",
+      "program-manager": "Program Manager",
+      "project-manager": "Project Manager",
+      "qa-engineer": "QA Engineer",
+      "qa-lead": "QA Lead",
+      "regulator": "Regulator",
+      "release-manager": "Release Manager",
+      "release-train-engineer": "Release Train Engineer",
+      "risk-manager": "Risk Manager",
+      "scrum-master": "Scrum Master",
+      "security-architect": "Security Architect",
+      "security-engineer": "Security Engineer",
+      "security-officer": "Security Officer",
+      "service-manager": "Service Manager",
+      "service-owner": "Service Owner",
+      "soc-analyst": "SOC Analyst",
+      "software-engineer": "Software Engineer",
+      "solution-architect": "Solution Architect",
+      "sre": "SRE",
+      "support-engineer": "Support Engineer",
+      "tech-lead": "Tech Lead",
+      "technical-writer": "Technical Writer",
+      "ux-designer": "UX Designer",
+      "ux-researcher": "UX Researcher",
+      "vendor-manager": "Vendor Manager"
+    }
+  },
+  "strategy": {
+    "capability": "Capabilities",
+    "resource": "Resources"
+  },
   "tab": {
-    "relations": "Relations",
+    "adr": "ADR",
+    "application": "Internal structure",
+    "application.architecture": "Architecture",
+    "applications": "Applications",
     "business": "Business",
     "business.actors": "Actors",
     "business.processes": "Processes",
-    "business.roles": "Roles"
+    "business.roles": "Roles",
+    "classification": "Classification",
+    "components": "Components",
+    "data-objects": "Data objects",
+    "description": "Description",
+    "events": "Events",
+    "flows": "Flows",
+    "flows.source": "Outgoing flows",
+    "flows.target": "Incoming flows",
+    "functions": "Functions",
+    "general": "General",
+    "hierarchy": "Structure",
+    "interfaces": "Interfaces",
+    "properties": "Properties",
+    "relations": "Relations",
+    "schemas": "Schemas",
+    "schemas.application": "Applications",
+    "schemas.description": "Schemas for solution {solution}",
+    "schemas.description.empty": "Schemas section is under development",
+    "schemas.technology": "Technologies",
+    "schemas.title": "Schemas",
+    "solutions": "Solutions",
+    "stakeholders": "Stakeholders",
+    "technology": "Technology",
+    "technology.networks": "Networks",
+    "technology.nodes": "Nodes",
+    "technology.system-software": "System software"
   },
-  "action": {
-    "expandAll": "Expand all",
-    "collapseAll": "Collapse all",
-    "remove": "Remove"
+  "table": {
+    "by-default": "By default",
+    "code": "Code",
+    "color": "Color",
+    "columns": "Columns",
+    "component": {
+      "children": {
+        "no-results": "Component {component} has no child components",
+        "no-results.description": "Add a child component from the list of available items for component {component}"
+      },
+      "data-objects": {
+        "no-results": "Component {component} has no data objects",
+        "no-results.description": "Create a new data object or add an existing one from the list for component {component}"
+      },
+      "events": {
+        "no-results": "Component {component} has no events",
+        "no-results.description": "Create a new event or add an existing one from the list for component {component}"
+      },
+      "flows": {
+        "no-results": "Component {component} has no flows",
+        "no-results.description": "Create a new flow for component {component}"
+      },
+      "functions": {
+        "no-results": "Component {component} has no functions",
+        "no-results.description": "Create a new function or add an existing one from the list for component {component}"
+      },
+      "interfaces": {
+        "no-results": "Component {component} has no interfaces",
+        "no-results.description": "Create a new interface or add an existing one from the list for component {component}"
+      },
+      "networks": {
+        "no-results": "Component {component} has no networks",
+        "no-results.description": "Add a network from the list of available items for component {component}"
+      },
+      "nodes": {
+        "no-results": "Component {component} has no nodes",
+        "no-results.description": "Add a node from the list of available items for component {component}"
+      },
+      "parents": {
+        "no-results": "Component {component} has no parent components",
+        "no-results.description": "Add a parent component from the list of available items for component {component}"
+      },
+      "stakeholders": {
+        "no-results": "Component {component} has no stakeholders",
+        "no-results.description": "Create a new stakeholder or add an existing one from the list for component {component}"
+      },
+      "system-software": {
+        "no-results": "Component {component} has no system software",
+        "no-results.description": "Add system software from the list of available items for component {component}"
+      }
+    },
+    "components": {
+      "no-results": "Application components not found",
+      "no-results.description": "Create a new application component or add an existing one from the list"
+    },
+    "created": "Created",
+    "data-objects": {
+      "no-results": "Data objects not found",
+      "no-results.description": "Create a new data object or add an existing one from the list"
+    },
+    "description": "Description",
+    "directory": {
+      "no-results": "Directory items not found",
+      "no-results.description": "Create a new item or add an existing one from the list"
+    },
+    "filter": "Filter...",
+    "functions": {
+      "no-results": "Application functions not found",
+      "no-results.description": "Create a new application function or add an existing one from the list"
+    },
+    "item": {
+      "actions": "Actions"
+    },
+    "license": {
+      "type": "License type"
+    },
+    "name": "Name",
+    "no-results": "Nothing found",
+    "page": {
+      "size": "Rows per page"
+    },
+    "select": {
+      "all": "Select all",
+      "row": "Select row"
+    },
+    "software": {
+      "no-results": "System software not found",
+      "no-results.description": "Add system software from the list of available items",
+      "type": "Software type"
+    },
+    "solution": {
+      "stakeholders": {
+        "no-results": "Solution {solution} has no stakeholders",
+        "no-results.description": "Create a new stakeholder or add an existing one from the list for solution {solution}"
+      }
+    },
+    "solutions": {
+      "no-results": "Solutions not found",
+      "no-results.description": "Create a new solution or add an existing one from the list"
+    },
+    "stakeholder": {
+      "name": "Name",
+      "role": "Role"
+    },
+    "state": "Status",
+    "updated": "Updated",
+    "version": "Version",
+    "version.placeholder": "Enter version"
   },
-  "upload.repository.title": "Upload Repository",
-  "upload.repository.tab.open-exchange": "Open Exchange XML",
-  "upload.repository.tab.draw-io": "Draw.io Diagram",
-  "upload.open-exchange.subtitle": "Upload XML in Open Exchange (Archimate) format.",
-  "upload.open-exchange.dropzone.title": "Drop file or click to select",
-  "upload.open-exchange.dropzone.hint": ".xml",
-  "upload.open-exchange.clear-before.label": "Clear repository before import",
-  "upload.open-exchange.action.start": "Start import",
-  "upload.open-exchange.job-id": "Job",
-  "upload.open-exchange.logs.title": "Import log",
-  "upload.open-exchange.logs.count": "{count} entries",
-  "upload.open-exchange.logs.empty": "Log empty",
-  "upload.open-exchange.summary.title": "Import result",
-  "upload.open-exchange.summary.line": "Components {components}, functions {functions}, links {links}, actor roles {actorRoleLinks}, flows {flows}",
-  "upload.open-exchange.summary.cross-layer": "Actors {businessActors}, roles {businessRoles}, software {systemSoftware}, networks {communicationNetworks}, nodes {technologyNodes}",
-  "upload.draw-io.title": "Draw.io Diagram",
-  "upload.draw-io.subtitle": "Upload ArchiMate diagram in Draw.io format (.drawio or .xml).",
-  "upload.draw-io.dropzone.title": "Drop file or click to select",
-  "upload.draw-io.dropzone.hint": ".drawio, .xml",
-  "upload.draw-io.clear-before.label": "Clear repository before import",
-  "upload.draw-io.action.start": "Start import",
-  "upload.draw-io.job-id": "Job",
-  "upload.draw-io.logs.title": "Import log",
-  "upload.draw-io.logs.count": "{count} entries",
-  "upload.draw-io.logs.empty": "Log empty",
-  "upload.draw-io.summary.title": "Import result",
-  "upload.draw-io.summary.line": "Components {components}, functions {functions}, data objects {dataObjects}, software {systemSoftware}, links {links}, hierarchy {hierarchy}, flows {flows}",
-  "repository.open-exchange.progress": "Progress",
-  "repository.draw-io.progress": "Progress",
-  "repository.draw-io.stage.parse": "Parsing XML",
-  "repository.draw-io.stage.create-entities": "Creating entities",
-  "repository.draw-io.stage.clear-repo": "Clearing repository",
-  "repository.draw-io.stage.create-links": "Creating links",
-  "repository.draw-io.stage.create-flows": "Creating flows",
-  "repository.draw-io.stage.completed": "Import completed",
-  "repository.draw-io.stage.started": "Import started",
-  "repository.draw-io.clear-repo.entity": "Deleted {deleted} {entity}",
-  "repository.draw-io.clear-repo.done": "Clear done",
-  "repository.draw-io.client.selected": "File selected: {fileName}",
-  "repository.draw-io.error": "Error: {message}"
+  "tabs": {
+    "description": "Description",
+    "general": "General",
+    "relations": "Relations"
+  },
+  "technologies": {
+    "location": "Locations",
+    "networks": "Networks",
+    "nodes": "Network nodes",
+    "system-software": "System software"
+  },
+  "under-construction": {
+    "description": "Please check back later",
+    "title": "Section under development"
+  },
+  "upload": {
+    "draw-io": {
+      "action": {
+        "start": "Start import"
+      },
+      "clear-before": {
+        "label": "Clear repository before import"
+      },
+      "dropzone": {
+        "hint": ".drawio, .xml",
+        "title": "Drop file or click to select"
+      },
+      "job-id": "Job",
+      "logs": {
+        "count": "{count} entries",
+        "empty": "Log empty",
+        "title": "Import log"
+      },
+      "subtitle": "Upload ArchiMate diagram in Draw.io format (.drawio or .xml).",
+      "summary": {
+        "line": "Components {components}, functions {functions}, data objects {dataObjects}, software {systemSoftware}, links {links}, hierarchy {hierarchy}, flows {flows}",
+        "title": "Import result"
+      },
+      "title": "Draw.io Diagram"
+    },
+    "open-exchange": {
+      "action": {
+        "start": "Start import"
+      },
+      "clear-before": {
+        "label": "Clear repository before import"
+      },
+      "clear-repo": {
+        "count": "Tables to clear: {count}"
+      },
+      "client": {
+        "job-created": "Job created: {jobId}",
+        "poll-failed": "Failed to get job status: {message}",
+        "selected": "File selected: {fileName}"
+      },
+      "dropzone": {
+        "hint": "Open Exchange (ArchiMate) XML supported",
+        "title": "Drop file or click to select"
+      },
+      "error": "Import error: {message}",
+      "job-id": "Job",
+      "logs": {
+        "count": "{count} entries",
+        "empty": "Log empty",
+        "title": "Import log"
+      },
+      "progress": "Progress",
+      "stage": {
+        "clear-repo": "Clearing repository before import",
+        "completed": "Import completed (components: {components}, functions: {functions}, links: {links}, flows: {flows})",
+        "create-data-access": "Creating data access relations (Access)",
+        "create-entities": "Creating entities (components: {components}, functions: {functions}, dataObjects: {dataObjects})",
+        "create-flows": "Creating flows (Flow)",
+        "create-links": "Creating component ↔ function relations (Assignment)",
+        "parse": "Reading and parsing XML",
+        "started": "Starting import of file: {fileName}"
+      },
+      "subtitle": "Import ArchiMate model from Open Exchange XML format (Archi, Sparx, etc.)",
+      "summary": {
+        "cross-layer": "Actors {businessActors}, roles {businessRoles}, software {systemSoftware}, networks {communicationNetworks}, nodes {technologyNodes}",
+        "line": "Components {components}, functions {functions}, links {links}, actor roles {actorRoleLinks}, flows {flows}",
+        "title": "Import result"
+      }
+    },
+    "repository": {
+      "tab": {
+        "draw-io": "Draw.io Diagram",
+        "open-exchange": "Open Exchange XML"
+      },
+      "title": "Upload Repository"
+    }
+  }
 }
