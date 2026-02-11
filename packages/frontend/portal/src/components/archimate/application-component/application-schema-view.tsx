@@ -5,7 +5,6 @@ import {
   ReactFlow,
   Controls,
   Background,
-  MiniMap,
   useNodesState,
   useEdgesState,
   MarkerType,
@@ -261,7 +260,7 @@ export function ApplicationSchemaView({
 
 
   return (
-    <Card className="flex min-h-0 flex-1 flex-col p-0 overflow-hidden">
+    <Card className="flex min-h-[600px] flex-1 flex-col p-0 overflow-hidden">
       <div className="flex items-center justify-end gap-2 px-3 py-2 border-b border-border">
         <Button
           variant="secondary"
@@ -294,7 +293,7 @@ export function ApplicationSchemaView({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex-1 w-full" style={{ minHeight: 0 }}>
+      <div className="w-full min-w-0" style={{ height: 556 }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -307,7 +306,6 @@ export function ApplicationSchemaView({
         >
           <Background />
           <Controls />
-          <MiniMap />
         </ReactFlow>
       </div>
     </Card>
