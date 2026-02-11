@@ -12,7 +12,8 @@ export abstract class ArchimateElementGeneric extends NamedObject {
   @Property({
     type: 'uuid',
     name: 'tenant_id',
-    default: '102153b6-28d4-40c2-ac27-11e419b639e0',
+    // No default: tenant must come from request context (x-archpad-tenant-ids).
+    // Legacy default was 102153b6-... which caused components to not appear in filtered lists.
   })
   tenantId!: string;
 }

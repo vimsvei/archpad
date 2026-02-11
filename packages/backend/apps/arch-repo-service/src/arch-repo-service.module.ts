@@ -176,6 +176,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
   ],
   controllers: [],
   providers: [
+    ArchpadRequestContextMiddleware,
     {
       provide: APP_INTERCEPTOR,
       useClass: RequestLoggerInterceptor,
@@ -186,10 +187,16 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     },
   ],
 })
-export class ArchRepoServiceModule implements OnModuleInit {
+export class ArchRepoServiceModule implements NestModule, OnModuleInit {
   private readonly loggerContext = ArchRepoServiceModule.name;
 
   constructor(private readonly logger: LoggerService) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ArchpadRequestContextMiddleware)
+      .forRoutes('*');
+  }
 
   async onModuleInit() {
     const mode = process.env.NODE_ENV;
