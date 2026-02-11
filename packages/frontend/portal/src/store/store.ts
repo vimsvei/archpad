@@ -13,6 +13,7 @@ import { directoriesReducer } from "@/store/slices/directories-slice"
 import { authFormsReducer } from "@/store/slices/auth-forms-slice"
 import { directoriesMiddleware } from "@/store/middleware/directories-middleware"
 import { openExchangeImportReducer } from "@/store/slices/open-exchange-import-slice"
+import { drawIoImportReducer } from "@/store/slices/draw-io-import-slice"
 import logger from 'redux-logger';
 
 export function makeStore() {
@@ -31,6 +32,7 @@ export function makeStore() {
       dataObjectEdit: dataObjectEditReducer,
       directories: directoriesReducer,
       openExchangeImport: openExchangeImportReducer,
+      drawIoImport: drawIoImportReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

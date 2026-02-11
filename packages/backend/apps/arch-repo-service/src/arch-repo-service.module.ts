@@ -20,6 +20,7 @@ import { ArchimateBootstrapModule } from './archimate-bootstrap/archimate-bootst
 import { ApplicationInterfaceModule } from './endpoints/archimate/application-interface/application-interface.module';
 import { SolutionModule } from './endpoints/solution/solution.module';
 import { OpenExchangeImportModule } from '@/endpoints/import/open-exchange/open-exchange-import.module';
+import { DrawIoImportModule } from '@/endpoints/import/draw-io/draw-io-import.module';
 import {
   LoggerModule,
   LoggerService,
@@ -172,6 +173,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     TechnologyNodeModule,
     DirectoriesModule,
     OpenExchangeImportModule,
+    DrawIoImportModule,
     HealthCheckerModule,
   ],
   controllers: [],

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { startOpenExchangeImport } from "@/store/slices/open-exchange-import-slice"
+import { startDrawIoImport } from "@/store/slices/draw-io-import-slice"
 import { cn } from "@/lib/utils"
 
 function formatBytes(bytes: number): string {
@@ -23,10 +23,10 @@ function formatBytes(bytes: number): string {
   return `${v.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
 }
 
-export function OpenExchangeUploader() {
+export function DrawIoUploader() {
   const { t } = useTranslate()
   const dispatch = useAppDispatch()
-  const state = useAppSelector((s) => s.openExchangeImport)
+  const state = useAppSelector((s) => s.drawIoImport)
 
   const inputRef = React.useRef<HTMLInputElement | null>(null)
   const [file, setFile] = React.useState<File | null>(null)
@@ -42,14 +42,16 @@ export function OpenExchangeUploader() {
 
   async function onStart() {
     if (!file) return
-    dispatch(startOpenExchangeImport(file, { clearBeforeImport }))
+    dispatch(startDrawIoImport(file, { clearBeforeImport }))
   }
 
   return (
     <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-semibold">{t("upload.draw-io.title")}</h2>
+
       <Card className="p-4">
         <div className="flex flex-col gap-3">
-          <div className="text-sm text-muted-foreground">{t("upload.open-exchange.subtitle")}</div>
+          <div className="text-sm text-muted-foreground">{t("upload.draw-io.subtitle")}</div>
 
           <div
             className={cn(
@@ -68,12 +70,12 @@ export function OpenExchangeUploader() {
             }}
             onClick={() => inputRef.current?.click()}
           >
-            <div className="font-medium">{t("upload.open-exchange.dropzone.title")}</div>
-            <div className="text-sm text-muted-foreground">{t("upload.open-exchange.dropzone.hint")}</div>
+            <div className="font-medium">{t("upload.draw-io.dropzone.title")}</div>
+            <div className="text-sm text-muted-foreground">{t("upload.draw-io.dropzone.hint")}</div>
             <input
               ref={inputRef}
               type="file"
-              accept=".xml,text/xml,application/xml"
+              accept=".drawio,.xml,text/xml,application/xml"
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0] ?? null
@@ -100,16 +102,16 @@ export function OpenExchangeUploader() {
               disabled={isRunning}
               onCheckedChange={(v) => setClearBeforeImport(Boolean(v))}
             />
-            <span>{t("upload.open-exchange.clear-before.label")}</span>
+            <span>{t("upload.draw-io.clear-before.label")}</span>
           </label>
 
           <div className="flex items-center gap-2">
             <Button onClick={onStart} disabled={!canStart}>
-              {t("upload.open-exchange.action.start")}
+              {t("upload.draw-io.action.start")}
             </Button>
             {state?.jobId ? (
               <div className="text-xs text-muted-foreground">
-                {t("upload.open-exchange.job-id")}: <span className="font-mono">{state.jobId}</span>
+                {t("upload.draw-io.job-id")}: <span className="font-mono">{state.jobId}</span>
               </div>
             ) : null}
           </div>
@@ -117,7 +119,7 @@ export function OpenExchangeUploader() {
           {state?.status !== "idle" ? (
             <div className="flex flex-col gap-2 pt-2">
               <div className="flex items-center justify-between text-sm">
-                <div className="font-medium">{t("repository.open-exchange.progress")}</div>
+                <div className="font-medium">{t("repository.draw-io.progress")}</div>
                 <div className="text-muted-foreground">{Math.round(state.progress ?? 0)}%</div>
               </div>
               <Progress value={state.progress ?? 0} />
@@ -129,9 +131,9 @@ export function OpenExchangeUploader() {
 
       <Card className="p-4">
         <div className="flex items-center justify-between">
-          <div className="font-medium">{t("upload.open-exchange.logs.title")}</div>
+          <div className="font-medium">{t("upload.draw-io.logs.title")}</div>
           {state?.logs?.length ? (
-            <div className="text-xs text-muted-foreground">{t("upload.open-exchange.logs.count", { count: state.logs.length })}</div>
+            <div className="text-xs text-muted-foreground">{t("upload.draw-io.logs.count", { count: state.logs.length })}</div>
           ) : null}
         </div>
 
@@ -146,35 +148,23 @@ export function OpenExchangeUploader() {
               </div>
             ))
           ) : (
-            <div className="text-sm text-muted-foreground">{t("upload.open-exchange.logs.empty")}</div>
+            <div className="text-sm text-muted-foreground">{t("upload.draw-io.logs.empty")}</div>
           )}
         </div>
 
         {state?.result?.created ? (
           <div className="mt-4 rounded-md bg-muted p-3 text-sm">
-            <div className="font-medium">{t("upload.open-exchange.summary.title")}</div>
-            <div className="mt-1 text-muted-foreground space-y-0.5">
-              <div>
-                {t("upload.open-exchange.summary.line", {
-                  components: state.result.created.applicationComponents,
-                  functions: state.result.created.applicationFunctions,
-                  links: state.result.created.componentFunctionLinks,
-                  actorRoleLinks: state.result.created.componentActorRoleLinks ?? 0,
-                  flows: state.result.created.applicationFlows,
-                })}
-              </div>
-              {(state.result.created.businessActors !== undefined ||
-                state.result.created.systemSoftware !== undefined) && (
-                <div>
-                  {t("upload.open-exchange.summary.cross-layer", {
-                    businessActors: state.result.created.businessActors ?? 0,
-                    businessRoles: state.result.created.businessRoles ?? 0,
-                    systemSoftware: state.result.created.systemSoftware ?? 0,
-                    communicationNetworks: state.result.created.communicationNetworks ?? 0,
-                    technologyNodes: state.result.created.technologyNodes ?? 0,
-                  })}
-                </div>
-              )}
+            <div className="font-medium">{t("upload.draw-io.summary.title")}</div>
+            <div className="mt-1 text-muted-foreground">
+              {t("upload.draw-io.summary.line", {
+                components: state.result.created.applicationComponents,
+                functions: state.result.created.applicationFunctions,
+                dataObjects: state.result.created.dataObjects,
+                systemSoftware: state.result.created.systemSoftware,
+                links: state.result.created.componentFunctionLinks,
+                hierarchy: state.result.created.componentHierarchyLinks,
+                flows: state.result.created.applicationFlows,
+              })}
             </div>
           </div>
         ) : null}
@@ -182,5 +172,3 @@ export function OpenExchangeUploader() {
     </div>
   )
 }
-
-

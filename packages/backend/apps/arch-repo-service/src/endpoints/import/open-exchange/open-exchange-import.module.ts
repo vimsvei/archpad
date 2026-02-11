@@ -16,6 +16,7 @@ import { ApplicationFunctionDataObjectMap } from '@/model/maps/application-funct
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
 import { Role } from '@/model/archimate/common/role.entity';
 import { BusinessRole } from '@/model/archimate/business/business-role.entity';
+import { ApplicationComponentBusinessActorRoleMap } from '@/model/maps/application-component-business-actor-role.map';
 import { BusinessActorRoleMap } from '@/model/maps/business-actor-role.map';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import { TechnologyLogicalNetwork } from '@/model/archimate/technology/technology-network.entity';
@@ -45,6 +46,7 @@ import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-sy
       BusinessActor,
       Role,
       BusinessRole,
+      ApplicationComponentBusinessActorRoleMap,
       BusinessActorRoleMap,
       SystemSoftware,
       TechnologyLogicalNetwork,
