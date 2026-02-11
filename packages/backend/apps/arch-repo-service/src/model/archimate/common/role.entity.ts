@@ -17,8 +17,5 @@ export class Role extends ArchimateElementGeneric {
   
   @ArchimateCode('ROLE')
   override code: string = undefined as any;
-
-  @HasuraReference({ objectName: 'role', collectionName: 'actors' })
-  @OneToMany(() => BusinessActorRoleMap, (map) => map.role)
-  actors = new Collection<BusinessActorRoleMap>(this);
+  
 }
