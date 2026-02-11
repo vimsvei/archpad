@@ -1028,30 +1028,34 @@ export class OpenExchangeImportService {
       }
     }
 
-    // Technology layer: SystemSoftware
+    // Technology layer: SystemSoftware (dedupe by name+tenantId+kind in DB and within batch)
+    const systemSoftwareByKey = new Map<string, SystemSoftware>();
+    const systemSoftwareKey = (n: string) => `${n}|${tenantId}|${SystemSoftwareKind.OTHER}`;
     for (const e of input.systemSoftware) {
       const name = e.name ?? e.id;
-      const existing = input.dedupe
-        ? await em.findOne(SystemSoftware, {
-            name,
-            kind: SystemSoftwareKind.OTHER as any,
-            tenantId,
-          } as any)
-        : null;
-      const entity =
-        existing ??
-        em.create(SystemSoftware, {
+      const key = systemSoftwareKey(name);
+      let entity = systemSoftwareByKey.get(key);
+      if (!entity && input.dedupe) {
+        entity = await em.findOne(SystemSoftware, {
+          name,
+          kind: SystemSoftwareKind.OTHER as any,
+          tenantId,
+        } as any) ?? undefined;
+        if (entity) systemSoftwareByKey.set(key, entity);
+      }
+      if (!entity) {
+        entity = em.create(SystemSoftware, {
           name,
           description: e.documentation,
           kind: SystemSoftwareKind.OTHER,
           created,
           tenantId,
         } as any);
-      input.systemSoftwareEntityByXmlId.set(e.id, entity);
-      if (!existing) {
+        systemSoftwareByKey.set(key, entity);
         await em.persist(entity);
         input.result.created.systemSoftware += 1;
       }
+      input.systemSoftwareEntityByXmlId.set(e.id, entity);
     }
 
     // Technology layer: CommunicationNetwork -> TechnologyLogicalNetwork
