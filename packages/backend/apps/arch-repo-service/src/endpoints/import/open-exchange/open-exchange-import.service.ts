@@ -1135,7 +1135,8 @@ export class OpenExchangeImportService {
       });
     }
 
-    // Base tables with tenant_id
+    // Base tables with tenant_id.
+    // Order: delete technology_nodes BEFORE system_software (FK: technology_nodes.operating_system_id → system_software).
     const baseDeletes: Array<{ entity: object; label: string }> = [
       { entity: ApplicationFlow, label: 'ApplicationFlow (flows)' },
       { entity: ArchimateInterface, label: 'Interface (interfaces)' },
@@ -1149,10 +1150,10 @@ export class OpenExchangeImportService {
       { entity: Capability, label: 'Capability (capabilities)' },
       { entity: Stakeholder, label: 'Stakeholder (stakeholders)' },
       { entity: Solution, label: 'Solution (solutions)' },
-      { entity: SystemSoftware, label: 'SystemSoftware (system_software)' },
       { entity: TechnologyLogicalNetwork, label: 'TechnologyLogicalNetwork (technology_networks)' },
       { entity: TechnologyHostNode, label: 'TechnologyHostNode (technology_nodes)' },
       { entity: TechnologyDeviceNode, label: 'TechnologyDeviceNode (technology_nodes)' },
+      { entity: SystemSoftware, label: 'SystemSoftware (system_software)' },
     ];
 
     for (const { entity, label } of baseDeletes) {
