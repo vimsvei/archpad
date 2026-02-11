@@ -6,12 +6,6 @@ metadata:
   annotations:
     # If you're applying apps in waves (app-of-apps), run after backend services.
     argocd.argoproj.io/sync-wave: "20"
-    # ArgoCD Image Updater: настройка отслеживания образов
-    argocd-image-updater.argoproj.io/image-list: hasura-sync-service=archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service
-    argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/git-branch: main
-    # Стратегия обновления: использовать latest тег
-    argocd-image-updater.argoproj.io/hasura-sync-service.update-strategy: latest
 spec:
   project: platform
   destination:

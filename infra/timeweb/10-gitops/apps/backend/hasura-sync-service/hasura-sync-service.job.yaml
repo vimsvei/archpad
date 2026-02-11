@@ -8,10 +8,6 @@ metadata:
     # ArgoCD будет пересоздавать Job при каждом синхронизации
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
-    # ArgoCD Image Updater: отслеживание обновлений образа
-    argocd-image-updater.argoproj.io/image-list: hasura-sync-service=archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service
-    argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/git-branch: main
   labels:
     app: hasura-sync-service
 spec:

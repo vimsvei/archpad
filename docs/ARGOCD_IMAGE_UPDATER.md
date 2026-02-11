@@ -2,16 +2,21 @@
 
 ## Обзор
 
-ArgoCD Image Updater автоматически отслеживает новые версии Docker образов в Container Registry и обновляет манифесты Kubernetes при обнаружении новых образов.
+**Примечание:** Для приложений main-ветки (arch-repo-service, tenant-service, auth-service, hasura-sync-service, portal, landing) используется подход **GitOps через CI**: после успешной сборки GitLab CI обновляет тег образа в манифестах и коммитит изменения. ArgoCD подтягивает обновления при синхронизации. ArgoCD Image Updater **не поддерживает** source type Directory, поэтому для этих приложений он не применяется.
 
-## Как это работает
+ArgoCD Image Updater может использоваться для приложений с Helm/Kustomize source type.
 
-1. **GitLab CI/CD** собирает и публикует новые образы в Container Registry с тегом `latest` и тегом с версией/commit SHA
-2. **ArgoCD Image Updater** периодически проверяет registry на наличие новых образов (каждые 2 минуты)
-3. При обнаружении нового образа Image Updater:
-   - Обновляет манифест в Git репозитории (меняет тег образа)
-   - ArgoCD автоматически синхронизирует изменения (благодаря `automated.syncPolicy`)
-   - Kubernetes перезапускает поды с новым образом
+## Как это работает (main-ветка)
+
+1. **GitLab CI/CD** собирает образ и публикует с тегами `main-<commit-sha>` и `latest`
+2. **Job update:main:&lt;service&gt;** после успешной сборки обновляет тег в deployment/job манифесте и делает коммит
+3. **ArgoCD** при следующей синхронизации подтягивает изменения и деплоит новый образ
+
+## Как это работало ранее (ArgoCD Image Updater)
+
+1. **GitLab CI/CD** собирает и публикует новые образы с тегом `latest`
+2. **ArgoCD Image Updater** периодически проверяет registry (поддерживает только Helm/Kustomize, не Directory)
+3. При обнаружении нового образа — обновляет манифест в Git (для поддерживаемых source types)
 
 ## Быстрый старт
 

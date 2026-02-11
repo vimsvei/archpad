@@ -849,6 +849,46 @@ cleanup:landing:
     - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 # ============================================
+# Update deployment image tags (GitOps: commit tag after build)
+# ============================================
+# После успешной сборки обновляет тег образа в манифестах и делает коммит.
+# ArgoCD подтягивает изменения и деплоит новый образ.
+
+.update_deploy_image_main:
+  stage: build
+  image: alpine:3.19
+  before_script:
+    - apk add --no-cache git
+    - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    - git config --global user.name "GitLab CI"
+    - git config --global user.email "ci@archpad.pro"
+    - |
+      if [ -z "$GIT_PUSH_TOKEN" ]; then
+        echo "ERROR: GIT_PUSH_TOKEN is not set (required for deploy image update)"
+        exit 1
+      fi
+      git remote set-url origin "https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git fetch origin main
+    - git checkout -B main origin/main
+  script:
+    - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
+    - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
+    - |
+      REGISTRY="${REGISTRY_URL}"
+      PREFIX="${REGISTRY_IMAGE_PREFIX}"
+      IMAGE_BASE="${REGISTRY}/${PREFIX}/${DEPLOY_SERVICE_NAME}"
+      NEW_TAG="main-${COMMIT_SHA}"
+      echo "Updating ${DEPLOY_FILE} image: ${IMAGE_BASE}:* -> ${IMAGE_BASE}:${NEW_TAG}"
+      sed -i "s|\(${IMAGE_BASE}:\)[a-zA-Z0-9._-]*|\1${NEW_TAG}|" "${DEPLOY_FILE}"
+      git add "${DEPLOY_FILE}"
+      if git diff --cached --quiet; then
+        echo "No change in image tag (already ${NEW_TAG})"
+        exit 0
+      fi
+      git commit -m "chore(deploy): update ${DEPLOY_SERVICE_NAME} image to ${NEW_TAG} [ci skip]"
+      git push origin main
+
+# ============================================
 # Backend Services (main ветка)
 # ============================================
 
@@ -872,6 +912,19 @@ build:main:arch-repo-service:
 
 cleanup:main:arch-repo-service:
   extends: .cleanup_registry_image
+  needs: ["build:main:arch-repo-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
+update:main:arch-repo-service:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: arch-repo-service
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.deployment.yaml
   needs: ["build:main:arch-repo-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -908,6 +961,19 @@ cleanup:main:tenant-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
 
+update:main:tenant-service:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: tenant-service
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.deployment.yaml
+  needs: ["build:main:tenant-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/tenant-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
 build:main:auth-service:
   extends: .build_docker_image_main
   variables:
@@ -927,6 +993,19 @@ build:main:auth-service:
 
 cleanup:main:auth-service:
   extends: .cleanup_registry_image
+  needs: ["build:main:auth-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/auth-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
+update:main:auth-service:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: auth-service
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.deployment.yaml
   needs: ["build:main:auth-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -955,6 +1034,19 @@ build:main:hasura-sync-service:
 
 cleanup:main:hasura-sync-service:
   extends: .cleanup_registry_image
+  needs: ["build:main:hasura-sync-service"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/libs/**/*
+        - packages/contract/**/*
+
+update:main:hasura-sync-service:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: hasura-sync-service
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.job.yaml
   needs: ["build:main:hasura-sync-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -995,6 +1087,19 @@ cleanup:main:portal:
         - packages/frontend/lib/logger/**/*
         - packages/contract/**/*
 
+update:main:portal:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: portal
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml
+  needs: ["build:main:portal"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/frontend/portal/**/*
+        - packages/frontend/lib/logger/**/*
+        - packages/contract/**/*
+
 build:main:landing:
   extends: .build_docker_image_main
   variables:
@@ -1012,6 +1117,18 @@ build:main:landing:
 
 cleanup:main:landing:
   extends: .cleanup_registry_image
+  needs: ["build:main:landing"]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - packages/frontend/landing/**/*
+        - packages/frontend/lib/logger/**/*
+
+update:main:landing:
+  extends: .update_deploy_image_main
+  variables:
+    DEPLOY_SERVICE_NAME: landing
+    DEPLOY_FILE: infra/timeweb/10-gitops/apps/frontend/landing/landing.deployment.yaml
   needs: ["build:main:landing"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
