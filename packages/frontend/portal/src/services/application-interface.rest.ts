@@ -1,4 +1,4 @@
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 
 export type ApplicationInterface = {
   id: string
@@ -24,7 +24,7 @@ export type GetApplicationInterfacesParams = {
 export async function getApplicationInterfacesRest(
   params: GetApplicationInterfacesParams
 ): Promise<Paginated<ApplicationInterface>> {
-  return restRequest<Paginated<ApplicationInterface>>("application-interfaces", {
+  return restRequest<Paginated<ApplicationInterface>>(archRepoPath(["application-interfaces"]), {
     method: "GET",
     query: {
       search: params.search,
@@ -35,7 +35,7 @@ export async function getApplicationInterfacesRest(
 }
 
 export async function getApplicationInterfaceRest(id: string): Promise<ApplicationInterface> {
-  return restRequest<ApplicationInterface>(["application-interfaces", id], { method: "GET" })
+  return restRequest<ApplicationInterface>(archRepoPath(["application-interfaces", id]), { method: "GET" })
 }
 
 export type CreateApplicationInterfaceInput = {
@@ -48,7 +48,7 @@ export type CreateApplicationInterfaceInput = {
 export async function createApplicationInterfaceRest(
   input: CreateApplicationInterfaceInput
 ): Promise<ApplicationInterface> {
-  return restRequest<ApplicationInterface>("application-interfaces", {
+  return restRequest<ApplicationInterface>(archRepoPath(["application-interfaces"]), {
     method: "POST",
     body: input,
   })

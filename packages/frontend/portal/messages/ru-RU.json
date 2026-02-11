@@ -1,1 +1,9 @@
-{}
+{
+  "upload": {
+    "open-exchange": {
+      "summary": {
+        "cross-layer": "Акторы: {businessActors}, Роли: {businessRoles}, Системное ПО: {systemSoftware}, Сети: {communicationNetworks}, Узлы: {technologyNodes}"
+      }
+    }
+  }
+}

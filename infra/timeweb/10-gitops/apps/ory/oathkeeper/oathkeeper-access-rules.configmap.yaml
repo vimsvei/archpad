@@ -102,6 +102,8 @@ data:
           config:
             headers:
               X-Archpad-User-Id: "{{ .Subject }}"
+              # Forward tenant from Next.js proxy (cookie archpad_tenant_id -> x-archpad-tenant-ids) to set correct tenant_id in DB
+              X-Archpad-Tenant-Ids: '{{ .MatchContext.Header.Get "X-Archpad-Tenant-Ids" }}'
 
     # ==== Swagger tenant-service (публичный доступ) ====
     - id: tenant-service-api-docs

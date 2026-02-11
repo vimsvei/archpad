@@ -5,6 +5,18 @@ import { createServerLogger } from "@archpad/logger"
 
 const log = createServerLogger("api.graphql")
 
+const TENANT_COOKIE_NAME = "archpad_tenant_id"
+
+function getTenantIdFromCookies(request: Request): string | null {
+  const cookieHeader = request.headers.get("cookie")
+  if (!cookieHeader) return null
+  const match = cookieHeader.match(
+    new RegExp(`(?:^|;)\\s*${TENANT_COOKIE_NAME}\\s*=\\s*([^;]+)`, "i")
+  )
+  const val = match?.[1]?.trim()
+  return val && /^[a-f0-9-]{36}$/i.test(val) ? val : null
+}
+
 type GraphQLRequestBody = {
   query: string
   variables?: Record<string, unknown>
@@ -70,15 +82,19 @@ export async function POST(request: Request) {
       log.error({ message: "No sessionId in cookies; request will go without Bearer token" })
     }
 
+    const tenantId = getTenantIdFromCookies(request)
+
     async function doFetch(currentAuth: string | null) {
+      const headers: Record<string, string> = {
+        "content-type": "application/json",
+        ...(currentAuth ? { authorization: currentAuth } : {}),
+      }
+      if (tenantId) headers["x-hasura-tenant-id"] = tenantId
+
       return fetch(targetUrl, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(currentAuth ? { authorization: currentAuth } : {}),
-        },
+        headers,
         body: JSON.stringify(body),
-        // We want fresh data for directories in dev.
         cache: "no-store",
       })
     }

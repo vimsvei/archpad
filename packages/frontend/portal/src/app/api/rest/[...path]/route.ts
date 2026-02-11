@@ -128,7 +128,7 @@ async function proxy(request: Request, ctx: { params: Promise<{ path?: string[] 
     const bodyLen = body?.byteLength ?? 0
 
     log.info(
-      `req id=${requestId} method=${method} path=${inUrl.pathname}${inUrl.search || ""} target=${target.toString()} auth=${authPresent ? "present" : "missing"} cookie=${cookiePresent ? "present" : "missing"} authSource=${authSource} bodyBytes=${bodyLen}`
+      `req id=${requestId} method=${method} path=${inUrl.pathname}${inUrl.search || ""} target=${target.toString()} auth=${authPresent ? "present" : "missing"} cookie=${cookiePresent ? "present" : "missing"} authSource=${authSource} tenantId=${tenantId ?? "none"} bodyBytes=${bodyLen}`
     )
     if (!authPresent) {
       const cookieNames = cookieNamesFromHeader(request.headers.get("cookie"))

@@ -1,1 +1,9 @@
-{}
+{
+  "upload": {
+    "open-exchange": {
+      "summary": {
+        "cross-layer": "Actors: {businessActors}, Roles: {businessRoles}, System software: {systemSoftware}, Networks: {communicationNetworks}, Nodes: {technologyNodes}"
+      }
+    }
+  }
+}

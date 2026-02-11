@@ -1,6 +1,6 @@
 import type { SystemSoftware, Paginated } from "@/@types/system-software"
 import type { CreateSystemSoftwareInput, UpdateSystemSoftwareInput } from "@archpad/contract"
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 
 export type { CreateSystemSoftwareInput, UpdateSystemSoftwareInput } from "@archpad/contract"
 
@@ -13,7 +13,7 @@ export type GetSystemSoftwareParams = {
 export async function getSystemSoftwareRest(
   params: GetSystemSoftwareParams
 ): Promise<Paginated<SystemSoftware>> {
-  return restRequest<Paginated<SystemSoftware>>("system-software", {
+  return restRequest<Paginated<SystemSoftware>>(archRepoPath(["system-software"]), {
     method: "GET",
     query: {
       search: params.search,
@@ -24,13 +24,13 @@ export async function getSystemSoftwareRest(
 }
 
 export async function getSystemSoftwareByIdRest(id: string): Promise<SystemSoftware> {
-  return restRequest<SystemSoftware>(["system-software", id], { method: "GET" })
+  return restRequest<SystemSoftware>(archRepoPath(["system-software", id]), { method: "GET" })
 }
 
 export async function createSystemSoftwareRest(
   input: CreateSystemSoftwareInput
 ): Promise<SystemSoftware> {
-  return restRequest<SystemSoftware>("system-software", {
+  return restRequest<SystemSoftware>(archRepoPath(["system-software"]), {
     method: "POST",
     body: input,
   })
@@ -40,14 +40,14 @@ export async function updateSystemSoftwareRest(
   id: string,
   input: UpdateSystemSoftwareInput
 ): Promise<SystemSoftware> {
-  return restRequest<SystemSoftware>(["system-software", id], {
+  return restRequest<SystemSoftware>(archRepoPath(["system-software", id]), {
     method: "PATCH",
     body: input,
   })
 }
 
 export async function deleteSystemSoftwareRest(id: string): Promise<void> {
-  return restRequest<void>(["system-software", id], {
+  return restRequest<void>(archRepoPath(["system-software", id]), {
     method: "DELETE",
   })
 }

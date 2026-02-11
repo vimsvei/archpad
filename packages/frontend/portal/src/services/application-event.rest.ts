@@ -1,4 +1,4 @@
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 
 export type ApplicationEvent = {
   id: string
@@ -16,7 +16,7 @@ export type CreateApplicationEventInput = {
 export async function createApplicationEventRest(
   input: CreateApplicationEventInput
 ): Promise<ApplicationEvent> {
-  return restRequest<ApplicationEvent>("application-events", {
+  return restRequest<ApplicationEvent>(archRepoPath(["application-events"]), {
     method: "POST",
     body: input,
   })

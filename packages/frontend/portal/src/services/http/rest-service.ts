@@ -1,5 +1,12 @@
 import { httpRequestJson, type HttpRequestOptions } from "./http-requester"
 
+/** Oathkeeper routes /rest/arch-repo-service/* to arch-repo-service. Use for all arch-repo REST calls. */
+export const ARCH_REPO_SERVICE = "arch-repo-service"
+
+export function archRepoPath(segments: (string | number)[]): string[] {
+  return [ARCH_REPO_SERVICE, ...segments.map(String)]
+}
+
 export type RestRequestOptions = Omit<HttpRequestOptions, "method"> & {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
   /**

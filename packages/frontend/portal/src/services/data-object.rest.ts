@@ -1,5 +1,5 @@
 import type { DataObject, Paginated } from "@/@types/data-object"
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 
 export type CreateDataObjectInput = {
   code?: string
@@ -18,7 +18,7 @@ export type GetDataObjectsParams = {
 export async function getDataObjectsRest(
   params: GetDataObjectsParams
 ): Promise<Paginated<DataObject>> {
-  return restRequest<Paginated<DataObject>>("data-objects", {
+  return restRequest<Paginated<DataObject>>(archRepoPath(["data-objects"]), {
     method: "GET",
     query: {
       search: params.search,
@@ -29,13 +29,13 @@ export async function getDataObjectsRest(
 }
 
 export async function getDataObjectRest(id: string): Promise<DataObject> {
-  return restRequest<DataObject>(["data-objects", id], { method: "GET" })
+  return restRequest<DataObject>(archRepoPath(["data-objects", id]), { method: "GET" })
 }
 
 export async function createDataObjectRest(
   input: CreateDataObjectInput
 ): Promise<DataObject> {
-  return restRequest<DataObject>("data-objects", {
+  return restRequest<DataObject>(archRepoPath(["data-objects"]), {
     method: "POST",
     body: input,
   })
@@ -45,14 +45,14 @@ export async function updateDataObjectRest(
   id: string,
   input: UpdateDataObjectInput
 ): Promise<DataObject> {
-  return restRequest<DataObject>(["data-objects", id], {
+  return restRequest<DataObject>(archRepoPath(["data-objects", id]), {
     method: "PATCH",
     body: input,
   })
 }
 
 export async function deleteDataObjectRest(id: string): Promise<void> {
-  return restRequest<void>(["data-objects", id], {
+  return restRequest<void>(archRepoPath(["data-objects", id]), {
     method: "DELETE",
   })
 }

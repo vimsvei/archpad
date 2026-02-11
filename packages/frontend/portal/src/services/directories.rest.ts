@@ -1,20 +1,13 @@
 /**
  * Directory REST API functions (arch-repo)
  *
- * Oathkeeper routes /rest/arch-repo-service/* to arch-repo-service, so we must
- * include the service prefix in the path.
+ * Oathkeeper routes /rest/arch-repo-service/* to arch-repo-service.
  */
 
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
 import type { DirectoryLinkType } from "@/@types/directory-link-type"
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 import type { BulkDirectoryLinkInput } from "@archpad/contract"
-
-const ARCH_REPO = "arch-repo-service"
-
-function archRepoPath(segments: (string | number)[]): string[] {
-  return [ARCH_REPO, ...segments.map(String)]
-}
 
 export type CreateDirectoryItemInput = {
   code?: string

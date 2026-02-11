@@ -1,6 +1,6 @@
 import type { ApplicationComponent } from "@/@types/application-component"
 import type { CreateApplicationComponentDto, UpdateApplicationComponentDto } from "@archpad/contract"
-import { restRequest } from "@/services/http/rest-service"
+import { restRequest, archRepoPath } from "@/services/http/rest-service"
 
 export type CreateApplicationComponentInput = CreateApplicationComponentDto
 
@@ -9,7 +9,7 @@ export type UpdateApplicationComponentInput = Partial<UpdateApplicationComponent
 export async function createApplicationComponentRest(
   input: CreateApplicationComponentInput
 ): Promise<ApplicationComponent> {
-  return restRequest<ApplicationComponent>("application-components", {
+  return restRequest<ApplicationComponent>(archRepoPath(["application-components"]), {
     method: "POST",
     body: input,
   })
@@ -19,7 +19,7 @@ export async function updateApplicationComponentRest(
   id: string,
   input: UpdateApplicationComponentInput
 ): Promise<ApplicationComponent> {
-  return restRequest<ApplicationComponent>(["application-components", id], {
+  return restRequest<ApplicationComponent>(archRepoPath(["application-components", id]), {
     method: "PATCH",
     body: input,
   })
@@ -34,7 +34,7 @@ export async function updateApplicationComponentFullRest(
   id: string,
   input: UpdateApplicationComponentFullInput
 ): Promise<ApplicationComponent> {
-  return restRequest<ApplicationComponent>(["application-components", id], {
+  return restRequest<ApplicationComponent>(archRepoPath(["application-components", id]), {
     method: "PUT",
     body: input,
   })
