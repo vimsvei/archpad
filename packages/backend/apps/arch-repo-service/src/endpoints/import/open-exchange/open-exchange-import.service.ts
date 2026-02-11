@@ -750,23 +750,20 @@ export class OpenExchangeImportService {
     });
 
     // Map tables: delete via ORM (component/interface/role/solution scoped)
-    // ApplicationFunctionDataObjectMap: use QueryBuilder (nativeDelete has composite PK subquery bug)
-    // createQueryBuilder is on Knex EntityManager (Postgres); cast for TypeScript
-    const qb = (em as any).createQueryBuilder(ApplicationFunctionDataObjectMap);
-    const qbDeleted = await qb.delete({ component: { tenantId } }).execute('run');
-    const qbAffected =
-      typeof qbDeleted === 'object' &&
-      qbDeleted != null &&
-      'affectedRows' in qbDeleted
-        ? (qbDeleted as { affectedRows: number }).affectedRows
-        : 0;
+    // ApplicationFunctionDataObjectMap: MikroORM bug (nativeDelete + QueryBuilder) generates invalid
+    // composite PK subquery — "subquery has too few columns". Use raw SQL as workaround.
+    const conn = em.getConnection();
+    await conn.execute(
+      `DELETE FROM map_application_function_data_object WHERE component_id IN (SELECT id FROM components WHERE tenant_id = ?)`,
+      [tenantId],
+    );
     this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted ${qbAffected} rows from ApplicationFunctionDataObjectMap (qb)`,
+      `[tenantId=${tenantId}] clearRepository: deleted from map_application_function_data_object (raw, MikroORM composite PK bug)`,
       logContext,
     );
     reporter.log('repository.open-exchange.clear-repo.entity', {
       entity: 'ApplicationFunctionDataObjectMap',
-      deleted: qbAffected,
+      deleted: 'N/A',
     });
 
     const mapDeletes: Array<{
