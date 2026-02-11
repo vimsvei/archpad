@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Trash2,
   Eye,
+  Pencil,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -39,6 +40,8 @@ export type RelationGroupProps = {
   t: (key: string) => string
   /** Translation key for group title */
   titleKey: string
+  /** Optional icon shown left of title */
+  icon?: React.ReactNode
   items: RelationGroupItem[]
   /** Translation key for empty state */
   emptyTextKey: string
@@ -48,8 +51,13 @@ export type RelationGroupProps = {
   onAddExisting?: () => void
   onCreate?: () => void
   onDelete: (item: RelationGroupItem) => void
+  /** When provided, "Просмотр" opens item in sidebar (read-only) instead of navigating */
+  onViewInSidebar?: (item: RelationGroupItem, editPath: string) => void
   /** Optional color for status indicator per item */
   stateColor?: (item: RelationGroupItem) => string | undefined
+  /** Controlled open state (for expand/collapse all) */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 /**
@@ -59,6 +67,7 @@ export type RelationGroupProps = {
 export function RelationGroup({
   t,
   titleKey,
+  icon,
   items,
   emptyTextKey,
   editPath,
@@ -66,21 +75,40 @@ export function RelationGroup({
   onAddExisting,
   onCreate,
   onDelete,
+  onViewInSidebar,
   stateColor,
+  open: controlledOpen,
+  onOpenChange: onOpenChangeProp,
 }: RelationGroupProps) {
-  const [isOpen, setIsOpen] = React.useState(true)
+  const [internalOpen, setInternalOpen] = React.useState(true)
+  const isControlled = controlledOpen !== undefined
+  const isOpen = isControlled ? controlledOpen : internalOpen
+  const handleToggle = React.useCallback(() => {
+    const next = !isOpen
+    if (isControlled) {
+      onOpenChangeProp?.(next)
+    } else {
+      setInternalOpen(next)
+      onOpenChangeProp?.(next)
+    }
+  }, [isControlled, isOpen, onOpenChangeProp])
 
   return (
     <div className="border-b border-border/50 last:border-b-0">
       <div className="w-full flex items-center justify-between py-3 px-1 group">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleToggle}
           className="flex items-center gap-2 flex-1 hover:text-foreground transition-colors text-left"
         >
           <ChevronDown
-            className={`size-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`size-4 text-muted-foreground transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
           />
+          {icon && (
+            <span className="shrink-0 [&_svg]:min-w-6 [&_svg]:min-h-6 [&_svg]:size-6 [&_svg]:text-muted-foreground">
+              {icon}
+            </span>
+          )}
           <span className="text-base font-semibold text-foreground">{t(titleKey)}</span>
           <span className="text-xs text-muted-foreground">{items.length}</span>
         </button>
@@ -182,10 +210,29 @@ export function RelationGroup({
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem asChild>
-                                <Link href={editPath(item)}>
+                              {onViewInSidebar ? (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    onViewInSidebar(item, editPath(item))
+                                  }}
+                                >
                                   <Eye className="size-4 mr-2" />
                                   {t("item.action.view")}
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem asChild>
+                                  <Link href={editPath(item)}>
+                                    <Eye className="size-4 mr-2" />
+                                    {t("item.action.view")}
+                                  </Link>
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem asChild>
+                                <Link href={editPath(item)}>
+                                  <Pencil className="size-4 mr-2" />
+                                  {t("action.edit")}
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />

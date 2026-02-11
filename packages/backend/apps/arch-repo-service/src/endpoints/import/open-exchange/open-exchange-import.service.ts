@@ -48,6 +48,7 @@ import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-
 import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
 import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
 import { ApplicationComponentProductMap } from '@/model/maps/application-component-product.map';
+import { ApplicationComponentBusinessActorRoleMap } from '@/model/maps/application-component-business-actor-role.map';
 import { ApplicationComponentStakeholderMap } from '@/model/maps/application-component-stakeholder.map';
 import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
 import { ApplicationComponentDirectoryMap } from '@/model/maps/application-component-directory.map';
@@ -296,6 +297,7 @@ export class OpenExchangeImportService {
         dataObjects: 0,
         applicationFlows: 0,
         componentFunctionLinks: 0,
+        componentActorRoleLinks: 0,
         businessActors: 0,
         businessRoles: 0,
         systemSoftware: 0,
@@ -428,6 +430,82 @@ export class OpenExchangeImportService {
             }
           }
         }
+
+        // ApplicationComponent Composition/Aggregation: child входит в состав parent (parent contains child)
+        if (rel.type === 'Composition' || rel.type === 'Aggregation') {
+          if (
+            sourceEl.type === 'ApplicationComponent' &&
+            targetEl.type === 'ApplicationComponent'
+          ) {
+            const parent = componentEntityByXmlId.get(sourceEl.id);
+            const child = componentEntityByXmlId.get(targetEl.id);
+            if (!parent || !child || parent.id === child.id) continue;
+            const existing = await txEm.findOne(
+              ApplicationComponentHierarchyMap,
+              {
+                parent: parent.id as any,
+                child: child.id as any,
+              } as any,
+            );
+            if (!existing) {
+              await txEm.persistAndFlush(
+                txEm.create(ApplicationComponentHierarchyMap, {
+                  parent,
+                  child,
+                } as any),
+              );
+            }
+          }
+        }
+
+        // BusinessActor <-> ApplicationComponent (Association): link via ApplicationComponentBusinessActorRoleMap.
+        // Use role "Пользователь" (USER); create if not present in model.
+        if (rel.type === 'Association') {
+          const aIsActor = sourceEl.type === 'BusinessActor';
+          const bIsActor = targetEl.type === 'BusinessActor';
+          const aIsComponent = sourceEl.type === 'ApplicationComponent';
+          const bIsComponent = targetEl.type === 'ApplicationComponent';
+          if ((aIsActor && bIsComponent) || (aIsComponent && bIsActor)) {
+            const actor = businessActorEntityByXmlId.get(
+              aIsActor ? sourceEl.id : targetEl.id,
+            );
+            const component = componentEntityByXmlId.get(
+              aIsComponent ? sourceEl.id : targetEl.id,
+            );
+            if (!actor || !component) continue;
+            const userRole = await this.ensureUserRole(txEm, context, tenantId, {
+              businessRoles: parsed.elements.filter((e) => e.type === 'BusinessRole'),
+              businessRoleEntityByXmlId,
+            });
+            let actorRole = await txEm.findOne(BusinessActorRoleMap, {
+              actor: actor.id as any,
+              role: userRole.id as any,
+            } as any);
+            if (!actorRole) {
+              actorRole = txEm.create(BusinessActorRoleMap, {
+                actor,
+                role: userRole,
+              } as any);
+              await txEm.persistAndFlush(actorRole);
+            }
+            const existingCompActorRole = await txEm.findOne(
+              ApplicationComponentBusinessActorRoleMap,
+              {
+                component: component.id as any,
+                actorRole: actorRole as any,
+              } as any,
+            );
+            if (!existingCompActorRole) {
+              await txEm.persistAndFlush(
+                txEm.create(ApplicationComponentBusinessActorRoleMap, {
+                  component,
+                  actorRole,
+                } as any),
+              );
+              result.created.componentActorRoleLinks += 1;
+            }
+          }
+        }
       }
 
       if (maps.length) {
@@ -549,15 +627,31 @@ export class OpenExchangeImportService {
       reporter.setProgress(75);
       reporter.log('repository.open-exchange.stage.create-flows');
 
-      // Relationships: Flow (component -> component)
+      // Relationships: Flow (component↔component, component↔function, function↔function)
       const flows = parsed.relationships.filter((r) => r.type === 'Flow');
       const flowEntities: ApplicationFlow[] = [];
+      const flowDedupeKeys = new Set<string>();
+
+      const getComponentFunctionMap = async (
+        component: ApplicationComponent,
+        fn: ApplicationFunction,
+      ) =>
+        (await txEm.findOne(ApplicationComponentFunctionMap, {
+          component: component.id as any,
+          function: fn.id as any,
+        } as any)) ?? null;
+
       for (const rel of flows) {
         if (!rel.source || !rel.target) continue;
         const sourceEl = elementById.get(rel.source);
         const targetEl = elementById.get(rel.target);
         if (!sourceEl || !targetEl) continue;
 
+        const name =
+          rel.name ??
+          `${sourceEl.name ?? sourceEl.id} → ${targetEl.name ?? targetEl.id}`;
+
+        // Flow: Component -> Component
         if (
           sourceEl.type === 'ApplicationComponent' &&
           targetEl.type === 'ApplicationComponent'
@@ -566,14 +660,16 @@ export class OpenExchangeImportService {
           const target = componentEntityByXmlId.get(targetEl.id);
           if (!source || !target) continue;
 
-          const name =
-            rel.name ??
-            `${sourceEl.name ?? sourceEl.id} → ${targetEl.name ?? targetEl.id}`;
+          const dedupeKey = `flow:${source.id}:null:${target.id}:null`;
+          if (flowDedupeKeys.has(dedupeKey)) continue;
+          flowDedupeKeys.add(dedupeKey);
+
           const existing = await txEm.findOne(ApplicationFlow, {
             layer: LayerKind.APPLICATION as any,
-            name,
             sourceComponent: source.id as any,
             targetComponent: target.id as any,
+            sourceFunction: { $eq: null } as any,
+            targetFunction: { $eq: null } as any,
           } as any);
           if (existing) continue;
 
@@ -584,6 +680,138 @@ export class OpenExchangeImportService {
               description: rel.documentation,
               sourceComponent: source,
               targetComponent: target,
+              created: ActionStamp.now(context.userId),
+              tenantId,
+            } as any),
+          );
+          continue;
+        }
+
+        // Flow: Component -> Function (within component)
+        if (
+          sourceEl.type === 'ApplicationComponent' &&
+          targetEl.type === 'ApplicationFunction'
+        ) {
+          const srcComp = componentEntityByXmlId.get(sourceEl.id);
+          const fn = functionEntityByXmlId.get(targetEl.id);
+          if (!srcComp || !fn) continue;
+          const targetComps = componentsByFunctionXmlId.get(targetEl.id) ?? [];
+          if (!targetComps.some((c) => c.id === srcComp.id)) continue;
+          const targetCfMap = await getComponentFunctionMap(srcComp, fn);
+          if (!targetCfMap) continue;
+
+          const dedupeKey = `flow:${srcComp.id}:null:${srcComp.id}:${targetCfMap.function?.id}`;
+          if (flowDedupeKeys.has(dedupeKey)) continue;
+          flowDedupeKeys.add(dedupeKey);
+
+          const existing = await txEm.findOne(ApplicationFlow, {
+            layer: LayerKind.APPLICATION as any,
+            sourceComponent: srcComp.id as any,
+            targetComponent: srcComp.id as any,
+            sourceFunction: { $eq: null } as any,
+            targetFunction: targetCfMap as any,
+          } as any);
+          if (existing) continue;
+
+          flowEntities.push(
+            txEm.create(ApplicationFlow, {
+              layer: LayerKind.APPLICATION,
+              name,
+              description: rel.documentation,
+              sourceComponent: srcComp,
+              targetComponent: srcComp,
+              targetFunction: targetCfMap,
+              created: ActionStamp.now(context.userId),
+              tenantId,
+            } as any),
+          );
+          continue;
+        }
+
+        // Flow: Function (within component) -> Component
+        if (
+          sourceEl.type === 'ApplicationFunction' &&
+          targetEl.type === 'ApplicationComponent'
+        ) {
+          const fn = functionEntityByXmlId.get(sourceEl.id);
+          const tgtComp = componentEntityByXmlId.get(targetEl.id);
+          if (!fn || !tgtComp) continue;
+          const srcComps = componentsByFunctionXmlId.get(sourceEl.id) ?? [];
+          if (srcComps.length === 0) continue;
+          const srcComp = srcComps[0];
+          const srcCfMap = await getComponentFunctionMap(srcComp, fn);
+          if (!srcCfMap) continue;
+
+          const dedupeKey = `flow:${srcComp.id}:${fn.id}:${tgtComp.id}:null`;
+          if (flowDedupeKeys.has(dedupeKey)) continue;
+          flowDedupeKeys.add(dedupeKey);
+
+          const existing = await txEm.findOne(ApplicationFlow, {
+            layer: LayerKind.APPLICATION as any,
+            sourceComponent: srcComp.id as any,
+            targetComponent: tgtComp.id as any,
+            sourceFunction: srcCfMap as any,
+            targetFunction: { $eq: null } as any,
+          } as any);
+          if (existing) continue;
+
+          flowEntities.push(
+            txEm.create(ApplicationFlow, {
+              layer: LayerKind.APPLICATION,
+              name,
+              description: rel.documentation,
+              sourceComponent: srcComp,
+              targetComponent: tgtComp,
+              sourceFunction: srcCfMap,
+              created: ActionStamp.now(context.userId),
+              tenantId,
+            } as any),
+          );
+          continue;
+        }
+
+        // Flow: Function -> Function
+        if (
+          sourceEl.type === 'ApplicationFunction' &&
+          targetEl.type === 'ApplicationFunction'
+        ) {
+          const srcFn = functionEntityByXmlId.get(sourceEl.id);
+          const tgtFn = functionEntityByXmlId.get(targetEl.id);
+          if (!srcFn || !tgtFn) continue;
+          const srcComps = componentsByFunctionXmlId.get(sourceEl.id) ?? [];
+          const tgtComps = componentsByFunctionXmlId.get(targetEl.id) ?? [];
+          const common =
+            srcComps.filter((c) => tgtComps.some((tc) => tc.id === c.id))[0] ??
+            srcComps[0];
+          const tgtComp = tgtComps.find((c) => c.id === common?.id) ?? tgtComps[0];
+          const srcComp = common ?? srcComps[0];
+          if (!srcComp || !tgtComp) continue;
+          const srcCfMap = await getComponentFunctionMap(srcComp, srcFn);
+          const tgtCfMap = await getComponentFunctionMap(tgtComp, tgtFn);
+          if (!srcCfMap || !tgtCfMap) continue;
+
+          const dedupeKey = `flow:${srcComp.id}:${srcFn.id}:${tgtComp.id}:${tgtFn.id}`;
+          if (flowDedupeKeys.has(dedupeKey)) continue;
+          flowDedupeKeys.add(dedupeKey);
+
+          const existing = await txEm.findOne(ApplicationFlow, {
+            layer: LayerKind.APPLICATION as any,
+            sourceComponent: srcComp.id as any,
+            targetComponent: tgtComp.id as any,
+            sourceFunction: srcCfMap as any,
+            targetFunction: tgtCfMap as any,
+          } as any);
+          if (existing) continue;
+
+          flowEntities.push(
+            txEm.create(ApplicationFlow, {
+              layer: LayerKind.APPLICATION,
+              name,
+              description: rel.documentation,
+              sourceComponent: srcComp,
+              targetComponent: tgtComp,
+              sourceFunction: srcCfMap,
+              targetFunction: tgtCfMap,
               created: ActionStamp.now(context.userId),
               tenantId,
             } as any),
@@ -602,6 +830,7 @@ export class OpenExchangeImportService {
       components: result.created.applicationComponents,
       functions: result.created.applicationFunctions,
       links: result.created.componentFunctionLinks,
+      actorRoleLinks: result.created.componentActorRoleLinks,
       flows: result.created.applicationFlows,
     });
 
@@ -811,6 +1040,11 @@ export class OpenExchangeImportService {
         entity: ApplicationComponentTechnologyLogicalNetworkMap,
         where: { component: { tenantId } },
         label: 'ApplicationComponentTechnologyLogicalNetworkMap',
+      },
+      {
+        entity: ApplicationComponentBusinessActorRoleMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentBusinessActorRoleMap',
       },
       {
         entity: ApplicationComponentProductMap,
@@ -1335,6 +1569,47 @@ export class OpenExchangeImportService {
         }
       }
     }
+  }
+
+  /**
+   * Returns role "Пользователь" (USER) for actor-component links.
+   * Uses existing role from imported model if name "Пользователь" exists; otherwise creates one with code USER.
+   */
+  private async ensureUserRole(
+    em: EntityManager,
+    context: ArchpadRequestContext,
+    tenantId: string,
+    input: {
+      businessRoles: ParsedElement[];
+      businessRoleEntityByXmlId: Map<string, BusinessRole>;
+    },
+  ): Promise<BusinessRole> {
+    const USER_ROLE_NAME = 'Пользователь';
+    const USER_ROLE_CODE = 'USER';
+    const fromModel = input.businessRoles.find(
+      (r) => (r.name ?? '').trim() === USER_ROLE_NAME,
+    );
+    if (fromModel) {
+      const role = input.businessRoleEntityByXmlId.get(fromModel.id);
+      if (role) return role;
+    }
+    const existing = await em.findOne(BusinessRole, {
+      $or: [
+        { code: USER_ROLE_CODE, tenantId } as any,
+        { name: USER_ROLE_NAME, tenantId } as any,
+      ],
+    } as any);
+    if (existing) return existing;
+    const created = ActionStamp.now(context.userId);
+    const entity = em.create(BusinessRole, {
+      code: USER_ROLE_CODE,
+      name: USER_ROLE_NAME,
+      description: 'Auto-created for actor-component association import',
+      created,
+      tenantId,
+    } as any);
+    await em.persistAndFlush(entity);
+    return entity;
   }
 
   private async ensureUnknownOperatingSystem(

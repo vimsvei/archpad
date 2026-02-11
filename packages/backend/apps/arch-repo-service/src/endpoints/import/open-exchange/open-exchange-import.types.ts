@@ -34,6 +34,7 @@ export type ImportJob = {
       dataObjects: number;
       applicationFlows: number;
       componentFunctionLinks: number;
+      componentActorRoleLinks: number;
       businessActors: number;
       businessRoles: number;
       systemSoftware: number;
