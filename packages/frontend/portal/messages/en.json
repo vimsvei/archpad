@@ -1,8 +1,56 @@
 {
   "upload": {
+    "repository": {
+      "title": "Import repository"
+    },
     "open-exchange": {
+      "subtitle": "Import ArchiMate model from Open Exchange XML format (Archi, Sparx, etc.)",
+      "dropzone": {
+        "title": "Drop XML file or click to select",
+        "hint": "Accepts .xml files (Archimate 3.0 / 3.1)"
+      },
+      "clear-before": {
+        "label": "Clear repository before import (remove existing data)"
+      },
+      "action": {
+        "start": "Start import"
+      },
+      "job-id": "Job ID",
+      "logs": {
+        "title": "Import log",
+        "count": "{count} entries",
+        "empty": "No logs yet"
+      },
       "summary": {
+        "title": "Import result",
+        "line": "Components: {components}, Functions: {functions}, Links: {links}, Flows: {flows}",
         "cross-layer": "Actors: {businessActors}, Roles: {businessRoles}, System software: {systemSoftware}, Networks: {communicationNetworks}, Nodes: {technologyNodes}"
+      }
+    }
+  },
+  "repository": {
+    "open-exchange": {
+      "progress": "Import progress",
+      "stage": {
+        "started": "Import started: {fileName}",
+        "parse": "Parsing XML…",
+        "create-entities": "Creating entities: {components} components, {functions} functions, {dataObjects} data objects",
+        "clear-repo": "Clearing repository…",
+        "create-links": "Creating links…",
+        "create-technology-links": "Creating technology links…",
+        "create-data-access": "Creating data access…",
+        "create-flows": "Creating flows…",
+        "completed": "Import completed: {components} components, {functions} functions, {links} links, {flows} flows"
+      },
+      "clear-repo": {
+        "count": "Performing {count} cleanup operations",
+        "entity": "{entity}: deleted {deleted} rows"
+      },
+      "error": "Import error: {message}",
+      "client": {
+        "selected": "Selected file: {fileName}",
+        "job-created": "Job created: {jobId}",
+        "poll-failed": "Failed to fetch job status: {message}"
       }
     }
   }

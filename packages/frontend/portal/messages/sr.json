@@ -1,1 +1,57 @@
-{}
+{
+  "upload": {
+    "repository": {
+      "title": "Uvezi repozitorijum"
+    },
+    "open-exchange": {
+      "subtitle": "Uvoz ArchiMate modela iz Open Exchange XML formata (Archi, Sparx, itd.)",
+      "dropzone": {
+        "title": "Prevucite XML fajl ili kliknite za izbor",
+        "hint": "Prihvata .xml fajlove (Archimate 3.0 / 3.1)"
+      },
+      "clear-before": {
+        "label": "Očisti repozitorijum pre uvoza (ukloni postojeće podatke)"
+      },
+      "action": {
+        "start": "Pokreni uvoz"
+      },
+      "job-id": "ID zadatka",
+      "logs": {
+        "title": "Zapisnik uvoza",
+        "count": "{count} unosa",
+        "empty": "Još nema unosa"
+      },
+      "summary": {
+        "title": "Rezultat uvoza",
+        "line": "Komponente: {components}, Funkcije: {functions}, Veze: {links}, Tokovi: {flows}",
+        "cross-layer": "Akteri: {businessActors}, Uloge: {businessRoles}, Sistemski softver: {systemSoftware}, Mreže: {communicationNetworks}, Čvorovi: {technologyNodes}"
+      }
+    }
+  },
+  "repository": {
+    "open-exchange": {
+      "progress": "Napredak uvoza",
+      "stage": {
+        "started": "Uvoz pokrenut: {fileName}",
+        "parse": "Parsiranje XML-a…",
+        "create-entities": "Kreiranje entiteta: {components} komponenti, {functions} funkcija, {dataObjects} objekata podataka",
+        "clear-repo": "Čišćenje repozitorijuma…",
+        "create-links": "Kreiranje veza…",
+        "create-technology-links": "Kreiranje tehnoloških veza…",
+        "create-data-access": "Kreiranje pristupa podacima…",
+        "create-flows": "Kreiranje tokova…",
+        "completed": "Uvoz završen: {components} komponenti, {functions} funkcija, {links} veza, {flows} tokova"
+      },
+      "clear-repo": {
+        "count": "Izvršavanje {count} operacija čišćenja",
+        "entity": "{entity}: obrisano {deleted} redova"
+      },
+      "error": "Greška uvoza: {message}",
+      "client": {
+        "selected": "Izabran fajl: {fileName}",
+        "job-created": "Zadatak kreiran: {jobId}",
+        "poll-failed": "Greška pri proveri statusa zadatka: {message}"
+      }
+    }
+  }
+}

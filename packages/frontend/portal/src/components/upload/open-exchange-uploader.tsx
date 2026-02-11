@@ -137,7 +137,7 @@ export function OpenExchangeUploader() {
           ) : null}
         </div>
 
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 max-h-[280px] space-y-2 overflow-y-auto pr-1">
           {state?.logs?.length ? (
             state.logs.slice(-50).map((log: any) => (
               <div key={`${log.at}-${log.key}`} className="text-sm">

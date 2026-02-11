@@ -1019,6 +1019,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           created,
           tenantId,
+          layer: LayerKind.BUSINESS,
         } as any);
       input.businessRoleEntityByXmlId.set(e.id, entity);
       if (!existing) {
