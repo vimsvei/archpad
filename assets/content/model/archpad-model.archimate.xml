@@ -687,59 +687,8 @@ service_owner 		владелец бакета</documentation>
     <element identifier="id-8a57800985ca45aebac9ee91ec3aeeaf" xsi:type="CommunicationNetwork">
       <name xml:lang="ru">Internet</name>
     </element>
-    <element identifier="id-9e17395e3896420bb4fc6cf06bf24916" xsi:type="SystemSoftware">
-      <name xml:lang="ru">React</name>
-    </element>
-    <element identifier="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="SystemSoftware">
-      <name xml:lang="ru">NestJS</name>
-    </element>
-    <element identifier="id-f17a19aa2a9048f69d49fe47acdc66ca" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Next</name>
-    </element>
-    <element identifier="id-e9d6426d9d194ff99c6072aff1bf48ea" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Ory Hydra</name>
-    </element>
-    <element identifier="id-c2f14be61e6841dca8677b3e9e1b6050" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Superset BI</name>
-    </element>
-    <element identifier="id-39e6aba837a14818b55f0dc4eb11ecee" xsi:type="SystemSoftware">
-      <name xml:lang="ru">OpenSearch</name>
-    </element>
-    <element identifier="id-bfab9a67f8644036a9c40ea77b7746f5" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Prometheus</name>
-    </element>
-    <element identifier="id-163ef12cabb34a71a78fe2799ea8a1fa" xsi:type="SystemSoftware">
-      <name xml:lang="ru">MinIO</name>
-    </element>
-    <element identifier="id-7f61d79c5626441ead2ba907d6e52a8c" xsi:type="SystemSoftware">
-      <name xml:lang="ru">OAuthKeeper</name>
-    </element>
-    <element identifier="id-4d4ee54406594bffb577f7fcd2b2f89c" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Traefik</name>
-    </element>
-    <element identifier="id-359bef4be1fb45dc9ed7c810d900f6b7" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Hasura</name>
-    </element>
     <element identifier="id-cb2a2d34b69e4dc4b0619acc31afcf34" xsi:type="SystemSoftware">
       <name xml:lang="ru">WordPress</name>
-    </element>
-    <element identifier="id-bc614089a5904f8fb9ba1aab4cc66153" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Grafana</name>
-    </element>
-    <element identifier="id-e3514c44c9ff4a85bf2a5be0f7b8a256" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Clickhouse</name>
-    </element>
-    <element identifier="id-e5a0f17f069b494da8115f3f950fdf04" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Kafka</name>
-    </element>
-    <element identifier="id-b121717b2ae24475b2eb51838eb8a2e9" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Postgres Pro</name>
-    </element>
-    <element identifier="id-9a4e3e93dd4b435d80938e61e99c5df1" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Redis</name>
-    </element>
-    <element identifier="id-5b4e6d5e61df4f07ac4828d381f604b0" xsi:type="SystemSoftware">
-      <name xml:lang="ru">PostgreSQL</name>
     </element>
     <element identifier="id-cc7bf3ca43e04f62a4e91c21147c19f3" xsi:type="CommunicationNetwork">
       <name xml:lang="ru">Частное облако АФ-Софт</name>
@@ -801,17 +750,8 @@ service_owner 		владелец бакета</documentation>
     <element identifier="id-9ed1ea65b2234a33ab38c3cc618361ee" xsi:type="SystemSoftware">
       <name xml:lang="ru">Vault</name>
     </element>
-    <element identifier="id-f14001818f7b42e9aa9cbd0e3e04e711" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Postgres Pro</name>
-    </element>
-    <element identifier="id-93f73905e1c7488e90ab561dcdfc7657" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Redis</name>
-    </element>
-    <element identifier="id-24ec287c27474ce88a5c589119ac1bf3" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Clickhouse</name>
-    </element>
-    <element identifier="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="SystemSoftware">
-      <name xml:lang="ru">PostgreSQL</name>
+    <element identifier="id-fd98833d999b479dbe16b41cc1723e27" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Loki</name>
     </element>
     <element identifier="id-70118611284e4655ac3609de59a2b498" xsi:type="SystemSoftware">
       <name xml:lang="ru">Camunda 7 DMN Engine</name>
@@ -822,9 +762,8 @@ service_owner 		владелец бакета</documentation>
     <element identifier="id-7630e07d841f44ef9c6773ec4a3c525d" xsi:type="SystemSoftware">
       <name xml:lang="ru">Kubernates</name>
     </element>
-    <element identifier="id-edb4837ab59347f3b166d443fc4b44ce" xsi:type="SystemSoftware">
-      <name xml:lang="ru">Superset</name>
-      <documentation xml:lang="ru">Apache Superset</documentation>
+    <element identifier="id-c2f14be61e6841dca8677b3e9e1b6050" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Superset BI</name>
     </element>
     <element identifier="id-1ecfd0b2283d4168853c4e1cc1e0fce5" xsi:type="SystemSoftware">
       <name xml:lang="ru">Kratos</name>
@@ -837,6 +776,27 @@ service_owner 		владелец бакета</documentation>
     <element identifier="id-9aa4b9f0137447c5a410975c54df7369" xsi:type="SystemSoftware">
       <name xml:lang="ru">Hydra</name>
       <documentation xml:lang="ru">Ory Hydra</documentation>
+    </element>
+    <element identifier="id-e3514c44c9ff4a85bf2a5be0f7b8a256" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Clickhouse</name>
+    </element>
+    <element identifier="id-e5a0f17f069b494da8115f3f950fdf04" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Kafka</name>
+    </element>
+    <element identifier="id-b121717b2ae24475b2eb51838eb8a2e9" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Postgres Pro</name>
+    </element>
+    <element identifier="id-9a4e3e93dd4b435d80938e61e99c5df1" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Redis</name>
+    </element>
+    <element identifier="id-5b4e6d5e61df4f07ac4828d381f604b0" xsi:type="SystemSoftware">
+      <name xml:lang="ru">PostgreSQL</name>
+    </element>
+    <element identifier="id-39e6aba837a14818b55f0dc4eb11ecee" xsi:type="SystemSoftware">
+      <name xml:lang="ru">OpenSearch</name>
+    </element>
+    <element identifier="id-4d4ee54406594bffb577f7fcd2b2f89c" xsi:type="SystemSoftware">
+      <name xml:lang="ru">Traefik</name>
     </element>
     <element identifier="id-2025981d50b042808d25168326da34ca" xsi:type="Principle">
       <name xml:lang="ru">Протоколы авторизации и аутентификации</name>
@@ -896,13 +856,9 @@ OAuth 2.0</documentation>
     <relationship identifier="id-47e997464e7d48eda401132af1858b05" source="id-9cb384b20d5f47bcb275e687526446d3" target="id-32ff7582a70e4e25bc3412cd05cbe5f3" xsi:type="Realization" />
     <relationship identifier="id-f56594ab04fd4abd9b9f8bc075dc2df1" source="id-55dea6e9a1d64adfa19d699eb0c449fb" target="id-4a44617fee7c45ad8377b573a1d63b50" xsi:type="Realization" />
     <relationship identifier="id-99c4630712334b4ab59f135f0bd213d5" source="id-d38e7087fc6049529f14e0279376b221" target="id-0ff0fa7eb8824087b07a432790420882" xsi:type="Flow" />
-    <relationship identifier="id-e43f9308ba32495b98942755b0fb41be" source="id-08d7090c3e9d472cab81e193fb3c9b36" target="id-4f2bb5d075184736b88e6eb4efe82863" xsi:type="Flow">
-      <name xml:lang="ru">NS-0.1.x</name>
-    </relationship>
     <relationship identifier="id-5f52bfff620a466cbfca792067f43ac2" source="id-f88423254d134a78a6f7228c45c42708" target="id-44f2e207dd63400ba3d7a0c1e9e68b82" xsi:type="Access" accessType="Write" />
     <relationship identifier="id-ab91e7d118c94865a6cc0efbf058a7dc" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-2fc0a3430d4b48f8b2fc6b711d206e49" xsi:type="Realization" />
     <relationship identifier="id-15a65f70f0ba4d4e91152739f006a48c" source="id-87a41a366f6c40cc9a05b8c1759f2f79" target="id-06b2df3e18f84d64937303a47f7ceac0" xsi:type="Realization" />
-    <relationship identifier="id-bf79f476c73a49bcae1ca13cfbd403a7" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-08cb9b53238d44b2bf37da32b3280324" xsi:type="Flow" />
     <relationship identifier="id-ed4b24b9411b48c3b9e58320ab771f39" source="id-fc1379067a2142299e252ba338893511" target="id-09b32c705ecc45b897f508f193e2c8c2" xsi:type="Realization" />
     <relationship identifier="id-b26fa891bf0b43b196afe899548101f8" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-28cc0ee1625a4b8c81c88916575e67db" xsi:type="Realization" />
     <relationship identifier="id-d39298ca34604dfab597c6fb9c727825" source="id-b86229f2caa14c07ac3d92a0065c26c5" target="id-9bcae9714aee43e1b687ab6fb6512414" xsi:type="Access" accessType="Write" />
@@ -910,7 +866,9 @@ OAuth 2.0</documentation>
     <relationship identifier="id-21fda9de402446c5af64264f7064b04f" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-f58bd3a0d3184a8bb7d0662092b98b4f" xsi:type="Realization" />
     <relationship identifier="id-f5171ed678ac49e187b558cb7e22efad" source="id-87a41a366f6c40cc9a05b8c1759f2f79" target="id-bb5d7f8eda6f47ec9fa78308fb760295" xsi:type="Realization" />
     <relationship identifier="id-3200335e3c4245028aed31ca97ef5138" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-74054bc503cd48cfaea218ae802924ec" xsi:type="Realization" />
-    <relationship identifier="id-906bfd2a00364a74a279fa7f6d23e796" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow" />
+    <relationship identifier="id-906bfd2a00364a74a279fa7f6d23e796" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.3.2</name>
+    </relationship>
     <relationship identifier="id-fe3574c718bd4fc2b9d898f4e94f6d9c" source="id-ffc10acafde44406a8458bec1067601c" target="id-a73bda934dc345d7acb4563847bd46f7" xsi:type="Realization" />
     <relationship identifier="id-e710feacd6cf469993486893c1a1ff72" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-55dea6e9a1d64adfa19d699eb0c449fb" xsi:type="Realization" />
     <relationship identifier="id-4888da61678c414abc83679c18ea7c19" source="id-b86229f2caa14c07ac3d92a0065c26c5" target="id-1e202db7809149af8f11666549b86a8c" xsi:type="Access" accessType="Write" />
@@ -919,8 +877,9 @@ OAuth 2.0</documentation>
     <relationship identifier="id-88c9fc93a1054700b8c1141faec941cd" source="id-9052612c3a634814930ecd36a9f70eaf" target="id-8052db94d829480faf787a7c88a1bdae" xsi:type="Assignment" />
     <relationship identifier="id-c81196baf83741b9a4ca623a527f63ab" source="id-f88423254d134a78a6f7228c45c42708" target="id-0c6be0855a144ea2811d02d4db1f8afa" xsi:type="Realization" />
     <relationship identifier="id-8fdc638a865548f3837eba594279d118" source="id-28cc0ee1625a4b8c81c88916575e67db" target="id-fc1379067a2142299e252ba338893511" xsi:type="Flow" />
-    <relationship identifier="id-f0d38a07d7fe4344afe09be8bce8221b" source="id-ffc10acafde44406a8458bec1067601c" target="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" xsi:type="Flow">
-      <name xml:lang="ru">NS-9.x</name>
+    <relationship identifier="id-f0d38a07d7fe4344afe09be8bce8221b" source="id-ffc10acafde44406a8458bec1067601c" target="id-5e9fe33ae0974b43b3461959ce316ac2" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.1.1</name>
+      <documentation xml:lang="ru">Получение секретов</documentation>
     </relationship>
     <relationship identifier="id-ec976c615cfc46c69406ef31f6e9a342" source="id-ffc10acafde44406a8458bec1067601c" target="id-1c2d7881f4d54a6488b86aa6fc14d541" xsi:type="Access" accessType="Write" />
     <relationship identifier="id-007766de0fe8456abd182fe0a2266113" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-14ed73781f1148d4b96dc7f51f85e4ee" xsi:type="Assignment" />
@@ -984,7 +943,6 @@ OAuth 2.0</documentation>
     <relationship identifier="id-147010ddcfcd46e4bdfe8cd48971a012" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-02631439998a41f89f5ab086452de09f" xsi:type="Realization" />
     <relationship identifier="id-dc2064a826774c21bac0d87b3ae1c853" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-9cb384b20d5f47bcb275e687526446d3" xsi:type="Realization" />
     <relationship identifier="id-d8e5a365785f494ea4e43312ce3eaa82" source="id-f88423254d134a78a6f7228c45c42708" target="id-467519d5ddd44fb4891bc0a382ed7445" xsi:type="Access" accessType="Write" />
-    <relationship identifier="id-109b62d3bbef4870aaa80c9cc0464f94" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-bccad2d0c879433087de4e5cb89cbd2d" xsi:type="Flow" />
     <relationship identifier="id-73e60dea8c0e4e70a906f866abb6dab4" source="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" target="id-5e9fe33ae0974b43b3461959ce316ac2" xsi:type="Realization" />
     <relationship identifier="id-7c1b1df5f4d54b338da78ea5758b2132" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-866a53c4215f4e30ba7e003b1a471f65" xsi:type="Realization" />
     <relationship identifier="id-af31f89820904f08b64e5183db969376" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-d38e7087fc6049529f14e0279376b221" xsi:type="Realization" />
@@ -993,11 +951,10 @@ OAuth 2.0</documentation>
     <relationship identifier="id-9df2127459c24afba0ab3593438b464a" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-1c867922852546fbb7f1af867758a46e" xsi:type="Specialization" />
     <relationship identifier="id-f0f1d99cfefd4e248b22de1a758f10ce" source="id-92f86f88859643208a1b5105c2693fa5" target="id-058e3c763f0e4e55ac4ef84133904f86" xsi:type="Realization" />
     <relationship identifier="id-bd728f0789824dbab8343979c2b24780" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-1c867922852546fbb7f1af867758a46e" xsi:type="Specialization" />
-    <relationship identifier="id-a082140bbef44ec9a442d9639e6845c6" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-87a41a366f6c40cc9a05b8c1759f2f79" xsi:type="Flow" />
     <relationship identifier="id-fe56790757cc414abe278f30a7d8ba8d" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-8a53dc2470ad4ed18a4ebee70e99a6c3" xsi:type="Realization" />
     <relationship identifier="id-a2512177855a4109bdfa3d36cbd26701" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-1fbd4ff8172d49b5aa82df3daf62497c" xsi:type="Assignment" />
     <relationship identifier="id-aecefe2d50c3481189c846f3272fddf5" source="id-d38e7087fc6049529f14e0279376b221" target="id-6bb693ee454349a5ad407bc874db8d27" xsi:type="Access" accessType="Write" />
-    <relationship identifier="id-2bce04040ec5481294a452bf28501f46" source="id-2a9a7be64c14429a876bd62627331eb7" target="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" xsi:type="Flow">
+    <relationship identifier="id-2bce04040ec5481294a452bf28501f46" source="id-2a9a7be64c14429a876bd62627331eb7" target="id-cc9264a7eca04ad7b1d09e97e1528795" xsi:type="Flow">
       <name xml:lang="ru">NS-11.x</name>
     </relationship>
     <relationship identifier="id-7b77db655e07490480316462968b1888" source="id-085ba472087946128dfd7198cba98024" target="id-7654bd2c377840759852ea960f620d43" xsi:type="Serving" />
@@ -1042,8 +999,9 @@ OAuth 2.0</documentation>
       <name xml:lang="ru">NS-6.1.x</name>
     </relationship>
     <relationship identifier="id-cda2275d232d4200b1322a2780b3f0aa" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-bccad2d0c879433087de4e5cb89cbd2d" xsi:type="Realization" />
-    <relationship identifier="id-43afe19ae4964e30adcbc17f4acddbc6" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-7555e0dbbefc45c9b328981c93c10fbb" xsi:type="Flow" />
-    <relationship identifier="id-b95df70395e643b8ac1bd7dfbe334dfd" source="id-65fe17f882464a56aefc81da2a961d11" target="id-4f2bb5d075184736b88e6eb4efe82863" xsi:type="Flow" />
+    <relationship identifier="id-43afe19ae4964e30adcbc17f4acddbc6" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-7555e0dbbefc45c9b328981c93c10fbb" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.6.2</name>
+    </relationship>
     <relationship identifier="id-33434a01491645b596e16906795b2568" source="id-02631439998a41f89f5ab086452de09f" target="id-a0b92004b5ed4431824c178df6607d8c" xsi:type="Realization" />
     <relationship identifier="id-db49e0efb1334f7c9922fc1d935671dc" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-0ff0fa7eb8824087b07a432790420882" xsi:type="Realization" />
     <relationship identifier="id-d95fbf3e1484460983eee96b57748bb1" source="id-be701aa26df24b2bb3d4647daeb2a44b" target="id-2a9a7be64c14429a876bd62627331eb7" xsi:type="Flow">
@@ -1076,7 +1034,6 @@ OAuth 2.0</documentation>
     </relationship>
     <relationship identifier="id-1aa7f9e08b07428abf55deab78e240d3" source="id-ffc10acafde44406a8458bec1067601c" target="id-60ae214544704af083f6abaf30ff6084" xsi:type="Realization" />
     <relationship identifier="id-781cd5f7736b437c9fba756827af27c3" source="id-f88423254d134a78a6f7228c45c42708" target="id-d01ba45c2c3d473bb6ad48cce47cd280" xsi:type="Realization" />
-    <relationship identifier="id-22ad9cdb7adf4763ad3a97d4b84d56d4" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-08cb9b53238d44b2bf37da32b3280324" xsi:type="Flow" />
     <relationship identifier="id-23a8de15b50840e6a4f712479dfeabf8" source="id-31910d7ca0f942d6b8c5b3bea0eeeaa6" target="id-d643893dd78c4c3fa2dee33a5144ec24" xsi:type="Realization" />
     <relationship identifier="id-12496607bc2e41f7b3a51d4007c654a9" source="id-7654bd2c377840759852ea960f620d43" target="id-be3bb0dcca4c474398494c28a5791e14" xsi:type="Assignment" />
     <relationship identifier="id-52e1fe4c190c41b5aff3053b8955721a" source="id-b86229f2caa14c07ac3d92a0065c26c5" target="id-8a0b9f3fc956434b8af098a95824e072" xsi:type="Realization" />
@@ -1096,7 +1053,9 @@ OAuth 2.0</documentation>
     <relationship identifier="id-b93896a39c83453081867549a749b08f" source="id-d9a62d5da6a04cffb8b17a82383f71b7" target="id-5c88fcbc7d384d3a94dfa5171c35b8ca" xsi:type="Realization" />
     <relationship identifier="id-62264419856743b386403d6babc31019" source="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" target="id-d1aef7eecceb436e94ab8b67c9ed9227" xsi:type="Realization" />
     <relationship identifier="id-a512346238204d18a79fbf0f47a3facb" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-75c965ef3bd34fb7992585539a2dfe0a" xsi:type="Realization" />
-    <relationship identifier="id-dc7f34cf18104c829acd734d87a7e0a0" source="id-9d9769d37d5047118b1b56c0fd09d4f7" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow" />
+    <relationship identifier="id-dc7f34cf18104c829acd734d87a7e0a0" source="id-9d9769d37d5047118b1b56c0fd09d4f7" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.4.1</name>
+    </relationship>
     <relationship identifier="id-e3fe74ed08574446ac00097faf915e15" source="id-f88423254d134a78a6f7228c45c42708" target="id-6bef5004540e488e9a1767c31ada1dd0" xsi:type="Realization" />
     <relationship identifier="id-a1b8c8e20ae94d2e9edeaeab2fd92509" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-2627b8b6026941c282e84f0507554ad6" xsi:type="Realization" />
     <relationship identifier="id-dd6df42650eb418fadae696ec5c485bc" source="id-31910d7ca0f942d6b8c5b3bea0eeeaa6" target="id-28cc0ee1625a4b8c81c88916575e67db" xsi:type="Flow" />
@@ -1107,13 +1066,11 @@ OAuth 2.0</documentation>
     <relationship identifier="id-f648183cd62347dca3ec2f9dababfd44" source="id-02631439998a41f89f5ab086452de09f" target="id-af699045b7c34e0b9a3e7eefb7b87449" xsi:type="Realization" />
     <relationship identifier="id-a255ff2d31d047d1aaefdc36cf70ffaa" source="id-3d6ef01cf04e4178ae678893df4aaccc" target="id-6478cb5fda7846339cb3454e57f72f3e" xsi:type="Specialization" />
     <relationship identifier="id-7d1db7ce216144ec96867f4d197d790e" source="id-74054bc503cd48cfaea218ae802924ec" target="id-e80e2023b7ae476eb61a73daa30ee346" xsi:type="Realization" />
-    <relationship identifier="id-5fe81294a9704b61a7cba79c795fe44d" source="id-65fe17f882464a56aefc81da2a961d11" target="id-be701aa26df24b2bb3d4647daeb2a44b" xsi:type="Flow" />
     <relationship identifier="id-b1fea5e5b9454e01813c184d71308719" source="id-fc1379067a2142299e252ba338893511" target="id-1557b3b4ac984f65a61653e3a78a9d62" xsi:type="Access" accessType="Write" />
     <relationship identifier="id-381e92d28b6b42d189f6c2a31dead618" source="id-ffc10acafde44406a8458bec1067601c" target="id-99f013bd2d2b486eb54f91b655de75a0" xsi:type="Assignment" />
     <relationship identifier="id-4bb62f1d00bf4d33bb49d5dc6fce2611" source="id-2a9a7be64c14429a876bd62627331eb7" target="id-20780a147e36400b8af7f0732f0eed95" xsi:type="Flow">
       <name xml:lang="ru">NS-7.x</name>
     </relationship>
-    <relationship identifier="id-99f74ce6f0b8469bbd8e424118e05b0a" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-bccad2d0c879433087de4e5cb89cbd2d" xsi:type="Flow" />
     <relationship identifier="id-b91b6782524b488c80d28fe812cacc95" source="id-14f492cb688d47c69f4673b5a4b68d64" target="id-0ccd43fd1de546899130947301045524" xsi:type="Realization" />
     <relationship identifier="id-5e6372882c2546258e28aa6866c2fb99" source="id-b5284394d3844d9fab261e2877462666" target="id-388b351ba8d44a24bfb86e568ab96d7e" xsi:type="Realization" />
     <relationship identifier="id-38f627d8bd5d484aab7138512a7ca126" source="id-65fe17f882464a56aefc81da2a961d11" target="id-1c867922852546fbb7f1af867758a46e" xsi:type="Specialization" />
@@ -1123,13 +1080,13 @@ OAuth 2.0</documentation>
     <relationship identifier="id-87b2283f051143c1ac9cf491e51525f1" source="id-b5198d0557ff401587faaf2484e837e8" target="id-be3bb0dcca4c474398494c28a5791e14" xsi:type="Realization" />
     <relationship identifier="id-7c71a39b2fd4441bbc30d560e63928dc" source="id-b5198d0557ff401587faaf2484e837e8" target="id-31ffb386660c4ad49f6e347d10e0fd9f" xsi:type="Realization" />
     <relationship identifier="id-597339e53f9d494d99f8b7b5d6ddef76" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-be701aa26df24b2bb3d4647daeb2a44b" xsi:type="Realization" />
-    <relationship identifier="id-9e44eb19af424a0a84598c8749225a8f" source="id-42c44109b6484e7eb958c2879b11b115" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow" />
+    <relationship identifier="id-9e44eb19af424a0a84598c8749225a8f" source="id-42c44109b6484e7eb958c2879b11b115" target="id-f88423254d134a78a6f7228c45c42708" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.5.1</name>
+    </relationship>
     <relationship identifier="id-ec0c6e96f4cc4364b8628b7ed61e3aa3" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-6bd717b1c3464d999d2fdd93a471a3d5" xsi:type="Realization" />
     <relationship identifier="id-432cb6edb7874ef08c7c17358f039038" source="id-b5234738b2fc4e2d83c2fe418ba9d523" target="id-0e223accfe6f449cbecf6e8f598255b6" xsi:type="Access" accessType="Write" />
     <relationship identifier="id-1d335300b55546fd869455748431b433" source="id-bd1047d259f64aea82aa959eff4c71f1" target="id-7a342b257c9741e098ae374f89136e93" xsi:type="Realization" />
-    <relationship identifier="id-0fff6b382dcb429a8a1268cf6b7c05da" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" xsi:type="Flow">
-      <name xml:lang="ru">NS-9.x</name>
-    </relationship>
+    <relationship identifier="id-0fff6b382dcb429a8a1268cf6b7c05da" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-d1aef7eecceb436e94ab8b67c9ed9227" xsi:type="Flow" />
     <relationship identifier="id-7d86806bd72e45a8aa5881c3fc2f87a4" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-65fe17f882464a56aefc81da2a961d11" xsi:type="Realization" />
     <relationship identifier="id-ae7f4c093d58493fa466883493363866" source="id-87a41a366f6c40cc9a05b8c1759f2f79" target="id-9fe7b42eb9114dcca4354a786900124d" xsi:type="Realization" />
     <relationship identifier="id-aa7f49025c244216a96501d296318850" source="id-31910d7ca0f942d6b8c5b3bea0eeeaa6" target="id-55ff94327bc64826b0b66d3d91015649" xsi:type="Realization" />
@@ -1138,7 +1095,9 @@ OAuth 2.0</documentation>
     <relationship identifier="id-1c9d4e59ef074b3db9fb69aab4f42ae2" source="id-ffc10acafde44406a8458bec1067601c" target="id-4e5dac2c8a99468eac7edfd3d9942ad8" xsi:type="Access" accessType="Write" />
     <relationship identifier="id-aa186ed901d547109f074e49ef5bee11" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-e577503aa0fb4a3a8bfdd0731673547d" xsi:type="Assignment" />
     <relationship identifier="id-46c0522dedac4e4db3183f4631b8d7f6" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-53b4ad6607ef426d8c202fa71a00f3de" xsi:type="Assignment" />
-    <relationship identifier="id-4d463452562945c68530d1360d822cdc" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-02631439998a41f89f5ab086452de09f" xsi:type="Flow" />
+    <relationship identifier="id-4d463452562945c68530d1360d822cdc" source="id-3ada9939ef60428b998ab3102f7c15f3" target="id-02631439998a41f89f5ab086452de09f" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.6.1</name>
+    </relationship>
     <relationship identifier="id-7c4bce43a29c401390d84758c3e6b2ad" source="id-d38e7087fc6049529f14e0279376b221" target="id-d7cc369db3f74dc8892b29a8cc933f24" xsi:type="Realization" />
     <relationship identifier="id-6a7a9cc3fcbf48879e030bcd97f33998" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-92f86f88859643208a1b5105c2693fa5" xsi:type="Realization" />
     <relationship identifier="id-d5b1765d698c4b2391fd5a4a6bda00ab" source="id-74054bc503cd48cfaea218ae802924ec" target="id-f46b9270d18f4ac6ad64b618ba4fe389" xsi:type="Realization" />
@@ -1163,7 +1122,6 @@ OAuth 2.0</documentation>
     <relationship identifier="id-68ba193a8dd4472c9fe7d0e84bf4f55b" source="id-2a9a7be64c14429a876bd62627331eb7" target="id-492f9e5f17b64c5fa84c96fe27eb6618" xsi:type="Flow">
       <name xml:lang="ru">NS-6.2.x</name>
     </relationship>
-    <relationship identifier="id-bbab8e37dcbc430ba08ea9b85c6947ec" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-74054bc503cd48cfaea218ae802924ec" xsi:type="Flow" />
     <relationship identifier="id-a12ca71148a2445ca4c8ffbb51ec356a" source="id-b86229f2caa14c07ac3d92a0065c26c5" target="id-241c0a9be6f646e49250111d30823a0d" xsi:type="Realization" />
     <relationship identifier="id-20692acfa61743a99e7c97c4c10ecda1" source="id-2a9a7be64c14429a876bd62627331eb7" target="id-2173be6085074067874dee325db95045" xsi:type="Realization" />
     <relationship identifier="id-4ed312ee42c54079994677fdb83fdbe4" source="id-ffc10acafde44406a8458bec1067601c" target="id-a9a53d99c2944d2f8ded5e0b150655aa" xsi:type="Realization" />
@@ -1190,7 +1148,6 @@ OAuth 2.0</documentation>
     <relationship identifier="id-641b4ead552e4fa9947164bba07fe504" source="id-ab9ac133a297434b8c6c7e02b63e4fb4" target="id-8ed279cb12c24e2d9aa99c269b7ce8eb" xsi:type="Realization" />
     <relationship identifier="id-461bda2ff84846e1b973906c0f554a03" source="id-9d9769d37d5047118b1b56c0fd09d4f7" target="id-c2ccf1df101c42829f082939c5cbe64c" xsi:type="Realization" />
     <relationship identifier="id-f4f57224c13e4a5c906e4bfea89322d0" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-8a33ffd8086d442ea319231341d46cf1" xsi:type="Realization" />
-    <relationship identifier="id-1d4bbcde682e42a1a9f571f52eb3257c" source="id-6478cb5fda7846339cb3454e57f72f3e" target="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Realization" />
     <relationship identifier="id-fa119caa25d64f9cac871be5d312d164" source="id-28cc0ee1625a4b8c81c88916575e67db" target="id-8cb6cef1fb724e8fab1cf6e8f9ee8992" xsi:type="Realization" />
     <relationship identifier="id-601ab5b6e9da481f8be2aa65cc273c12" source="id-963905ca94594ce78bb25f577736abc2" target="id-20780a147e36400b8af7f0732f0eed95" xsi:type="Realization" />
     <relationship identifier="id-d7940d6350884988bdc6666f22944cd6" source="id-f88423254d134a78a6f7228c45c42708" target="id-b22b7cb79082453aa95575dbabaca02e" xsi:type="Realization" />
@@ -1217,9 +1174,10 @@ OAuth 2.0</documentation>
     <relationship identifier="id-d91f4ad921814089852d60d8c45ae88f" source="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" target="id-ba01c8bcaadd4eccb4fba9a2f2413980" xsi:type="Realization" />
     <relationship identifier="id-7aeef88fc3c24273974f39fbc1598465" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-266a6432bdbb4911abea77de567a9bb1" xsi:type="Assignment" />
     <relationship identifier="id-e311e189c4ae4c1d9bef4c0b8bff53b8" source="id-f88423254d134a78a6f7228c45c42708" target="id-98605f9173c44710994823d12225ac65" xsi:type="Realization" />
-    <relationship identifier="id-e9963771d33749a39251ad842e9bc04a" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-9d9769d37d5047118b1b56c0fd09d4f7" xsi:type="Flow" />
+    <relationship identifier="id-e9963771d33749a39251ad842e9bc04a" source="id-7555e0dbbefc45c9b328981c93c10fbb" target="id-9d9769d37d5047118b1b56c0fd09d4f7" xsi:type="Flow">
+      <name xml:lang="ru">NS-5.3.1</name>
+    </relationship>
     <relationship identifier="id-f04e3aae06d347dca85931487a8b2b6e" source="id-31910d7ca0f942d6b8c5b3bea0eeeaa6" target="id-b6f3954ac5a54106940e37134798538d" xsi:type="Realization" />
-    <relationship identifier="id-27104813f1d7464399d4e978ee36b55b" source="id-9052612c3a634814930ecd36a9f70eaf" target="id-87a41a366f6c40cc9a05b8c1759f2f79" xsi:type="Flow" />
     <relationship identifier="id-8d02f6112ebb431eab9a619103c30e23" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-9d9769d37d5047118b1b56c0fd09d4f7" xsi:type="Realization" />
     <relationship identifier="id-055f1a3ec1984698b385cb3c02fdcfbc" source="id-9d9769d37d5047118b1b56c0fd09d4f7" target="id-c7b8b3d0f94b4aa0a3778e45b7e87742" xsi:type="Realization" />
     <relationship identifier="id-4a3aa4cadce74d21bc918538d537a697" source="id-9d9769d37d5047118b1b56c0fd09d4f7" target="id-50c70cb8907a4afb8e9c4dc52725c18f" xsi:type="Realization" />
@@ -1235,6 +1193,38 @@ OAuth 2.0</documentation>
     <relationship identifier="id-62c956995cad49939513c0cce91047cc" source="id-dcdc22a2e3bd4b2baa95315fde7a1409" target="id-963905ca94594ce78bb25f577736abc2" xsi:type="Composition" />
     <relationship identifier="id-46a643b72fdc4d4a9db6bdc652a462a4" source="id-be701aa26df24b2bb3d4647daeb2a44b" target="id-b4a220067901411da8ad8d29f04d4780" xsi:type="Realization" />
     <relationship identifier="id-c7a43d81a0724c639f060303f4a70754" source="id-86503bddec6140b38cfd684e2d2cdfda" target="id-7fbee433aabd4c11845e82129bd2e09e" xsi:type="Realization" />
+    <relationship identifier="id-02198e7d850e4d0ba736bbf164278ae3" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-74054bc503cd48cfaea218ae802924ec" xsi:type="Association" />
+    <relationship identifier="id-fc124a62bdc1483fa06e1ab85db2e281" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-08cb9b53238d44b2bf37da32b3280324" xsi:type="Association" />
+    <relationship identifier="id-c3270c472a484f4385b8b3eb28545b6e" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-87a41a366f6c40cc9a05b8c1759f2f79" xsi:type="Association" />
+    <relationship identifier="id-d0c3aa25dfa64b7b8fa7b5b9d94b20b7" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-08cb9b53238d44b2bf37da32b3280324" xsi:type="Association" />
+    <relationship identifier="id-1e6809450eef4709afc6ff3925d8c3e5" source="id-30e0d4ef8e3e42f8b0ec1e7cd2bf0c5f" target="id-bccad2d0c879433087de4e5cb89cbd2d" xsi:type="Association" />
+    <relationship identifier="id-c37bec9ad40747aba4bad80f6cb284d4" source="id-75c965ef3bd34fb7992585539a2dfe0a" target="id-bccad2d0c879433087de4e5cb89cbd2d" xsi:type="Association" />
+    <relationship identifier="id-6f43be4af3024a478329c6b339295a63" source="id-9052612c3a634814930ecd36a9f70eaf" target="id-87a41a366f6c40cc9a05b8c1759f2f79" xsi:type="Association" />
+    <relationship identifier="id-bcac4e0006f749d0a15fe4163967c868" source="id-08d7090c3e9d472cab81e193fb3c9b36" target="id-4f2bb5d075184736b88e6eb4efe82863" xsi:type="Association">
+      <name xml:lang="ru">NS-0.1.x</name>
+    </relationship>
+    <relationship identifier="id-b7790409b7d24fd18d440959816d0806" source="id-65fe17f882464a56aefc81da2a961d11" target="id-4f2bb5d075184736b88e6eb4efe82863" xsi:type="Association" />
+    <relationship identifier="id-f1faf25ec1074807a41eb7ff10d2ad4b" source="id-65fe17f882464a56aefc81da2a961d11" target="id-be701aa26df24b2bb3d4647daeb2a44b" xsi:type="Association" />
+    <relationship identifier="id-5e5d185c61aa48a794a04f715fb5b2c7" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-5e9fe33ae0974b43b3461959ce316ac2" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.1.2</name>
+      <documentation xml:lang="ru">Получение секретов</documentation>
+    </relationship>
+    <relationship identifier="id-e8e31f037e394ba1804a497560342d2d" source="id-d1aef7eecceb436e94ab8b67c9ed9227" target="id-75e12ba1dd95466cb9d8faadf95b1007" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.3</name>
+      <documentation xml:lang="ru">Сбор данных о работоспособности сервисов</documentation>
+    </relationship>
+    <relationship identifier="id-39a23e491c804b978ff398c096043f27" source="id-d1aef7eecceb436e94ab8b67c9ed9227" target="id-ffc10acafde44406a8458bec1067601c" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.3</name>
+      <documentation xml:lang="ru">Сбор данных о работоспособности сервисов</documentation>
+    </relationship>
+    <relationship identifier="id-c8cb745f3e534d9c8c32a55ac53ddeca" source="id-ffc10acafde44406a8458bec1067601c" target="id-6f5c415f833942fcae9536855d774c98" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.4</name>
+      <documentation xml:lang="ru">Сохранение логов в хранилище</documentation>
+    </relationship>
+    <relationship identifier="id-2f4882f9a8694ef3927a8a70981db6ae" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-6f5c415f833942fcae9536855d774c98" xsi:type="Flow">
+      <name xml:lang="ru">NS-9.4</name>
+      <documentation xml:lang="ru">Сохранение логов в хранилище</documentation>
+    </relationship>
   </relationships>
   <organizations>
     <item>
@@ -1609,31 +1599,8 @@ OAuth 2.0</documentation>
         <item identifierRef="id-8a57800985ca45aebac9ee91ec3aeeaf" />
       </item>
       <item>
-        <label xml:lang="ru">Фреймворки</label>
-        <item identifierRef="id-9e17395e3896420bb4fc6cf06bf24916" />
-        <item identifierRef="id-68504b7319da4ae3b8d845c0b72cf490" />
-        <item identifierRef="id-f17a19aa2a9048f69d49fe47acdc66ca" />
-      </item>
-      <item>
         <label xml:lang="ru">Продукты</label>
-        <item identifierRef="id-e9d6426d9d194ff99c6072aff1bf48ea" />
-        <item identifierRef="id-c2f14be61e6841dca8677b3e9e1b6050" />
-        <item identifierRef="id-39e6aba837a14818b55f0dc4eb11ecee" />
-        <item identifierRef="id-bfab9a67f8644036a9c40ea77b7746f5" />
-        <item identifierRef="id-163ef12cabb34a71a78fe2799ea8a1fa" />
-        <item identifierRef="id-7f61d79c5626441ead2ba907d6e52a8c" />
-        <item identifierRef="id-4d4ee54406594bffb577f7fcd2b2f89c" />
-        <item identifierRef="id-359bef4be1fb45dc9ed7c810d900f6b7" />
         <item identifierRef="id-cb2a2d34b69e4dc4b0619acc31afcf34" />
-        <item identifierRef="id-bc614089a5904f8fb9ba1aab4cc66153" />
-      </item>
-      <item>
-        <label xml:lang="ru">Базы данных</label>
-        <item identifierRef="id-e3514c44c9ff4a85bf2a5be0f7b8a256" />
-        <item identifierRef="id-e5a0f17f069b494da8115f3f950fdf04" />
-        <item identifierRef="id-b121717b2ae24475b2eb51838eb8a2e9" />
-        <item identifierRef="id-9a4e3e93dd4b435d80938e61e99c5df1" />
-        <item identifierRef="id-5b4e6d5e61df4f07ac4828d381f604b0" />
       </item>
       <item>
         <label xml:lang="ru">Абстракции</label>
@@ -1676,13 +1643,7 @@ OAuth 2.0</documentation>
             <item identifierRef="id-63469aa6e9364f33a4167222d8b46a06" />
             <item identifierRef="id-76895fb97b434af2928bbb8ee2161550" />
             <item identifierRef="id-9ed1ea65b2234a33ab38c3cc618361ee" />
-          </item>
-          <item>
-            <label xml:lang="ru">Базы денных</label>
-            <item identifierRef="id-f14001818f7b42e9aa9cbd0e3e04e711" />
-            <item identifierRef="id-93f73905e1c7488e90ab561dcdfc7657" />
-            <item identifierRef="id-24ec287c27474ce88a5c589119ac1bf3" />
-            <item identifierRef="id-85615fa2282b46c4b07df316dac28c2e" />
+            <item identifierRef="id-fd98833d999b479dbe16b41cc1723e27" />
           </item>
           <item>
             <label xml:lang="ru">Правила DFX</label>
@@ -1698,13 +1659,26 @@ OAuth 2.0</documentation>
           </item>
           <item>
             <label xml:lang="ru">Платформа данных</label>
-            <item identifierRef="id-edb4837ab59347f3b166d443fc4b44ce" />
+            <item identifierRef="id-c2f14be61e6841dca8677b3e9e1b6050" />
           </item>
           <item>
             <label xml:lang="ru">IDM-платформа</label>
             <item identifierRef="id-1ecfd0b2283d4168853c4e1cc1e0fce5" />
             <item identifierRef="id-86142c10ba24478cbf90b84ad4086548" />
             <item identifierRef="id-9aa4b9f0137447c5a410975c54df7369" />
+          </item>
+          <item>
+            <label xml:lang="ru">Базы данных</label>
+            <item identifierRef="id-e3514c44c9ff4a85bf2a5be0f7b8a256" />
+            <item identifierRef="id-e5a0f17f069b494da8115f3f950fdf04" />
+            <item identifierRef="id-b121717b2ae24475b2eb51838eb8a2e9" />
+            <item identifierRef="id-9a4e3e93dd4b435d80938e61e99c5df1" />
+            <item identifierRef="id-5b4e6d5e61df4f07ac4828d381f604b0" />
+            <item identifierRef="id-39e6aba837a14818b55f0dc4eb11ecee" />
+          </item>
+          <item>
+            <label xml:lang="ru">Прокси</label>
+            <item identifierRef="id-4d4ee54406594bffb577f7fcd2b2f89c" />
           </item>
         </item>
       </item>
@@ -1754,11 +1728,9 @@ OAuth 2.0</documentation>
       <item identifierRef="id-47e997464e7d48eda401132af1858b05" />
       <item identifierRef="id-f56594ab04fd4abd9b9f8bc075dc2df1" />
       <item identifierRef="id-99c4630712334b4ab59f135f0bd213d5" />
-      <item identifierRef="id-e43f9308ba32495b98942755b0fb41be" />
       <item identifierRef="id-5f52bfff620a466cbfca792067f43ac2" />
       <item identifierRef="id-ab91e7d118c94865a6cc0efbf058a7dc" />
       <item identifierRef="id-15a65f70f0ba4d4e91152739f006a48c" />
-      <item identifierRef="id-bf79f476c73a49bcae1ca13cfbd403a7" />
       <item identifierRef="id-ed4b24b9411b48c3b9e58320ab771f39" />
       <item identifierRef="id-b26fa891bf0b43b196afe899548101f8" />
       <item identifierRef="id-d39298ca34604dfab597c6fb9c727825" />
@@ -1831,7 +1803,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-147010ddcfcd46e4bdfe8cd48971a012" />
       <item identifierRef="id-dc2064a826774c21bac0d87b3ae1c853" />
       <item identifierRef="id-d8e5a365785f494ea4e43312ce3eaa82" />
-      <item identifierRef="id-109b62d3bbef4870aaa80c9cc0464f94" />
       <item identifierRef="id-73e60dea8c0e4e70a906f866abb6dab4" />
       <item identifierRef="id-7c1b1df5f4d54b338da78ea5758b2132" />
       <item identifierRef="id-af31f89820904f08b64e5183db969376" />
@@ -1840,7 +1811,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-9df2127459c24afba0ab3593438b464a" />
       <item identifierRef="id-f0f1d99cfefd4e248b22de1a758f10ce" />
       <item identifierRef="id-bd728f0789824dbab8343979c2b24780" />
-      <item identifierRef="id-a082140bbef44ec9a442d9639e6845c6" />
       <item identifierRef="id-fe56790757cc414abe278f30a7d8ba8d" />
       <item identifierRef="id-a2512177855a4109bdfa3d36cbd26701" />
       <item identifierRef="id-aecefe2d50c3481189c846f3272fddf5" />
@@ -1877,7 +1847,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-561f5615b0144377b28e7d4e35234b6b" />
       <item identifierRef="id-cda2275d232d4200b1322a2780b3f0aa" />
       <item identifierRef="id-43afe19ae4964e30adcbc17f4acddbc6" />
-      <item identifierRef="id-b95df70395e643b8ac1bd7dfbe334dfd" />
       <item identifierRef="id-33434a01491645b596e16906795b2568" />
       <item identifierRef="id-db49e0efb1334f7c9922fc1d935671dc" />
       <item identifierRef="id-d95fbf3e1484460983eee96b57748bb1" />
@@ -1904,7 +1873,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-317a1715d9e44f41a1b2345df6a204b2" />
       <item identifierRef="id-1aa7f9e08b07428abf55deab78e240d3" />
       <item identifierRef="id-781cd5f7736b437c9fba756827af27c3" />
-      <item identifierRef="id-22ad9cdb7adf4763ad3a97d4b84d56d4" />
       <item identifierRef="id-23a8de15b50840e6a4f712479dfeabf8" />
       <item identifierRef="id-12496607bc2e41f7b3a51d4007c654a9" />
       <item identifierRef="id-52e1fe4c190c41b5aff3053b8955721a" />
@@ -1932,11 +1900,9 @@ OAuth 2.0</documentation>
       <item identifierRef="id-f648183cd62347dca3ec2f9dababfd44" />
       <item identifierRef="id-a255ff2d31d047d1aaefdc36cf70ffaa" />
       <item identifierRef="id-7d1db7ce216144ec96867f4d197d790e" />
-      <item identifierRef="id-5fe81294a9704b61a7cba79c795fe44d" />
       <item identifierRef="id-b1fea5e5b9454e01813c184d71308719" />
       <item identifierRef="id-381e92d28b6b42d189f6c2a31dead618" />
       <item identifierRef="id-4bb62f1d00bf4d33bb49d5dc6fce2611" />
-      <item identifierRef="id-99f74ce6f0b8469bbd8e424118e05b0a" />
       <item identifierRef="id-b91b6782524b488c80d28fe812cacc95" />
       <item identifierRef="id-5e6372882c2546258e28aa6866c2fb99" />
       <item identifierRef="id-38f627d8bd5d484aab7138512a7ca126" />
@@ -1980,7 +1946,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-0026b75f9beb40f09c671a179fdb6a2d" />
       <item identifierRef="id-e4c7a5b1d4a441f3926b802cf2c08368" />
       <item identifierRef="id-68ba193a8dd4472c9fe7d0e84bf4f55b" />
-      <item identifierRef="id-bbab8e37dcbc430ba08ea9b85c6947ec" />
       <item identifierRef="id-a12ca71148a2445ca4c8ffbb51ec356a" />
       <item identifierRef="id-20692acfa61743a99e7c97c4c10ecda1" />
       <item identifierRef="id-4ed312ee42c54079994677fdb83fdbe4" />
@@ -2007,7 +1972,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-641b4ead552e4fa9947164bba07fe504" />
       <item identifierRef="id-461bda2ff84846e1b973906c0f554a03" />
       <item identifierRef="id-f4f57224c13e4a5c906e4bfea89322d0" />
-      <item identifierRef="id-1d4bbcde682e42a1a9f571f52eb3257c" />
       <item identifierRef="id-fa119caa25d64f9cac871be5d312d164" />
       <item identifierRef="id-601ab5b6e9da481f8be2aa65cc273c12" />
       <item identifierRef="id-d7940d6350884988bdc6666f22944cd6" />
@@ -2033,7 +1997,6 @@ OAuth 2.0</documentation>
       <item identifierRef="id-e311e189c4ae4c1d9bef4c0b8bff53b8" />
       <item identifierRef="id-e9963771d33749a39251ad842e9bc04a" />
       <item identifierRef="id-f04e3aae06d347dca85931487a8b2b6e" />
-      <item identifierRef="id-27104813f1d7464399d4e978ee36b55b" />
       <item identifierRef="id-8d02f6112ebb431eab9a619103c30e23" />
       <item identifierRef="id-055f1a3ec1984698b385cb3c02fdcfbc" />
       <item identifierRef="id-4a3aa4cadce74d21bc918538d537a697" />
@@ -2049,6 +2012,21 @@ OAuth 2.0</documentation>
       <item identifierRef="id-62c956995cad49939513c0cce91047cc" />
       <item identifierRef="id-46a643b72fdc4d4a9db6bdc652a462a4" />
       <item identifierRef="id-c7a43d81a0724c639f060303f4a70754" />
+      <item identifierRef="id-02198e7d850e4d0ba736bbf164278ae3" />
+      <item identifierRef="id-fc124a62bdc1483fa06e1ab85db2e281" />
+      <item identifierRef="id-c3270c472a484f4385b8b3eb28545b6e" />
+      <item identifierRef="id-d0c3aa25dfa64b7b8fa7b5b9d94b20b7" />
+      <item identifierRef="id-1e6809450eef4709afc6ff3925d8c3e5" />
+      <item identifierRef="id-c37bec9ad40747aba4bad80f6cb284d4" />
+      <item identifierRef="id-6f43be4af3024a478329c6b339295a63" />
+      <item identifierRef="id-bcac4e0006f749d0a15fe4163967c868" />
+      <item identifierRef="id-b7790409b7d24fd18d440959816d0806" />
+      <item identifierRef="id-f1faf25ec1074807a41eb7ff10d2ad4b" />
+      <item identifierRef="id-5e5d185c61aa48a794a04f715fb5b2c7" />
+      <item identifierRef="id-e8e31f037e394ba1804a497560342d2d" />
+      <item identifierRef="id-39a23e491c804b978ff398c096043f27" />
+      <item identifierRef="id-c8cb745f3e534d9c8c32a55ac53ddeca" />
+      <item identifierRef="id-2f4882f9a8694ef3927a8a70981db6ae" />
     </item>
     <item>
       <label xml:lang="ru">Views</label>
@@ -2432,15 +2410,6 @@ OAuth 2.0</documentation>
                 <color r="0" g="0" b="0" />
               </font>
             </style>
-            <node identifier="id-bca1097ab2fb4cb583d91d17ccd205cc" elementRef="id-edb4837ab59347f3b166d443fc4b44ce" xsi:type="Element" x="420" y="588" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="12">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
           </node>
           <node identifier="id-98a16bc672db406eaef1b6d3138c7aec" elementRef="id-75c965ef3bd34fb7992585539a2dfe0a" xsi:type="Element" x="36" y="570" w="169" h="55">
             <style>
@@ -2692,15 +2661,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-93a07e3c1e854cab9dfe7206b9f67f9a" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1091" y="756" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
               <node identifier="id-a1d4f4776a7f435981d3350f3029513d" elementRef="id-2627b8b6026941c282e84f0507554ad6" xsi:type="Element" x="985" y="558" w="214" h="37">
                 <style>
                   <fillColor r="181" g="255" b="255" a="100" />
@@ -2818,15 +2778,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-7fd2a3b809e84837a8671f77a30128b9" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1355" y="948" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
               <node identifier="id-aabdf6fe87574e77a95c9111a2afb717" elementRef="id-4fce008311d3467abbeaa159df1aac2e" xsi:type="Element" x="1248" y="666" w="216" h="43">
                 <style>
                   <fillColor r="181" g="255" b="255" a="100" />
@@ -2908,15 +2859,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-36735334d6e84046974ce311d1e8e93a" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1355" y="1236" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
               <node identifier="id-4b434ca4aefb47fda38669da00faed16" elementRef="id-f61fa97014e540ef958e7229e7c93be6" xsi:type="Element" x="1248" y="1056" w="215" h="37">
                 <style>
                   <fillColor r="181" g="255" b="255" a="100" />
@@ -2947,24 +2889,6 @@ OAuth 2.0</documentation>
               <node identifier="id-1fcc0ff0ce3c4b31862e95e26e754519" elementRef="id-e36a4fec1cfd4e779781d47fa5c2e320" xsi:type="Element" x="2088" y="1152" w="216" h="37">
                 <style>
                   <fillColor r="181" g="255" b="255" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-647614fd75474036b91db6e0ebfb6300" elementRef="id-edb4837ab59347f3b166d443fc4b44ce" xsi:type="Element" x="2088" y="1200" w="108" h="24">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-a6472743c80240cf8927a808e4fc8d08" elementRef="id-24ec287c27474ce88a5c589119ac1bf3" xsi:type="Element" x="2195" y="1200" w="108" h="24">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
                   <font name="Roboto" size="12">
                     <color r="0" g="0" b="0" />
@@ -3052,15 +2976,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-662ded28365e4ab18245ad1400f3ad21" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1093" y="1248" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
               <node identifier="id-90445533e9d64103bea3b6960f099812" elementRef="id-1e202db7809149af8f11666549b86a8c" xsi:type="Element" x="986" y="1152" w="214" h="25">
                 <style>
                   <fillColor r="181" g="255" b="255" a="100" />
@@ -3089,15 +3004,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
               <node identifier="id-f56678ed4edf40be981977921a18933e" elementRef="id-79e875a3481a4d02977fbf1bf6595e33" xsi:type="Element" x="1776" y="1237" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-b09445de6e8240b7a07a118e350cb094" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1883" y="1237" w="108" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3259,15 +3165,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-403585dbe2c448f7b2db53b753bc13eb" elementRef="id-93f73905e1c7488e90ab561dcdfc7657" xsi:type="Element" x="1776" y="852" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
             </node>
             <node identifier="id-f932ceb96d43415facc09a960358cb46" elementRef="id-3ada9939ef60428b998ab3102f7c15f3" xsi:type="Element" x="972" y="816" w="241" h="181">
               <style>
@@ -3313,15 +3210,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-e0654dcd270347bb9768db31fcd11bb7" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1091" y="960" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
             </node>
             <node identifier="id-fa5ee9baa1fb44d687974472d0e54f6b" elementRef="id-b5234738b2fc4e2d83c2fe418ba9d523" xsi:type="Element" x="2077" y="660" w="240" h="217">
               <style>
@@ -3350,15 +3238,6 @@ OAuth 2.0</documentation>
                 </style>
               </node>
               <node identifier="id-0b05e3f145cc4781bbe2915222c3a603" elementRef="id-79e875a3481a4d02977fbf1bf6595e33" xsi:type="Element" x="2089" y="840" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-93c84b90ea4d4844a37814aa9a2d471e" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="2196" y="840" w="108" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3475,15 +3354,6 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-7647bb7511934503973f3c4253e12e8f" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1618" y="846" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
             </node>
             <node identifier="id-e11df2f4359f4a1d98346faed097da7e" elementRef="id-55dea6e9a1d64adfa19d699eb0c449fb" xsi:type="Element" x="1763" y="486" w="241" h="193">
               <style>
@@ -3521,15 +3391,6 @@ OAuth 2.0</documentation>
                 </style>
               </node>
               <node identifier="id-a01ad76f8eba40cb872ecccbb5171782" elementRef="id-79e875a3481a4d02977fbf1bf6595e33" xsi:type="Element" x="1775" y="642" w="108" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-5402aa6cd73d4361a96d4b580fd5ccc1" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1882" y="642" w="108" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3665,15 +3526,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
             </node>
-            <node identifier="id-523e22d6e4354f49b89867b54c1ceea9" elementRef="id-85615fa2282b46c4b07df316dac28c2e" xsi:type="Element" x="1416" y="192" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="12">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-a14aa560bbbe4b3681f165816441fbbc" elementRef="id-ae490367281a4d09bd004f27197c9a07" xsi:type="Element" x="1416" y="120" w="214" h="25">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
@@ -3765,7 +3617,7 @@ OAuth 2.0</documentation>
               </style>
             </node>
           </node>
-          <node identifier="id-f4313423a4894ad59631518eea617ad3" elementRef="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" xsi:type="Element" x="1788" y="24" w="553" h="313">
+          <node identifier="id-f4313423a4894ad59631518eea617ad3" elementRef="id-436198ee3d604ed3b9e3a5e7c8a2dfbe" xsi:type="Element" x="1788" y="24" w="553" h="349">
             <style>
               <fillColor r="255" g="255" b="255" a="100" />
               <lineColor r="92" g="92" b="92" a="100" />
@@ -3773,7 +3625,7 @@ OAuth 2.0</documentation>
                 <color r="0" g="0" b="0" />
               </font>
             </style>
-            <node identifier="id-445f04d8eac94318a5aa37da5d74e31f" elementRef="id-ba1978f7fc554362aec6a3af4b44dd4c" xsi:type="Element" x="1812" y="144" w="241" h="73">
+            <node identifier="id-445f04d8eac94318a5aa37da5d74e31f" elementRef="id-ba1978f7fc554362aec6a3af4b44dd4c" xsi:type="Element" x="1812" y="180" w="241" h="73">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
@@ -3781,7 +3633,7 @@ OAuth 2.0</documentation>
                   <color r="0" g="0" b="0" />
                 </font>
               </style>
-              <node identifier="id-593ae7f57ed44bb5847275b7375b9c4a" elementRef="id-17cb2ad4cb1d46f3ba204b9ccb6e10f1" xsi:type="Element" x="1920" y="180" w="120" h="25">
+              <node identifier="id-593ae7f57ed44bb5847275b7375b9c4a" elementRef="id-17cb2ad4cb1d46f3ba204b9ccb6e10f1" xsi:type="Element" x="1920" y="216" w="120" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3791,7 +3643,7 @@ OAuth 2.0</documentation>
                 </style>
               </node>
             </node>
-            <node identifier="id-974865d236fa4e10aba1e4a939792beb" elementRef="id-6f5c415f833942fcae9536855d774c98" xsi:type="Element" x="2076" y="60" w="241" h="121">
+            <node identifier="id-974865d236fa4e10aba1e4a939792beb" elementRef="id-6f5c415f833942fcae9536855d774c98" xsi:type="Element" x="2076" y="96" w="241" h="73">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
@@ -3799,16 +3651,7 @@ OAuth 2.0</documentation>
                   <color r="0" g="0" b="0" />
                 </font>
               </style>
-            </node>
-            <node identifier="id-9e5a420a55ce46618978f18f301fbcba" elementRef="id-d1aef7eecceb436e94ab8b67c9ed9227" xsi:type="Element" x="2076" y="192" w="241" h="109">
-              <style>
-                <fillColor r="181" g="255" b="255" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="12">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-              <node identifier="id-a5cbc8f2af1446d2af3c0f54c81967eb" elementRef="id-343dd3b2275f40a19a0a65e8dbdc1b81" xsi:type="Element" x="2207" y="267" w="97" h="25">
+              <node identifier="id-f813a928e35c4b74b8da383c3a900c0f" elementRef="id-fd98833d999b479dbe16b41cc1723e27" xsi:type="Element" x="2196" y="132" w="108" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3817,16 +3660,7 @@ OAuth 2.0</documentation>
                   </font>
                 </style>
               </node>
-              <node identifier="id-2bc2f1f70d8b43e6ae3069c58ffb902f" elementRef="id-53502752321845799c16d6e7e090784d" xsi:type="Element" x="2088" y="267" w="120" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="12">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-cf20ed0e84eb4b4b8c7f4480028b2600" elementRef="id-76895fb97b434af2928bbb8ee2161550" xsi:type="Element" x="2088" y="240" w="216" h="28">
+              <node identifier="id-3750a2bee2fc47bca86b7ddfad4b7de3" elementRef="id-a63a93615d944da18eae891ae8743ea2" xsi:type="Element" x="2088" y="132" w="109" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3836,7 +3670,7 @@ OAuth 2.0</documentation>
                 </style>
               </node>
             </node>
-            <node identifier="id-50a6ddf2dd914b9a92ef5baa90dc3489" elementRef="id-cc9264a7eca04ad7b1d09e97e1528795" xsi:type="Element" x="1812" y="228" w="241" h="73">
+            <node identifier="id-9e5a420a55ce46618978f18f301fbcba" elementRef="id-d1aef7eecceb436e94ab8b67c9ed9227" xsi:type="Element" x="2076" y="252" w="241" h="109">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
@@ -3844,7 +3678,25 @@ OAuth 2.0</documentation>
                   <color r="0" g="0" b="0" />
                 </font>
               </style>
-              <node identifier="id-1a8434388613453fbe2a6217f8ecfa75" elementRef="id-63469aa6e9364f33a4167222d8b46a06" xsi:type="Element" x="1920" y="264" w="120" h="25">
+              <node identifier="id-a5cbc8f2af1446d2af3c0f54c81967eb" elementRef="id-343dd3b2275f40a19a0a65e8dbdc1b81" xsi:type="Element" x="2207" y="327" w="97" h="25">
+                <style>
+                  <fillColor r="201" g="231" b="183" a="100" />
+                  <lineColor r="92" g="92" b="92" a="100" />
+                  <font name="Roboto" size="12">
+                    <color r="0" g="0" b="0" />
+                  </font>
+                </style>
+              </node>
+              <node identifier="id-2bc2f1f70d8b43e6ae3069c58ffb902f" elementRef="id-53502752321845799c16d6e7e090784d" xsi:type="Element" x="2088" y="327" w="120" h="25">
+                <style>
+                  <fillColor r="201" g="231" b="183" a="100" />
+                  <lineColor r="92" g="92" b="92" a="100" />
+                  <font name="Roboto" size="12">
+                    <color r="0" g="0" b="0" />
+                  </font>
+                </style>
+              </node>
+              <node identifier="id-cf20ed0e84eb4b4b8c7f4480028b2600" elementRef="id-76895fb97b434af2928bbb8ee2161550" xsi:type="Element" x="2088" y="300" w="216" h="28">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3854,7 +3706,7 @@ OAuth 2.0</documentation>
                 </style>
               </node>
             </node>
-            <node identifier="id-3c6011830cfb4960a567faaa35221060" elementRef="id-5e9fe33ae0974b43b3461959ce316ac2" xsi:type="Element" x="1812" y="60" w="241" h="73">
+            <node identifier="id-50a6ddf2dd914b9a92ef5baa90dc3489" elementRef="id-cc9264a7eca04ad7b1d09e97e1528795" xsi:type="Element" x="1812" y="288" w="241" h="73">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
@@ -3862,7 +3714,25 @@ OAuth 2.0</documentation>
                   <color r="0" g="0" b="0" />
                 </font>
               </style>
-              <node identifier="id-f6feceff1f0945308aebba85cc0a0cd9" elementRef="id-9ed1ea65b2234a33ab38c3cc618361ee" xsi:type="Element" x="1920" y="96" w="120" h="25">
+              <node identifier="id-1a8434388613453fbe2a6217f8ecfa75" elementRef="id-63469aa6e9364f33a4167222d8b46a06" xsi:type="Element" x="1920" y="324" w="120" h="25">
+                <style>
+                  <fillColor r="201" g="231" b="183" a="100" />
+                  <lineColor r="92" g="92" b="92" a="100" />
+                  <font name="Roboto" size="12">
+                    <color r="0" g="0" b="0" />
+                  </font>
+                </style>
+              </node>
+            </node>
+            <node identifier="id-3c6011830cfb4960a567faaa35221060" elementRef="id-5e9fe33ae0974b43b3461959ce316ac2" xsi:type="Element" x="1812" y="84" w="241" h="73">
+              <style>
+                <fillColor r="181" g="255" b="255" a="100" />
+                <lineColor r="92" g="92" b="92" a="100" />
+                <font name="Roboto" size="12">
+                  <color r="0" g="0" b="0" />
+                </font>
+              </style>
+              <node identifier="id-f6feceff1f0945308aebba85cc0a0cd9" elementRef="id-9ed1ea65b2234a33ab38c3cc618361ee" xsi:type="Element" x="1920" y="120" w="120" h="25">
                 <style>
                   <fillColor r="201" g="231" b="183" a="100" />
                   <lineColor r="92" g="92" b="92" a="100" />
@@ -3890,7 +3760,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-2b4e240485034309a30ec5274f02f1d6" relationshipRef="id-e43f9308ba32495b98942755b0fb41be" xsi:type="Relationship" source="id-ddd0dc96e4054cf5b718ac8f28f82437" target="id-caf4d5d0ccb24b0d931c31e975f41957">
+        <connection identifier="id-2b4e240485034309a30ec5274f02f1d6" relationshipRef="id-bcac4e0006f749d0a15fe4163967c868" xsi:type="Relationship" source="id-ddd0dc96e4054cf5b718ac8f28f82437" target="id-caf4d5d0ccb24b0d931c31e975f41957">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3906,7 +3776,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-81bc2cc97f0b45ce9ea9856d794dc9cc" relationshipRef="id-5fe81294a9704b61a7cba79c795fe44d" xsi:type="Relationship" source="id-62951af528ae461e8bffac739d2aabb0" target="id-1736f0de0cdd4d4faeb8f31159d07439">
+        <connection identifier="id-95b0a7df8e734cb6af9827277853c932" relationshipRef="id-b7790409b7d24fd18d440959816d0806" xsi:type="Relationship" source="id-62951af528ae461e8bffac739d2aabb0" target="id-caf4d5d0ccb24b0d931c31e975f41957">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3914,7 +3784,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-95b0a7df8e734cb6af9827277853c932" relationshipRef="id-b95df70395e643b8ac1bd7dfbe334dfd" xsi:type="Relationship" source="id-62951af528ae461e8bffac739d2aabb0" target="id-caf4d5d0ccb24b0d931c31e975f41957">
+        <connection identifier="id-81bc2cc97f0b45ce9ea9856d794dc9cc" relationshipRef="id-f1faf25ec1074807a41eb7ff10d2ad4b" xsi:type="Relationship" source="id-62951af528ae461e8bffac739d2aabb0" target="id-1736f0de0cdd4d4faeb8f31159d07439">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3922,7 +3792,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-eecb9ad034c743419cbb9b6b5b957512" relationshipRef="id-99f74ce6f0b8469bbd8e424118e05b0a" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-efb5278afaf8429e85e9f34319c931e5">
+        <connection identifier="id-5719e737eb94477fb14716b52df1b745" relationshipRef="id-c3270c472a484f4385b8b3eb28545b6e" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-b109beb916724a309cef1618175bb492">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3930,7 +3800,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-5719e737eb94477fb14716b52df1b745" relationshipRef="id-a082140bbef44ec9a442d9639e6845c6" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-b109beb916724a309cef1618175bb492">
+        <connection identifier="id-6e5b651e308441cca0e96910f7be41f4" relationshipRef="id-d0c3aa25dfa64b7b8fa7b5b9d94b20b7" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-086271e6e00145a88b7b4be3c86d4f78">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3938,7 +3808,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-6e5b651e308441cca0e96910f7be41f4" relationshipRef="id-bf79f476c73a49bcae1ca13cfbd403a7" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-086271e6e00145a88b7b4be3c86d4f78">
+        <connection identifier="id-eecb9ad034c743419cbb9b6b5b957512" relationshipRef="id-1e6809450eef4709afc6ff3925d8c3e5" xsi:type="Relationship" source="id-b236079bf9494bfebc429e56161e9c16" target="id-efb5278afaf8429e85e9f34319c931e5">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3954,7 +3824,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-6291f3dfba384b58988ed1a7fba36cbf" relationshipRef="id-27104813f1d7464399d4e978ee36b55b" xsi:type="Relationship" source="id-1dfb87b1efa84be3b97b8a8e82f01633" target="id-b109beb916724a309cef1618175bb492">
+        <connection identifier="id-6291f3dfba384b58988ed1a7fba36cbf" relationshipRef="id-6f43be4af3024a478329c6b339295a63" xsi:type="Relationship" source="id-1dfb87b1efa84be3b97b8a8e82f01633" target="id-b109beb916724a309cef1618175bb492">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3970,7 +3840,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-c3d6f6b91b784a388728c2c82da2c2e4" relationshipRef="id-bbab8e37dcbc430ba08ea9b85c6947ec" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-2d84b1968d634c618c63619c9346b9a0">
+        <connection identifier="id-c3d6f6b91b784a388728c2c82da2c2e4" relationshipRef="id-02198e7d850e4d0ba736bbf164278ae3" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-2d84b1968d634c618c63619c9346b9a0">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3978,7 +3848,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-7c0efaa7849b4afa9b78ca0591b30644" relationshipRef="id-22ad9cdb7adf4763ad3a97d4b84d56d4" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-086271e6e00145a88b7b4be3c86d4f78">
+        <connection identifier="id-7c0efaa7849b4afa9b78ca0591b30644" relationshipRef="id-fc124a62bdc1483fa06e1ab85db2e281" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-086271e6e00145a88b7b4be3c86d4f78">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -3986,7 +3856,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-e2ac42fe6a0f4362868fc82db3757a99" relationshipRef="id-109b62d3bbef4870aaa80c9cc0464f94" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-efb5278afaf8429e85e9f34319c931e5">
+        <connection identifier="id-e2ac42fe6a0f4362868fc82db3757a99" relationshipRef="id-c37bec9ad40747aba4bad80f6cb284d4" xsi:type="Relationship" source="id-98a16bc672db406eaef1b6d3138c7aec" target="id-efb5278afaf8429e85e9f34319c931e5">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
@@ -4026,15 +3896,6 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-d7f941d8457c488d9c06793018e6b368" relationshipRef="id-2bce04040ec5481294a452bf28501f46" xsi:type="Relationship" source="id-4e3f4e530af641a38793bc5eca385d23" target="id-f4313423a4894ad59631518eea617ad3">
-          <style>
-            <lineColor r="0" g="0" b="0" />
-            <font name="Roboto" size="12">
-              <color r="0" g="0" b="0" />
-            </font>
-          </style>
-          <bendpoint x="1332" y="318" />
-        </connection>
         <connection identifier="id-a564dc6059034c5d81a4beafe2e67df7" relationshipRef="id-c69e445e676943cf9aa5545203f505c0" xsi:type="Relationship" source="id-4e3f4e530af641a38793bc5eca385d23" target="id-411c601bc81a456983d9934815539c46">
           <style>
             <lineColor r="0" g="0" b="0" />
@@ -4069,6 +3930,15 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
+        <connection identifier="id-d7f941d8457c488d9c06793018e6b368" relationshipRef="id-2bce04040ec5481294a452bf28501f46" xsi:type="Relationship" source="id-4e3f4e530af641a38793bc5eca385d23" target="id-50a6ddf2dd914b9a92ef5baa90dc3489">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Roboto" size="12">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+          <bendpoint x="1344" y="330" />
+        </connection>
         <connection identifier="id-20d526a2705142019a854dfb6bf71b5a" relationshipRef="id-317a1715d9e44f41a1b2345df6a204b2" xsi:type="Relationship" source="id-411c601bc81a456983d9934815539c46" target="id-4e3f4e530af641a38793bc5eca385d23">
           <style>
             <lineColor r="0" g="0" b="0" />
@@ -4078,13 +3948,24 @@ OAuth 2.0</documentation>
           </style>
           <bendpoint x="1020" y="360" />
         </connection>
-        <connection identifier="id-d707bd3d81b146bc93c6acd5fef42864" relationshipRef="id-0fff6b382dcb429a8a1268cf6b7c05da" xsi:type="Relationship" source="id-411c601bc81a456983d9934815539c46" target="id-f4313423a4894ad59631518eea617ad3">
+        <connection identifier="id-717f8c7c4eae479c97634d41e0111220" relationshipRef="id-5e5d185c61aa48a794a04f715fb5b2c7" xsi:type="Relationship" source="id-411c601bc81a456983d9934815539c46" target="id-3c6011830cfb4960a567faaa35221060">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
               <color r="0" g="0" b="0" />
             </font>
           </style>
+          <bendpoint x="1716" y="132" />
+        </connection>
+        <connection identifier="id-37bb4eef857543efb399f75293d26b83" relationshipRef="id-2f4882f9a8694ef3927a8a70981db6ae" xsi:type="Relationship" source="id-411c601bc81a456983d9934815539c46" target="id-974865d236fa4e10aba1e4a939792beb">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Roboto" size="12">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+          <bendpoint x="2352" y="408" />
+          <bendpoint x="2352" y="180" />
         </connection>
         <connection identifier="id-499eaa379b2a4ae6af3c611a3cc347aa" relationshipRef="id-e9963771d33749a39251ad842e9bc04a" xsi:type="Relationship" source="id-8c34bfe75be2461686ccdc3255c13c97" target="id-cba7028fc7da425ab6d6258c2283944e">
           <style>
@@ -4163,13 +4044,39 @@ OAuth 2.0</documentation>
           </style>
           <bendpoint x="1428" y="540" />
         </connection>
-        <connection identifier="id-7f15b7e3474c46729c49588c08ee09f8" relationshipRef="id-f0d38a07d7fe4344afe09be8bce8221b" xsi:type="Relationship" source="id-c3077c622ceb4711936d83107a06c723" target="id-f4313423a4894ad59631518eea617ad3">
+        <connection identifier="id-7f15b7e3474c46729c49588c08ee09f8" relationshipRef="id-f0d38a07d7fe4344afe09be8bce8221b" xsi:type="Relationship" source="id-c3077c622ceb4711936d83107a06c723" target="id-3c6011830cfb4960a567faaa35221060">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="12">
               <color r="0" g="0" b="0" />
             </font>
           </style>
+        </connection>
+        <connection identifier="id-7581d2fbb6d845a98a554a7c0636ccaa" relationshipRef="id-c8cb745f3e534d9c8c32a55ac53ddeca" xsi:type="Relationship" source="id-c3077c622ceb4711936d83107a06c723" target="id-974865d236fa4e10aba1e4a939792beb">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Roboto" size="12">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+          <bendpoint x="2112" y="60" />
+        </connection>
+        <connection identifier="id-aac0a72afd79474f8be74a2b1e034486" relationshipRef="id-e8e31f037e394ba1804a497560342d2d" xsi:type="Relationship" source="id-9e5a420a55ce46618978f18f301fbcba" target="id-411c601bc81a456983d9934815539c46">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Roboto" size="12">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="id-91464933f70a43e4b0a1261bdaf67f43" relationshipRef="id-39a23e491c804b978ff398c096043f27" xsi:type="Relationship" source="id-9e5a420a55ce46618978f18f301fbcba" target="id-c3077c622ceb4711936d83107a06c723">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Roboto" size="12">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+          <bendpoint x="1860" y="258" />
         </connection>
       </view>
       <view identifier="id-a822c42d05694ef3832c11f44d7861b7" xsi:type="Diagram">
@@ -4823,7 +4730,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-6d9ae58c06e64669919424c30762f0f1" relationshipRef="id-e43f9308ba32495b98942755b0fb41be" xsi:type="Relationship" source="id-57aa2ef978d242fba7c1f7374f713367" target="id-15ee82cfbf5e4b32825afccebca1dff8">
+        <connection identifier="id-6d9ae58c06e64669919424c30762f0f1" relationshipRef="id-bcac4e0006f749d0a15fe4163967c868" xsi:type="Relationship" source="id-57aa2ef978d242fba7c1f7374f713367" target="id-15ee82cfbf5e4b32825afccebca1dff8">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4839,7 +4746,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-dec0c5e0ef14401e8c7c2a5e63ce02d4" relationshipRef="id-5fe81294a9704b61a7cba79c795fe44d" xsi:type="Relationship" source="id-20efa7a1c1884c1280f0cd219fd80267" target="id-d4f27847c17440e08a2b327403f047c5">
+        <connection identifier="id-2b49c2f6803c43d3b1f432e8140fee38" relationshipRef="id-b7790409b7d24fd18d440959816d0806" xsi:type="Relationship" source="id-20efa7a1c1884c1280f0cd219fd80267" target="id-15ee82cfbf5e4b32825afccebca1dff8">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4847,7 +4754,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-2b49c2f6803c43d3b1f432e8140fee38" relationshipRef="id-b95df70395e643b8ac1bd7dfbe334dfd" xsi:type="Relationship" source="id-20efa7a1c1884c1280f0cd219fd80267" target="id-15ee82cfbf5e4b32825afccebca1dff8">
+        <connection identifier="id-dec0c5e0ef14401e8c7c2a5e63ce02d4" relationshipRef="id-f1faf25ec1074807a41eb7ff10d2ad4b" xsi:type="Relationship" source="id-20efa7a1c1884c1280f0cd219fd80267" target="id-d4f27847c17440e08a2b327403f047c5">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4855,7 +4762,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-d2f863001a4f4622847843b31c00df55" relationshipRef="id-99f74ce6f0b8469bbd8e424118e05b0a" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-698d91c78cc746aa872bc6f766f6cfd2">
+        <connection identifier="id-04cfe0b2e89b47909e2da48b822aeb5f" relationshipRef="id-c3270c472a484f4385b8b3eb28545b6e" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-ef41d262a80d4b1c8b8326ec57f6cd39">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4863,7 +4770,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-04cfe0b2e89b47909e2da48b822aeb5f" relationshipRef="id-a082140bbef44ec9a442d9639e6845c6" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-ef41d262a80d4b1c8b8326ec57f6cd39">
+        <connection identifier="id-5a2802bde4a946a2b73acd14149d6ec0" relationshipRef="id-d0c3aa25dfa64b7b8fa7b5b9d94b20b7" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-99b611ff037d47a28d597a99fef82231">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4871,7 +4778,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-5a2802bde4a946a2b73acd14149d6ec0" relationshipRef="id-bf79f476c73a49bcae1ca13cfbd403a7" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-99b611ff037d47a28d597a99fef82231">
+        <connection identifier="id-d2f863001a4f4622847843b31c00df55" relationshipRef="id-1e6809450eef4709afc6ff3925d8c3e5" xsi:type="Relationship" source="id-c36a7caeb6e14180bb5264ecc9392bc9" target="id-698d91c78cc746aa872bc6f766f6cfd2">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4887,7 +4794,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-db516631ab634a638c67d539995bad84" relationshipRef="id-27104813f1d7464399d4e978ee36b55b" xsi:type="Relationship" source="id-e836bf3538ff4e249b3245b88c6c0b78" target="id-ef41d262a80d4b1c8b8326ec57f6cd39">
+        <connection identifier="id-db516631ab634a638c67d539995bad84" relationshipRef="id-6f43be4af3024a478329c6b339295a63" xsi:type="Relationship" source="id-e836bf3538ff4e249b3245b88c6c0b78" target="id-ef41d262a80d4b1c8b8326ec57f6cd39">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4903,7 +4810,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-d10571b0e2434bd8aeda1ea9d85cbdfe" relationshipRef="id-bbab8e37dcbc430ba08ea9b85c6947ec" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-12ca4ed139a84bf2b18a078aba50f318">
+        <connection identifier="id-d10571b0e2434bd8aeda1ea9d85cbdfe" relationshipRef="id-02198e7d850e4d0ba736bbf164278ae3" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-12ca4ed139a84bf2b18a078aba50f318">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4911,7 +4818,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-65431096e36249b4a0892fdc5f009ec7" relationshipRef="id-22ad9cdb7adf4763ad3a97d4b84d56d4" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-99b611ff037d47a28d597a99fef82231">
+        <connection identifier="id-65431096e36249b4a0892fdc5f009ec7" relationshipRef="id-fc124a62bdc1483fa06e1ab85db2e281" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-99b611ff037d47a28d597a99fef82231">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4919,7 +4826,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-9f015d390aed45329b540e28a7c38dfc" relationshipRef="id-109b62d3bbef4870aaa80c9cc0464f94" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-698d91c78cc746aa872bc6f766f6cfd2">
+        <connection identifier="id-9f015d390aed45329b540e28a7c38dfc" relationshipRef="id-c37bec9ad40747aba4bad80f6cb284d4" xsi:type="Relationship" source="id-9d593b45c0e24d738bdf89956591b02d" target="id-698d91c78cc746aa872bc6f766f6cfd2">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4959,14 +4866,14 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-02a5f620a85d4afe9047a8653345ca59" relationshipRef="id-2bce04040ec5481294a452bf28501f46" xsi:type="Relationship" source="id-a4c188ad0e284adfb9d3a2429305681b" target="id-77ccd1d7e137449184ce64e3d1424f6e">
+        <connection identifier="id-02a5f620a85d4afe9047a8653345ca59" relationshipRef="id-2bce04040ec5481294a452bf28501f46" xsi:type="Relationship" source="id-a4c188ad0e284adfb9d3a2429305681b" target="id-91af457a6e70417f9c2daf4db5e2cc4e">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
               <color r="0" g="0" b="0" />
             </font>
           </style>
-          <bendpoint x="1068" y="684" />
+          <bendpoint x="1065" y="790" />
         </connection>
         <connection identifier="id-d6d53559c6b5458b8ccb7feedf87f4bb" relationshipRef="id-317a1715d9e44f41a1b2345df6a204b2" xsi:type="Relationship" source="id-df2671e0a70d4f8f82359355bc0e5284" target="id-a4c188ad0e284adfb9d3a2429305681b">
           <style>
@@ -4976,7 +4883,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-d91193ade0a74253863a98cea0fec44c" relationshipRef="id-0fff6b382dcb429a8a1268cf6b7c05da" xsi:type="Relationship" source="id-df2671e0a70d4f8f82359355bc0e5284" target="id-77ccd1d7e137449184ce64e3d1424f6e">
+        <connection identifier="id-d91193ade0a74253863a98cea0fec44c" relationshipRef="id-0fff6b382dcb429a8a1268cf6b7c05da" xsi:type="Relationship" source="id-df2671e0a70d4f8f82359355bc0e5284" target="id-8bd31020134b4301bbea3ddbbef757bd">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -4984,7 +4891,7 @@ OAuth 2.0</documentation>
             </font>
           </style>
         </connection>
-        <connection identifier="id-3baa6bb1d4d44256a2ba996dbcfe3e16" relationshipRef="id-f0d38a07d7fe4344afe09be8bce8221b" xsi:type="Relationship" source="id-00956da5906440bf89020f83bc099482" target="id-77ccd1d7e137449184ce64e3d1424f6e">
+        <connection identifier="id-3baa6bb1d4d44256a2ba996dbcfe3e16" relationshipRef="id-f0d38a07d7fe4344afe09be8bce8221b" xsi:type="Relationship" source="id-00956da5906440bf89020f83bc099482" target="id-a30c18e7509140c3a4c9c5b970863322">
           <style>
             <lineColor r="0" g="0" b="0" />
             <font name="Roboto" size="10">
@@ -5173,24 +5080,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
             </node>
-            <node identifier="id-83a20cd7234040efa4b0fb3e3a4bdf05" elementRef="id-9e17395e3896420bb4fc6cf06bf24916" xsi:type="Element" x="600" y="456" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
-            <node identifier="id-671eac3e303c4452a579a705894913bb" elementRef="id-f17a19aa2a9048f69d49fe47acdc66ca" xsi:type="Element" x="492" y="456" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
           </node>
           <node identifier="id-1379ba03e7a542f0a06718fcc7689f7f" elementRef="id-31910d7ca0f942d6b8c5b3bea0eeeaa6" xsi:type="Element" x="780" y="228" w="252" h="637">
             <style>
@@ -5200,15 +5089,6 @@ OAuth 2.0</documentation>
                 <color r="0" g="0" b="0" />
               </font>
             </style>
-            <node identifier="id-6bc52e657521414089ab326aad7334cf" elementRef="id-359bef4be1fb45dc9ed7c810d900f6b7" xsi:type="Element" x="900" y="828" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-4885d2a6bc4649c89f08d54f97563f1f" elementRef="id-4d4ee54406594bffb577f7fcd2b2f89c" xsi:type="Element" x="792" y="828" w="108" h="25">
               <style>
                 <fillColor r="201" g="231" b="183" a="100" />
@@ -5239,15 +5119,6 @@ OAuth 2.0</documentation>
             <node identifier="id-6b06190a85894c7c90261efe5a0229b9" elementRef="id-493bbd322ce4476c90f408e93afe19a8" xsi:type="Element" x="792" y="300" w="228" h="37">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
-            <node identifier="id-7cd4d82ad97e4179b8223e021aa0f843" elementRef="id-7f61d79c5626441ead2ba907d6e52a8c" xsi:type="Element" x="792" y="804" w="228" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
                 <font name="Roboto" size="10">
                   <color r="0" g="0" b="0" />
@@ -5335,15 +5206,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
             </node>
-            <node identifier="id-b12177d4ce1d4bca87b05854118ea229" elementRef="id-e9d6426d9d194ff99c6072aff1bf48ea" xsi:type="Element" x="1295" y="300" w="109" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-5a8ebc588ec44ce2b77066df81c6a24a" elementRef="id-09b32c705ecc45b897f508f193e2c8c2" xsi:type="Element" x="1176" y="120" w="228" h="37">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
@@ -5407,15 +5269,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
             </node>
-            <node identifier="id-839054b89ed34f4a9620b4c757c91c0d" elementRef="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Element" x="1607" y="636" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-8e32a15a708149a792ac49bb2b0faa67" elementRef="id-8ed279cb12c24e2d9aa99c269b7ce8eb" xsi:type="Element" x="1489" y="516" w="226" h="37">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
@@ -5452,24 +5305,6 @@ OAuth 2.0</documentation>
                 <color r="0" g="0" b="0" />
               </font>
             </style>
-            <node identifier="id-15133f02049e48ed8f40944179abc47c" elementRef="id-163ef12cabb34a71a78fe2799ea8a1fa" xsi:type="Element" x="1896" y="540" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
-            <node identifier="id-ded66480e1a542c2ab65c07527bbf1d1" elementRef="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Element" x="1789" y="540" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-b42d88bb02bf4a0c95e4db9ceeb0d21a" elementRef="id-9d1044dfd37b4f0f9bc95c381ff8db27" xsi:type="Element" x="1789" y="408" w="226" h="97">
               <style>
                 <fillColor r="204" g="204" b="255" a="100" />
@@ -5551,15 +5386,6 @@ OAuth 2.0</documentation>
                 <color r="0" g="0" b="0" />
               </font>
             </style>
-            <node identifier="id-9cb03e69e26d48a4bb0867c75cc9daba" elementRef="id-9e17395e3896420bb4fc6cf06bf24916" xsi:type="Element" x="600" y="696" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
             <node identifier="id-795e96a493434eaf9022d8ed2207912d" elementRef="id-f46ff2d0c88c4e93828788d7dfac7e7a" xsi:type="Element" x="492" y="600" w="228" h="37">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
@@ -5597,15 +5423,6 @@ OAuth 2.0</documentation>
               </font>
             </style>
             <node identifier="id-6506f6cb52e84224802edf24f5299c9f" elementRef="id-5b4e6d5e61df4f07ac4828d381f604b0" xsi:type="Element" x="1488" y="336" w="120" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
-            <node identifier="id-809a29408112464490b8b11de45df249" elementRef="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Element" x="1607" y="336" w="108" h="25">
               <style>
                 <fillColor r="201" g="231" b="183" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
@@ -5671,15 +5488,6 @@ OAuth 2.0</documentation>
             <node identifier="id-a1f2fb283d404e30a8789cb21a7bdf3c" elementRef="id-f5639073d83e4e5faeec5a747e14912a" xsi:type="Element" x="1177" y="432" w="228" h="37">
               <style>
                 <fillColor r="181" g="255" b="255" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
-            <node identifier="id-1b5df7e09dd342cb89343665d8f10ff1" elementRef="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Element" x="1177" y="516" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
                 <lineColor r="92" g="92" b="92" a="100" />
                 <font name="Roboto" size="10">
                   <color r="0" g="0" b="0" />
@@ -5785,15 +5593,6 @@ OAuth 2.0</documentation>
                 </font>
               </style>
             </node>
-            <node identifier="id-a62f94da0184433e80e0593344c62ec8" elementRef="id-68504b7319da4ae3b8d845c0b72cf490" xsi:type="Element" x="1295" y="828" w="108" h="25">
-              <style>
-                <fillColor r="201" g="231" b="183" a="100" />
-                <lineColor r="92" g="92" b="92" a="100" />
-                <font name="Roboto" size="10">
-                  <color r="0" g="0" b="0" />
-                </font>
-              </style>
-            </node>
           </node>
           <node identifier="id-339cd9fdf591444a9ed633a33ddfd935" elementRef="id-3d6ef01cf04e4178ae678893df4aaccc" xsi:type="Element" x="1476" y="684" w="552" h="252">
             <style>
@@ -5811,24 +5610,6 @@ OAuth 2.0</documentation>
                   <color r="0" g="0" b="0" />
                 </font>
               </style>
-              <node identifier="id-268b790bf4584edfac0a52581524ef1b" elementRef="id-bfab9a67f8644036a9c40ea77b7746f5" xsi:type="Element" x="1773" y="888" w="120" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="10">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
-              <node identifier="id-3bb8d95d844f48989dbf811cddb29e4e" elementRef="id-bc614089a5904f8fb9ba1aab4cc66153" xsi:type="Element" x="1892" y="888" w="110" h="25">
-                <style>
-                  <fillColor r="201" g="231" b="183" a="100" />
-                  <lineColor r="92" g="92" b="92" a="100" />
-                  <font name="Roboto" size="10">
-                    <color r="0" g="0" b="0" />
-                  </font>
-                </style>
-              </node>
             </node>
             <node identifier="id-e97b49f28f3b474bab04e0d65fbd926c" elementRef="id-d2dd3391b24b483e8193d6eec5a9f8f2" xsi:type="Element" x="1761" y="780" w="252" h="55">
               <style>
