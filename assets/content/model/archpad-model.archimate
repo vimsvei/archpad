@@ -836,6 +836,9 @@ OAuth 2.0</documentation>
             <bounds x="312" y="636" width="240" height="55"/>
             <feature name="deriveElementLineColor" value="false"/>
             <sourceConnection xsi:type="archimate:Connection" id="id-23c627c3256d4555bc78887e46e77367" source="id-efb5278afaf8429e85e9f34319c931e5" target="id-4e3f4e530af641a38793bc5eca385d23" archimateRelationship="id-8caf034112344cb9afbdfc75708d2fad"/>
+            <child xsi:type="archimate:DiagramObject" id="id-ac69495b16d1481f8c9d1c9322580443" archimateElement="id-f6a7d8af73d34f05893f7e9f4fa6180f">
+              <bounds x="108" y="24" width="120" height="25"/>
+            </child>
           </child>
           <child xsi:type="archimate:DiagramObject" id="id-caf4d5d0ccb24b0d931c31e975f41957" targetConnections="id-ee44fbe8bb8847549d74319072bc3958 id-2b4e240485034309a30ec5274f02f1d6 id-95b0a7df8e734cb6af9827277853c932" archimateElement="id-4f2bb5d075184736b88e6eb4efe82863">
             <bounds x="312" y="27" width="240" height="154"/>
@@ -1620,10 +1623,6 @@ OAuth 2.0</documentation>
               <bounds x="575" y="192" width="108" height="25"/>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
-            <child xsi:type="archimate:DiagramObject" id="id-cbd78d11cfda4759a3aa66a927058711" archimateElement="id-86142c10ba24478cbf90b84ad4086548">
-              <bounds x="575" y="168" width="108" height="25"/>
-              <feature name="deriveElementLineColor" value="false"/>
-            </child>
             <child xsi:type="archimate:DiagramObject" id="id-49ddee318d024241a47cb13e3a4f4ac7" targetConnections="id-0d079ba7d2e446cf94405ab261ec3d1f" archimateElement="id-1c2d7881f4d54a6488b86aa6fc14d541">
               <bounds x="468" y="120" width="214" height="25"/>
               <feature name="deriveElementLineColor" value="false"/>
@@ -1682,6 +1681,10 @@ OAuth 2.0</documentation>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-2e5515df63f3461dabd6736e42c34d50" targetConnections="id-c055e33794054f9499058ca8f3f007b4" archimateElement="id-785e76283e0249729fdd1db2ca30ee60">
               <bounds x="468" y="36" width="214" height="25"/>
+              <feature name="deriveElementLineColor" value="false"/>
+            </child>
+            <child xsi:type="archimate:DiagramObject" id="id-cbd78d11cfda4759a3aa66a927058711" archimateElement="id-86142c10ba24478cbf90b84ad4086548">
+              <bounds x="575" y="168" width="108" height="25"/>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
           </child>

@@ -46,10 +46,10 @@ export function DrawIoUploader() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">{t("upload.draw-io.title")}</h2>
+    <div className="flex flex-1 flex-col gap-4 min-h-0">
+      <h2 className="text-xl font-semibold shrink-0">{t("upload.draw-io.title")}</h2>
 
-      <Card className="p-4">
+      <Card className="p-4 shrink-0">
         <div className="flex flex-col gap-3">
           <div className="text-sm text-muted-foreground">{t("upload.draw-io.subtitle")}</div>
 
@@ -123,21 +123,26 @@ export function DrawIoUploader() {
                 <div className="text-muted-foreground">{Math.round(state.progress ?? 0)}%</div>
               </div>
               <Progress value={state.progress ?? 0} />
-              {state?.error ? <div className="text-sm text-destructive">{state.error}</div> : null}
             </div>
           ) : null}
         </div>
       </Card>
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
+      <Card className="p-4 flex flex-col overflow-hidden min-h-[200px] max-h-[min(450px,50vh)]">
+        <div className="flex items-center justify-between shrink-0">
           <div className="font-medium">{t("upload.draw-io.logs.title")}</div>
           {state?.logs?.length ? (
             <div className="text-xs text-muted-foreground">{t("upload.draw-io.logs.count", { count: state.logs.length })}</div>
           ) : null}
         </div>
 
-        <div className="mt-3 max-h-[280px] space-y-2 overflow-y-auto pr-1">
+        {state?.error ? (
+          <div className="mt-3 p-3 rounded-md bg-destructive/10 text-destructive text-sm break-words shrink-0">
+            {state.error}
+          </div>
+        ) : null}
+
+        <div className="mt-3 flex-1 min-h-0 space-y-2 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
           {state?.logs?.length ? (
             state.logs.slice(-50).map((log: any) => (
               <div key={`${log.at}-${log.key}`} className="text-sm">
