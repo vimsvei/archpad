@@ -59,7 +59,7 @@ spec:
       serviceAccountName: arch-repo-service
       containers:
         - name: arch-repo-service
-          image: archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service:main-e948839c
+          image: archpad-cr.registry.twcstorage.ru/archpad/arch-repo-service:main-566e8b41
           imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
