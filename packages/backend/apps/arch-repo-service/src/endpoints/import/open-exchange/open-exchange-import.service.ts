@@ -39,6 +39,7 @@ import { TechnologyHostNode } from '@/model/archimate/technology/technology-node
 import { OperatingSystem } from '@/model/archimate/technology/operating-system.entity';
 import { NodeTypeDirectory } from '@/model/directories/directories';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
+import { TechnologyNodeHierarchyMap } from '@/model/maps/technology-node-hierarchy.map';
 import { ApplicationFunctionInterfaceMap } from '@/model/maps/application-function-interface.map';
 import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
 import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
@@ -52,6 +53,7 @@ import { ApplicationComponentDirectoryMap } from '@/model/maps/application-compo
 import { TechnologyNetworkHierarchyMap } from '@/model/maps/technology-network-hierarchy.map';
 import { SolutionApplicationComponentMap } from '@/model/maps/solution-application-component.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
+import { SolutionConstraintMap } from '@/model/maps/solution-constraint.map';
 import { Location } from '@/model/archimate/common/location.entity';
 import { BusinessProduct } from '@/model/archimate/business/business-product.entity';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
@@ -741,7 +743,6 @@ export class OpenExchangeImportService {
     // Keep directories (and directory items) intact; remove only ArchiMate domain tables.
     // Order matters due to FK constraints (maps first, then base tables).
     // Clear only data for the given tenant, not the entire tables.
-    const conn = em.getConnection();
     const logContext = 'OpenExchangeImportService.clearRepository';
 
     reporter.log('repository.open-exchange.clear-repo.count', {
@@ -749,16 +750,30 @@ export class OpenExchangeImportService {
     });
 
     // Map tables: delete via ORM (component/interface/role/solution scoped)
+    // ApplicationFunctionDataObjectMap: use QueryBuilder (nativeDelete has composite PK subquery bug)
+    // createQueryBuilder is on Knex EntityManager (Postgres); cast for TypeScript
+    const qb = (em as any).createQueryBuilder(ApplicationFunctionDataObjectMap);
+    const qbDeleted = await qb.delete({ component: { tenantId } }).execute('run');
+    const qbAffected =
+      typeof qbDeleted === 'object' &&
+      qbDeleted != null &&
+      'affectedRows' in qbDeleted
+        ? (qbDeleted as { affectedRows: number }).affectedRows
+        : 0;
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted ${qbAffected} rows from ApplicationFunctionDataObjectMap (qb)`,
+      logContext,
+    );
+    reporter.log('repository.open-exchange.clear-repo.entity', {
+      entity: 'ApplicationFunctionDataObjectMap',
+      deleted: qbAffected,
+    });
+
     const mapDeletes: Array<{
       entity: object;
       where: object;
       label: string;
     }> = [
-      {
-        entity: ApplicationFunctionDataObjectMap,
-        where: { component: { tenantId } },
-        label: 'ApplicationFunctionDataObjectMap',
-      },
       {
         entity: ApplicationComponentDataObjectMap,
         where: { component: { tenantId } },
@@ -825,6 +840,21 @@ export class OpenExchangeImportService {
         label: 'ApplicationComponentDirectoryMap',
       },
       {
+        entity: TechnologyNodeSystemSoftwareMap,
+        where: { node: { tenantId } },
+        label: 'TechnologyNodeSystemSoftwareMap',
+      },
+      {
+        entity: TechnologyNodeHierarchyMap,
+        where: {
+          $or: [
+            { parent: { tenantId } },
+            { child: { tenantId } },
+          ],
+        },
+        label: 'TechnologyNodeHierarchyMap',
+      },
+      {
         entity: TechnologyNetworkHierarchyMap,
         where: {
           $or: [
@@ -854,6 +884,11 @@ export class OpenExchangeImportService {
         where: { solution: { tenantId } },
         label: 'SolutionMotivationElementMap',
       },
+      {
+        entity: SolutionConstraintMap,
+        where: { solution: { tenantId } },
+        label: 'SolutionConstraintMap',
+      },
     ];
 
     for (const { entity, where, label } of mapDeletes) {
@@ -867,34 +902,6 @@ export class OpenExchangeImportService {
         deleted,
       });
     }
-
-    // TechnologyNode has no tenantId in entity; use raw SQL for node-scoped maps
-    await conn.execute(
-      `DELETE FROM map_technology_node_system_software WHERE node_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?)`,
-      [tenantId],
-    );
-    this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from map_technology_node_system_software (raw)`,
-      logContext,
-    );
-    await conn.execute(
-      `DELETE FROM map_technology_node_hierarchy WHERE node_parent_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?) OR node_child_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?)`,
-      [tenantId, tenantId],
-    );
-    this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from map_technology_node_hierarchy (raw)`,
-      logContext,
-    );
-
-    // map_solution_constraint: no ORM entity, use raw SQL
-    await conn.execute(
-      `DELETE FROM map_solution_constraint WHERE solution_id IN (SELECT id FROM solutions WHERE tenant_id = ?)`,
-      [tenantId],
-    );
-    this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from map_solution_constraint (raw)`,
-      logContext,
-    );
 
     // Base tables with tenant_id
     const baseDeletes: Array<{ entity: object; label: string }> = [
@@ -912,6 +919,8 @@ export class OpenExchangeImportService {
       { entity: Solution, label: 'Solution (solutions)' },
       { entity: SystemSoftware, label: 'SystemSoftware (system_software)' },
       { entity: TechnologyLogicalNetwork, label: 'TechnologyLogicalNetwork (technology_networks)' },
+      { entity: TechnologyHostNode, label: 'TechnologyHostNode (technology_nodes)' },
+      { entity: TechnologyDeviceNode, label: 'TechnologyDeviceNode (technology_nodes)' },
     ];
 
     for (const { entity, label } of baseDeletes) {
@@ -928,34 +937,30 @@ export class OpenExchangeImportService {
       });
     }
 
-    // technology_nodes: entity extends NamedObject without tenantId; use raw SQL
-    await conn.execute(
-      `DELETE FROM technology_nodes WHERE tenant_id = ?`,
-      [tenantId],
-    );
+    // actors, locations: no tenant_id; delete only those linked to tenant's data via relations
+    const actorsDeleted = await em.nativeDelete(BusinessActor, {
+      roles: { role: { tenantId } },
+    } as never);
     this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from technology_nodes (raw)`,
+      `[tenantId=${tenantId}] clearRepository: deleted ${actorsDeleted} rows from BusinessActor (roles.role.tenantId)`,
       logContext,
     );
+    reporter.log('repository.open-exchange.clear-repo.entity', {
+      entity: 'BusinessActor',
+      deleted: actorsDeleted,
+    });
 
-    // actors, locations: no tenant_id; delete only those linked to tenant's data
-    await conn.execute(
-      `DELETE FROM actors WHERE id IN (SELECT DISTINCT actor_id FROM map_business_actor_role WHERE role_id IN (SELECT id FROM roles WHERE tenant_id = ?))`,
-      [tenantId],
-    );
+    const locationsDeleted = await em.nativeDelete(Location, {
+      networks: { tenantId },
+    } as never);
     this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from actors (raw)`,
+      `[tenantId=${tenantId}] clearRepository: deleted ${locationsDeleted} rows from Location (networks.tenantId)`,
       logContext,
     );
-
-    await conn.execute(
-      `DELETE FROM locations WHERE id IN (SELECT DISTINCT location_id FROM technology_networks WHERE tenant_id = ? AND location_id IS NOT NULL)`,
-      [tenantId],
-    );
-    this.logger.log(
-      `[tenantId=${tenantId}] clearRepository: deleted from locations (raw)`,
-      logContext,
-    );
+    reporter.log('repository.open-exchange.clear-repo.entity', {
+      entity: 'Location',
+      deleted: locationsDeleted,
+    });
   }
 
   private async createCrossLayerEntities(

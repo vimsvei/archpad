@@ -25,6 +25,13 @@ import { OperatingSystem } from './operating-system.entity';
   discriminatorColumn: 'kind',
 })
 export abstract class TechnologyNode extends NamedObject {
+  @Property({
+    type: 'uuid',
+    name: 'tenant_id',
+    nullable: true, // migration may have nulls; clearRepository filters by tenantId
+  })
+  tenantId?: string;
+
   @Enum({ items: () => NodeKind, nativeEnumName: 'node_kind_enum' })
   kind!: NodeKind;
 
