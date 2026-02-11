@@ -1,57 +1,9 @@
 {
-  "upload": {
-    "repository": {
-      "title": "Importar repositorio"
-    },
-    "open-exchange": {
-      "subtitle": "Importar modelo ArchiMate desde formato Open Exchange XML (Archi, Sparx, etc.)",
-      "dropzone": {
-        "title": "Arrastra el archivo XML o haz clic para seleccionar",
-        "hint": "Acepta archivos .xml (Archimate 3.0 / 3.1)"
-      },
-      "clear-before": {
-        "label": "Limpiar repositorio antes de importar (eliminar datos existentes)"
-      },
-      "action": {
-        "start": "Iniciar importación"
-      },
-      "job-id": "ID de tarea",
-      "logs": {
-        "title": "Registro de importación",
-        "count": "{count} entradas",
-        "empty": "Aún no hay registros"
-      },
-      "summary": {
-        "title": "Resultado de importación",
-        "line": "Componentes: {components}, Funciones: {functions}, Enlaces: {links}, Flujos: {flows}",
-        "cross-layer": "Actores: {businessActors}, Roles: {businessRoles}, Software del sistema: {systemSoftware}, Redes: {communicationNetworks}, Nodos: {technologyNodes}"
-      }
-    }
-  },
-  "repository": {
-    "open-exchange": {
-      "progress": "Progreso de importación",
-      "stage": {
-        "started": "Importación iniciada: {fileName}",
-        "parse": "Analizando XML…",
-        "create-entities": "Creando entidades: {components} componentes, {functions} funciones, {dataObjects} objetos de datos",
-        "clear-repo": "Limpiando repositorio…",
-        "create-links": "Creando enlaces…",
-        "create-technology-links": "Creando enlaces tecnológicos…",
-        "create-data-access": "Creando acceso a datos…",
-        "create-flows": "Creando flujos…",
-        "completed": "Importación completada: {components} componentes, {functions} funciones, {links} enlaces, {flows} flujos"
-      },
-      "clear-repo": {
-        "count": "Realizando {count} operaciones de limpieza",
-        "entity": "{entity}: {deleted} filas eliminadas"
-      },
-      "error": "Error de importación: {message}",
-      "client": {
-        "selected": "Archivo seleccionado: {fileName}",
-        "job-created": "Tarea creada: {jobId}",
-        "poll-failed": "Error al obtener estado de la tarea: {message}"
-      }
-    }
+  "tab": {
+    "relations": "Relaciones",
+    "business": "Negocio",
+    "business.actors": "Actores",
+    "business.processes": "Procesos",
+    "business.roles": "Roles"
   }
 }

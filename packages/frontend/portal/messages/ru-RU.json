@@ -1,57 +1,9 @@
 {
-  "upload": {
-    "repository": {
-      "title": "Импорт репозитория"
-    },
-    "open-exchange": {
-      "subtitle": "Импорт ArchiMate-модели из формата Open Exchange XML (Archi, Sparx и др.)",
-      "dropzone": {
-        "title": "Перетащите XML-файл или нажмите для выбора",
-        "hint": "Принимаются файлы .xml (Archimate 3.0 / 3.1)"
-      },
-      "clear-before": {
-        "label": "Очистить репозиторий перед импортом (удалить существующие данные)"
-      },
-      "action": {
-        "start": "Начать импорт"
-      },
-      "job-id": "ID задачи",
-      "logs": {
-        "title": "Журнал импорта",
-        "count": "Записей: {count}",
-        "empty": "Пока нет записей"
-      },
-      "summary": {
-        "title": "Результат импорта",
-        "line": "Компоненты: {components}, Функции: {functions}, Связи: {links}, Потоки: {flows}",
-        "cross-layer": "Акторы: {businessActors}, Роли: {businessRoles}, Системное ПО: {systemSoftware}, Сети: {communicationNetworks}, Узлы: {technologyNodes}"
-      }
-    }
-  },
-  "repository": {
-    "open-exchange": {
-      "progress": "Прогресс импорта",
-      "stage": {
-        "started": "Импорт запущен: {fileName}",
-        "parse": "Парсинг XML…",
-        "create-entities": "Создание сущностей: {components} компонентов, {functions} функций, {dataObjects} объектов данных",
-        "clear-repo": "Очистка репозитория…",
-        "create-links": "Создание связей…",
-        "create-technology-links": "Создание технологических связей…",
-        "create-data-access": "Создание доступа к данным…",
-        "create-flows": "Создание потоков…",
-        "completed": "Импорт завершён: {components} компонентов, {functions} функций, {links} связей, {flows} потоков"
-      },
-      "clear-repo": {
-        "count": "Выполнение {count} операций очистки",
-        "entity": "{entity}: удалено {deleted} строк"
-      },
-      "error": "Ошибка импорта: {message}",
-      "client": {
-        "selected": "Выбран файл: {fileName}",
-        "job-created": "Задача создана: {jobId}",
-        "poll-failed": "Ошибка получения статуса задачи: {message}"
-      }
-    }
+  "tab": {
+    "relations": "Связи",
+    "business": "Бизнес",
+    "business.actors": "Исполнители",
+    "business.processes": "Процессы",
+    "business.roles": "Роли"
   }
 }
