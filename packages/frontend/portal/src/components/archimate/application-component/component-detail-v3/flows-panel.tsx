@@ -4,6 +4,7 @@ import * as React from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export type FlowItem = {
   id: string
@@ -37,16 +38,22 @@ export function FlowsPanel({
     <div>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-foreground">{t("tab.flows")}</h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onAdd?.()}
-          disabled={!onAdd}
-          title={onAdd ? undefined : t("action.not-implemented")}
-        >
-          <Plus className="size-4 mr-2" />
-          {t("action.add")}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onAdd?.()}
+              disabled={!onAdd}
+              className="shrink-0"
+            >
+              <Plus className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {onAdd ? t("action.add") : t("action.not-implemented")}
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div className="border border-border rounded-lg overflow-hidden bg-card">
         <div className="overflow-x-auto">

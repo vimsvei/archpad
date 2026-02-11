@@ -122,12 +122,13 @@ export function DetailHeader({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              size="sm"
+              variant="default"
+              size="icon"
               onClick={onSave}
               disabled={!isDirty || !isDraftValid || isSaving}
+              className="size-12 shrink-0 [&_svg]:size-5"
             >
-              <Save className="size-4 mr-2" />
-              {t("action.save")}
+              <Save />
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t("action.save")}</TooltipContent>

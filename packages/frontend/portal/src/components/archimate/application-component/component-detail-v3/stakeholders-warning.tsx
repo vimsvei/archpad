@@ -4,6 +4,7 @@ import * as React from "react"
 import { AlertCircle, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export type StakeholdersWarningProps = {
   t: (key: string, params?: object) => string
@@ -25,10 +26,14 @@ export function StakeholdersWarning({
           <span className="text-sm text-foreground">
             {t("table.component.stakeholders.no-results", { component: entityName })}
           </span>
-          <Button variant="outline" size="sm" onClick={onAdd} className="shrink-0">
-            <UserPlus className="size-4 mr-2" />
-            {t("action.add")}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon" onClick={onAdd} className="shrink-0">
+                <UserPlus className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("action.add")}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </Card>
