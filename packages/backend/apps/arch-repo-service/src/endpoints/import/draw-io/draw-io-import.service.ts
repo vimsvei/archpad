@@ -13,6 +13,7 @@ import { ApplicationComponentFunctionMap } from '@/model/maps/application-compon
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
 import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
+import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import { SystemSoftwareKind } from '@/model/enums/system-software-kind.enum';
 import {
@@ -384,8 +385,34 @@ export class DrawIoImportService {
     reporter: DrawIoImportJobReporter,
     tenantId: string,
   ) {
-    const deletes: Array<{ entity: object; where: object; label: string }> = [
-      { entity: ApplicationFlow, where: { tenantId }, label: 'ApplicationFlow' },
+    // ApplicationFunctionDataObjectMap: MikroORM composite PK bug. Use raw SQL.
+    const conn = em.getConnection();
+    await conn.execute(
+      `DELETE FROM map_application_function_data_object WHERE component_id IN (SELECT id FROM components WHERE tenant_id = ?)`,
+      [tenantId],
+    );
+    reporter.log('repository.draw-io.clear-repo.entity', {
+      entity: 'ApplicationFunctionDataObjectMap',
+      deleted: 'N/A',
+    });
+
+    // SolutionFlowMap must be deleted before ApplicationFlow (FK: flow_id).
+    const solutionFlowDeleted = await em.nativeDelete(SolutionFlowMap, {
+      solution: { tenantId },
+    } as never);
+    reporter.log('repository.draw-io.clear-repo.entity', {
+      entity: 'SolutionFlowMap',
+      deleted: String(solutionFlowDeleted),
+    });
+
+    // ApplicationFlow must be deleted before ApplicationComponentFunctionMap and ApplicationComponentDataObjectMap.
+    const flowDeleted = await em.nativeDelete(ApplicationFlow, { tenantId } as never);
+    reporter.log('repository.draw-io.clear-repo.entity', {
+      entity: 'ApplicationFlow',
+      deleted: String(flowDeleted),
+    });
+
+    const mapDeletes: Array<{ entity: object; where: object; label: string }> = [
       {
         entity: ApplicationComponentHierarchyMap,
         where: {
@@ -413,7 +440,7 @@ export class DrawIoImportService {
       },
     ];
 
-    for (const { entity, where, label } of deletes) {
+    for (const { entity, where, label } of mapDeletes) {
       const deleted = await em.nativeDelete(entity as never, where as never);
       reporter.log('repository.draw-io.clear-repo.entity', {
         entity: label,

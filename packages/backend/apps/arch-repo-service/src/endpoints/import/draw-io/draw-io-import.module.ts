@@ -8,6 +8,8 @@ import { ApplicationComponentFunctionMap } from '@/model/maps/application-compon
 import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
 import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
 import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
+import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
+import { Solution } from '@/model/solution/solution.entity';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
 import { DrawIoImportController } from './draw-io-import.controller';
 import { DrawIoImportService } from './draw-io-import.service';
@@ -24,6 +26,8 @@ import { DrawIoImportJobStore } from './draw-io-import.job-store';
       ApplicationComponentDataObjectMap,
       ApplicationComponentSystemSoftwareMap,
       ApplicationComponentHierarchyMap,
+      SolutionFlowMap,
+      Solution,
       SystemSoftware,
     ]),
   ],

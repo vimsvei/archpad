@@ -29,6 +29,8 @@ import { TechnologyHostNode } from '@/model/archimate/technology/technology-node
 import { OperatingSystem } from '@/model/archimate/technology/operating-system.entity';
 import { NodeTypeDirectory } from '@/model/directories/directories';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
+import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
+import { Solution } from '@/model/solution/solution.entity';
 
 @Module({
   imports: [
@@ -59,6 +61,8 @@ import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-sy
       OperatingSystem,
       NodeTypeDirectory,
       TechnologyNodeSystemSoftwareMap,
+      SolutionFlowMap,
+      Solution,
     ]),
   ],
   controllers: [OpenExchangeImportController],

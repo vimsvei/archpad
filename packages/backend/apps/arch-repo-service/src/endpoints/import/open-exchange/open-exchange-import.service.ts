@@ -54,6 +54,7 @@ import { ApplicationComponentHierarchyMap } from '@/model/maps/application-compo
 import { ApplicationComponentDirectoryMap } from '@/model/maps/application-component-directory.map';
 import { TechnologyNetworkHierarchyMap } from '@/model/maps/technology-network-hierarchy.map';
 import { SolutionApplicationComponentMap } from '@/model/maps/solution-application-component.map';
+import { SolutionFlowMap } from '@/model/maps/solution-flow.map';
 import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
 import { SolutionConstraintMap } from '@/model/maps/solution-constraint.map';
 import { Location } from '@/model/archimate/common/location.entity';
@@ -996,6 +997,30 @@ export class OpenExchangeImportService {
       deleted: 'N/A',
     });
 
+    // SolutionFlowMap and ApplicationFlow must be deleted BEFORE maps they reference.
+    // ApplicationFlow references ApplicationComponentFunctionMap and ApplicationComponentDataObjectMap.
+    const solutionFlowDeleted = await em.nativeDelete(SolutionFlowMap, {
+      solution: { tenantId },
+    } as never);
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted ${solutionFlowDeleted} rows from SolutionFlowMap`,
+      logContext,
+    );
+    reporter.log('repository.open-exchange.clear-repo.entity', {
+      entity: 'SolutionFlowMap',
+      deleted: solutionFlowDeleted,
+    });
+
+    const flowDeleted = await em.nativeDelete(ApplicationFlow, { tenantId } as never);
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted ${flowDeleted} rows from ApplicationFlow`,
+      logContext,
+    );
+    reporter.log('repository.open-exchange.clear-repo.entity', {
+      entity: 'ApplicationFlow',
+      deleted: flowDeleted,
+    });
+
     const mapDeletes: Array<{
       entity: object;
       where: object;
@@ -1136,9 +1161,10 @@ export class OpenExchangeImportService {
     }
 
     // Base tables with tenant_id.
-    // Order: delete technology_nodes BEFORE system_software (FK: technology_nodes.operating_system_id → system_software).
+    // Order: delete technology_nodes BEFORE technology_networks (FK: technology_nodes.network_id → technology_networks)
+    //        and BEFORE system_software (FK: technology_nodes.operating_system_id → system_software).
+    // ApplicationFlow already deleted above (before maps it references).
     const baseDeletes: Array<{ entity: object; label: string }> = [
-      { entity: ApplicationFlow, label: 'ApplicationFlow (flows)' },
       { entity: ArchimateInterface, label: 'Interface (interfaces)' },
       { entity: ArchimateEvent, label: 'Event (events)' },
       { entity: ArchimateFunction, label: 'Function (functions)' },
@@ -1150,9 +1176,9 @@ export class OpenExchangeImportService {
       { entity: Capability, label: 'Capability (capabilities)' },
       { entity: Stakeholder, label: 'Stakeholder (stakeholders)' },
       { entity: Solution, label: 'Solution (solutions)' },
-      { entity: TechnologyLogicalNetwork, label: 'TechnologyLogicalNetwork (technology_networks)' },
       { entity: TechnologyHostNode, label: 'TechnologyHostNode (technology_nodes)' },
       { entity: TechnologyDeviceNode, label: 'TechnologyDeviceNode (technology_nodes)' },
+      { entity: TechnologyLogicalNetwork, label: 'TechnologyLogicalNetwork (technology_networks)' },
       { entity: SystemSoftware, label: 'SystemSoftware (system_software)' },
     ];
 
