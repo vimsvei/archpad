@@ -254,7 +254,8 @@ export function EditItem({ id }: EditItemProps) {
   const [sheetOpen, setSheetOpen] = React.useState(false)
   const [sheetType, setSheetType] = React.useState<SheetType | null>(null)
   const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
-  const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
+  const [sheetSelectedItemsData, setSheetSelectedItemsData] = React.useState<Map<string, SelectableItem>>(new Map())
+  const sheetSelectedItems = React.useMemo(() => new Set(sheetSelectedItemsData.keys()), [sheetSelectedItemsData])
   const [sheetPage, setSheetPage] = React.useState(1)
   const [sheetPageSize, setSheetPageSize] = React.useState<10 | 25 | 50 | 100>(25)
 
@@ -491,30 +492,30 @@ export function EditItem({ id }: EditItemProps) {
   const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
     setSheetType(type)
     setSheetSearchQuery("")
-    setSheetSelectedItems(new Set())
+    setSheetSelectedItemsData(new Map())
     setSheetPage(1)
     setSheetPageSize(25)
     setSheetOpen(true)
   }, [])
 
-  // Handler for toggling item selection in sheet
-  const handleSheetToggleItem = React.useCallback((itemId: string) => {
-    setSheetSelectedItems((prev) => {
-      const next = new Set(prev)
+  // Handler for toggling item selection in sheet (pass item when selecting to preserve across pages)
+  const handleSheetToggleItem = React.useCallback((itemId: string, item?: SelectableItem) => {
+    setSheetSelectedItemsData((prev) => {
+      const next = new Map(prev)
       if (next.has(itemId)) {
         next.delete(itemId)
-      } else {
-        next.add(itemId)
+      } else if (item) {
+        next.set(itemId, item)
       }
       return next
     })
   }, [])
 
-  // Handler for adding selected items
+  // Handler for adding selected items (uses stored data so selection persists across pages)
   const handleSheetAdd = React.useCallback(() => {
     if (!sheetType) return
     
-    const itemsToAdd = sheetItems.filter((item) => sheetSelectedItems.has(item.id))
+    const itemsToAdd = Array.from(sheetSelectedItemsData.values())
     if (itemsToAdd.length === 0) return
 
     if (sheetType === "data-objects") {
@@ -531,7 +532,7 @@ export function EditItem({ id }: EditItemProps) {
 
     toast.success(t("action.added"))
     setSheetOpen(false)
-  }, [sheetType, sheetItems, sheetSelectedItems, dispatch, t])
+  }, [sheetType, sheetSelectedItemsData, dispatch, t])
 
   // Get sheet title and icon based on type
   const sheetConfig = React.useMemo(() => {

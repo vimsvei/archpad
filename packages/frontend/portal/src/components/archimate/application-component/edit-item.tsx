@@ -61,7 +61,7 @@ import {
   selectIsDirty,
   selectIsDraftValid,
 } from "@/store/slices/application-component-edit-slice"
-import { ComponentDetailV3ContentWithStore } from "./component-detail-v3-content"
+import { ComponentDetailV3 } from "./component-detail-v3"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 import { getSheetConfig, type SheetType } from "@/components/shared/archimate/sheet-configs"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
@@ -88,6 +88,7 @@ export function EditItem({ id }: EditItemProps) {
 
   // Redux state
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
+  const saveInProgressRef = React.useRef(false)
   const [updateComponentFull] = useUpdateApplicationComponentFullMutation()
   const [createDataObject] = useCreateDataObjectMutation()
   const [createApplicationFunction] = useCreateApplicationFunctionMutation()
@@ -135,6 +136,9 @@ export function EditItem({ id }: EditItemProps) {
         technologyNetworks: fullData.technologyNetworks,
         parents: fullData.parents,
         children: fullData.children,
+        businessActors: fullData.businessActors ?? [],
+        businessRoles: fullData.businessRoles ?? [],
+        businessProcesses: fullData.businessProcesses ?? [],
         stakeholders: (fullData.stakeholders || []).map((s) => ({
           id: `${id}-${s.stakeholderId}-${s.roleId}`,
           stakeholderId: s.stakeholderId,
@@ -192,6 +196,8 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(setSaveError(errorMsg))
       return
     }
+    if (saveInProgressRef.current) return
+    saveInProgressRef.current = true
 
     try {
       dispatch(setSaving(true))
@@ -287,10 +293,14 @@ export function EditItem({ id }: EditItemProps) {
           dataObjectIds: editState.dataObjects.map((d) => resolveId(d.id)),
           interfaceIds: editState.interfaces.map((i) => resolveId(i.id)),
           eventIds: editState.events.map((e) => resolveId(e.id)),
-          systemSoftwareIds: editState.systemSoftware.map((s) => ({
-            id: resolveId(s.id),
-            kind: (s as any).kind ?? undefined,
-          })),
+          systemSoftwareIds: Array.from(
+            new Map(
+              editState.systemSoftware.map((s) => {
+                const id = resolveId(s.id)
+                return [id, { id, kind: (s as any).kind ?? undefined }]
+              })
+            ).values()
+          ),
           technologyNodeIds: editState.technologyNodes.map((n) => resolveId(n.id)),
           technologyNetworkIds: editState.technologyNetworks.map((n) => resolveId(n.id)),
           parentIds: editState.parents.map((p) => resolveId(p.id)),
@@ -314,6 +324,7 @@ export function EditItem({ id }: EditItemProps) {
       console.error("Failed to save component:", e)
       throw e // Re-throw to allow caller to handle
     } finally {
+      saveInProgressRef.current = false
       dispatch(setSaving(false))
     }
   }, [id, editState, isDraftValid, dispatch, t, updateComponentFull])
@@ -325,7 +336,8 @@ export function EditItem({ id }: EditItemProps) {
   const [sheetOpen, setSheetOpen] = React.useState(false)
   const [sheetType, setSheetType] = React.useState<SheetType | null>(null)
   const [sheetSearchQuery, setSheetSearchQuery] = React.useState("")
-  const [sheetSelectedItems, setSheetSelectedItems] = React.useState<Set<string>>(new Set())
+  const [sheetSelectedItemsData, setSheetSelectedItemsData] = React.useState<Map<string, SelectableItem>>(new Map())
+  const sheetSelectedItems = React.useMemo(() => new Set(sheetSelectedItemsData.keys()), [sheetSelectedItemsData])
   const [sheetPage, setSheetPage] = React.useState(1)
   const [sheetPageSize, setSheetPageSize] = React.useState<10 | 25 | 50 | 100>(25)
 
@@ -630,30 +642,30 @@ export function EditItem({ id }: EditItemProps) {
   const handleOpenAddExistingSheet = React.useCallback((type: SheetType) => {
     setSheetType(type)
     setSheetSearchQuery("")
-    setSheetSelectedItems(new Set())
+    setSheetSelectedItemsData(new Map())
     setSheetPage(1)
     setSheetPageSize(25)
     setSheetOpen(true)
   }, [])
 
-  // Handler for toggling item selection in sheet
-  const handleSheetToggleItem = React.useCallback((itemId: string) => {
-    setSheetSelectedItems((prev) => {
-      const next = new Set(prev)
+  // Handler for toggling item selection in sheet (pass item when selecting to preserve across pages)
+  const handleSheetToggleItem = React.useCallback((itemId: string, item?: SelectableItem) => {
+    setSheetSelectedItemsData((prev) => {
+      const next = new Map(prev)
       if (next.has(itemId)) {
         next.delete(itemId)
-      } else {
-        next.add(itemId)
+      } else if (item) {
+        next.set(itemId, item)
       }
       return next
     })
   }, [])
 
-  // Handler for adding selected items
+  // Handler for adding selected items (uses stored data so selection persists across pages)
   const handleSheetAdd = React.useCallback(() => {
     if (!sheetType) return
     
-    const itemsToAdd = sheetItems.filter((item) => sheetSelectedItems.has(item.id))
+    const itemsToAdd = Array.from(sheetSelectedItemsData.values())
     if (itemsToAdd.length === 0) return
 
     if (sheetType === "data-objects") {
@@ -680,7 +692,7 @@ export function EditItem({ id }: EditItemProps) {
 
     toast.success(t("action.added"))
     setSheetOpen(false)
-  }, [sheetType, sheetItems, sheetSelectedItems, dispatch, t])
+  }, [sheetType, sheetSelectedItemsData, dispatch, t])
 
   // Get sheet title and icon based on type
   const sheetConfig = React.useMemo(() => {
@@ -697,6 +709,11 @@ export function EditItem({ id }: EditItemProps) {
       icon: config.icon,
     }
   }, [sheetType, t, t])
+
+  const handleAddStakeholder = React.useCallback(() => {
+    toast.info(t("action.not-implemented"))
+    // TODO: Open stakeholder selection sheet
+  }, [t])
 
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {
@@ -769,17 +786,11 @@ export function EditItem({ id }: EditItemProps) {
     )
   }
 
-  const handleAddStakeholder = React.useCallback(() => {
-    toast.info(t("action.not-implemented"))
-    // TODO: Open stakeholder selection sheet
-  }, [t])
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <ComponentDetailV3ContentWithStore
+      <ComponentDetailV3
         componentId={id}
         componentName={editState.name || fullData?.name || ""}
-        t={t}
         isSaving={editState.isSaving}
         onBack={handleBack}
         onSave={() => void handleSave()}
@@ -800,6 +811,9 @@ export function EditItem({ id }: EditItemProps) {
           technologyNetworks: editState.technologyNetworks,
           parents: editState.parents,
           children: editState.children,
+          businessActors: editState.businessActors,
+          businessRoles: editState.businessRoles,
+          businessProcesses: editState.businessProcesses,
           stakeholders: editState.stakeholders,
           incomingFlows: editState.incomingFlows,
           outgoingFlows: editState.outgoingFlows,

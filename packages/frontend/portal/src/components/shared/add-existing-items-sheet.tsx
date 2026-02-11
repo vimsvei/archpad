@@ -54,7 +54,8 @@ type AddExistingItemsSheetProps<T extends SelectableItem> = {
   searchQuery: string
   onSearchChange: (query: string) => void
   selectedItems: Set<string>
-  onToggleItem: (itemId: string) => void
+  /** When selecting, pass item for persistence across pages. When deselecting, itemId is enough. */
+  onToggleItem: (itemId: string, item?: T) => void
   onAdd: () => void
   pagination?: {
     page: number
@@ -189,11 +190,11 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                   return (
                     <div
                       key={item.id}
-                      onClick={() => onToggleItem(item.id)}
+                      onClick={() => onToggleItem(item.id, item)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault()
-                          onToggleItem(item.id)
+                          onToggleItem(item.id, item)
                         }
                       }}
                       role="button"
@@ -215,7 +216,7 @@ export function AddExistingItemsSheet<T extends SelectableItem>({
                       >
                         <Checkbox
                           checked={selected}
-                          onCheckedChange={() => onToggleItem(item.id)}
+                          onCheckedChange={() => onToggleItem(item.id, item)}
                         />
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium">
