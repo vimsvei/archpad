@@ -131,4 +131,18 @@ query GetComponentFull($where: ApplicationComponent_bool_exp!, $componentId: uui
     }
     role
   }
+  businessActorRoles: BusinessActorRoleMap(
+    where: { components: { componentId: { _eq: $componentId } } }
+  ) {
+    actor {
+      id
+      code
+      name
+    }
+    role {
+      id
+      code
+      name
+    }
+  }
 }

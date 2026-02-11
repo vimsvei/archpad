@@ -90,6 +90,9 @@ export type ApplicationComponentFull = {
   technologyNetworks: Array<{ id: string; code: string; name: string }>
   parents: Array<{ id: string; code: string; name: string; description?: string | null }>
   children: Array<{ id: string; code: string; name: string; description?: string | null }>
+  businessActors: Array<{ id: string; code: string; name: string }>
+  businessRoles: Array<{ id: string; code: string; name: string }>
+  businessProcesses: Array<{ id: string; code: string; name: string }>
   stakeholders: Array<{
     stakeholderId: string
     stakeholderName: string
@@ -146,6 +149,31 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
     technologyNetworks: (data.technologyNetworks || []).map((x: any) => x.logicalNetwork).filter(Boolean),
     parents: (data.parentComponents || []).map((x: any) => x.parent).filter(Boolean),
     children: (data.childComponents || []).map((x: any) => x.child).filter(Boolean),
+    businessActors: (() => {
+      const seen = new Set<string>()
+      const arr: Array<{ id: string; code: string; name: string }> = []
+      for (const x of data.businessActorRoles || []) {
+        const a = x.actor
+        if (a && !seen.has(a.id)) {
+          seen.add(a.id)
+          arr.push({ id: a.id, code: a.code ?? "", name: a.name ?? "" })
+        }
+      }
+      return arr
+    })(),
+    businessRoles: (() => {
+      const seen = new Set<string>()
+      const arr: Array<{ id: string; code: string; name: string }> = []
+      for (const x of data.businessActorRoles || []) {
+        const r = x.role
+        if (r && !seen.has(r.id)) {
+          seen.add(r.id)
+          arr.push({ id: r.id, code: r.code ?? "", name: r.name ?? "" })
+        }
+      }
+      return arr
+    })(),
+    businessProcesses: [], // TODO: add when ApplicationComponent->BusinessProcess link exists
     stakeholders: (data.stakeholders || []).map((x: any) => ({
       stakeholderId: x.stakeholder?.id ?? "",
       stakeholderName: x.stakeholder?.name ?? "",

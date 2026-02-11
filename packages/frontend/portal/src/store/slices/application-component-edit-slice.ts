@@ -55,6 +55,9 @@ export type ApplicationComponentEditState = {
   technologyNetworks: TechnologyNetworkItem[]
   parents: RelatedItem[]
   children: RelatedItem[]
+  businessActors: RelatedItem[]
+  businessRoles: RelatedItem[]
+  businessProcesses: RelatedItem[]
   stakeholders: StakeholderItem[]
   incomingFlows: FlowItem[]
   outgoingFlows: FlowItem[]
@@ -75,6 +78,9 @@ export type ApplicationComponentEditState = {
       technologyNetworks: TechnologyNetworkItem[]
       parents: RelatedItem[]
       children: RelatedItem[]
+      businessActors: RelatedItem[]
+      businessRoles: RelatedItem[]
+      businessProcesses: RelatedItem[]
       stakeholders: StakeholderItem[]
       incomingFlows: FlowItem[]
       outgoingFlows: FlowItem[]
@@ -112,6 +118,9 @@ const initialState: ApplicationComponentEditState = {
   technologyNetworks: [],
   parents: [],
   children: [],
+  businessActors: [],
+  businessRoles: [],
+  businessProcesses: [],
   stakeholders: [],
   incomingFlows: [],
   outgoingFlows: [],
@@ -169,6 +178,9 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: TechnologyNetworkItem[]
         parents: RelatedItem[]
         children: RelatedItem[]
+        businessActors: RelatedItem[]
+        businessRoles: RelatedItem[]
+        businessProcesses: RelatedItem[]
         stakeholders: StakeholderItem[]
         incomingFlows: FlowItem[]
         outgoingFlows: FlowItem[]
@@ -188,6 +200,9 @@ export const applicationComponentEditSlice = createSlice({
       state.technologyNetworks = action.payload.technologyNetworks
       state.parents = action.payload.parents
       state.children = action.payload.children
+      state.businessActors = action.payload.businessActors
+      state.businessRoles = action.payload.businessRoles
+      state.businessProcesses = action.payload.businessProcesses
       state.stakeholders = action.payload.stakeholders
       state.incomingFlows = action.payload.incomingFlows
       state.outgoingFlows = action.payload.outgoingFlows
@@ -208,6 +223,9 @@ export const applicationComponentEditSlice = createSlice({
         technologyNetworks: [...action.payload.technologyNetworks],
         parents: [...action.payload.parents],
         children: [...action.payload.children],
+        businessActors: [...action.payload.businessActors],
+        businessRoles: [...action.payload.businessRoles],
+        businessProcesses: [...action.payload.businessProcesses],
         stakeholders: [...action.payload.stakeholders],
         incomingFlows: [...action.payload.incomingFlows],
         outgoingFlows: [...action.payload.outgoingFlows],
@@ -367,10 +385,13 @@ export const applicationComponentEditSlice = createSlice({
           events: [...state.events],
           systemSoftware: [...state.systemSoftware],
           technologyNodes: [...state.technologyNodes],
-          technologyNetworks: [...state.technologyNetworks],
-          parents: [...state.parents],
-          children: [...state.children],
-          stakeholders: [...state.stakeholders],
+        technologyNetworks: [...state.technologyNetworks],
+        parents: [...state.parents],
+        children: [...state.children],
+        businessActors: [...state.businessActors],
+        businessRoles: [...state.businessRoles],
+        businessProcesses: [...state.businessProcesses],
+        stakeholders: [...state.stakeholders],
           incomingFlows: [...state.incomingFlows],
           outgoingFlows: [...state.outgoingFlows],
         }
@@ -459,6 +480,9 @@ export const selectIsDirty = createSelector([selectEditState], (editState) => {
     !arraysEqual(editState.technologyNetworks, baseline.technologyNetworks) ||
     !arraysEqual(editState.parents, baseline.parents) ||
     !arraysEqual(editState.children, baseline.children) ||
+    !arraysEqual(editState.businessActors, baseline.businessActors) ||
+    !arraysEqual(editState.businessRoles, baseline.businessRoles) ||
+    !arraysEqual(editState.businessProcesses, baseline.businessProcesses) ||
     !arraysEqual(editState.incomingFlows, baseline.incomingFlows) ||
     !arraysEqual(editState.outgoingFlows, baseline.outgoingFlows)
 
