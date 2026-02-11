@@ -12,13 +12,6 @@ import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { UnsavedChangesDialog } from "./unsaved-changes-dialog"
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContents,
-  TabsContent,
-} from "@/components/animate-ui/components/animate/tabs"
-import {
   useGetApplicationComponentFullQuery,
   useGetApplicationComponentsQuery,
   useUpdateApplicationComponentFullMutation,
@@ -52,19 +45,25 @@ import {
   addParent,
   addChild,
   updateBaseline,
+  updateBasicFields,
+  updateStateId,
+  updateDirectoryField,
+  removeFunction,
+  removeDataObject,
+  removeInterface,
+  removeEvent,
+  removeSystemSoftware,
+  removeTechnologyNode,
+  removeTechnologyNetwork,
+  removeParent,
+  removeChild,
+  removeStakeholder,
   selectIsDirty,
   selectIsDraftValid,
 } from "@/store/slices/application-component-edit-slice"
-import { GeneralTab } from "./general-tab"
-import { ClassificationTab } from "./classification-tab"
-import { StakeholdersTab } from "./stakeholders-tab"
-import { ApplicationTab } from "./application-tab"
-import { TechnologyTab } from "./technology-tab"
-import { FlowsTable } from "./flows-table"
-import { SchemasTab } from "./schemas-tab"
+import { ComponentDetailV3ContentWithStore } from "./component-detail-v3-content"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
 import { getSheetConfig, type SheetType } from "@/components/shared/archimate/sheet-configs"
-import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
 import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
 import * as ApplicationEventRest from "@/services/application-event.rest"
@@ -177,8 +176,6 @@ export function EditItem({ id }: EditItemProps) {
       dispatch(reset())
     }
   }, [dispatch])
-
-  const [tab, setTab] = React.useState<string>("general")
 
   // Check if dirty using selector
   const isDirty = useSelector(selectIsDirty)
@@ -772,154 +769,63 @@ export function EditItem({ id }: EditItemProps) {
     )
   }
 
+  const handleAddStakeholder = React.useCallback(() => {
+    toast.info(t("action.not-implemented"))
+    // TODO: Open stakeholder selection sheet
+  }, [t])
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-start justify-between gap-4 flex-shrink-0 mb-6">
-        <div className="flex items-start gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <div className="flex items-start gap-3">
-            <div className="grid place-items-center rounded-full bg-muted shrink-0 size-12">
-              <ArchimateObjectIcon type="application-component" className="text-foreground" size={28} />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-2xl font-semibold">
-                {t("application.component")}: {editState.name || fullData?.name}
-              </h1>
-              <p className="text-muted-foreground text-sm">ID: {id}</p>
-            </div>
-          </div>
-        </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              aria-label={t("action.save")}
-              onClick={() => void handleSave()}
-              disabled={!isDirty || !isDraftValid || editState.isSaving}
-              variant={editState.saveError ? "destructive" : "default"}
-            >
-              <Save />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">{t("action.save")}</TooltipContent>
-        </Tooltip>
-      </div>
-
-      <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
-        <TabsList className="relative w-fit">
-          <TabsTrigger value="general">
-            {t("tab.general")}
-          </TabsTrigger>
-          <TabsTrigger value="classification">
-            {t("tab.classification")}
-          </TabsTrigger>
-          <TabsTrigger value="stakeholders">
-            {t("tab.stakeholders")}
-          </TabsTrigger>
-          <TabsTrigger value="application">
-            {t("tab.application")}
-          </TabsTrigger>
-          <TabsTrigger value="technology">
-            {t("tab.technology")}
-          </TabsTrigger>
-          <TabsTrigger value="flows">
-            {t("tab.flows")}
-          </TabsTrigger>
-          <TabsTrigger value="solutions">
-            {t("tab.solutions")}
-          </TabsTrigger>
-          <TabsTrigger value="schemas">
-            {t("tab.schemas")}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContents className="flex min-h-0 flex-1 flex-col">
-          <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <GeneralTab
-              t={t}
-              isSaving={editState.isSaving}
-            />
-          </TabsContent>
-
-          <TabsContent value="classification" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <ClassificationTab
-              t={t}
-              isSaving={editState.isSaving}
-            />
-          </TabsContent>
-
-          <TabsContent value="stakeholders" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <StakeholdersTab
-              componentId={id}
-              componentName={editState.name}
-            />
-          </TabsContent>
-
-          <TabsContent value="application" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <ApplicationTab
-              componentId={id}
-              componentName={editState.name}
-              onAddExistingParent={() => handleOpenAddExistingSheet("parent")}
-              onAddExistingChild={() => handleOpenAddExistingSheet("child")}
-              onAddExistingDataObjects={() => handleOpenAddExistingSheet("data-objects")}
-              onAddExistingFunctions={() => handleOpenAddExistingSheet("functions")}
-              onAddExistingInterfaces={() => handleOpenAddExistingSheet("interfaces")}
-              onAddExistingEvents={() => handleOpenAddExistingSheet("events")}
-              onCreateDataObjects={() => handleOpenCreateSheet("data-objects")}
-              onCreateFunctions={() => handleOpenCreateSheet("functions")}
-              onCreateInterfaces={() => handleOpenCreateSheet("interfaces")}
-              onCreateEvents={() => handleOpenCreateSheet("events")}
-            />
-          </TabsContent>
-
-          <TabsContent value="technology" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <TechnologyTab
-              componentId={id}
-              componentName={editState.name}
-              onAddExistingSystemSoftware={() => handleOpenAddExistingSheet("system-software")}
-              onCreateSystemSoftware={() => handleOpenCreateSheet("system-software")}
-              onAddExistingNode={() => handleOpenAddExistingSheet("node")}
-              onAddExistingNetwork={() => handleOpenAddExistingSheet("network")}
-            />
-          </TabsContent>
-
-          <TabsContent value="flows" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <FlowsTable
-              componentId={id}
-              componentName={editState.name}
-              onCreate={() => {
-                // TODO: Implement flow creation
-                toast.info(t("action.not-implemented"))
-              }}
-            />
-          </TabsContent>
-          
-          <TabsContent value="solutions" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <Card className="flex min-h-0 flex-1 flex-col p-6">
-              <div className="text-muted-foreground">Solutions tab content</div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="schemas" className="flex min-h-0 flex-1 flex-col mt-4 pb-4 h-full">
-            <SchemasTab
-              componentId={id}
-              componentName={editState.name}
-            />
-          </TabsContent>
-        </TabsContents>
-      </Tabs>
+      <ComponentDetailV3ContentWithStore
+        componentId={id}
+        componentName={editState.name || fullData?.name || ""}
+        t={t}
+        isSaving={editState.isSaving}
+        onBack={handleBack}
+        onSave={() => void handleSave()}
+        isDirty={isDirty}
+        isDraftValid={isDraftValid}
+        editState={{
+          code: editState.code,
+          name: editState.name,
+          description: editState.description,
+          stateId: editState.stateId,
+          directoryFields: editState.directoryFields,
+          functions: editState.functions,
+          dataObjects: editState.dataObjects,
+          interfaces: editState.interfaces,
+          events: editState.events,
+          systemSoftware: editState.systemSoftware,
+          technologyNodes: editState.technologyNodes,
+          technologyNetworks: editState.technologyNetworks,
+          parents: editState.parents,
+          children: editState.children,
+          stakeholders: editState.stakeholders,
+          incomingFlows: editState.incomingFlows,
+          outgoingFlows: editState.outgoingFlows,
+        }}
+        onAddExisting={handleOpenAddExistingSheet}
+        onCreate={handleOpenCreateSheet}
+        onAddStakeholder={handleAddStakeholder}
+        onAddFlow={() => toast.info(t("action.not-implemented"))}
+        onUpdateCode={(v) => dispatch(updateBasicFields({ code: v }))}
+        onUpdateName={(v) => dispatch(updateBasicFields({ name: v }))}
+        onUpdateDescription={(v) => dispatch(updateBasicFields({ description: v }))}
+        onUpdateStateId={(v) => dispatch(updateStateId(v))}
+        onUpdateDirectoryField={(field, value) =>
+          dispatch(updateDirectoryField({ field: field as any, value }))
+        }
+        onRemoveFunction={(itemId) => dispatch(removeFunction(itemId))}
+        onRemoveDataObject={(itemId) => dispatch(removeDataObject(itemId))}
+        onRemoveInterface={(itemId) => dispatch(removeInterface(itemId))}
+        onRemoveEvent={(itemId) => dispatch(removeEvent(itemId))}
+        onRemoveSystemSoftware={(itemId) => dispatch(removeSystemSoftware(itemId))}
+        onRemoveTechnologyNode={(itemId) => dispatch(removeTechnologyNode(itemId))}
+        onRemoveTechnologyNetwork={(itemId) => dispatch(removeTechnologyNetwork(itemId))}
+        onRemoveParent={(itemId) => dispatch(removeParent(itemId))}
+        onRemoveChild={(itemId) => dispatch(removeChild(itemId))}
+        onRemoveStakeholder={(itemId) => dispatch(removeStakeholder(itemId))}
+      />
 
       {/* Add Existing Items Sheet */}
       {sheetType && (

@@ -1086,7 +1086,7 @@ export class OpenExchangeImportService {
       name: 'Device',
       makeDefault: true,
     });
-    const unknownOs = await this.ensureUnknownOperatingSystem(em, context);
+    const unknownOs = await this.ensureUnknownOperatingSystem(em, context, tenantId);
 
     for (const e of input.devices) {
       const name = e.name ?? e.id;
@@ -1336,9 +1336,10 @@ export class OpenExchangeImportService {
   private async ensureUnknownOperatingSystem(
     em: EntityManager,
     context: ArchpadRequestContext,
+    tenantId: string,
   ): Promise<OperatingSystem> {
     const name = 'Unknown OS';
-    const existing = await em.findOne(OperatingSystem, { name } as any);
+    const existing = await em.findOne(OperatingSystem, { name, tenantId } as any);
     if (existing) return existing;
 
     const created = ActionStamp.now(context.userId);
@@ -1347,6 +1348,7 @@ export class OpenExchangeImportService {
       description: 'Auto-created by Open Exchange importer',
       kind: SystemSoftwareKind.OS,
       created,
+      tenantId,
     } as any);
 
     await em.persistAndFlush(entity);
