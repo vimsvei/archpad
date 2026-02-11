@@ -107,17 +107,17 @@ export function EditItem({ id }: EditItemProps) {
     // Get stateId from state if available
     const stateId = fullData.state?.id ?? null
 
-    // Map directory fields (TODO: add other fields when API supports them)
+    // Map directory fields from GraphQL
     const directoryFields = {
       stateId,
-      licenseTypeId: null,
-      architectureStyleId: null,
-      criticalLevelId: null,
-      failoverTypeId: null,
-      recoveryTimeId: null,
-      redundancyTypeId: null,
-      monitoringLevelId: null,
-      scalingTypeId: null,
+      licenseTypeId: fullData.licenseType?.id ?? null,
+      architectureStyleId: fullData.style?.id ?? null,
+      criticalLevelId: fullData.criticalLevel?.id ?? null,
+      failoverTypeId: fullData.failoverType?.id ?? null,
+      recoveryTimeId: fullData.recoveryTime?.id ?? null,
+      redundancyTypeId: fullData.redundancyType?.id ?? null,
+      monitoringLevelId: fullData.monitoringLevel?.id ?? null,
+      scalingTypeId: fullData.scalingType?.id ?? null,
     }
 
     dispatch(

@@ -9,6 +9,48 @@ query GetComponentFull($where: ApplicationComponent_bool_exp!, $componentId: uui
       name
       color
     }
+    licenseType {
+      id
+      code
+      name
+    }
+    style {
+      id
+      code
+      name
+    }
+    criticalLevel {
+      id
+      code
+      name
+    }
+    failoverType {
+      id
+      code
+      name
+    }
+    recoveryTime {
+      id
+      code
+      name
+    }
+    redundancyType {
+      id
+      code
+      name
+      color
+    }
+    monitoringLevel {
+      id
+      code
+      name
+    }
+    scalingType {
+      id
+      code
+      name
+      color
+    }
     createdAt
     createdBy
     updatedAt

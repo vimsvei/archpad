@@ -77,6 +77,14 @@ export type ApplicationComponentFull = {
   name: string
   description: string | null
   state: { id: string; name: string; color?: string | null } | null
+  licenseType?: { id: string; code: string; name: string } | null
+  style?: { id: string; code: string; name: string } | null
+  criticalLevel?: { id: string; code: string; name: string } | null
+  failoverType?: { id: string; code: string; name: string } | null
+  recoveryTime?: { id: string; code: string; name: string } | null
+  redundancyType?: { id: string; code: string; name: string; color?: string | null } | null
+  monitoringLevel?: { id: string; code: string; name: string } | null
+  scalingType?: { id: string; code: string; name: string; color?: string | null } | null
   createdAt?: string | null
   createdBy?: string | null
   updatedAt?: string | null
@@ -131,6 +139,14 @@ export async function getApplicationComponentFullGraphql(id: string): Promise<Ap
     name: component.name,
     description: component.description ?? null,
     state: component.state ? { id: component.state.id, name: component.state.name, color: component.state.color } : null,
+    licenseType: component.licenseType ? { id: component.licenseType.id, code: component.licenseType.code, name: component.licenseType.name } : null,
+    style: component.style ? { id: component.style.id, code: component.style.code, name: component.style.name } : null,
+    criticalLevel: component.criticalLevel ? { id: component.criticalLevel.id, code: component.criticalLevel.code, name: component.criticalLevel.name } : null,
+    failoverType: component.failoverType ? { id: component.failoverType.id, code: component.failoverType.code, name: component.failoverType.name } : null,
+    recoveryTime: component.recoveryTime ? { id: component.recoveryTime.id, code: component.recoveryTime.code, name: component.recoveryTime.name } : null,
+    redundancyType: component.redundancyType ? { id: component.redundancyType.id, code: component.redundancyType.code, name: component.redundancyType.name, color: component.redundancyType.color } : null,
+    monitoringLevel: component.monitoringLevel ? { id: component.monitoringLevel.id, code: component.monitoringLevel.code, name: component.monitoringLevel.name } : null,
+    scalingType: component.scalingType ? { id: component.scalingType.id, code: component.scalingType.code, name: component.scalingType.name, color: component.scalingType.color } : null,
     createdAt: component.createdAt ?? null,
     createdBy: component.createdBy ?? null,
     updatedAt: component.updatedAt ?? null,
