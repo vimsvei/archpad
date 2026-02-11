@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { LoggerModule } from '@archpad/logger';
 import { OpenExchangeImportController } from './open-exchange-import.controller';
 import { OpenExchangeImportService } from './open-exchange-import.service';
 import { OpenExchangeImportJobStore } from './open-exchange-import.job-store';
@@ -29,6 +30,7 @@ import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-sy
 
 @Module({
   imports: [
+    LoggerModule,
     MikroOrmModule.forFeature([
       ApplicationComponent,
       ApplicationFunction,

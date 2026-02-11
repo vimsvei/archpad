@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { LoggerService } from '@archpad/logger';
 import { ActionStamp } from '@archpad/models';
-import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
+import {
+  getArchpadRequestContext,
+  type ArchpadRequestContext,
+} from '@/request-context/archpad-request-context';
 import type {
   ImportJobReporter,
   ImportJob,
@@ -35,6 +39,29 @@ import { TechnologyHostNode } from '@/model/archimate/technology/technology-node
 import { OperatingSystem } from '@/model/archimate/technology/operating-system.entity';
 import { NodeTypeDirectory } from '@/model/directories/directories';
 import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
+import { ApplicationFunctionInterfaceMap } from '@/model/maps/application-function-interface.map';
+import { ApplicationComponentInterfaceMap } from '@/model/maps/application-component-interface.map';
+import { ApplicationComponentEventMap } from '@/model/maps/application-component-event.map';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
+import { ApplicationComponentTechnologyNodeMap } from '@/model/maps/application-component-technology-node.map';
+import { ApplicationComponentTechnologyLogicalNetworkMap } from '@/model/maps/application-component-technology-logical-network.map';
+import { ApplicationComponentProductMap } from '@/model/maps/application-component-product.map';
+import { ApplicationComponentStakeholderMap } from '@/model/maps/application-component-stakeholder.map';
+import { ApplicationComponentHierarchyMap } from '@/model/maps/application-component-hierarchy.map';
+import { ApplicationComponentDirectoryMap } from '@/model/maps/application-component-directory.map';
+import { TechnologyNetworkHierarchyMap } from '@/model/maps/technology-network-hierarchy.map';
+import { SolutionApplicationComponentMap } from '@/model/maps/solution-application-component.map';
+import { SolutionMotivationElementMap } from '@/model/maps/solution-motivation-item.map';
+import { Location } from '@/model/archimate/common/location.entity';
+import { BusinessProduct } from '@/model/archimate/business/business-product.entity';
+import { Capability } from '@/model/archimate/strategy/capability.entity';
+import { Stakeholder } from '@/model/archimate/motivation/stakeholder.entity';
+import { Solution } from '@/model/solution/solution.entity';
+import { FlowGeneric } from '@/model/archimate/core/flow.generic';
+import { Interface as ArchimateInterface } from '@/model/archimate/common/interface.entity';
+import { Function as ArchimateFunction } from '@/model/archimate/common/function.entity';
+import { Event as ArchimateEvent } from '@/model/archimate/common/event.entity';
+import { MotivationElementGeneric } from '@/model/archimate/core/motivation-element.generic';
 
 type ParsedElement = {
   id: string; // xml identifier
@@ -192,6 +219,7 @@ export class OpenExchangeImportService {
     private readonly nodeTypeDirectoryRepo: EntityRepository<NodeTypeDirectory>,
     @InjectRepository(TechnologyNodeSystemSoftwareMap)
     private readonly technologyNodeSystemSoftwareRepo: EntityRepository<TechnologyNodeSystemSoftwareMap>,
+    private readonly logger: LoggerService,
   ) {}
 
   async importApplicationFromOpenExchangeXml(
@@ -200,6 +228,13 @@ export class OpenExchangeImportService {
     reporter: ImportJobReporter,
     options?: { clear?: boolean },
   ): Promise<NonNullable<ImportJob['result']>> {
+    const tenantId = getArchpadRequestContext()?.tenantIds?.[0];
+    if (!tenantId) {
+      throw new Error(
+        'Import requires tenant context (x-archpad-tenant-ids header). ' +
+          'Ensure you are authenticated and have a tenant selected.',
+      );
+    }
     reporter.setProgress(2);
     reporter.log('repository.open-exchange.stage.parse');
     const parsed = parseOpenExchangeXml(xml);
@@ -281,10 +316,10 @@ export class OpenExchangeImportService {
     await em.transactional(async (txEm) => {
       if (options?.clear) {
         reporter.log('repository.open-exchange.stage.clear-repo');
-        await this.clearRepository(txEm, reporter);
+        await this.clearRepository(txEm, reporter, tenantId);
       }
 
-      await this.createApplicationEntities(txEm, context, {
+      await this.createApplicationEntities(txEm, context, tenantId, {
         appComponents,
         appFunctions,
         dataObjects,
@@ -297,7 +332,7 @@ export class OpenExchangeImportService {
         dedupe: !options?.clear,
       });
 
-      await this.createCrossLayerEntities(txEm, context, {
+      await this.createCrossLayerEntities(txEm, context, tenantId, {
         businessActors,
         businessRoles,
         systemSoftware,
@@ -547,6 +582,7 @@ export class OpenExchangeImportService {
               sourceComponent: source,
               targetComponent: target,
               created: ActionStamp.now(context.userId),
+              tenantId,
             } as any),
           );
         }
@@ -573,6 +609,7 @@ export class OpenExchangeImportService {
   private async createApplicationEntities(
     em: EntityManager,
     context: ArchpadRequestContext,
+    tenantId: string,
     input: {
       appComponents: ParsedElement[];
       appFunctions: ParsedElement[];
@@ -592,7 +629,7 @@ export class OpenExchangeImportService {
     for (const e of input.appComponents) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(ApplicationComponent, { name } as any)
+        ? await em.findOne(ApplicationComponent, { name, tenantId } as any)
         : null;
       const entity =
         existing ??
@@ -600,6 +637,7 @@ export class OpenExchangeImportService {
           name,
           description: e.documentation,
           created,
+          tenantId,
         } as any);
       input.componentEntityByXmlId.set(e.id, entity);
       if (!existing) components.push(entity);
@@ -612,6 +650,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(ApplicationFunction, {
             layer: LayerKind.APPLICATION as any,
             name,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -621,6 +660,7 @@ export class OpenExchangeImportService {
           name,
           description: e.documentation,
           created,
+          tenantId,
         } as any);
       input.functionEntityByXmlId.set(e.id, entity);
       if (!existing) functions.push(entity);
@@ -630,7 +670,7 @@ export class OpenExchangeImportService {
     for (const e of input.dataObjects) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(DataObject, { name } as any)
+        ? await em.findOne(DataObject, { name, tenantId } as any)
         : null;
       const entity =
         existing ??
@@ -638,6 +678,7 @@ export class OpenExchangeImportService {
           name,
           description: e.documentation,
           created,
+          tenantId,
         } as any);
       input.dataObjectEntityByXmlId.set(e.id, entity);
       if (!existing) dataObjects.push(entity);
@@ -649,6 +690,7 @@ export class OpenExchangeImportService {
         name: e.name ?? e.id,
         description: e.documentation,
         created,
+        tenantId,
       } as any),
     );
 
@@ -658,6 +700,7 @@ export class OpenExchangeImportService {
         name: e.name ?? e.id,
         description: e.documentation,
         created,
+        tenantId,
       } as any),
     );
 
@@ -693,65 +736,232 @@ export class OpenExchangeImportService {
   private async clearRepository(
     em: EntityManager,
     reporter: ImportJobReporter,
+    tenantId: string,
   ) {
     // Keep directories (and directory items) intact; remove only ArchiMate domain tables.
     // Order matters due to FK constraints (maps first, then base tables).
-    const maps = [
-      'map_application_function_data_object',
-      'map_application_component_data_object',
-      'map_application_component_function',
-      'map_application_component_interface',
-      'map_application_interface_function',
-      'map_application_component_event',
-      'map_application_component_system_software',
-      'map_application_component_technology_node',
-      'map_application_component_technology_logical_network',
-      'map_application_component_product',
-      'map_application_component_stakeholder',
-      'map_application_component_hierarchy',
-      'map_application_component_directory',
-      'map_technology_node_system_software',
-      'map_technology_node_hierarchy',
-      'map_technology_network_hierarchy',
-      'map_business_actor_role',
-      'map_solution_application_component',
-      'map_solution_constraint',
-    ];
-
-    const tables = [
-      ...maps,
-      'flows',
-      'interfaces',
-      'events',
-      'functions',
-      'motivations',
-      'data_objects',
-      'components',
-      'technology_nodes',
-      'technology_networks',
-      'system_software',
-      'actors',
-      'roles',
-      'products',
-      'capabilities',
-      'locations',
-      'stakeholders',
-      'solutions',
-    ];
+    // Clear only data for the given tenant, not the entire tables.
+    const conn = em.getConnection();
+    const logContext = 'OpenExchangeImportService.clearRepository';
 
     reporter.log('repository.open-exchange.clear-repo.count', {
-      count: tables.length,
+      count: 35,
     });
 
-    for (const table of tables) {
-      // `DELETE` (not TRUNCATE) to avoid accidental CASCADE into directory tables.
-      await em.getConnection().execute(`delete from ${table};`);
+    // Map tables: delete via ORM (component/interface/role/solution scoped)
+    const mapDeletes: Array<{
+      entity: object;
+      where: object;
+      label: string;
+    }> = [
+      {
+        entity: ApplicationFunctionDataObjectMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationFunctionDataObjectMap',
+      },
+      {
+        entity: ApplicationComponentDataObjectMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentDataObjectMap',
+      },
+      {
+        entity: ApplicationComponentFunctionMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentFunctionMap',
+      },
+      {
+        entity: ApplicationComponentInterfaceMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentInterfaceMap',
+      },
+      {
+        entity: ApplicationFunctionInterfaceMap,
+        where: { interface: { tenantId } },
+        label: 'ApplicationFunctionInterfaceMap',
+      },
+      {
+        entity: ApplicationComponentEventMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentEventMap',
+      },
+      {
+        entity: ApplicationComponentSystemSoftwareMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentSystemSoftwareMap',
+      },
+      {
+        entity: ApplicationComponentTechnologyNodeMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentTechnologyNodeMap',
+      },
+      {
+        entity: ApplicationComponentTechnologyLogicalNetworkMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentTechnologyLogicalNetworkMap',
+      },
+      {
+        entity: ApplicationComponentProductMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentProductMap',
+      },
+      {
+        entity: ApplicationComponentStakeholderMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentStakeholderMap',
+      },
+      {
+        entity: ApplicationComponentHierarchyMap,
+        where: {
+          $or: [
+            { parent: { tenantId } },
+            { child: { tenantId } },
+          ],
+        },
+        label: 'ApplicationComponentHierarchyMap',
+      },
+      {
+        entity: ApplicationComponentDirectoryMap,
+        where: { component: { tenantId } },
+        label: 'ApplicationComponentDirectoryMap',
+      },
+      {
+        entity: TechnologyNetworkHierarchyMap,
+        where: {
+          $or: [
+            { parent: { tenantId } },
+            { child: { tenantId } },
+          ],
+        },
+        label: 'TechnologyNetworkHierarchyMap',
+      },
+      {
+        entity: BusinessActorRoleMap,
+        where: { role: { tenantId } },
+        label: 'BusinessActorRoleMap',
+      },
+      {
+        entity: SolutionApplicationComponentMap,
+        where: {
+          $or: [
+            { solution: { tenantId } },
+            { component: { tenantId } },
+          ],
+        },
+        label: 'SolutionApplicationComponentMap',
+      },
+      {
+        entity: SolutionMotivationElementMap,
+        where: { solution: { tenantId } },
+        label: 'SolutionMotivationElementMap',
+      },
+    ];
+
+    for (const { entity, where, label } of mapDeletes) {
+      const deleted = await em.nativeDelete(entity as never, where as never);
+      this.logger.log(
+        `[tenantId=${tenantId}] clearRepository: deleted ${deleted} rows from ${label}`,
+        logContext,
+      );
+      reporter.log('repository.open-exchange.clear-repo.entity', {
+        entity: label,
+        deleted,
+      });
     }
+
+    // TechnologyNode has no tenantId in entity; use raw SQL for node-scoped maps
+    await conn.execute(
+      `DELETE FROM map_technology_node_system_software WHERE node_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?)`,
+      [tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from map_technology_node_system_software (raw)`,
+      logContext,
+    );
+    await conn.execute(
+      `DELETE FROM map_technology_node_hierarchy WHERE node_parent_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?) OR node_child_id IN (SELECT id FROM technology_nodes WHERE tenant_id = ?)`,
+      [tenantId, tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from map_technology_node_hierarchy (raw)`,
+      logContext,
+    );
+
+    // map_solution_constraint: no ORM entity, use raw SQL
+    await conn.execute(
+      `DELETE FROM map_solution_constraint WHERE solution_id IN (SELECT id FROM solutions WHERE tenant_id = ?)`,
+      [tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from map_solution_constraint (raw)`,
+      logContext,
+    );
+
+    // Base tables with tenant_id
+    const baseDeletes: Array<{ entity: object; label: string }> = [
+      { entity: ApplicationFlow, label: 'ApplicationFlow (flows)' },
+      { entity: ArchimateInterface, label: 'Interface (interfaces)' },
+      { entity: ArchimateEvent, label: 'Event (events)' },
+      { entity: ArchimateFunction, label: 'Function (functions)' },
+      { entity: MotivationElementGeneric, label: 'MotivationElementGeneric (motivations)' },
+      { entity: DataObject, label: 'DataObject (data_objects)' },
+      { entity: ApplicationComponent, label: 'ApplicationComponent (components)' },
+      { entity: Role, label: 'Role (roles)' },
+      { entity: BusinessProduct, label: 'BusinessProduct (products)' },
+      { entity: Capability, label: 'Capability (capabilities)' },
+      { entity: Stakeholder, label: 'Stakeholder (stakeholders)' },
+      { entity: Solution, label: 'Solution (solutions)' },
+      { entity: SystemSoftware, label: 'SystemSoftware (system_software)' },
+      { entity: TechnologyLogicalNetwork, label: 'TechnologyLogicalNetwork (technology_networks)' },
+    ];
+
+    for (const { entity, label } of baseDeletes) {
+      const deleted = await em.nativeDelete(entity as never, {
+        tenantId,
+      } as never);
+      this.logger.log(
+        `[tenantId=${tenantId}] clearRepository: deleted ${deleted} rows from ${label}`,
+        logContext,
+      );
+      reporter.log('repository.open-exchange.clear-repo.entity', {
+        entity: label,
+        deleted,
+      });
+    }
+
+    // technology_nodes: entity extends NamedObject without tenantId; use raw SQL
+    await conn.execute(
+      `DELETE FROM technology_nodes WHERE tenant_id = ?`,
+      [tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from technology_nodes (raw)`,
+      logContext,
+    );
+
+    // actors, locations: no tenant_id; delete only those linked to tenant's data
+    await conn.execute(
+      `DELETE FROM actors WHERE id IN (SELECT DISTINCT actor_id FROM map_business_actor_role WHERE role_id IN (SELECT id FROM roles WHERE tenant_id = ?))`,
+      [tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from actors (raw)`,
+      logContext,
+    );
+
+    await conn.execute(
+      `DELETE FROM locations WHERE id IN (SELECT DISTINCT location_id FROM technology_networks WHERE tenant_id = ? AND location_id IS NOT NULL)`,
+      [tenantId],
+    );
+    this.logger.log(
+      `[tenantId=${tenantId}] clearRepository: deleted from locations (raw)`,
+      logContext,
+    );
   }
 
   private async createCrossLayerEntities(
     em: EntityManager,
     context: ArchpadRequestContext,
+    tenantId: string,
     input: {
       businessActors: ParsedElement[];
       businessRoles: ParsedElement[];
@@ -798,7 +1008,7 @@ export class OpenExchangeImportService {
     for (const e of input.businessRoles) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(Role, { name } as any)
+        ? await em.findOne(Role, { name, tenantId } as any)
         : null;
       const entity =
         existing ??
@@ -806,6 +1016,7 @@ export class OpenExchangeImportService {
           name,
           description: e.documentation,
           created,
+          tenantId,
         } as any);
       input.businessRoleEntityByXmlId.set(e.id, entity);
       if (!existing) {
@@ -821,6 +1032,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(SystemSoftware, {
             name,
             kind: SystemSoftwareKind.OTHER as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -830,6 +1042,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           kind: SystemSoftwareKind.OTHER,
           created,
+          tenantId,
         } as any);
       input.systemSoftwareEntityByXmlId.set(e.id, entity);
       if (!existing) {
@@ -845,6 +1058,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(TechnologyLogicalNetwork, {
             name,
             level: NetworkAbstractionLevel.LOGICAL as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -854,6 +1068,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           level: NetworkAbstractionLevel.LOGICAL,
           created,
+          tenantId,
         } as any);
       input.networkEntityByXmlId.set(e.id, entity);
       if (!existing) {
@@ -873,7 +1088,7 @@ export class OpenExchangeImportService {
     for (const e of input.devices) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(TechnologyDeviceNode, { name } as any)
+        ? await em.findOne(TechnologyDeviceNode, { name, tenantId } as any)
         : null;
 
       const entity =
@@ -884,6 +1099,7 @@ export class OpenExchangeImportService {
           type: defaultNodeType,
           operatingSystem: unknownOs,
           created,
+          tenantId,
         } as any);
 
       input.deviceEntityByXmlId.set(e.id, entity);
@@ -906,7 +1122,7 @@ export class OpenExchangeImportService {
     for (const e of input.nodes) {
       const name = e.name ?? e.id;
       const existing = input.dedupe
-        ? await em.findOne(TechnologyHostNode, { name } as any)
+        ? await em.findOne(TechnologyHostNode, { name, tenantId } as any)
         : null;
 
       const entity =
@@ -917,6 +1133,7 @@ export class OpenExchangeImportService {
           type: defaultHostNodeType,
           operatingSystem: unknownOs,
           created,
+          tenantId,
         } as any);
 
       input.hostEntityByXmlId.set(e.id, entity);
@@ -933,6 +1150,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(Principle, {
             name,
             kind: MotivationKind.PRINCIPLE as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -942,6 +1160,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           kind: MotivationKind.PRINCIPLE,
           created,
+          tenantId,
         } as any);
       if (!existing) await em.persist(entity);
     }
@@ -952,6 +1171,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(Constraint, {
             name,
             kind: MotivationKind.CONSTRAINT as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -961,6 +1181,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           kind: MotivationKind.CONSTRAINT,
           created,
+          tenantId,
         } as any);
       if (!existing) await em.persist(entity);
     }
@@ -971,6 +1192,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(Requirement, {
             name,
             kind: MotivationKind.REQUIREMENT as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -980,6 +1202,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           kind: MotivationKind.REQUIREMENT,
           created,
+          tenantId,
         } as any);
       if (!existing) await em.persist(entity);
     }
@@ -990,6 +1213,7 @@ export class OpenExchangeImportService {
         ? await em.findOne(Assessment, {
             name,
             kind: MotivationKind.ASSESSMENT as any,
+            tenantId,
           } as any)
         : null;
       const entity =
@@ -999,6 +1223,7 @@ export class OpenExchangeImportService {
           description: e.documentation,
           kind: MotivationKind.ASSESSMENT,
           created,
+          tenantId,
         } as any);
       if (!existing) await em.persist(entity);
     }
