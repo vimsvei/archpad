@@ -1,6 +1,6 @@
 import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
-import {BrickWallShield, BringToFront, Folder, House, LayoutDashboard,
-  LibraryBig, LifeBuoy, Send, Settings, Settings2, Tent, TrendingUp, Upload} from "lucide-react";
+import {BrickWallShield, BringToFront, Building2, CheckCircle2, Folder, House, Layers, LayoutDashboard,
+  LibraryBig, LifeBuoy, Network, Send, Settings, Settings2, Sparkles, Target, Tent, TrendingUp, Upload} from "lucide-react";
 import { DirectoryKind } from "@/@types/directory-kind";
 
 function slugFromDirectoryKindKey(key: string) {
@@ -32,7 +32,7 @@ export const menu: TMenu = [
     items: [
       {
         title: 'architecture.layer.strategy',
-        icon: Folder,
+        icon: Target,
         // color: '#fcca56',
         isActive: false,
         items: [
@@ -48,7 +48,7 @@ export const menu: TMenu = [
       },
       {
         title: 'architecture.layer.business',
-        icon: Folder,
+        icon: Building2,
         // color: '#ffffaf',
         items: [
           {
@@ -67,7 +67,7 @@ export const menu: TMenu = [
       },
       {
         title: 'architecture.layer.application',
-        icon: Folder,
+        icon: Layers,
         // color: '#62fcfc',
         isActive: true,
         items: [
@@ -87,7 +87,7 @@ export const menu: TMenu = [
       },
       {
         title: 'architecture.layer.technologies',
-        icon: Folder,
+        icon: Network,
         // color: '#77fc77',
         items: [
           {
@@ -110,7 +110,7 @@ export const menu: TMenu = [
       },
       {
         title: 'architecture.layer.motivation',
-        icon: Folder,
+        icon: Sparkles,
         // color: '#77fc77',
         items: [
           {
@@ -125,7 +125,7 @@ export const menu: TMenu = [
       },
       {
         title: 'architecture.layer.implementation',
-        icon: Folder,
+        icon: CheckCircle2,
         items: [
           {
             title: 'implementation.plateau',
@@ -133,11 +133,6 @@ export const menu: TMenu = [
           },
         ]
       },
-    ]
-  },
-  {
-    title: 'portfolio',
-    items: [
       {
         title: 'portfolio.solutions',
         icon: BrickWallShield,
@@ -148,6 +143,12 @@ export const menu: TMenu = [
         icon: TrendingUp,
         url: '/flows',
       }
+    ]
+  },
+  {
+    title: 'portfolio',
+    items: [
+    
     ]
   },
   {
@@ -164,11 +165,6 @@ export const menu: TMenu = [
         url: '/state-schemas',
       },
       {
-        title: 'management.settings.tenants',
-        icon: Tent,
-        url: '/tenants',
-      },
-      {
         title: 'management.settings',
         icon: Settings,
         items: [
@@ -177,30 +173,36 @@ export const menu: TMenu = [
             icon: Upload,
             url: '/upload/repository',
           },
-          // {
-          //   title: 'management.settings.upload.directories',
-          //   icon: Upload,
-          //   url: '/upload/directories',
-          // },
         ]
       }
     ]
   },
   {
     title: 'admin-level',
-    items: []
+    items: [
+      {
+        title: 'management.settings.tenants',
+        icon: Tent,
+        url: '/admin/tenants',
+      },
+      {
+        title: 'management.settings.users',
+        icon: Tent,
+        url: '/admin/users',
+      },
+    ]
   }
 ]
 
-export const secondaryMenu: TSecondaryMenu = [
-  {
-    title: "Support",
-    url: "#",
-    icon: LifeBuoy,
-  },
-  {
-    title: "Feedback",
-    url: "#",
-    icon: Send,
-  },
-]
+// export const secondaryMenu: TSecondaryMenu = [
+//   {
+//     title: "Support",
+//     url: "#",
+//     icon: LifeBuoy,
+//   },
+//   {
+//     title: "Feedback",
+//     url: "#",
+//     icon: Send,
+//   },
+// ]

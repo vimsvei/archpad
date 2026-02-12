@@ -24,8 +24,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import {NavMenu} from "@/components/layouts/private/nav-menu";
-import {menu, secondaryMenu} from "@/menu";
-import {NavSecondary} from "@/components/layouts/private/nav-secondary";
+import {menu} from "@/menu";
 
 // This is sample data.
 const data = {
@@ -184,7 +183,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMenu menu={menu} />
-        <NavSecondary menu={secondaryMenu}  className="mt-auto" />
+        {/*<NavSecondary menu={secondaryMenu}  className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
