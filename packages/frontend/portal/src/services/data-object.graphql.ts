@@ -4,14 +4,13 @@ import { loadGql } from "@/graphql/load-gql"
 import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetDataObjectByPkQuery,
-  GetDataObjectByPkQueryVariables,
   GetDataObjectsQuery,
   GetDataObjectsQueryVariables,
 } from "@/generated/operations"
 
 type HasuraDataObjectRow =
   | GetDataObjectsQuery["DataObject"][number]
-  | NonNullable<GetDataObjectByPkQuery["DataObjectByPk"]>
+  | GetDataObjectByPkQuery["DataObject"][number]
 
 export type GetDataObjectsParams = {
   search?: string
@@ -158,4 +157,3 @@ export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFu
     functionUsages,
   }
 }
-

@@ -5,14 +5,13 @@ import { loadGql } from "@/graphql/load-gql"
 import { mergeTenantWhere } from "@/lib/tenant-context"
 import type {
   GetSystemSoftwareByPkQuery,
-  GetSystemSoftwareByPkQueryVariables,
   GetSystemSoftwareQuery,
   GetSystemSoftwareQueryVariables,
 } from "@/generated/operations"
 
 type HasuraSystemSoftwareRow =
   | GetSystemSoftwareQuery["SystemSoftware"][number]
-  | NonNullable<GetSystemSoftwareByPkQuery["SystemSoftwareByPk"]>
+  | GetSystemSoftwareByPkQuery["SystemSoftware"][number]
 
 function parseSystemSoftwareKind(input: string | null): SystemSoftwareKind | null {
   if (!input) return null
@@ -82,5 +81,4 @@ export async function getSystemSoftwareByPkGraphql(id: string): Promise<SystemSo
   if (!row) throw new Error("Item not found")
   return mapRow(row)
 }
-
 
