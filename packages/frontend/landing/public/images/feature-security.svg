@@ -1,0 +1,85 @@
+<svg width="1080" height="720" viewBox="0 0 1080 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <rect width="1080" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- Security Illustration -->
+  <g opacity="0.9">
+    <!-- Large Shield -->
+    <g transform="translate(540, 360)">
+      <!-- Shield Outline -->
+      <path d="M 0,-200 L 120,-180 L 120,-80 C 120,40 60,140 0,180 C -60,140 -120,40 -120,-80 L -120,-180 Z" 
+            fill="white" stroke="#7CB342" stroke-width="4"/>
+      
+      <!-- Shield Inner Design -->
+      <path d="M 0,-180 L 100,-165 L 100,-75 C 100,35 50,125 0,160 C -50,125 -100,35 -100,-75 L -100,-165 Z" 
+            fill="#7CB342" opacity="0.1"/>
+      
+      <!-- Checkmark -->
+      <g transform="translate(-20, -20)">
+        <path d="M -30,0 L -5,30 L 50,-40" stroke="#7CB342" stroke-width="12" 
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </g>
+      
+      <!-- Lock Icon -->
+      <g transform="translate(0, 80)">
+        <rect x="-25" y="0" width="50" height="40" rx="5" fill="#7CB342" opacity="0.3"/>
+        <rect x="-20" y="5" width="40" height="30" rx="3" fill="white" stroke="#7CB342" stroke-width="2"/>
+        <circle cy="-10" r="18" fill="none" stroke="#7CB342" stroke-width="3"/>
+        <circle cy="18" r="4" fill="#7CB342"/>
+      </g>
+    </g>
+    
+    <!-- Security Features Around Shield -->
+    <!-- Encryption -->
+    <g transform="translate(280, 200)">
+      <circle r="40" fill="white" stroke="#9CCC65" stroke-width="3"/>
+      <text y="6" text-anchor="middle" fill="#7CB342" font-size="24" font-weight="bold">🔐</text>
+    </g>
+    
+    <!-- Authentication -->
+    <g transform="translate(800, 200)">
+      <circle r="40" fill="white" stroke="#9CCC65" stroke-width="3"/>
+      <text y="6" text-anchor="middle" fill="#7CB342" font-size="24" font-weight="bold">🔑</text>
+    </g>
+    
+    <!-- Firewall -->
+    <g transform="translate(280, 520)">
+      <circle r="40" fill="white" stroke="#9CCC65" stroke-width="3"/>
+      <text y="6" text-anchor="middle" fill="#7CB342" font-size="24" font-weight="bold">🛡️</text>
+    </g>
+    
+    <!-- Monitoring -->
+    <g transform="translate(800, 520)">
+      <circle r="40" fill="white" stroke="#9CCC65" stroke-width="3"/>
+      <text y="6" text-anchor="middle" fill="#7CB342" font-size="24" font-weight="bold">👁️</text>
+    </g>
+    
+    <!-- Connection Lines -->
+    <line x1="320" y1="220" x2="420" y2="290" stroke="#9CCC65" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+    <line x1="760" y1="220" x2="660" y2="290" stroke="#9CCC65" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+    <line x1="320" y1="500" x2="420" y2="430" stroke="#9CCC65" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+    <line x1="760" y1="500" x2="660" y2="430" stroke="#9CCC65" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+    
+    <!-- Protective Waves -->
+    <circle cx="540" cy="360" r="220" fill="none" stroke="#7CB342" stroke-width="2" opacity="0.2">
+      <animate attributeName="r" values="220;240;220" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0;0.2" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="540" cy="360" r="220" fill="none" stroke="#7CB342" stroke-width="2" opacity="0.2">
+      <animate attributeName="r" values="220;240;220" dur="4s" begin="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0;0.2" dur="4s" begin="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="110" cy="120" r="40" fill="#9CCC65" opacity="0.2"/>
+  <circle cx="970" cy="600" r="50" fill="#7CB342" opacity="0.15"/>
+  <rect x="900" y="90" width="75" height="75" rx="15" fill="#C5E1A5" opacity="0.3"/>
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1080" y2="720">
+      <stop offset="0%" style="stop-color:#F1F8E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DCEDC8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

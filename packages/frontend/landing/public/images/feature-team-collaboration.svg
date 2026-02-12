@@ -1,0 +1,73 @@
+<svg width="1080" height="720" viewBox="0 0 1080 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <rect width="1080" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- Team Collaboration Illustration -->
+  <g opacity="0.9">
+    <!-- Central Hub -->
+    <circle cx="540" cy="360" r="100" fill="#7CB342" opacity="0.2"/>
+    <circle cx="540" cy="360" r="80" fill="#7CB342" opacity="0.3"/>
+    <circle cx="540" cy="360" r="60" fill="white" stroke="#7CB342" stroke-width="4"/>
+    
+    <!-- Team Members (Circles) -->
+    <!-- Member 1 - Top -->
+    <g transform="translate(540, 160)">
+      <circle r="50" fill="white" stroke="#7CB342" stroke-width="3"/>
+      <circle cy="-10" r="15" fill="#9CCC65"/>
+      <ellipse cy="15" rx="20" ry="15" fill="#C5E1A5"/>
+    </g>
+    
+    <!-- Member 2 - Right -->
+    <g transform="translate(740, 360)">
+      <circle r="50" fill="white" stroke="#7CB342" stroke-width="3"/>
+      <circle cy="-10" r="15" fill="#9CCC65"/>
+      <ellipse cy="15" rx="20" ry="15" fill="#C5E1A5"/>
+    </g>
+    
+    <!-- Member 3 - Bottom -->
+    <g transform="translate(540, 560)">
+      <circle r="50" fill="white" stroke="#7CB342" stroke-width="3"/>
+      <circle cy="-10" r="15" fill="#9CCC65"/>
+      <ellipse cy="15" rx="20" ry="15" fill="#C5E1A5"/>
+    </g>
+    
+    <!-- Member 4 - Left -->
+    <g transform="translate(340, 360)">
+      <circle r="50" fill="white" stroke="#7CB342" stroke-width="3"/>
+      <circle cy="-10" r="15" fill="#9CCC65"/>
+      <ellipse cy="15" rx="20" ry="15" fill="#C5E1A5"/>
+    </g>
+    
+    <!-- Connection Lines -->
+    <line x1="540" y1="210" x2="540" y2="300" stroke="#7CB342" stroke-width="3"/>
+    <line x1="690" y1="360" x2="600" y2="360" stroke="#7CB342" stroke-width="3"/>
+    <line x1="540" y1="510" x2="540" y2="420" stroke="#7CB342" stroke-width="3"/>
+    <line x1="390" y1="360" x2="480" y2="360" stroke="#7CB342" stroke-width="3"/>
+    
+    <!-- Data Flow Indicators -->
+    <circle cx="540" cy="250" r="8" fill="#7CB342">
+      <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="640" cy="360" r="8" fill="#7CB342">
+      <animate attributeName="r" values="8;12;8" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="540" cy="470" r="8" fill="#7CB342">
+      <animate attributeName="r" values="8;12;8" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="440" cy="360" r="8" fill="#7CB342">
+      <animate attributeName="r" values="8;12;8" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="120" cy="120" r="35" fill="#9CCC65" opacity="0.2"/>
+  <circle cx="960" cy="600" r="45" fill="#7CB342" opacity="0.15"/>
+  <rect x="880" y="100" width="70" height="70" rx="14" fill="#C5E1A5" opacity="0.3"/>
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1080" y2="720">
+      <stop offset="0%" style="stop-color:#F1F8E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DCEDC8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

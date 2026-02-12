@@ -1,161 +1,85 @@
 import { defineConfig, defineCollection, s } from 'velite';
 
-const landingSections = defineCollection({
-  name: 'LandingSection',
-  pattern: 'landing/sections/**/*.mdx',
+const features = defineCollection({
+  name: 'Feature',
+  pattern: 'features/[0-9][0-9]-*.md',
   schema: s.object({
-    id: s.string(),
-    titleKey: s.string().optional(),
-    titleLine1Key: s.string().optional(),
-    titleLine2Key: s.string().optional(),
-    descriptionKey: s.string().optional(),
-    variant: s.string().optional(),
-    dataFile: s.string().optional(),
-    assets: s
-      .object({
-        storyset: s
-          .object({
-            url: s.string().optional(),
-            localSvg: s.string().optional(),
-          })
-          .optional(),
-      })
-      .optional(),
-    cta: s
-      .object({
-        primaryKey: s.string().optional(),
-        primaryHref: s.string().optional(),
-        secondaryKey: s.string().optional(),
-        secondaryHref: s.string().optional(),
-      })
-      .optional(),
-    bodyKey: s.string().optional(),
-    primaryKey: s.string().optional(),
-    primaryHref: s.string().optional(),
-    secondaryKey: s.string().optional(),
-    secondaryHref: s.string().optional(),
-    seo: s
-      .object({
-        titleKey: s.string().optional(),
-        descriptionKey: s.string().optional(),
-      })
-      .optional(),
-    body: s.mdx(),
+    title: s.string(),
+    description: s.string(),
+    icon: s.string(),
+    color: s.string(),
+    order: s.number(),
   }),
 });
 
-const pages = defineCollection({
-  name: 'Page',
-  pattern: 'pages/**/*.mdx',
+const featurePages = defineCollection({
+  name: 'FeaturePage',
+  pattern: 'features/pages/*.md',
   schema: s.object({
-    titleKey: s.string().optional(),
-    descriptionKey: s.string().optional(),
-    slug: s.string().optional(),
-    nav: s
-      .object({
-        labelKey: s.string().optional(),
-        order: s.number().optional(),
-      })
-      .optional(),
-    seo: s
-      .object({
-        ogImage: s.string().optional(),
-        titleKey: s.string().optional(),
-        descriptionKey: s.string().optional(),
-      })
-      .optional(),
-    cta: s
-      .object({
-        primaryKey: s.string().optional(),
-        primaryHref: s.string().optional(),
-      })
-      .optional(),
-    body: s.mdx(),
+    slug: s.slug('features/pages'),
+    title: s.string().optional(),
+    metadata: s.record(s.any()).optional(),
+  }),
+});
+
+const benefits = defineCollection({
+  name: 'Benefit',
+  pattern: 'benefits/**/*.md',
+  schema: s.object({
+    stat: s.string(),
+    label: s.string(),
+    order: s.number(),
   }),
 });
 
 const useCases = defineCollection({
   name: 'UseCase',
-  pattern: 'use-cases/**/*.mdx',
+  pattern: 'use-cases/**/*.md',
   schema: s.object({
-    titleKey: s.string().optional(),
-    descriptionKey: s.string().optional(),
-    slug: s.string().optional(),
-    tags: s.array(s.string()).optional(),
-    cta: s
-      .object({
-        primaryKey: s.string().optional(),
-        primaryHref: s.string().optional(),
-      })
-      .optional(),
-    body: s.mdx(),
-  }),
-  transform: (data: { slug?: string; [key: string]: unknown }, { meta }: { meta?: { path?: string } }) => {
-    const slug = data.slug ?? meta?.path?.replace(/\.mdx$/, '').replace(/^use-cases\//, '') ?? 'untitled';
-    return { ...data, slug };
-  },
-});
-
-const integrations = defineCollection({
-  name: 'Integration',
-  pattern: 'integrations/**/*.mdx',
-  schema: s.object({
-    titleKey: s.string().optional(),
-    slug: s.slug('integrations'),
-    body: s.mdx(),
+    title: s.string(),
+    description: s.string(),
+    icon: s.string(),
+    image: s.string(),
+    tags: s.array(s.string()),
+    order: s.number(),
   }),
 });
 
-const legal = defineCollection({
-  name: 'Legal',
-  pattern: 'legal/**/*.mdx',
+const legalDocuments = defineCollection({
+  name: 'LegalDocument',
+  pattern: 'legal/**/*.md',
   schema: s.object({
-    titleKey: s.string().optional(),
     slug: s.slug('legal'),
-    body: s.mdx(),
-  }),
-});
-
-// YAML data (capabilities, personas, faq, etc.)
-const capabilities = defineCollection({
-  name: 'Capabilities',
-  pattern: 'landing/data/capabilities.yml',
-  schema: s.object({
-    items: s.array(
-      s.object({
-        id: s.string(),
-        icon: s.string(),
-        titleKey: s.string(),
-        bodyKey: s.string(),
-      })
-    ),
-  }),
-});
-
-const personas = defineCollection({
-  name: 'Personas',
-  pattern: 'landing/data/personas.yml',
-  schema: s.object({
-    items: s.array(
-      s.object({
-        id: s.string(),
-        titleKey: s.string(),
-        bodyKey: s.string(),
-      })
-    ),
+    title: s.string(),
+    subtitle: s.string().optional(),
+    icon: s.string(),
+    lastUpdated: s.string(),
+    content: s.markdown(),
   }),
 });
 
 const faq = defineCollection({
-  name: 'Faq',
-  pattern: 'landing/data/faq.yml',
+  name: 'FAQ',
+  pattern: 'faq/**/*.md',
   schema: s.object({
-    items: s.array(
-      s.object({
-        qKey: s.string(),
-        aKey: s.string(),
-      })
-    ),
+    question: s.string(),
+    answer: s.string(),
+    category: s.string().optional(),
+    order: s.number(),
+  }),
+});
+
+const textBlocks = defineCollection({
+  name: 'TextBlock',
+  pattern: 'text-blocks/**/*.md',
+  schema: s.object({
+    slug: s.slug('text-blocks'),
+    title: s.string().optional(),
+    metadata: s.record(s.any()).optional(),
+    steps: s.array(s.any()).optional(),
+    integrations: s.array(s.any()).optional(),
+    navigation: s.array(s.any()).optional(),
+    footerLinks: s.any().optional(),
   }),
 });
 
@@ -164,15 +88,21 @@ export default defineConfig({
   output: {
     data: '.velite',
     assets: 'public/static',
+    base: '/static/',
+    name: '[name]-[hash:6].[ext]',
+    clean: true,
   },
   collections: {
-    landingSections,
-    pages,
+    features,
+    featurePages,
+    benefits,
     useCases,
-    integrations,
-    legal,
-    capabilities,
-    personas,
+    legalDocuments,
     faq,
+    textBlocks,
+  },
+  mdx: {
+    rehypePlugins: [],
+    remarkPlugins: [],
   },
 });

@@ -1,0 +1,9 @@
+node_modules
+.next
+.velite
+dist
+out
+build
+public/static
+tsconfig.tsbuildinfo
+pnpm-lock.yaml

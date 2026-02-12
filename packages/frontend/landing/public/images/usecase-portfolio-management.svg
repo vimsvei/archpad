@@ -1,0 +1,92 @@
+<svg width="1080" height="720" viewBox="0 0 1080 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <rect width="1080" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- Portfolio Management Illustration -->
+  <g opacity="0.9">
+    <!-- Dashboard/Grid View -->
+    <g transform="translate(540, 360)">
+      <!-- Portfolio Cards Grid -->
+      <!-- Row 1 -->
+      <g transform="translate(-240, -160)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#7CB342" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#7CB342"/>
+      </g>
+      
+      <g transform="translate(-60, -160)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#9CCC65" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#9CCC65"/>
+      </g>
+      
+      <g transform="translate(120, -160)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#C5E1A5" opacity="0.2"/>
+        <circle cx="70" cy="85" r="5" fill="#C5E1A5"/>
+      </g>
+      
+      <!-- Row 2 -->
+      <g transform="translate(-240, -20)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#9CCC65" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#9CCC65"/>
+      </g>
+      
+      <g transform="translate(-60, -20)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#7CB342" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#7CB342"/>
+      </g>
+      
+      <g transform="translate(120, -20)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#C5E1A5" opacity="0.2"/>
+        <circle cx="70" cy="85" r="5" fill="#C5E1A5"/>
+      </g>
+      
+      <!-- Row 3 -->
+      <g transform="translate(-240, 120)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#C5E1A5" opacity="0.2"/>
+        <circle cx="70" cy="85" r="5" fill="#C5E1A5"/>
+      </g>
+      
+      <g transform="translate(-60, 120)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#7CB342" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#7CB342"/>
+      </g>
+      
+      <g transform="translate(120, 120)">
+        <rect width="140" height="100" rx="12" fill="white" stroke="#7CB342" stroke-width="3"/>
+        <rect x="10" y="10" width="120" height="60" rx="6" fill="#9CCC65" opacity="0.15"/>
+        <circle cx="70" cy="85" r="5" fill="#9CCC65"/>
+      </g>
+    </g>
+    
+    <!-- Trend Arrow -->
+    <g transform="translate(180, 180)">
+      <path d="M 0,40 L 40,20 L 80,30 L 120,0" stroke="#7CB342" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <polygon points="120,0 110,8 115,-5" fill="#7CB342"/>
+    </g>
+    
+    <!-- Status Indicators -->
+    <g transform="translate(850, 200)">
+      <circle r="40" fill="white" stroke="#7CB342" stroke-width="3"/>
+      <text y="8" text-anchor="middle" fill="#7CB342" font-size="28" font-weight="bold">9</text>
+      <text y="60" text-anchor="middle" fill="#7CB342" font-size="12">Projects</text>
+    </g>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="100" cy="120" r="35" fill="#9CCC65" opacity="0.2"/>
+  <circle cx="980" cy="600" r="45" fill="#7CB342" opacity="0.15"/>
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1080" y2="720">
+      <stop offset="0%" style="stop-color:#F1F8E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DCEDC8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

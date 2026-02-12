@@ -1,66 +1,60 @@
-import './globals.css';
-import { cookies } from 'next/headers';
-import { Roboto } from 'next/font/google';
 import type { Metadata } from 'next';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { Montserrat } from 'next/font/google';
+import '@/styles/index.css';
 
-const roboto = Roboto({
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import { getPageMetadata, siteMetadata } from '@/lib/metadata';
+
+const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-roboto',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://archpad.pro';
+const homeMeta = getPageMetadata('/');
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'ArchPad — платформа для архитектурных артефактов',
-    template: '%s | ArchPad',
-  },
-  description:
-    'Репозиторий проектов, справочники, решения — работа с архитектурными артефактами в единой среде.',
-  keywords: ['архитектура', 'enterprise', 'репозиторий', 'ArchiMate', 'EA'],
-  authors: [{ name: 'ArchPad' }],
+  metadataBase: new URL(siteMetadata.siteUrl),
+  title: homeMeta.title,
+  description: homeMeta.description,
+  keywords: homeMeta.keywords
+    ?.split(',')
+    .map((keyword) => keyword.trim())
+    .filter(Boolean),
   openGraph: {
+    title: homeMeta.title,
+    description: homeMeta.description,
     type: 'website',
-    locale: 'ru_RU',
-    url: siteUrl,
-    siteName: 'ArchPad',
-    title: 'ArchPad — платформа для архитектурных артефактов',
-    description:
-      'Репозиторий проектов, справочники, решения — работа с архитектурными артефактами в единой среде.',
+    siteName: siteMetadata.siteName,
+    locale: siteMetadata.locale,
+    images: [siteMetadata.defaultImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ArchPad — платформа для архитектурных артефактов',
-    description:
-      'Репозиторий проектов, справочники, решения — работа с архитектурными артефактами в единой среде.',
+    site: siteMetadata.twitterHandle,
+    title: homeMeta.title,
+    description: homeMeta.description,
+    images: [siteMetadata.defaultImage],
   },
 };
 
-const LOCALE_TO_LANG: Record<string, string> = {
-  'ru-RU': 'ru',
-  en: 'en',
-  'es-ES': 'es',
-  sr: 'sr',
-};
-
-type RootLayoutProps = {
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode;
-};
-
-export default async function RootLayout({ children }: RootLayoutProps) {
-  const cookieStore = await cookies();
-  const locale = cookieStore.get('archpad_locale')?.value ?? 'en';
-  const lang = LOCALE_TO_LANG[locale] ?? 'en';
-
+}) {
   return (
-    <html lang={lang} suppressHydrationWarning className={roboto.variable}>
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="ru" suppressHydrationWarning>
+      <body className={montserrat.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          forcedTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

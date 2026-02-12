@@ -1,0 +1,101 @@
+<svg width="1080" height="720" viewBox="0 0 1080 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <rect width="1080" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- Integrations Illustration -->
+  <g opacity="0.9">
+    <!-- Central Hub/Platform -->
+    <rect x="440" y="310" width="200" height="100" rx="20" fill="white" stroke="#7CB342" stroke-width="4"/>
+    <text x="540" y="365" text-anchor="middle" fill="#7CB342" font-size="18" font-weight="bold">ArchPad</text>
+    
+    <!-- Integration Points (surrounding boxes) -->
+    <!-- Top Left -->
+    <g transform="translate(240, 180)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Top -->
+    <g transform="translate(540, 150)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Top Right -->
+    <g transform="translate(840, 180)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Left -->
+    <g transform="translate(180, 360)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Right -->
+    <g transform="translate(900, 360)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Bottom Left -->
+    <g transform="translate(240, 540)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Bottom -->
+    <g transform="translate(540, 570)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Bottom Right -->
+    <g transform="translate(840, 540)">
+      <rect x="-40" y="-30" width="80" height="60" rx="10" fill="#9CCC65" opacity="0.3"/>
+      <rect x="-35" y="-25" width="70" height="50" rx="8" fill="white" stroke="#7CB342" stroke-width="2"/>
+      <circle r="10" fill="#7CB342"/>
+    </g>
+    
+    <!-- Connection Lines -->
+    <line x1="260" y1="210" x2="440" y2="330" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="540" y1="180" x2="540" y2="310" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="820" y1="210" x2="640" y2="330" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="220" y1="360" x2="440" y2="360" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="860" y1="360" x2="640" y2="360" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="260" y1="510" x2="440" y2="390" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="540" y1="540" x2="540" y2="410" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    <line x1="820" y1="510" x2="640" y2="390" stroke="#7CB342" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+    
+    <!-- Data Flow Animation -->
+    <circle cx="350" cy="270" r="6" fill="#7CB342">
+      <animate attributeName="opacity" values="1;0;1" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="730" cy="270" r="6" fill="#7CB342">
+      <animate attributeName="opacity" values="1;0;1" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="350" cy="450" r="6" fill="#7CB342">
+      <animate attributeName="opacity" values="1;0;1" dur="3s" begin="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="90" cy="110" r="35" fill="#9CCC65" opacity="0.2"/>
+  <circle cx="990" cy="610" r="45" fill="#7CB342" opacity="0.15"/>
+  <rect x="930" y="90" width="70" height="70" rx="14" fill="#C5E1A5" opacity="0.3"/>
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1080" y2="720">
+      <stop offset="0%" style="stop-color:#F1F8E9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DCEDC8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
