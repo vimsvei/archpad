@@ -31,3 +31,6 @@ spec:
       # Server-Side Apply avoids "metadata.resourceVersion: Invalid value: 0" when
       # updating existing Application CRs (API server handles resourceVersion).
       - ServerSideApply=true
+      # Отключаем client-side apply migration — она падает с resourceVersion на Application CR.
+      # SSA применяется напрямую без миграции managed fields.
+      - ClientSideApplyMigration=false

@@ -28,6 +28,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
-  ignoreDifferences:
-    # (опционально) здесь можно добавлять игноры на "шумные" ресурсы,
-    # но prometheus ресурсы должны быть исключены через directory.exclude выше.
+  ignoreDifferences: []  # пустой массив; для игноров используйте элементы вида: - group: ... kind: ... jsonPointers: ...
