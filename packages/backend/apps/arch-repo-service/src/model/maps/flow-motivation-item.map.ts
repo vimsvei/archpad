@@ -17,7 +17,7 @@ export class FlowMotivationItemMap extends MappedObject {
   })
   flow!: FlowGeneric;
 
-  @HasuraReference({ objectName: 'assessment', collectionName: 'processes' })
+  @HasuraReference({ objectName: 'assessment', collectionName: 'flows' })
   @ManyToOne({
     entity: () => MotivationElementGeneric,
     primary: true,
