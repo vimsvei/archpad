@@ -2,6 +2,7 @@ import type { DataObject, Paginated } from "@/@types/data-object"
 import { graphqlRequest } from "@/services/http/graphql-service"
 import { loadGql } from "@/graphql/load-gql"
 import { mergeTenantWhere } from "@/lib/tenant-context"
+import { getApplicationFunctionRest } from "@/services/application-function.rest"
 import type {
   GetDataObjectByPkQuery,
   GetDataObjectsQuery,
@@ -114,10 +115,18 @@ export async function getDataObjectFullGraphql(id: string): Promise<DataObjectFu
 
   let functionsById = new Map<string, { id: string; code: string; name: string; description?: string | null }>()
   if (functionIds.length > 0) {
-    const functionsQuery = await loadGql("application-functions/get-functions-by-ids.gql")
-    const where = mergeTenantWhere({ id: { _in: functionIds } })
-    const functionsData = await graphqlRequest<any, { where: unknown }>(functionsQuery, { where })
-    const functions = Array.isArray(functionsData.FunctionGeneric) ? functionsData.FunctionGeneric : []
+    const functions = (
+      await Promise.all(
+        functionIds.map(async (functionId) => {
+          try {
+            return await getApplicationFunctionRest(functionId)
+          } catch {
+            return null
+          }
+        })
+      )
+    ).filter(Boolean) as Array<{ id: string; code: string; name: string; description?: string | null }>
+
     functionsById = new Map(
       functions.map((f: any) => [
         f.id,

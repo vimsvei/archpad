@@ -524,13 +524,6 @@ export type ApplicationComponentBusinessActorRoleMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_actor_role" */
-export type ApplicationComponentBusinessActorRoleMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentBusinessActorRoleMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentBusinessActorRoleMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_actor_role". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentBusinessActorRoleMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentBusinessActorRoleMap_Bool_Exp>>;
@@ -547,27 +540,6 @@ export type ApplicationComponentBusinessActorRoleMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_actor_role" */
-export enum ApplicationComponentBusinessActorRoleMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "actor_id", "role_id" */
-  MapApplicationComponentActorRolePkey = 'map_application_component_actor_role_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_actor_role" */
-export type ApplicationComponentBusinessActorRoleMap_Insert_Input = {
-  actorId?: InputMaybe<Scalars['uuid']['input']>;
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  roleId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -628,22 +600,6 @@ export type ApplicationComponentBusinessActorRoleMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_actor_role" */
-export type ApplicationComponentBusinessActorRoleMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentBusinessActorRoleMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentBusinessActorRoleMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_actor_role" */
-export type ApplicationComponentBusinessActorRoleMap_On_Conflict = {
-  constraint: ApplicationComponentBusinessActorRoleMap_Constraint;
-  update_columns?: Array<ApplicationComponentBusinessActorRoleMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_actor_role". */
 export type ApplicationComponentBusinessActorRoleMap_Order_By = {
   actorId?: InputMaybe<Order_By>;
@@ -657,13 +613,6 @@ export type ApplicationComponentBusinessActorRoleMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_actor_role */
-export type ApplicationComponentBusinessActorRoleMap_Pk_Columns_Input = {
-  actorId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
-  roleId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_actor_role" */
@@ -690,20 +639,6 @@ export enum ApplicationComponentBusinessActorRoleMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_actor_role" */
-export type ApplicationComponentBusinessActorRoleMap_Set_Input = {
-  actorId?: InputMaybe<Scalars['uuid']['input']>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  roleId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentBusinessActorRoleMap" */
 export type ApplicationComponentBusinessActorRoleMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -724,37 +659,6 @@ export type ApplicationComponentBusinessActorRoleMap_Stream_Cursor_Value_Input =
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_actor_role" */
-export enum ApplicationComponentBusinessActorRoleMap_Update_Column {
-  /** column name */
-  ActorId = 'actorId',
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  RoleId = 'roleId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentBusinessActorRoleMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentBusinessActorRoleMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_data_object" */
@@ -839,13 +743,6 @@ export type ApplicationComponentDataObjectMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentDataObjectMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_data_object" */
-export type ApplicationComponentDataObjectMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentDataObjectMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentDataObjectMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_data_object". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentDataObjectMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentDataObjectMap_Bool_Exp>>;
@@ -864,28 +761,6 @@ export type ApplicationComponentDataObjectMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_data_object" */
-export enum ApplicationComponentDataObjectMap_Constraint {
-  /** unique or primary key constraint on columns "data_object_id", "component_id" */
-  MapApplicationComponentDataObjectPkey = 'map_application_component_data_object_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_data_object" */
-export type ApplicationComponentDataObjectMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObject?: InputMaybe<DataObject_Obj_Rel_Insert_Input>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  solutions?: InputMaybe<SolutionDataObjectMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -942,22 +817,6 @@ export type ApplicationComponentDataObjectMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_data_object" */
-export type ApplicationComponentDataObjectMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentDataObjectMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentDataObjectMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_data_object" */
-export type ApplicationComponentDataObjectMap_On_Conflict = {
-  constraint: ApplicationComponentDataObjectMap_Constraint;
-  update_columns?: Array<ApplicationComponentDataObjectMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentDataObjectMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_data_object". */
 export type ApplicationComponentDataObjectMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -972,12 +831,6 @@ export type ApplicationComponentDataObjectMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_data_object */
-export type ApplicationComponentDataObjectMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_data_object" */
@@ -1002,19 +855,6 @@ export enum ApplicationComponentDataObjectMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_data_object" */
-export type ApplicationComponentDataObjectMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentDataObjectMap" */
 export type ApplicationComponentDataObjectMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -1034,35 +874,6 @@ export type ApplicationComponentDataObjectMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_data_object" */
-export enum ApplicationComponentDataObjectMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DataObjectId = 'dataObjectId',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentDataObjectMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentDataObjectMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentDataObjectMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_directory" */
@@ -1123,13 +934,6 @@ export type ApplicationComponentDirectoryMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentDirectoryMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_directory" */
-export type ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentDirectoryMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_directory". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentDirectoryMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentDirectoryMap_Bool_Exp>>;
@@ -1146,27 +950,6 @@ export type ApplicationComponentDirectoryMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_directory" */
-export enum ApplicationComponentDirectoryMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "directory_id" */
-  MapApplicationComponentDirectoryPkey = 'map_application_component_directory_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_directory" */
-export type ApplicationComponentDirectoryMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  directory?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  directoryId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -1223,22 +1006,6 @@ export type ApplicationComponentDirectoryMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_directory" */
-export type ApplicationComponentDirectoryMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentDirectoryMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentDirectoryMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_directory" */
-export type ApplicationComponentDirectoryMap_On_Conflict = {
-  constraint: ApplicationComponentDirectoryMap_Constraint;
-  update_columns?: Array<ApplicationComponentDirectoryMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentDirectoryMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_directory". */
 export type ApplicationComponentDirectoryMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -1252,12 +1019,6 @@ export type ApplicationComponentDirectoryMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_directory */
-export type ApplicationComponentDirectoryMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  directoryId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_directory" */
@@ -1282,19 +1043,6 @@ export enum ApplicationComponentDirectoryMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_directory" */
-export type ApplicationComponentDirectoryMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  directoryId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentDirectoryMap" */
 export type ApplicationComponentDirectoryMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -1316,35 +1064,6 @@ export type ApplicationComponentDirectoryMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_application_component_directory" */
-export enum ApplicationComponentDirectoryMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  DirectoryId = 'directoryId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentDirectoryMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentDirectoryMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_application_component_event" */
 export type ApplicationComponentEventMap = {
   __typename?: 'ApplicationComponentEventMap';
@@ -1356,7 +1075,7 @@ export type ApplicationComponentEventMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  event: EventGeneric;
+  event: Event;
   eventId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -1403,13 +1122,6 @@ export type ApplicationComponentEventMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentEventMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_event" */
-export type ApplicationComponentEventMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentEventMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentEventMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_event". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentEventMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentEventMap_Bool_Exp>>;
@@ -1421,32 +1133,11 @@ export type ApplicationComponentEventMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  event?: InputMaybe<EventGeneric_Bool_Exp>;
+  event?: InputMaybe<Event_Bool_Exp>;
   eventId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_event" */
-export enum ApplicationComponentEventMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "event_id" */
-  MapApplicationComponentEventPkey = 'map_application_component_event_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_event" */
-export type ApplicationComponentEventMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  event?: InputMaybe<EventGeneric_Obj_Rel_Insert_Input>;
-  eventId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -1503,22 +1194,6 @@ export type ApplicationComponentEventMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_event" */
-export type ApplicationComponentEventMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentEventMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentEventMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_event" */
-export type ApplicationComponentEventMap_On_Conflict = {
-  constraint: ApplicationComponentEventMap_Constraint;
-  update_columns?: Array<ApplicationComponentEventMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentEventMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_event". */
 export type ApplicationComponentEventMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -1527,17 +1202,11 @@ export type ApplicationComponentEventMap_Order_By = {
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  event?: InputMaybe<EventGeneric_Order_By>;
+  event?: InputMaybe<Event_Order_By>;
   eventId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_event */
-export type ApplicationComponentEventMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  eventId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_event" */
@@ -1562,19 +1231,6 @@ export enum ApplicationComponentEventMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_event" */
-export type ApplicationComponentEventMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  eventId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentEventMap" */
 export type ApplicationComponentEventMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -1596,35 +1252,6 @@ export type ApplicationComponentEventMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_application_component_event" */
-export enum ApplicationComponentEventMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  EventId = 'eventId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentEventMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentEventMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentEventMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_application_component_function" */
 export type ApplicationComponentFunctionMap = {
   __typename?: 'ApplicationComponentFunctionMap';
@@ -1636,7 +1263,7 @@ export type ApplicationComponentFunctionMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  function: FunctionGeneric;
+  function: Function;
   functionId: Scalars['uuid']['output'];
   /** An array relationship */
   interfaces: Array<ApplicationFunctionInterfaceMap>;
@@ -1731,13 +1358,6 @@ export type ApplicationComponentFunctionMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentFunctionMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_function" */
-export type ApplicationComponentFunctionMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentFunctionMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentFunctionMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_function". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentFunctionMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentFunctionMap_Bool_Exp>>;
@@ -1749,7 +1369,7 @@ export type ApplicationComponentFunctionMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  function?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  function?: InputMaybe<Function_Bool_Exp>;
   functionId?: InputMaybe<Uuid_Comparison_Exp>;
   interfaces?: InputMaybe<ApplicationFunctionInterfaceMap_Bool_Exp>;
   interfaces_aggregate?: InputMaybe<ApplicationFunctionInterfaceMap_Aggregate_Bool_Exp>;
@@ -1758,29 +1378,6 @@ export type ApplicationComponentFunctionMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_function" */
-export enum ApplicationComponentFunctionMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "function_id" */
-  MapApplicationComponentFunctionPkey = 'map_application_component_function_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_function" */
-export type ApplicationComponentFunctionMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  function?: InputMaybe<FunctionGeneric_Obj_Rel_Insert_Input>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  interfaces?: InputMaybe<ApplicationFunctionInterfaceMap_Arr_Rel_Insert_Input>;
-  solutions?: InputMaybe<SolutionApplicationFunctionMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -1837,22 +1434,6 @@ export type ApplicationComponentFunctionMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_function" */
-export type ApplicationComponentFunctionMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentFunctionMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentFunctionMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_function" */
-export type ApplicationComponentFunctionMap_On_Conflict = {
-  constraint: ApplicationComponentFunctionMap_Constraint;
-  update_columns?: Array<ApplicationComponentFunctionMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentFunctionMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_function". */
 export type ApplicationComponentFunctionMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -1861,19 +1442,13 @@ export type ApplicationComponentFunctionMap_Order_By = {
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  function?: InputMaybe<FunctionGeneric_Order_By>;
+  function?: InputMaybe<Function_Order_By>;
   functionId?: InputMaybe<Order_By>;
   interfaces_aggregate?: InputMaybe<ApplicationFunctionInterfaceMap_Aggregate_Order_By>;
   solutions_aggregate?: InputMaybe<SolutionApplicationFunctionMap_Aggregate_Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_function */
-export type ApplicationComponentFunctionMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_function" */
@@ -1898,19 +1473,6 @@ export enum ApplicationComponentFunctionMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_function" */
-export type ApplicationComponentFunctionMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentFunctionMap" */
 export type ApplicationComponentFunctionMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -1930,35 +1492,6 @@ export type ApplicationComponentFunctionMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_function" */
-export enum ApplicationComponentFunctionMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  FunctionId = 'functionId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentFunctionMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentFunctionMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentFunctionMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_hierarchy" */
@@ -2036,13 +1569,6 @@ export type ApplicationComponentHierarchyMap_Aggregate_Order_By = {
   variance?: InputMaybe<ApplicationComponentHierarchyMap_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentHierarchyMap_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type ApplicationComponentHierarchyMap_Avg_Fields = {
   __typename?: 'ApplicationComponentHierarchyMap_avg_fields';
@@ -2071,33 +1597,6 @@ export type ApplicationComponentHierarchyMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_hierarchy" */
-export enum ApplicationComponentHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "component_child_id", "component_parent_id" */
-  MapApplicationComponentHierarchyPkey = 'map_application_component_hierarchy_pkey'
-}
-
-/** input type for incrementing numeric columns in table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_Inc_Input = {
-  order?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** input type for inserting data into table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_Insert_Input = {
-  child?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentChildId?: InputMaybe<Scalars['uuid']['input']>;
-  componentParentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  parent?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -2158,22 +1657,6 @@ export type ApplicationComponentHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_On_Conflict = {
-  constraint: ApplicationComponentHierarchyMap_Constraint;
-  update_columns?: Array<ApplicationComponentHierarchyMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_hierarchy". */
 export type ApplicationComponentHierarchyMap_Order_By = {
   child?: InputMaybe<ApplicationComponent_Order_By>;
@@ -2188,12 +1671,6 @@ export type ApplicationComponentHierarchyMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_hierarchy */
-export type ApplicationComponentHierarchyMap_Pk_Columns_Input = {
-  componentChildId: Scalars['uuid']['input'];
-  componentParentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_hierarchy" */
@@ -2219,20 +1696,6 @@ export enum ApplicationComponentHierarchyMap_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "map_application_component_hierarchy" */
-export type ApplicationComponentHierarchyMap_Set_Input = {
-  componentChildId?: InputMaybe<Scalars['uuid']['input']>;
-  componentParentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type ApplicationComponentHierarchyMap_Stddev_Fields = {
@@ -2300,39 +1763,6 @@ export type ApplicationComponentHierarchyMap_Sum_Order_By = {
   order?: InputMaybe<Order_By>;
 };
 
-/** update columns of table "map_application_component_hierarchy" */
-export enum ApplicationComponentHierarchyMap_Update_Column {
-  /** column name */
-  ComponentChildId = 'componentChildId',
-  /** column name */
-  ComponentParentId = 'componentParentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Order = 'order',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentHierarchyMap_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<ApplicationComponentHierarchyMap_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentHierarchyMap_Bool_Exp;
-};
-
 /** aggregate var_pop on columns */
 export type ApplicationComponentHierarchyMap_Var_Pop_Fields = {
   __typename?: 'ApplicationComponentHierarchyMap_var_pop_fields';
@@ -2377,7 +1807,7 @@ export type ApplicationComponentInterfaceMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  interface: InterfaceGeneric;
+  interface: Interface;
   interfaceId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -2424,13 +1854,6 @@ export type ApplicationComponentInterfaceMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentInterfaceMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_interface" */
-export type ApplicationComponentInterfaceMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentInterfaceMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentInterfaceMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_interface". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentInterfaceMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentInterfaceMap_Bool_Exp>>;
@@ -2442,32 +1865,11 @@ export type ApplicationComponentInterfaceMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  interface?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  interface?: InputMaybe<Interface_Bool_Exp>;
   interfaceId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_interface" */
-export enum ApplicationComponentInterfaceMap_Constraint {
-  /** unique or primary key constraint on columns "interface_id", "component_id" */
-  MapApplicationComponentInterfacePkey = 'map_application_component_interface_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_interface" */
-export type ApplicationComponentInterfaceMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  interface?: InputMaybe<InterfaceGeneric_Obj_Rel_Insert_Input>;
-  interfaceId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -2524,22 +1926,6 @@ export type ApplicationComponentInterfaceMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_interface" */
-export type ApplicationComponentInterfaceMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentInterfaceMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentInterfaceMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_interface" */
-export type ApplicationComponentInterfaceMap_On_Conflict = {
-  constraint: ApplicationComponentInterfaceMap_Constraint;
-  update_columns?: Array<ApplicationComponentInterfaceMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentInterfaceMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_interface". */
 export type ApplicationComponentInterfaceMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -2548,17 +1934,11 @@ export type ApplicationComponentInterfaceMap_Order_By = {
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  interface?: InputMaybe<InterfaceGeneric_Order_By>;
+  interface?: InputMaybe<Interface_Order_By>;
   interfaceId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_interface */
-export type ApplicationComponentInterfaceMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  interfaceId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_interface" */
@@ -2583,19 +1963,6 @@ export enum ApplicationComponentInterfaceMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_interface" */
-export type ApplicationComponentInterfaceMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  interfaceId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentInterfaceMap" */
 export type ApplicationComponentInterfaceMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -2615,35 +1982,6 @@ export type ApplicationComponentInterfaceMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_interface" */
-export enum ApplicationComponentInterfaceMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  InterfaceId = 'interfaceId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentInterfaceMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentInterfaceMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentInterfaceMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_product" */
@@ -2704,13 +2042,6 @@ export type ApplicationComponentProductMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentProductMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_product" */
-export type ApplicationComponentProductMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentProductMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentProductMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_product". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentProductMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentProductMap_Bool_Exp>>;
@@ -2727,27 +2058,6 @@ export type ApplicationComponentProductMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_product" */
-export enum ApplicationComponentProductMap_Constraint {
-  /** unique or primary key constraint on columns "product_id", "component_id" */
-  MapApplicationComponentProductPkey = 'map_application_component_product_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_product" */
-export type ApplicationComponentProductMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  product?: InputMaybe<BusinessProduct_Obj_Rel_Insert_Input>;
-  productId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -2804,22 +2114,6 @@ export type ApplicationComponentProductMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_product" */
-export type ApplicationComponentProductMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentProductMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentProductMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_product" */
-export type ApplicationComponentProductMap_On_Conflict = {
-  constraint: ApplicationComponentProductMap_Constraint;
-  update_columns?: Array<ApplicationComponentProductMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentProductMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_product". */
 export type ApplicationComponentProductMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -2833,12 +2127,6 @@ export type ApplicationComponentProductMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_product */
-export type ApplicationComponentProductMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  productId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_product" */
@@ -2863,19 +2151,6 @@ export enum ApplicationComponentProductMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_product" */
-export type ApplicationComponentProductMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  productId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentProductMap" */
 export type ApplicationComponentProductMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -2895,35 +2170,6 @@ export type ApplicationComponentProductMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_product" */
-export enum ApplicationComponentProductMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  ProductId = 'productId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentProductMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentProductMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentProductMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_stakeholder" */
@@ -2985,13 +2231,6 @@ export type ApplicationComponentStakeholderMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentStakeholderMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_stakeholder" */
-export type ApplicationComponentStakeholderMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentStakeholderMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentStakeholderMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_stakeholder". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentStakeholderMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentStakeholderMap_Bool_Exp>>;
@@ -3009,28 +2248,6 @@ export type ApplicationComponentStakeholderMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_stakeholder" */
-export enum ApplicationComponentStakeholderMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "stakeholder_id" */
-  MapApplicationComponentStakeholderPkey = 'map_application_component_stakeholder_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_stakeholder" */
-export type ApplicationComponentStakeholderMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['stakeholder_role_enum']['input']>;
-  stakeholder?: InputMaybe<Stakeholder_Obj_Rel_Insert_Input>;
-  stakeholderId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -3091,22 +2308,6 @@ export type ApplicationComponentStakeholderMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_stakeholder" */
-export type ApplicationComponentStakeholderMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentStakeholderMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentStakeholderMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_stakeholder" */
-export type ApplicationComponentStakeholderMap_On_Conflict = {
-  constraint: ApplicationComponentStakeholderMap_Constraint;
-  update_columns?: Array<ApplicationComponentStakeholderMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentStakeholderMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_stakeholder". */
 export type ApplicationComponentStakeholderMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -3121,12 +2322,6 @@ export type ApplicationComponentStakeholderMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_stakeholder */
-export type ApplicationComponentStakeholderMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  stakeholderId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_stakeholder" */
@@ -3153,20 +2348,6 @@ export enum ApplicationComponentStakeholderMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_stakeholder" */
-export type ApplicationComponentStakeholderMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['stakeholder_role_enum']['input']>;
-  stakeholderId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentStakeholderMap" */
 export type ApplicationComponentStakeholderMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -3187,37 +2368,6 @@ export type ApplicationComponentStakeholderMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_stakeholder" */
-export enum ApplicationComponentStakeholderMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Role = 'role',
-  /** column name */
-  StakeholderId = 'stakeholderId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentStakeholderMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentStakeholderMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentStakeholderMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_system_software" */
@@ -3279,13 +2429,6 @@ export type ApplicationComponentSystemSoftwareMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentSystemSoftwareMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_system_software" */
-export type ApplicationComponentSystemSoftwareMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentSystemSoftwareMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentSystemSoftwareMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_system_software". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentSystemSoftwareMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentSystemSoftwareMap_Bool_Exp>>;
@@ -3303,28 +2446,6 @@ export type ApplicationComponentSystemSoftwareMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_system_software" */
-export enum ApplicationComponentSystemSoftwareMap_Constraint {
-  /** unique or primary key constraint on columns "system_software_id", "component_id" */
-  MapApplicationComponentSystemSoftwarePkey = 'map_application_component_system_software_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_system_software" */
-export type ApplicationComponentSystemSoftwareMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  systemSoftware?: InputMaybe<SystemSoftware_Obj_Rel_Insert_Input>;
-  systemSoftwareId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -3385,22 +2506,6 @@ export type ApplicationComponentSystemSoftwareMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_system_software" */
-export type ApplicationComponentSystemSoftwareMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentSystemSoftwareMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentSystemSoftwareMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_system_software" */
-export type ApplicationComponentSystemSoftwareMap_On_Conflict = {
-  constraint: ApplicationComponentSystemSoftwareMap_Constraint;
-  update_columns?: Array<ApplicationComponentSystemSoftwareMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentSystemSoftwareMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_system_software". */
 export type ApplicationComponentSystemSoftwareMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -3415,12 +2520,6 @@ export type ApplicationComponentSystemSoftwareMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_system_software */
-export type ApplicationComponentSystemSoftwareMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  systemSoftwareId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_system_software" */
@@ -3447,20 +2546,6 @@ export enum ApplicationComponentSystemSoftwareMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_system_software" */
-export type ApplicationComponentSystemSoftwareMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  systemSoftwareId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentSystemSoftwareMap" */
 export type ApplicationComponentSystemSoftwareMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -3481,37 +2566,6 @@ export type ApplicationComponentSystemSoftwareMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_system_software" */
-export enum ApplicationComponentSystemSoftwareMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  SystemSoftwareId = 'systemSoftwareId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentSystemSoftwareMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentSystemSoftwareMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentSystemSoftwareMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_technology_logical_network" */
@@ -3572,13 +2626,6 @@ export type ApplicationComponentTechnologyLogicalNetworkMap_Aggregate_Order_By =
   min?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_technology_logical_network" */
-export type ApplicationComponentTechnologyLogicalNetworkMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentTechnologyLogicalNetworkMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_technology_logical_network". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp>>;
@@ -3595,27 +2642,6 @@ export type ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_technology_logical_network" */
-export enum ApplicationComponentTechnologyLogicalNetworkMap_Constraint {
-  /** unique or primary key constraint on columns "logical_network_id", "component_id" */
-  MapApplicationComponentTechnologyLogicalNetworkPkey = 'map_application_component_technology_logical_network_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_technology_logical_network" */
-export type ApplicationComponentTechnologyLogicalNetworkMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  logicalNetwork?: InputMaybe<TechnologyNetwork_Obj_Rel_Insert_Input>;
-  logicalNetworkId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -3672,22 +2698,6 @@ export type ApplicationComponentTechnologyLogicalNetworkMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_technology_logical_network" */
-export type ApplicationComponentTechnologyLogicalNetworkMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentTechnologyLogicalNetworkMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_technology_logical_network" */
-export type ApplicationComponentTechnologyLogicalNetworkMap_On_Conflict = {
-  constraint: ApplicationComponentTechnologyLogicalNetworkMap_Constraint;
-  update_columns?: Array<ApplicationComponentTechnologyLogicalNetworkMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_technology_logical_network". */
 export type ApplicationComponentTechnologyLogicalNetworkMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -3701,12 +2711,6 @@ export type ApplicationComponentTechnologyLogicalNetworkMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_technology_logical_network */
-export type ApplicationComponentTechnologyLogicalNetworkMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  logicalNetworkId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_technology_logical_network" */
@@ -3731,19 +2735,6 @@ export enum ApplicationComponentTechnologyLogicalNetworkMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_technology_logical_network" */
-export type ApplicationComponentTechnologyLogicalNetworkMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  logicalNetworkId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentTechnologyLogicalNetworkMap" */
 export type ApplicationComponentTechnologyLogicalNetworkMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -3763,35 +2754,6 @@ export type ApplicationComponentTechnologyLogicalNetworkMap_Stream_Cursor_Value_
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_technology_logical_network" */
-export enum ApplicationComponentTechnologyLogicalNetworkMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  LogicalNetworkId = 'logicalNetworkId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentTechnologyLogicalNetworkMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_component_technology_node" */
@@ -3852,13 +2814,6 @@ export type ApplicationComponentTechnologyNodeMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationComponentTechnologyNodeMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_component_technology_node" */
-export type ApplicationComponentTechnologyNodeMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationComponentTechnologyNodeMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyNodeMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_component_technology_node". All fields are combined with a logical 'AND'. */
 export type ApplicationComponentTechnologyNodeMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationComponentTechnologyNodeMap_Bool_Exp>>;
@@ -3875,27 +2830,6 @@ export type ApplicationComponentTechnologyNodeMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_component_technology_node" */
-export enum ApplicationComponentTechnologyNodeMap_Constraint {
-  /** unique or primary key constraint on columns "node_id", "component_id" */
-  MapApplicationComponentTechnologyNodePkey = 'map_application_component_technology_node_pkey'
-}
-
-/** input type for inserting data into table "map_application_component_technology_node" */
-export type ApplicationComponentTechnologyNodeMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  node?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -3952,22 +2886,6 @@ export type ApplicationComponentTechnologyNodeMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_component_technology_node" */
-export type ApplicationComponentTechnologyNodeMap_Mutation_Response = {
-  __typename?: 'ApplicationComponentTechnologyNodeMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponentTechnologyNodeMap>;
-};
-
-/** on_conflict condition type for table "map_application_component_technology_node" */
-export type ApplicationComponentTechnologyNodeMap_On_Conflict = {
-  constraint: ApplicationComponentTechnologyNodeMap_Constraint;
-  update_columns?: Array<ApplicationComponentTechnologyNodeMap_Update_Column>;
-  where?: InputMaybe<ApplicationComponentTechnologyNodeMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_component_technology_node". */
 export type ApplicationComponentTechnologyNodeMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -3981,12 +2899,6 @@ export type ApplicationComponentTechnologyNodeMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_component_technology_node */
-export type ApplicationComponentTechnologyNodeMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  nodeId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_component_technology_node" */
@@ -4011,19 +2923,6 @@ export enum ApplicationComponentTechnologyNodeMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_component_technology_node" */
-export type ApplicationComponentTechnologyNodeMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponentTechnologyNodeMap" */
 export type ApplicationComponentTechnologyNodeMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -4043,35 +2942,6 @@ export type ApplicationComponentTechnologyNodeMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_component_technology_node" */
-export enum ApplicationComponentTechnologyNodeMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  NodeId = 'nodeId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponentTechnologyNodeMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponentTechnologyNodeMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponentTechnologyNodeMap_Bool_Exp;
 };
 
 /** aggregated selection of "components" */
@@ -4164,63 +3034,6 @@ export type ApplicationComponent_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "components" */
-export enum ApplicationComponent_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ComponentsCodeUnique = 'components_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ComponentsPkey = 'components_pkey'
-}
-
-/** input type for inserting data into table "components" */
-export type ApplicationComponent_Insert_Input = {
-  actorRole?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Arr_Rel_Insert_Input>;
-  capabilities?: InputMaybe<CapabilityApplicationComponentMap_Arr_Rel_Insert_Input>;
-  children?: InputMaybe<ApplicationComponentHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  criticalLevel?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  criticalLevelId?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjects?: InputMaybe<ApplicationComponentDataObjectMap_Arr_Rel_Insert_Input>;
-  dataObjectsInFunctions?: InputMaybe<ApplicationFunctionDataObjectMap_Arr_Rel_Insert_Input>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  directories?: InputMaybe<ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input>;
-  events?: InputMaybe<ApplicationComponentEventMap_Arr_Rel_Insert_Input>;
-  failoverType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  failoverTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  functions?: InputMaybe<ApplicationComponentFunctionMap_Arr_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  interfaces?: InputMaybe<ApplicationComponentInterfaceMap_Arr_Rel_Insert_Input>;
-  licenseType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  licenseTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  monitoringLevel?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  monitoringLevelId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  networks?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Arr_Rel_Insert_Input>;
-  nodes?: InputMaybe<ApplicationComponentTechnologyNodeMap_Arr_Rel_Insert_Input>;
-  parents?: InputMaybe<ApplicationComponentHierarchyMap_Arr_Rel_Insert_Input>;
-  products?: InputMaybe<ApplicationComponentProductMap_Arr_Rel_Insert_Input>;
-  recoveryTime?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  recoveryTimeId?: InputMaybe<Scalars['uuid']['input']>;
-  redundancyType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  redundancyTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  scalingType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  scalingTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  solutions?: InputMaybe<SolutionApplicationComponentMap_Arr_Rel_Insert_Input>;
-  stakeholders?: InputMaybe<ApplicationComponentStakeholderMap_Arr_Rel_Insert_Input>;
-  state?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  stateId?: InputMaybe<Scalars['uuid']['input']>;
-  style?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  styleId?: InputMaybe<Scalars['uuid']['input']>;
-  systemSoftware?: InputMaybe<ApplicationComponentSystemSoftwareMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type ApplicationComponent_Max_Fields = {
   __typename?: 'ApplicationComponent_max_fields';
@@ -4269,29 +3082,6 @@ export type ApplicationComponent_Min_Fields = {
   tenantId?: Maybe<Scalars['uuid']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-/** response of any mutation on the table "components" */
-export type ApplicationComponent_Mutation_Response = {
-  __typename?: 'ApplicationComponent_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationComponent>;
-};
-
-/** input type for inserting object relation for remote table "components" */
-export type ApplicationComponent_Obj_Rel_Insert_Input = {
-  data: ApplicationComponent_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationComponent_On_Conflict>;
-};
-
-/** on_conflict condition type for table "components" */
-export type ApplicationComponent_On_Conflict = {
-  constraint: ApplicationComponent_Constraint;
-  update_columns?: Array<ApplicationComponent_Update_Column>;
-  where?: InputMaybe<ApplicationComponent_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "components". */
@@ -4343,11 +3133,6 @@ export type ApplicationComponent_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: components */
-export type ApplicationComponent_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
 /** select columns of table "components" */
 export enum ApplicationComponent_Select_Column {
   /** column name */
@@ -4392,30 +3177,6 @@ export enum ApplicationComponent_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "components" */
-export type ApplicationComponent_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  criticalLevelId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  failoverTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  licenseTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  monitoringLevelId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  recoveryTimeId?: InputMaybe<Scalars['uuid']['input']>;
-  redundancyTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  scalingTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  stateId?: InputMaybe<Scalars['uuid']['input']>;
-  styleId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationComponent" */
 export type ApplicationComponent_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -4446,57 +3207,6 @@ export type ApplicationComponent_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "components" */
-export enum ApplicationComponent_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  CriticalLevelId = 'criticalLevelId',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  FailoverTypeId = 'failoverTypeId',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  LicenseTypeId = 'licenseTypeId',
-  /** column name */
-  MonitoringLevelId = 'monitoringLevelId',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RecoveryTimeId = 'recoveryTimeId',
-  /** column name */
-  RedundancyTypeId = 'redundancyTypeId',
-  /** column name */
-  ScalingTypeId = 'scalingTypeId',
-  /** column name */
-  StateId = 'stateId',
-  /** column name */
-  StyleId = 'styleId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationComponent_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationComponent_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationComponent_Bool_Exp;
 };
 
 /** columns and relationships of "map_application_function_data_object" */
@@ -4559,13 +3269,6 @@ export type ApplicationFunctionDataObjectMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationFunctionDataObjectMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_function_data_object" */
-export type ApplicationFunctionDataObjectMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationFunctionDataObjectMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationFunctionDataObjectMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_function_data_object". All fields are combined with a logical 'AND'. */
 export type ApplicationFunctionDataObjectMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationFunctionDataObjectMap_Bool_Exp>>;
@@ -4584,29 +3287,6 @@ export type ApplicationFunctionDataObjectMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_function_data_object" */
-export enum ApplicationFunctionDataObjectMap_Constraint {
-  /** unique or primary key constraint on columns "data_object_id", "component_id", "function_id" */
-  MapApplicationFunctionDataObjectPkey = 'map_application_function_data_object_pkey'
-}
-
-/** input type for inserting data into table "map_application_function_data_object" */
-export type ApplicationFunctionDataObjectMap_Insert_Input = {
-  accessKind?: InputMaybe<Scalars['data_access_kind_enum']['input']>;
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObject?: InputMaybe<DataObject_Obj_Rel_Insert_Input>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -4671,22 +3351,6 @@ export type ApplicationFunctionDataObjectMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_function_data_object" */
-export type ApplicationFunctionDataObjectMap_Mutation_Response = {
-  __typename?: 'ApplicationFunctionDataObjectMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationFunctionDataObjectMap>;
-};
-
-/** on_conflict condition type for table "map_application_function_data_object" */
-export type ApplicationFunctionDataObjectMap_On_Conflict = {
-  constraint: ApplicationFunctionDataObjectMap_Constraint;
-  update_columns?: Array<ApplicationFunctionDataObjectMap_Update_Column>;
-  where?: InputMaybe<ApplicationFunctionDataObjectMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_function_data_object". */
 export type ApplicationFunctionDataObjectMap_Order_By = {
   accessKind?: InputMaybe<Order_By>;
@@ -4702,13 +3366,6 @@ export type ApplicationFunctionDataObjectMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_function_data_object */
-export type ApplicationFunctionDataObjectMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_function_data_object" */
@@ -4737,21 +3394,6 @@ export enum ApplicationFunctionDataObjectMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_function_data_object" */
-export type ApplicationFunctionDataObjectMap_Set_Input = {
-  accessKind?: InputMaybe<Scalars['data_access_kind_enum']['input']>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationFunctionDataObjectMap" */
 export type ApplicationFunctionDataObjectMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -4775,39 +3417,6 @@ export type ApplicationFunctionDataObjectMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_application_function_data_object" */
-export enum ApplicationFunctionDataObjectMap_Update_Column {
-  /** column name */
-  AccessKind = 'accessKind',
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DataObjectId = 'dataObjectId',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  FunctionId = 'functionId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationFunctionDataObjectMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationFunctionDataObjectMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationFunctionDataObjectMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_application_interface_function" */
 export type ApplicationFunctionInterfaceMap = {
   __typename?: 'ApplicationFunctionInterfaceMap';
@@ -4818,7 +3427,7 @@ export type ApplicationFunctionInterfaceMap = {
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   functionId: Scalars['uuid']['output'];
   /** An object relationship */
-  interface: InterfaceGeneric;
+  interface: Interface;
   interfaceId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -4865,13 +3474,6 @@ export type ApplicationFunctionInterfaceMap_Aggregate_Order_By = {
   min?: InputMaybe<ApplicationFunctionInterfaceMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_application_interface_function" */
-export type ApplicationFunctionInterfaceMap_Arr_Rel_Insert_Input = {
-  data: Array<ApplicationFunctionInterfaceMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ApplicationFunctionInterfaceMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_application_interface_function". All fields are combined with a logical 'AND'. */
 export type ApplicationFunctionInterfaceMap_Bool_Exp = {
   _and?: InputMaybe<Array<ApplicationFunctionInterfaceMap_Bool_Exp>>;
@@ -4883,32 +3485,11 @@ export type ApplicationFunctionInterfaceMap_Bool_Exp = {
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
   functionId?: InputMaybe<Uuid_Comparison_Exp>;
-  interface?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  interface?: InputMaybe<Interface_Bool_Exp>;
   interfaceId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_application_interface_function" */
-export enum ApplicationFunctionInterfaceMap_Constraint {
-  /** unique or primary key constraint on columns "interface_id", "component_id", "function_id" */
-  MapApplicationInterfaceFunctionPkey = 'map_application_interface_function_pkey'
-}
-
-/** input type for inserting data into table "map_application_interface_function" */
-export type ApplicationFunctionInterfaceMap_Insert_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  interface?: InputMaybe<InterfaceGeneric_Obj_Rel_Insert_Input>;
-  interfaceId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -4969,22 +3550,6 @@ export type ApplicationFunctionInterfaceMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_application_interface_function" */
-export type ApplicationFunctionInterfaceMap_Mutation_Response = {
-  __typename?: 'ApplicationFunctionInterfaceMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ApplicationFunctionInterfaceMap>;
-};
-
-/** on_conflict condition type for table "map_application_interface_function" */
-export type ApplicationFunctionInterfaceMap_On_Conflict = {
-  constraint: ApplicationFunctionInterfaceMap_Constraint;
-  update_columns?: Array<ApplicationFunctionInterfaceMap_Update_Column>;
-  where?: InputMaybe<ApplicationFunctionInterfaceMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_application_interface_function". */
 export type ApplicationFunctionInterfaceMap_Order_By = {
   componentId?: InputMaybe<Order_By>;
@@ -4993,18 +3558,11 @@ export type ApplicationFunctionInterfaceMap_Order_By = {
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
   functionId?: InputMaybe<Order_By>;
-  interface?: InputMaybe<InterfaceGeneric_Order_By>;
+  interface?: InputMaybe<Interface_Order_By>;
   interfaceId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_application_interface_function */
-export type ApplicationFunctionInterfaceMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-  interfaceId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_application_interface_function" */
@@ -5031,20 +3589,6 @@ export enum ApplicationFunctionInterfaceMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_application_interface_function" */
-export type ApplicationFunctionInterfaceMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  interfaceId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "ApplicationFunctionInterfaceMap" */
 export type ApplicationFunctionInterfaceMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -5065,37 +3609,6 @@ export type ApplicationFunctionInterfaceMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_application_interface_function" */
-export enum ApplicationFunctionInterfaceMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  FunctionId = 'functionId',
-  /** column name */
-  InterfaceId = 'interfaceId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ApplicationFunctionInterfaceMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ApplicationFunctionInterfaceMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ApplicationFunctionInterfaceMap_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -5165,7 +3678,7 @@ export type BusinessActorRoleMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  role: BusinessRole;
+  role: Role;
   roleId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -5232,13 +3745,6 @@ export type BusinessActorRoleMap_Aggregate_Order_By = {
   min?: InputMaybe<BusinessActorRoleMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_business_actor_role" */
-export type BusinessActorRoleMap_Arr_Rel_Insert_Input = {
-  data: Array<BusinessActorRoleMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessActorRoleMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_business_actor_role". All fields are combined with a logical 'AND'. */
 export type BusinessActorRoleMap_Bool_Exp = {
   _and?: InputMaybe<Array<BusinessActorRoleMap_Bool_Exp>>;
@@ -5252,35 +3758,11 @@ export type BusinessActorRoleMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  role?: InputMaybe<BusinessRole_Bool_Exp>;
+  role?: InputMaybe<Role_Bool_Exp>;
   roleId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_business_actor_role" */
-export enum BusinessActorRoleMap_Constraint {
-  /** unique or primary key constraint on columns "actor_id", "role_id" */
-  MapBusinessActorRoleActorIdRoleIdUnique = 'map_business_actor_role_actor_id_role_id_unique',
-  /** unique or primary key constraint on columns "actor_id", "role_id" */
-  MapBusinessActorRolePkey = 'map_business_actor_role_pkey'
-}
-
-/** input type for inserting data into table "map_business_actor_role" */
-export type BusinessActorRoleMap_Insert_Input = {
-  actor?: InputMaybe<BusinessActor_Obj_Rel_Insert_Input>;
-  actorId?: InputMaybe<Scalars['uuid']['input']>;
-  components?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<BusinessRole_Obj_Rel_Insert_Input>;
-  roleId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -5337,22 +3819,6 @@ export type BusinessActorRoleMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_business_actor_role" */
-export type BusinessActorRoleMap_Mutation_Response = {
-  __typename?: 'BusinessActorRoleMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessActorRoleMap>;
-};
-
-/** on_conflict condition type for table "map_business_actor_role" */
-export type BusinessActorRoleMap_On_Conflict = {
-  constraint: BusinessActorRoleMap_Constraint;
-  update_columns?: Array<BusinessActorRoleMap_Update_Column>;
-  where?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_business_actor_role". */
 export type BusinessActorRoleMap_Order_By = {
   actor?: InputMaybe<BusinessActor_Order_By>;
@@ -5362,17 +3828,11 @@ export type BusinessActorRoleMap_Order_By = {
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  role?: InputMaybe<BusinessRole_Order_By>;
+  role?: InputMaybe<Role_Order_By>;
   roleId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_business_actor_role */
-export type BusinessActorRoleMap_Pk_Columns_Input = {
-  actorId: Scalars['uuid']['input'];
-  roleId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_business_actor_role" */
@@ -5397,19 +3857,6 @@ export enum BusinessActorRoleMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_business_actor_role" */
-export type BusinessActorRoleMap_Set_Input = {
-  actorId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  roleId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessActorRoleMap" */
 export type BusinessActorRoleMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -5429,35 +3876,6 @@ export type BusinessActorRoleMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_business_actor_role" */
-export enum BusinessActorRoleMap_Update_Column {
-  /** column name */
-  ActorId = 'actorId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  RoleId = 'roleId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessActorRoleMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessActorRoleMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessActorRoleMap_Bool_Exp;
 };
 
 /** aggregated selection of "actors" */
@@ -5501,29 +3919,6 @@ export type BusinessActor_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "actors" */
-export enum BusinessActor_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ActorsCodeUnique = 'actors_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ActorsPkey = 'actors_pkey'
-}
-
-/** input type for inserting data into table "actors" */
-export type BusinessActor_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  roles?: InputMaybe<BusinessActorRoleMap_Arr_Rel_Insert_Input>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type BusinessActor_Max_Fields = {
   __typename?: 'BusinessActor_max_fields';
@@ -5554,29 +3949,6 @@ export type BusinessActor_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "actors" */
-export type BusinessActor_Mutation_Response = {
-  __typename?: 'BusinessActor_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessActor>;
-};
-
-/** input type for inserting object relation for remote table "actors" */
-export type BusinessActor_Obj_Rel_Insert_Input = {
-  data: BusinessActor_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessActor_On_Conflict>;
-};
-
-/** on_conflict condition type for table "actors" */
-export type BusinessActor_On_Conflict = {
-  constraint: BusinessActor_Constraint;
-  update_columns?: Array<BusinessActor_Update_Column>;
-  where?: InputMaybe<BusinessActor_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "actors". */
 export type BusinessActor_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -5590,11 +3962,6 @@ export type BusinessActor_Order_By = {
   roles_aggregate?: InputMaybe<BusinessActorRoleMap_Aggregate_Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: actors */
-export type BusinessActor_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "actors" */
@@ -5621,20 +3988,6 @@ export enum BusinessActor_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "actors" */
-export type BusinessActor_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessActor" */
 export type BusinessActor_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -5657,37 +4010,6 @@ export type BusinessActor_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "actors" */
-export enum BusinessActor_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessActor_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessActor_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessActor_Bool_Exp;
-};
-
 /** columns and relationships of "map_business_process_function" */
 export type BusinessProcessFunctionMap = {
   __typename?: 'BusinessProcessFunctionMap';
@@ -5696,10 +4018,10 @@ export type BusinessProcessFunctionMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  function: FunctionGeneric;
+  function: Function;
   functionId: Scalars['uuid']['output'];
   /** An object relationship */
-  process: ProcessGeneric;
+  process: Process;
   processId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -5746,13 +4068,6 @@ export type BusinessProcessFunctionMap_Aggregate_Order_By = {
   min?: InputMaybe<BusinessProcessFunctionMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_business_process_function" */
-export type BusinessProcessFunctionMap_Arr_Rel_Insert_Input = {
-  data: Array<BusinessProcessFunctionMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessProcessFunctionMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_business_process_function". All fields are combined with a logical 'AND'. */
 export type BusinessProcessFunctionMap_Bool_Exp = {
   _and?: InputMaybe<Array<BusinessProcessFunctionMap_Bool_Exp>>;
@@ -5762,34 +4077,13 @@ export type BusinessProcessFunctionMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  function?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  function?: InputMaybe<Function_Bool_Exp>;
   functionId?: InputMaybe<Uuid_Comparison_Exp>;
-  process?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  process?: InputMaybe<Process_Bool_Exp>;
   processId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_business_process_function" */
-export enum BusinessProcessFunctionMap_Constraint {
-  /** unique or primary key constraint on columns "function_id", "process_id" */
-  MapBusinessProcessFunctionPkey = 'map_business_process_function_pkey'
-}
-
-/** input type for inserting data into table "map_business_process_function" */
-export type BusinessProcessFunctionMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  function?: InputMaybe<FunctionGeneric_Obj_Rel_Insert_Input>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  process?: InputMaybe<ProcessGeneric_Obj_Rel_Insert_Input>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -5846,41 +4140,19 @@ export type BusinessProcessFunctionMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_business_process_function" */
-export type BusinessProcessFunctionMap_Mutation_Response = {
-  __typename?: 'BusinessProcessFunctionMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessProcessFunctionMap>;
-};
-
-/** on_conflict condition type for table "map_business_process_function" */
-export type BusinessProcessFunctionMap_On_Conflict = {
-  constraint: BusinessProcessFunctionMap_Constraint;
-  update_columns?: Array<BusinessProcessFunctionMap_Update_Column>;
-  where?: InputMaybe<BusinessProcessFunctionMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_business_process_function". */
 export type BusinessProcessFunctionMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  function?: InputMaybe<FunctionGeneric_Order_By>;
+  function?: InputMaybe<Function_Order_By>;
   functionId?: InputMaybe<Order_By>;
-  process?: InputMaybe<ProcessGeneric_Order_By>;
+  process?: InputMaybe<Process_Order_By>;
   processId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_business_process_function */
-export type BusinessProcessFunctionMap_Pk_Columns_Input = {
-  functionId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_business_process_function" */
@@ -5905,19 +4177,6 @@ export enum BusinessProcessFunctionMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_business_process_function" */
-export type BusinessProcessFunctionMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessProcessFunctionMap" */
 export type BusinessProcessFunctionMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -5939,46 +4198,17 @@ export type BusinessProcessFunctionMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_business_process_function" */
-export enum BusinessProcessFunctionMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  FunctionId = 'functionId',
-  /** column name */
-  ProcessId = 'processId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessProcessFunctionMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessProcessFunctionMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessProcessFunctionMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_business_process_hierarchy" */
 export type BusinessProcessHierarchyMap = {
   __typename?: 'BusinessProcessHierarchyMap';
   /** An object relationship */
-  child: ProcessGeneric;
+  child: Process;
   createdAt: Scalars['timestamptz']['output'];
   createdBy?: Maybe<Scalars['uuid']['output']>;
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  parent: ProcessGeneric;
+  parent: Process;
   processChildId: Scalars['uuid']['output'];
   processParentId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
@@ -6026,50 +4256,22 @@ export type BusinessProcessHierarchyMap_Aggregate_Order_By = {
   min?: InputMaybe<BusinessProcessHierarchyMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_business_process_hierarchy" */
-export type BusinessProcessHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<BusinessProcessHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessProcessHierarchyMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_business_process_hierarchy". All fields are combined with a logical 'AND'. */
 export type BusinessProcessHierarchyMap_Bool_Exp = {
   _and?: InputMaybe<Array<BusinessProcessHierarchyMap_Bool_Exp>>;
   _not?: InputMaybe<BusinessProcessHierarchyMap_Bool_Exp>;
   _or?: InputMaybe<Array<BusinessProcessHierarchyMap_Bool_Exp>>;
-  child?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  child?: InputMaybe<Process_Bool_Exp>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  parent?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  parent?: InputMaybe<Process_Bool_Exp>;
   processChildId?: InputMaybe<Uuid_Comparison_Exp>;
   processParentId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_business_process_hierarchy" */
-export enum BusinessProcessHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "process_child_id", "process_parent_id" */
-  MapBusinessProcessHierarchyPkey = 'map_business_process_hierarchy_pkey'
-}
-
-/** input type for inserting data into table "map_business_process_hierarchy" */
-export type BusinessProcessHierarchyMap_Insert_Input = {
-  child?: InputMaybe<ProcessGeneric_Obj_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  parent?: InputMaybe<ProcessGeneric_Obj_Rel_Insert_Input>;
-  processChildId?: InputMaybe<Scalars['uuid']['input']>;
-  processParentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -6126,41 +4328,19 @@ export type BusinessProcessHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_business_process_hierarchy" */
-export type BusinessProcessHierarchyMap_Mutation_Response = {
-  __typename?: 'BusinessProcessHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessProcessHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_business_process_hierarchy" */
-export type BusinessProcessHierarchyMap_On_Conflict = {
-  constraint: BusinessProcessHierarchyMap_Constraint;
-  update_columns?: Array<BusinessProcessHierarchyMap_Update_Column>;
-  where?: InputMaybe<BusinessProcessHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_business_process_hierarchy". */
 export type BusinessProcessHierarchyMap_Order_By = {
-  child?: InputMaybe<ProcessGeneric_Order_By>;
+  child?: InputMaybe<Process_Order_By>;
   createdAt?: InputMaybe<Order_By>;
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  parent?: InputMaybe<ProcessGeneric_Order_By>;
+  parent?: InputMaybe<Process_Order_By>;
   processChildId?: InputMaybe<Order_By>;
   processParentId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_business_process_hierarchy */
-export type BusinessProcessHierarchyMap_Pk_Columns_Input = {
-  processChildId: Scalars['uuid']['input'];
-  processParentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_business_process_hierarchy" */
@@ -6185,19 +4365,6 @@ export enum BusinessProcessHierarchyMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_business_process_hierarchy" */
-export type BusinessProcessHierarchyMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  processChildId?: InputMaybe<Scalars['uuid']['input']>;
-  processParentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessProcessHierarchyMap" */
 export type BusinessProcessHierarchyMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -6219,35 +4386,6 @@ export type BusinessProcessHierarchyMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_business_process_hierarchy" */
-export enum BusinessProcessHierarchyMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  ProcessChildId = 'processChildId',
-  /** column name */
-  ProcessParentId = 'processParentId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessProcessHierarchyMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessProcessHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessProcessHierarchyMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_business_process_motivation_item" */
 export type BusinessProcessMotivationItemMap = {
   __typename?: 'BusinessProcessMotivationItemMap';
@@ -6259,7 +4397,7 @@ export type BusinessProcessMotivationItemMap = {
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   motivationId: Scalars['uuid']['output'];
   /** An object relationship */
-  process: ProcessGeneric;
+  process: Process;
   processId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -6306,13 +4444,6 @@ export type BusinessProcessMotivationItemMap_Aggregate_Order_By = {
   min?: InputMaybe<BusinessProcessMotivationItemMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_business_process_motivation_item" */
-export type BusinessProcessMotivationItemMap_Arr_Rel_Insert_Input = {
-  data: Array<BusinessProcessMotivationItemMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessProcessMotivationItemMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_business_process_motivation_item". All fields are combined with a logical 'AND'. */
 export type BusinessProcessMotivationItemMap_Bool_Exp = {
   _and?: InputMaybe<Array<BusinessProcessMotivationItemMap_Bool_Exp>>;
@@ -6324,32 +4455,11 @@ export type BusinessProcessMotivationItemMap_Bool_Exp = {
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
   motivationId?: InputMaybe<Uuid_Comparison_Exp>;
-  process?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  process?: InputMaybe<Process_Bool_Exp>;
   processId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_business_process_motivation_item" */
-export enum BusinessProcessMotivationItemMap_Constraint {
-  /** unique or primary key constraint on columns "motivation_id", "process_id" */
-  MapBusinessProcessMotivationItemPkey = 'map_business_process_motivation_item_pkey'
-}
-
-/** input type for inserting data into table "map_business_process_motivation_item" */
-export type BusinessProcessMotivationItemMap_Insert_Input = {
-  assessment?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  process?: InputMaybe<ProcessGeneric_Obj_Rel_Insert_Input>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -6406,22 +4516,6 @@ export type BusinessProcessMotivationItemMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_business_process_motivation_item" */
-export type BusinessProcessMotivationItemMap_Mutation_Response = {
-  __typename?: 'BusinessProcessMotivationItemMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessProcessMotivationItemMap>;
-};
-
-/** on_conflict condition type for table "map_business_process_motivation_item" */
-export type BusinessProcessMotivationItemMap_On_Conflict = {
-  constraint: BusinessProcessMotivationItemMap_Constraint;
-  update_columns?: Array<BusinessProcessMotivationItemMap_Update_Column>;
-  where?: InputMaybe<BusinessProcessMotivationItemMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_business_process_motivation_item". */
 export type BusinessProcessMotivationItemMap_Order_By = {
   assessment?: InputMaybe<MotivationElementGeneric_Order_By>;
@@ -6430,17 +4524,11 @@ export type BusinessProcessMotivationItemMap_Order_By = {
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
   motivationId?: InputMaybe<Order_By>;
-  process?: InputMaybe<ProcessGeneric_Order_By>;
+  process?: InputMaybe<Process_Order_By>;
   processId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_business_process_motivation_item */
-export type BusinessProcessMotivationItemMap_Pk_Columns_Input = {
-  motivationId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_business_process_motivation_item" */
@@ -6465,19 +4553,6 @@ export enum BusinessProcessMotivationItemMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_business_process_motivation_item" */
-export type BusinessProcessMotivationItemMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessProcessMotivationItemMap" */
 export type BusinessProcessMotivationItemMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -6497,35 +4572,6 @@ export type BusinessProcessMotivationItemMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_business_process_motivation_item" */
-export enum BusinessProcessMotivationItemMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  MotivationId = 'motivationId',
-  /** column name */
-  ProcessId = 'processId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessProcessMotivationItemMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessProcessMotivationItemMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessProcessMotivationItemMap_Bool_Exp;
 };
 
 /** columns and relationships of "products" */
@@ -6610,30 +4656,6 @@ export type BusinessProduct_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "products" */
-export enum BusinessProduct_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ProductsCodeUnique = 'products_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ProductsPkey = 'products_pkey'
-}
-
-/** input type for inserting data into table "products" */
-export type BusinessProduct_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  products?: InputMaybe<ApplicationComponentProductMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type BusinessProduct_Max_Fields = {
   __typename?: 'BusinessProduct_max_fields';
@@ -6666,29 +4688,6 @@ export type BusinessProduct_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "products" */
-export type BusinessProduct_Mutation_Response = {
-  __typename?: 'BusinessProduct_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessProduct>;
-};
-
-/** input type for inserting object relation for remote table "products" */
-export type BusinessProduct_Obj_Rel_Insert_Input = {
-  data: BusinessProduct_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessProduct_On_Conflict>;
-};
-
-/** on_conflict condition type for table "products" */
-export type BusinessProduct_On_Conflict = {
-  constraint: BusinessProduct_Constraint;
-  update_columns?: Array<BusinessProduct_Update_Column>;
-  where?: InputMaybe<BusinessProduct_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "products". */
 export type BusinessProduct_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -6703,11 +4702,6 @@ export type BusinessProduct_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: products */
-export type BusinessProduct_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "products" */
@@ -6736,21 +4730,6 @@ export enum BusinessProduct_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "products" */
-export type BusinessProduct_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "BusinessProduct" */
 export type BusinessProduct_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -6772,318 +4751,6 @@ export type BusinessProduct_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "products" */
-export enum BusinessProduct_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessProduct_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessProduct_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessProduct_Bool_Exp;
-};
-
-/** columns and relationships of "roles" */
-export type BusinessRole = {
-  __typename?: 'BusinessRole';
-  /** An array relationship */
-  actors: Array<BusinessActorRoleMap>;
-  /** An aggregate relationship */
-  actors_aggregate: BusinessActorRoleMap_Aggregate;
-  code: Scalars['String']['output'];
-  createdAt: Scalars['timestamptz']['output'];
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['uuid']['output'];
-  name: Scalars['String']['output'];
-  tenantId: Scalars['uuid']['output'];
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-
-/** columns and relationships of "roles" */
-export type BusinessRoleActorsArgs = {
-  distinct_on?: InputMaybe<Array<BusinessActorRoleMap_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessActorRoleMap_Order_By>>;
-  where?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
-};
-
-
-/** columns and relationships of "roles" */
-export type BusinessRoleActors_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<BusinessActorRoleMap_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessActorRoleMap_Order_By>>;
-  where?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
-};
-
-/** aggregated selection of "roles" */
-export type BusinessRole_Aggregate = {
-  __typename?: 'BusinessRole_aggregate';
-  aggregate?: Maybe<BusinessRole_Aggregate_Fields>;
-  nodes: Array<BusinessRole>;
-};
-
-/** aggregate fields of "roles" */
-export type BusinessRole_Aggregate_Fields = {
-  __typename?: 'BusinessRole_aggregate_fields';
-  count: Scalars['Int']['output'];
-  max?: Maybe<BusinessRole_Max_Fields>;
-  min?: Maybe<BusinessRole_Min_Fields>;
-};
-
-
-/** aggregate fields of "roles" */
-export type BusinessRole_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<BusinessRole_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** Boolean expression to filter rows from the table "roles". All fields are combined with a logical 'AND'. */
-export type BusinessRole_Bool_Exp = {
-  _and?: InputMaybe<Array<BusinessRole_Bool_Exp>>;
-  _not?: InputMaybe<BusinessRole_Bool_Exp>;
-  _or?: InputMaybe<Array<BusinessRole_Bool_Exp>>;
-  actors?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
-  actors_aggregate?: InputMaybe<BusinessActorRoleMap_Aggregate_Bool_Exp>;
-  code?: InputMaybe<String_Comparison_Exp>;
-  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
-  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  description?: InputMaybe<String_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  name?: InputMaybe<String_Comparison_Exp>;
-  tenantId?: InputMaybe<Uuid_Comparison_Exp>;
-  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "roles" */
-export enum BusinessRole_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  RolesCodeUnique = 'roles_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  RolesPkey = 'roles_pkey'
-}
-
-/** input type for inserting data into table "roles" */
-export type BusinessRole_Insert_Input = {
-  actors?: InputMaybe<BusinessActorRoleMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** aggregate max on columns */
-export type BusinessRole_Max_Fields = {
-  __typename?: 'BusinessRole_max_fields';
-  code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  tenantId?: Maybe<Scalars['uuid']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-/** aggregate min on columns */
-export type BusinessRole_Min_Fields = {
-  __typename?: 'BusinessRole_min_fields';
-  code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  tenantId?: Maybe<Scalars['uuid']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-/** response of any mutation on the table "roles" */
-export type BusinessRole_Mutation_Response = {
-  __typename?: 'BusinessRole_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BusinessRole>;
-};
-
-/** input type for inserting object relation for remote table "roles" */
-export type BusinessRole_Obj_Rel_Insert_Input = {
-  data: BusinessRole_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<BusinessRole_On_Conflict>;
-};
-
-/** on_conflict condition type for table "roles" */
-export type BusinessRole_On_Conflict = {
-  constraint: BusinessRole_Constraint;
-  update_columns?: Array<BusinessRole_Update_Column>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "roles". */
-export type BusinessRole_Order_By = {
-  actors_aggregate?: InputMaybe<BusinessActorRoleMap_Aggregate_Order_By>;
-  code?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  createdBy?: InputMaybe<Order_By>;
-  deletedAt?: InputMaybe<Order_By>;
-  deletedBy?: InputMaybe<Order_By>;
-  description?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  name?: InputMaybe<Order_By>;
-  tenantId?: InputMaybe<Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-  updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: roles */
-export type BusinessRole_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
-/** select columns of table "roles" */
-export enum BusinessRole_Select_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-/** input type for updating data in table "roles" */
-export type BusinessRole_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "BusinessRole" */
-export type BusinessRole_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: BusinessRole_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type BusinessRole_Stream_Cursor_Value_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "roles" */
-export enum BusinessRole_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type BusinessRole_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BusinessRole_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: BusinessRole_Bool_Exp;
 };
 
 /** columns and relationships of "capabilities" */
@@ -7258,27 +4925,6 @@ export type CapabilityApplicationComponentAssessmentMap_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "map_capability_application_component_assessment" */
-export enum CapabilityApplicationComponentAssessmentMap_Constraint {
-  /** unique or primary key constraint on columns "capability_id", "component_id", "assessment_id" */
-  MapCapabilityApplicationComponentAssessmentPkey = 'map_capability_application_component_assessment_pkey'
-}
-
-/** input type for inserting data into table "map_capability_application_component_assessment" */
-export type CapabilityApplicationComponentAssessmentMap_Insert_Input = {
-  assessment?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  assessmentId?: InputMaybe<Scalars['uuid']['input']>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type CapabilityApplicationComponentAssessmentMap_Max_Fields = {
   __typename?: 'CapabilityApplicationComponentAssessmentMap_max_fields';
@@ -7309,22 +4955,6 @@ export type CapabilityApplicationComponentAssessmentMap_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "map_capability_application_component_assessment" */
-export type CapabilityApplicationComponentAssessmentMap_Mutation_Response = {
-  __typename?: 'CapabilityApplicationComponentAssessmentMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<CapabilityApplicationComponentAssessmentMap>;
-};
-
-/** on_conflict condition type for table "map_capability_application_component_assessment" */
-export type CapabilityApplicationComponentAssessmentMap_On_Conflict = {
-  constraint: CapabilityApplicationComponentAssessmentMap_Constraint;
-  update_columns?: Array<CapabilityApplicationComponentAssessmentMap_Update_Column>;
-  where?: InputMaybe<CapabilityApplicationComponentAssessmentMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_capability_application_component_assessment". */
 export type CapabilityApplicationComponentAssessmentMap_Order_By = {
   assessment?: InputMaybe<MotivationElementGeneric_Order_By>;
@@ -7338,13 +4968,6 @@ export type CapabilityApplicationComponentAssessmentMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_capability_application_component_assessment */
-export type CapabilityApplicationComponentAssessmentMap_Pk_Columns_Input = {
-  assessmentId: Scalars['uuid']['input'];
-  capabilityId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_capability_application_component_assessment" */
@@ -7371,20 +4994,6 @@ export enum CapabilityApplicationComponentAssessmentMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_capability_application_component_assessment" */
-export type CapabilityApplicationComponentAssessmentMap_Set_Input = {
-  assessmentId?: InputMaybe<Scalars['uuid']['input']>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "CapabilityApplicationComponentAssessmentMap" */
 export type CapabilityApplicationComponentAssessmentMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -7405,37 +5014,6 @@ export type CapabilityApplicationComponentAssessmentMap_Stream_Cursor_Value_Inpu
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_capability_application_component_assessment" */
-export enum CapabilityApplicationComponentAssessmentMap_Update_Column {
-  /** column name */
-  AssessmentId = 'assessmentId',
-  /** column name */
-  CapabilityId = 'capabilityId',
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type CapabilityApplicationComponentAssessmentMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<CapabilityApplicationComponentAssessmentMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: CapabilityApplicationComponentAssessmentMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_capability_application_component" */
@@ -7496,13 +5074,6 @@ export type CapabilityApplicationComponentMap_Aggregate_Order_By = {
   min?: InputMaybe<CapabilityApplicationComponentMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_capability_application_component" */
-export type CapabilityApplicationComponentMap_Arr_Rel_Insert_Input = {
-  data: Array<CapabilityApplicationComponentMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<CapabilityApplicationComponentMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_capability_application_component". All fields are combined with a logical 'AND'. */
 export type CapabilityApplicationComponentMap_Bool_Exp = {
   _and?: InputMaybe<Array<CapabilityApplicationComponentMap_Bool_Exp>>;
@@ -7519,27 +5090,6 @@ export type CapabilityApplicationComponentMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_capability_application_component" */
-export enum CapabilityApplicationComponentMap_Constraint {
-  /** unique or primary key constraint on columns "capability_id", "component_id" */
-  MapCapabilityApplicationComponentPkey = 'map_capability_application_component_pkey'
-}
-
-/** input type for inserting data into table "map_capability_application_component" */
-export type CapabilityApplicationComponentMap_Insert_Input = {
-  capability?: InputMaybe<Capability_Obj_Rel_Insert_Input>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -7596,22 +5146,6 @@ export type CapabilityApplicationComponentMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_capability_application_component" */
-export type CapabilityApplicationComponentMap_Mutation_Response = {
-  __typename?: 'CapabilityApplicationComponentMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<CapabilityApplicationComponentMap>;
-};
-
-/** on_conflict condition type for table "map_capability_application_component" */
-export type CapabilityApplicationComponentMap_On_Conflict = {
-  constraint: CapabilityApplicationComponentMap_Constraint;
-  update_columns?: Array<CapabilityApplicationComponentMap_Update_Column>;
-  where?: InputMaybe<CapabilityApplicationComponentMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_capability_application_component". */
 export type CapabilityApplicationComponentMap_Order_By = {
   capability?: InputMaybe<Capability_Order_By>;
@@ -7625,12 +5159,6 @@ export type CapabilityApplicationComponentMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_capability_application_component */
-export type CapabilityApplicationComponentMap_Pk_Columns_Input = {
-  capabilityId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_capability_application_component" */
@@ -7655,19 +5183,6 @@ export enum CapabilityApplicationComponentMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_capability_application_component" */
-export type CapabilityApplicationComponentMap_Set_Input = {
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "CapabilityApplicationComponentMap" */
 export type CapabilityApplicationComponentMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -7687,35 +5202,6 @@ export type CapabilityApplicationComponentMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_capability_application_component" */
-export enum CapabilityApplicationComponentMap_Update_Column {
-  /** column name */
-  CapabilityId = 'capabilityId',
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type CapabilityApplicationComponentMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<CapabilityApplicationComponentMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: CapabilityApplicationComponentMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_capability_business_process_assessment" */
@@ -7775,27 +5261,6 @@ export type CapabilityBusinessProcessAssessmentMap_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "map_capability_business_process_assessment" */
-export enum CapabilityBusinessProcessAssessmentMap_Constraint {
-  /** unique or primary key constraint on columns "capability_id", "assessment_id", "process_id" */
-  MapCapabilityBusinessProcessAssessmentPkey = 'map_capability_business_process_assessment_pkey'
-}
-
-/** input type for inserting data into table "map_capability_business_process_assessment" */
-export type CapabilityBusinessProcessAssessmentMap_Insert_Input = {
-  assessment?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  assessmentId?: InputMaybe<Scalars['uuid']['input']>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type CapabilityBusinessProcessAssessmentMap_Max_Fields = {
   __typename?: 'CapabilityBusinessProcessAssessmentMap_max_fields';
@@ -7826,22 +5291,6 @@ export type CapabilityBusinessProcessAssessmentMap_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "map_capability_business_process_assessment" */
-export type CapabilityBusinessProcessAssessmentMap_Mutation_Response = {
-  __typename?: 'CapabilityBusinessProcessAssessmentMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<CapabilityBusinessProcessAssessmentMap>;
-};
-
-/** on_conflict condition type for table "map_capability_business_process_assessment" */
-export type CapabilityBusinessProcessAssessmentMap_On_Conflict = {
-  constraint: CapabilityBusinessProcessAssessmentMap_Constraint;
-  update_columns?: Array<CapabilityBusinessProcessAssessmentMap_Update_Column>;
-  where?: InputMaybe<CapabilityBusinessProcessAssessmentMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_capability_business_process_assessment". */
 export type CapabilityBusinessProcessAssessmentMap_Order_By = {
   assessment?: InputMaybe<MotivationElementGeneric_Order_By>;
@@ -7855,13 +5304,6 @@ export type CapabilityBusinessProcessAssessmentMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_capability_business_process_assessment */
-export type CapabilityBusinessProcessAssessmentMap_Pk_Columns_Input = {
-  assessmentId: Scalars['uuid']['input'];
-  capabilityId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_capability_business_process_assessment" */
@@ -7888,20 +5330,6 @@ export enum CapabilityBusinessProcessAssessmentMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_capability_business_process_assessment" */
-export type CapabilityBusinessProcessAssessmentMap_Set_Input = {
-  assessmentId?: InputMaybe<Scalars['uuid']['input']>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "CapabilityBusinessProcessAssessmentMap" */
 export type CapabilityBusinessProcessAssessmentMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -7924,37 +5352,6 @@ export type CapabilityBusinessProcessAssessmentMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_capability_business_process_assessment" */
-export enum CapabilityBusinessProcessAssessmentMap_Update_Column {
-  /** column name */
-  AssessmentId = 'assessmentId',
-  /** column name */
-  CapabilityId = 'capabilityId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  ProcessId = 'processId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type CapabilityBusinessProcessAssessmentMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<CapabilityBusinessProcessAssessmentMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: CapabilityBusinessProcessAssessmentMap_Bool_Exp;
-};
-
 /** columns and relationships of "map_capability_business_process" */
 export type CapabilityBusinessProcessMap = {
   __typename?: 'CapabilityBusinessProcessMap';
@@ -7966,7 +5363,7 @@ export type CapabilityBusinessProcessMap = {
   deletedAt?: Maybe<Scalars['timestamptz']['output']>;
   deletedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  process: ProcessGeneric;
+  process: Process;
   processId: Scalars['uuid']['output'];
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -8013,13 +5410,6 @@ export type CapabilityBusinessProcessMap_Aggregate_Order_By = {
   min?: InputMaybe<CapabilityBusinessProcessMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_capability_business_process" */
-export type CapabilityBusinessProcessMap_Arr_Rel_Insert_Input = {
-  data: Array<CapabilityBusinessProcessMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<CapabilityBusinessProcessMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_capability_business_process". All fields are combined with a logical 'AND'. */
 export type CapabilityBusinessProcessMap_Bool_Exp = {
   _and?: InputMaybe<Array<CapabilityBusinessProcessMap_Bool_Exp>>;
@@ -8031,32 +5421,11 @@ export type CapabilityBusinessProcessMap_Bool_Exp = {
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
   deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  process?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  process?: InputMaybe<Process_Bool_Exp>;
   processId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_capability_business_process" */
-export enum CapabilityBusinessProcessMap_Constraint {
-  /** unique or primary key constraint on columns "capability_id", "process_id" */
-  MapCapabilityBusinessProcessPkey = 'map_capability_business_process_pkey'
-}
-
-/** input type for inserting data into table "map_capability_business_process" */
-export type CapabilityBusinessProcessMap_Insert_Input = {
-  capability?: InputMaybe<Capability_Obj_Rel_Insert_Input>;
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  process?: InputMaybe<ProcessGeneric_Obj_Rel_Insert_Input>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -8113,22 +5482,6 @@ export type CapabilityBusinessProcessMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_capability_business_process" */
-export type CapabilityBusinessProcessMap_Mutation_Response = {
-  __typename?: 'CapabilityBusinessProcessMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<CapabilityBusinessProcessMap>;
-};
-
-/** on_conflict condition type for table "map_capability_business_process" */
-export type CapabilityBusinessProcessMap_On_Conflict = {
-  constraint: CapabilityBusinessProcessMap_Constraint;
-  update_columns?: Array<CapabilityBusinessProcessMap_Update_Column>;
-  where?: InputMaybe<CapabilityBusinessProcessMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_capability_business_process". */
 export type CapabilityBusinessProcessMap_Order_By = {
   capability?: InputMaybe<Capability_Order_By>;
@@ -8137,17 +5490,11 @@ export type CapabilityBusinessProcessMap_Order_By = {
   createdBy?: InputMaybe<Order_By>;
   deletedAt?: InputMaybe<Order_By>;
   deletedBy?: InputMaybe<Order_By>;
-  process?: InputMaybe<ProcessGeneric_Order_By>;
+  process?: InputMaybe<Process_Order_By>;
   processId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_capability_business_process */
-export type CapabilityBusinessProcessMap_Pk_Columns_Input = {
-  capabilityId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_capability_business_process" */
@@ -8172,19 +5519,6 @@ export enum CapabilityBusinessProcessMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_capability_business_process" */
-export type CapabilityBusinessProcessMap_Set_Input = {
-  capabilityId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  processId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "CapabilityBusinessProcessMap" */
 export type CapabilityBusinessProcessMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -8204,35 +5538,6 @@ export type CapabilityBusinessProcessMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_capability_business_process" */
-export enum CapabilityBusinessProcessMap_Update_Column {
-  /** column name */
-  CapabilityId = 'capabilityId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  ProcessId = 'processId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type CapabilityBusinessProcessMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<CapabilityBusinessProcessMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: CapabilityBusinessProcessMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_capability_hierarchy" */
@@ -8310,13 +5615,6 @@ export type CapabilityHierarchyMap_Aggregate_Order_By = {
   variance?: InputMaybe<CapabilityHierarchyMap_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<CapabilityHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<CapabilityHierarchyMap_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type CapabilityHierarchyMap_Avg_Fields = {
   __typename?: 'CapabilityHierarchyMap_avg_fields';
@@ -8345,35 +5643,6 @@ export type CapabilityHierarchyMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_capability_hierarchy" */
-export enum CapabilityHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "child_id", "parent_id" */
-  MapCapabilityHierarchyParentIdChildIdUnique = 'map_capability_hierarchy_parent_id_child_id_unique',
-  /** unique or primary key constraint on columns "child_id", "parent_id" */
-  MapCapabilityHierarchyPkey = 'map_capability_hierarchy_pkey'
-}
-
-/** input type for incrementing numeric columns in table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_Inc_Input = {
-  order?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** input type for inserting data into table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_Insert_Input = {
-  child?: InputMaybe<Capability_Obj_Rel_Insert_Input>;
-  childId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  parent?: InputMaybe<Capability_Obj_Rel_Insert_Input>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -8434,22 +5703,6 @@ export type CapabilityHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_Mutation_Response = {
-  __typename?: 'CapabilityHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<CapabilityHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_On_Conflict = {
-  constraint: CapabilityHierarchyMap_Constraint;
-  update_columns?: Array<CapabilityHierarchyMap_Update_Column>;
-  where?: InputMaybe<CapabilityHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_capability_hierarchy". */
 export type CapabilityHierarchyMap_Order_By = {
   child?: InputMaybe<Capability_Order_By>;
@@ -8464,12 +5717,6 @@ export type CapabilityHierarchyMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_capability_hierarchy */
-export type CapabilityHierarchyMap_Pk_Columns_Input = {
-  childId: Scalars['uuid']['input'];
-  parentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_capability_hierarchy" */
@@ -8495,20 +5742,6 @@ export enum CapabilityHierarchyMap_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "map_capability_hierarchy" */
-export type CapabilityHierarchyMap_Set_Input = {
-  childId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type CapabilityHierarchyMap_Stddev_Fields = {
@@ -8574,39 +5807,6 @@ export type CapabilityHierarchyMap_Sum_Fields = {
 /** order by sum() on columns of table "map_capability_hierarchy" */
 export type CapabilityHierarchyMap_Sum_Order_By = {
   order?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "map_capability_hierarchy" */
-export enum CapabilityHierarchyMap_Update_Column {
-  /** column name */
-  ChildId = 'childId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Order = 'order',
-  /** column name */
-  ParentId = 'parentId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type CapabilityHierarchyMap_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<CapabilityHierarchyMap_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<CapabilityHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: CapabilityHierarchyMap_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
@@ -8692,35 +5892,6 @@ export type Capability_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "capabilities" */
-export enum Capability_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  CapabilitiesCodeUnique = 'capabilities_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  CapabilitiesPkey = 'capabilities_pkey'
-}
-
-/** input type for inserting data into table "capabilities" */
-export type Capability_Insert_Input = {
-  children?: InputMaybe<CapabilityHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<CapabilityApplicationComponentMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parent?: InputMaybe<Capability_Obj_Rel_Insert_Input>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  parents?: InputMaybe<CapabilityHierarchyMap_Arr_Rel_Insert_Input>;
-  processes?: InputMaybe<CapabilityBusinessProcessMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Capability_Max_Fields = {
   __typename?: 'Capability_max_fields';
@@ -8755,29 +5926,6 @@ export type Capability_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "capabilities" */
-export type Capability_Mutation_Response = {
-  __typename?: 'Capability_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Capability>;
-};
-
-/** input type for inserting object relation for remote table "capabilities" */
-export type Capability_Obj_Rel_Insert_Input = {
-  data: Capability_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Capability_On_Conflict>;
-};
-
-/** on_conflict condition type for table "capabilities" */
-export type Capability_On_Conflict = {
-  constraint: Capability_Constraint;
-  update_columns?: Array<Capability_Update_Column>;
-  where?: InputMaybe<Capability_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "capabilities". */
 export type Capability_Order_By = {
   children_aggregate?: InputMaybe<CapabilityHierarchyMap_Aggregate_Order_By>;
@@ -8797,11 +5945,6 @@ export type Capability_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: capabilities */
-export type Capability_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "capabilities" */
@@ -8832,22 +5975,6 @@ export enum Capability_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "capabilities" */
-export type Capability_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Capability" */
 export type Capability_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -8870,41 +5997,6 @@ export type Capability_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "capabilities" */
-export enum Capability_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  ParentId = 'parentId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Capability_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Capability_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Capability_Bool_Exp;
 };
 
 /** columns and relationships of "data_objects" */
@@ -9015,31 +6107,6 @@ export type DataObject_Bool_Exp = {
   useInFunctions_aggregate?: InputMaybe<ApplicationFunctionDataObjectMap_Aggregate_Bool_Exp>;
 };
 
-/** unique or primary key constraints on table "data_objects" */
-export enum DataObject_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  DataObjectsCodeUnique = 'data_objects_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  DataObjectsPkey = 'data_objects_pkey'
-}
-
-/** input type for inserting data into table "data_objects" */
-export type DataObject_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentDataObjectMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  useInFunctions?: InputMaybe<ApplicationFunctionDataObjectMap_Arr_Rel_Insert_Input>;
-};
-
 /** aggregate max on columns */
 export type DataObject_Max_Fields = {
   __typename?: 'DataObject_max_fields';
@@ -9072,29 +6139,6 @@ export type DataObject_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "data_objects" */
-export type DataObject_Mutation_Response = {
-  __typename?: 'DataObject_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<DataObject>;
-};
-
-/** input type for inserting object relation for remote table "data_objects" */
-export type DataObject_Obj_Rel_Insert_Input = {
-  data: DataObject_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<DataObject_On_Conflict>;
-};
-
-/** on_conflict condition type for table "data_objects" */
-export type DataObject_On_Conflict = {
-  constraint: DataObject_Constraint;
-  update_columns?: Array<DataObject_Update_Column>;
-  where?: InputMaybe<DataObject_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "data_objects". */
 export type DataObject_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -9110,11 +6154,6 @@ export type DataObject_Order_By = {
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
   useInFunctions_aggregate?: InputMaybe<ApplicationFunctionDataObjectMap_Aggregate_Order_By>;
-};
-
-/** primary key columns input for table: data_objects */
-export type DataObject_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "data_objects" */
@@ -9143,21 +6182,6 @@ export enum DataObject_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "data_objects" */
-export type DataObject_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "DataObject" */
 export type DataObject_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -9179,39 +6203,6 @@ export type DataObject_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "data_objects" */
-export enum DataObject_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type DataObject_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<DataObject_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: DataObject_Bool_Exp;
 };
 
 /** columns and relationships of "map_directory_items" */
@@ -9273,13 +6264,6 @@ export type DirectoryItemsMap_Aggregate_Order_By = {
   min?: InputMaybe<DirectoryItemsMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_directory_items" */
-export type DirectoryItemsMap_Arr_Rel_Insert_Input = {
-  data: Array<DirectoryItemsMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<DirectoryItemsMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_directory_items". All fields are combined with a logical 'AND'. */
 export type DirectoryItemsMap_Bool_Exp = {
   _and?: InputMaybe<Array<DirectoryItemsMap_Bool_Exp>>;
@@ -9297,30 +6281,6 @@ export type DirectoryItemsMap_Bool_Exp = {
   type?: InputMaybe<Directory_Link_Type_Enum_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_directory_items" */
-export enum DirectoryItemsMap_Constraint {
-  /** unique or primary key constraint on columns "target_id", "source_id" */
-  MapDirectoryItemsPkey = 'map_directory_items_pkey',
-  /** unique or primary key constraint on columns "target_id", "source_id" */
-  MapDirectoryItemsSourceIdTargetIdUnique = 'map_directory_items_source_id_target_id_unique'
-}
-
-/** input type for inserting data into table "map_directory_items" */
-export type DirectoryItemsMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  source?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  sourceId?: InputMaybe<Scalars['uuid']['input']>;
-  target?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  targetId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  type?: InputMaybe<Scalars['directory_link_type_enum']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -9381,22 +6341,6 @@ export type DirectoryItemsMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_directory_items" */
-export type DirectoryItemsMap_Mutation_Response = {
-  __typename?: 'DirectoryItemsMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<DirectoryItemsMap>;
-};
-
-/** on_conflict condition type for table "map_directory_items" */
-export type DirectoryItemsMap_On_Conflict = {
-  constraint: DirectoryItemsMap_Constraint;
-  update_columns?: Array<DirectoryItemsMap_Update_Column>;
-  where?: InputMaybe<DirectoryItemsMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_directory_items". */
 export type DirectoryItemsMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -9411,12 +6355,6 @@ export type DirectoryItemsMap_Order_By = {
   type?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_directory_items */
-export type DirectoryItemsMap_Pk_Columns_Input = {
-  sourceId: Scalars['uuid']['input'];
-  targetId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_directory_items" */
@@ -9443,20 +6381,6 @@ export enum DirectoryItemsMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_directory_items" */
-export type DirectoryItemsMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  sourceId?: InputMaybe<Scalars['uuid']['input']>;
-  targetId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  type?: InputMaybe<Scalars['directory_link_type_enum']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "DirectoryItemsMap" */
 export type DirectoryItemsMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -9477,37 +6401,6 @@ export type DirectoryItemsMap_Stream_Cursor_Value_Input = {
   type?: InputMaybe<Scalars['directory_link_type_enum']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_directory_items" */
-export enum DirectoryItemsMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  SourceId = 'sourceId',
-  /** column name */
-  TargetId = 'targetId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  Type = 'type',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type DirectoryItemsMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<DirectoryItemsMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: DirectoryItemsMap_Bool_Exp;
 };
 
 /** columns and relationships of "directories" */
@@ -9648,34 +6541,6 @@ export type DirectoryObject_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "directories" */
-export enum DirectoryObject_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  DirectoriesCodeUnique = 'directories_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  DirectoriesPkey = 'directories_pkey'
-}
-
-/** input type for inserting data into table "directories" */
-export type DirectoryObject_Insert_Input = {
-  byDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  children?: InputMaybe<DirectoryItemsMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  color?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentDirectoryMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['directory_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parents?: InputMaybe<DirectoryItemsMap_Arr_Rel_Insert_Input>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type DirectoryObject_Max_Fields = {
   __typename?: 'DirectoryObject_max_fields';
@@ -9710,29 +6575,6 @@ export type DirectoryObject_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "directories" */
-export type DirectoryObject_Mutation_Response = {
-  __typename?: 'DirectoryObject_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<DirectoryObject>;
-};
-
-/** input type for inserting object relation for remote table "directories" */
-export type DirectoryObject_Obj_Rel_Insert_Input = {
-  data: DirectoryObject_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<DirectoryObject_On_Conflict>;
-};
-
-/** on_conflict condition type for table "directories" */
-export type DirectoryObject_On_Conflict = {
-  constraint: DirectoryObject_Constraint;
-  update_columns?: Array<DirectoryObject_Update_Column>;
-  where?: InputMaybe<DirectoryObject_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "directories". */
 export type DirectoryObject_Order_By = {
   byDefault?: InputMaybe<Order_By>;
@@ -9751,11 +6593,6 @@ export type DirectoryObject_Order_By = {
   parents_aggregate?: InputMaybe<DirectoryItemsMap_Aggregate_Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: directories */
-export type DirectoryObject_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "directories" */
@@ -9788,23 +6625,6 @@ export enum DirectoryObject_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "directories" */
-export type DirectoryObject_Set_Input = {
-  byDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  color?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['directory_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "DirectoryObject" */
 export type DirectoryObject_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -9828,43 +6648,6 @@ export type DirectoryObject_Stream_Cursor_Value_Input = {
   name?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "directories" */
-export enum DirectoryObject_Update_Column {
-  /** column name */
-  ByDefault = 'byDefault',
-  /** column name */
-  Code = 'code',
-  /** column name */
-  Color = 'color',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type DirectoryObject_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<DirectoryObject_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: DirectoryObject_Bool_Exp;
 };
 
 /** columns and relationships of "employees" */
@@ -9921,28 +6704,6 @@ export type Employee_Bool_Exp = {
   userId?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "employees" */
-export enum Employee_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  EmployeesPkey = 'employees_pkey',
-  /** unique or primary key constraint on columns "user_id" */
-  EmployeesUserIdUnique = 'employees_user_id_unique'
-}
-
-/** input type for inserting data into table "employees" */
-export type Employee_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  firstName?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  lastName?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Employee_Max_Fields = {
   __typename?: 'Employee_max_fields';
@@ -9973,22 +6734,6 @@ export type Employee_Min_Fields = {
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "employees" */
-export type Employee_Mutation_Response = {
-  __typename?: 'Employee_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Employee>;
-};
-
-/** on_conflict condition type for table "employees" */
-export type Employee_On_Conflict = {
-  constraint: Employee_Constraint;
-  update_columns?: Array<Employee_Update_Column>;
-  where?: InputMaybe<Employee_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "employees". */
 export type Employee_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -10001,11 +6746,6 @@ export type Employee_Order_By = {
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
   userId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: employees */
-export type Employee_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "employees" */
@@ -10032,20 +6772,6 @@ export enum Employee_Select_Column {
   UserId = 'userId'
 }
 
-/** input type for updating data in table "employees" */
-export type Employee_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  firstName?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  lastName?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Employee" */
 export type Employee_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -10068,40 +6794,9 @@ export type Employee_Stream_Cursor_Value_Input = {
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "employees" */
-export enum Employee_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  FirstName = 'firstName',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  LastName = 'lastName',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  UserId = 'userId'
-}
-
-export type Employee_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Employee_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Employee_Bool_Exp;
-};
-
 /** columns and relationships of "events" */
-export type EventGeneric = {
-  __typename?: 'EventGeneric';
+export type Event = {
+  __typename?: 'Event';
   code: Scalars['String']['output'];
   /** An array relationship */
   components: Array<ApplicationComponentEventMap>;
@@ -10122,7 +6817,7 @@ export type EventGeneric = {
 
 
 /** columns and relationships of "events" */
-export type EventGenericComponentsArgs = {
+export type EventComponentsArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentEventMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10132,7 +6827,7 @@ export type EventGenericComponentsArgs = {
 
 
 /** columns and relationships of "events" */
-export type EventGenericComponents_AggregateArgs = {
+export type EventComponents_AggregateArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentEventMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10141,32 +6836,32 @@ export type EventGenericComponents_AggregateArgs = {
 };
 
 /** aggregated selection of "events" */
-export type EventGeneric_Aggregate = {
-  __typename?: 'EventGeneric_aggregate';
-  aggregate?: Maybe<EventGeneric_Aggregate_Fields>;
-  nodes: Array<EventGeneric>;
+export type Event_Aggregate = {
+  __typename?: 'Event_aggregate';
+  aggregate?: Maybe<Event_Aggregate_Fields>;
+  nodes: Array<Event>;
 };
 
 /** aggregate fields of "events" */
-export type EventGeneric_Aggregate_Fields = {
-  __typename?: 'EventGeneric_aggregate_fields';
+export type Event_Aggregate_Fields = {
+  __typename?: 'Event_aggregate_fields';
   count: Scalars['Int']['output'];
-  max?: Maybe<EventGeneric_Max_Fields>;
-  min?: Maybe<EventGeneric_Min_Fields>;
+  max?: Maybe<Event_Max_Fields>;
+  min?: Maybe<Event_Min_Fields>;
 };
 
 
 /** aggregate fields of "events" */
-export type EventGeneric_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<EventGeneric_Select_Column>>;
+export type Event_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Event_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Boolean expression to filter rows from the table "events". All fields are combined with a logical 'AND'. */
-export type EventGeneric_Bool_Exp = {
-  _and?: InputMaybe<Array<EventGeneric_Bool_Exp>>;
-  _not?: InputMaybe<EventGeneric_Bool_Exp>;
-  _or?: InputMaybe<Array<EventGeneric_Bool_Exp>>;
+export type Event_Bool_Exp = {
+  _and?: InputMaybe<Array<Event_Bool_Exp>>;
+  _not?: InputMaybe<Event_Bool_Exp>;
+  _or?: InputMaybe<Array<Event_Bool_Exp>>;
   code?: InputMaybe<String_Comparison_Exp>;
   components?: InputMaybe<ApplicationComponentEventMap_Bool_Exp>;
   components_aggregate?: InputMaybe<ApplicationComponentEventMap_Aggregate_Bool_Exp>;
@@ -10183,34 +6878,9 @@ export type EventGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "events" */
-export enum EventGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  EventsCodeUnique = 'events_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  EventsPkey = 'events_pkey'
-}
-
-/** input type for inserting data into table "events" */
-export type EventGeneric_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentEventMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
-export type EventGeneric_Max_Fields = {
-  __typename?: 'EventGeneric_max_fields';
+export type Event_Max_Fields = {
+  __typename?: 'Event_max_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -10226,8 +6896,8 @@ export type EventGeneric_Max_Fields = {
 };
 
 /** aggregate min on columns */
-export type EventGeneric_Min_Fields = {
-  __typename?: 'EventGeneric_min_fields';
+export type Event_Min_Fields = {
+  __typename?: 'Event_min_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -10242,31 +6912,8 @@ export type EventGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "events" */
-export type EventGeneric_Mutation_Response = {
-  __typename?: 'EventGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<EventGeneric>;
-};
-
-/** input type for inserting object relation for remote table "events" */
-export type EventGeneric_Obj_Rel_Insert_Input = {
-  data: EventGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<EventGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "events" */
-export type EventGeneric_On_Conflict = {
-  constraint: EventGeneric_Constraint;
-  update_columns?: Array<EventGeneric_Update_Column>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "events". */
-export type EventGeneric_Order_By = {
+export type Event_Order_By = {
   code?: InputMaybe<Order_By>;
   components_aggregate?: InputMaybe<ApplicationComponentEventMap_Aggregate_Order_By>;
   createdAt?: InputMaybe<Order_By>;
@@ -10282,13 +6929,8 @@ export type EventGeneric_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: events */
-export type EventGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
 /** select columns of table "events" */
-export enum EventGeneric_Select_Column {
+export enum Event_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -10315,32 +6957,16 @@ export enum EventGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "events" */
-export type EventGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "EventGeneric" */
-export type EventGeneric_Stream_Cursor_Input = {
+/** Streaming cursor of the table "Event" */
+export type Event_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: EventGeneric_Stream_Cursor_Value_Input;
+  initial_value: Event_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type EventGeneric_Stream_Cursor_Value_Input = {
+export type Event_Stream_Cursor_Value_Input = {
   code?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -10353,41 +6979,6 @@ export type EventGeneric_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "events" */
-export enum EventGeneric_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Layer = 'layer',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type EventGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<EventGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: EventGeneric_Bool_Exp;
 };
 
 /** columns and relationships of "flows" */
@@ -10417,7 +7008,7 @@ export type FlowGeneric = {
   sourceNode?: Maybe<TechnologyNode>;
   sourceNodeId?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  sourcePort?: Maybe<InterfaceGeneric>;
+  sourcePort?: Maybe<Interface>;
   sourcePortId?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
   targetComponent?: Maybe<ApplicationComponent>;
@@ -10427,7 +7018,7 @@ export type FlowGeneric = {
   targetNode?: Maybe<TechnologyNode>;
   targetNodeId?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
-  targetPort?: Maybe<InterfaceGeneric>;
+  targetPort?: Maybe<Interface>;
   targetPortId?: Maybe<Scalars['uuid']['output']>;
   tenantId: Scalars['uuid']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -10500,60 +7091,18 @@ export type FlowGeneric_Bool_Exp = {
   sourceFunctionId?: InputMaybe<Uuid_Comparison_Exp>;
   sourceNode?: InputMaybe<TechnologyNode_Bool_Exp>;
   sourceNodeId?: InputMaybe<Uuid_Comparison_Exp>;
-  sourcePort?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  sourcePort?: InputMaybe<Interface_Bool_Exp>;
   sourcePortId?: InputMaybe<Uuid_Comparison_Exp>;
   targetComponent?: InputMaybe<ApplicationComponent_Bool_Exp>;
   targetComponentId?: InputMaybe<Uuid_Comparison_Exp>;
   targetFunctionId?: InputMaybe<Uuid_Comparison_Exp>;
   targetNode?: InputMaybe<TechnologyNode_Bool_Exp>;
   targetNodeId?: InputMaybe<Uuid_Comparison_Exp>;
-  targetPort?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  targetPort?: InputMaybe<Interface_Bool_Exp>;
   targetPortId?: InputMaybe<Uuid_Comparison_Exp>;
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "flows" */
-export enum FlowGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  FlowsCodeUnique = 'flows_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  FlowsPkey = 'flows_pkey'
-}
-
-/** input type for inserting data into table "flows" */
-export type FlowGeneric_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  requestDataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  responseDataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  solutions?: InputMaybe<SolutionFlowMap_Arr_Rel_Insert_Input>;
-  sourceComponent?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  sourceComponentId?: InputMaybe<Scalars['uuid']['input']>;
-  sourceFunctionId?: InputMaybe<Scalars['uuid']['input']>;
-  sourceNode?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  sourceNodeId?: InputMaybe<Scalars['uuid']['input']>;
-  sourcePort?: InputMaybe<InterfaceGeneric_Obj_Rel_Insert_Input>;
-  sourcePortId?: InputMaybe<Scalars['uuid']['input']>;
-  targetComponent?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  targetComponentId?: InputMaybe<Scalars['uuid']['input']>;
-  targetFunctionId?: InputMaybe<Scalars['uuid']['input']>;
-  targetNode?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  targetNodeId?: InputMaybe<Scalars['uuid']['input']>;
-  targetPort?: InputMaybe<InterfaceGeneric_Obj_Rel_Insert_Input>;
-  targetPortId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -10612,29 +7161,6 @@ export type FlowGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "flows" */
-export type FlowGeneric_Mutation_Response = {
-  __typename?: 'FlowGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<FlowGeneric>;
-};
-
-/** input type for inserting object relation for remote table "flows" */
-export type FlowGeneric_Obj_Rel_Insert_Input = {
-  data: FlowGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<FlowGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "flows" */
-export type FlowGeneric_On_Conflict = {
-  constraint: FlowGeneric_Constraint;
-  update_columns?: Array<FlowGeneric_Update_Column>;
-  where?: InputMaybe<FlowGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "flows". */
 export type FlowGeneric_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -10655,23 +7181,18 @@ export type FlowGeneric_Order_By = {
   sourceFunctionId?: InputMaybe<Order_By>;
   sourceNode?: InputMaybe<TechnologyNode_Order_By>;
   sourceNodeId?: InputMaybe<Order_By>;
-  sourcePort?: InputMaybe<InterfaceGeneric_Order_By>;
+  sourcePort?: InputMaybe<Interface_Order_By>;
   sourcePortId?: InputMaybe<Order_By>;
   targetComponent?: InputMaybe<ApplicationComponent_Order_By>;
   targetComponentId?: InputMaybe<Order_By>;
   targetFunctionId?: InputMaybe<Order_By>;
   targetNode?: InputMaybe<TechnologyNode_Order_By>;
   targetNodeId?: InputMaybe<Order_By>;
-  targetPort?: InputMaybe<InterfaceGeneric_Order_By>;
+  targetPort?: InputMaybe<Interface_Order_By>;
   targetPortId?: InputMaybe<Order_By>;
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: flows */
-export type FlowGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "flows" */
@@ -10724,33 +7245,6 @@ export enum FlowGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "flows" */
-export type FlowGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  requestDataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  responseDataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  sourceComponentId?: InputMaybe<Scalars['uuid']['input']>;
-  sourceFunctionId?: InputMaybe<Scalars['uuid']['input']>;
-  sourceNodeId?: InputMaybe<Scalars['uuid']['input']>;
-  sourcePortId?: InputMaybe<Scalars['uuid']['input']>;
-  targetComponentId?: InputMaybe<Scalars['uuid']['input']>;
-  targetFunctionId?: InputMaybe<Scalars['uuid']['input']>;
-  targetNodeId?: InputMaybe<Scalars['uuid']['input']>;
-  targetPortId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "FlowGeneric" */
 export type FlowGeneric_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -10786,66 +7280,9 @@ export type FlowGeneric_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "flows" */
-export enum FlowGeneric_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Environment = 'environment',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Layer = 'layer',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RequestDataObjectId = 'requestDataObjectId',
-  /** column name */
-  ResponseDataObjectId = 'responseDataObjectId',
-  /** column name */
-  SourceComponentId = 'sourceComponentId',
-  /** column name */
-  SourceFunctionId = 'sourceFunctionId',
-  /** column name */
-  SourceNodeId = 'sourceNodeId',
-  /** column name */
-  SourcePortId = 'sourcePortId',
-  /** column name */
-  TargetComponentId = 'targetComponentId',
-  /** column name */
-  TargetFunctionId = 'targetFunctionId',
-  /** column name */
-  TargetNodeId = 'targetNodeId',
-  /** column name */
-  TargetPortId = 'targetPortId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type FlowGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<FlowGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: FlowGeneric_Bool_Exp;
-};
-
 /** columns and relationships of "functions" */
-export type FunctionGeneric = {
-  __typename?: 'FunctionGeneric';
+export type Function = {
+  __typename?: 'Function';
   code: Scalars['String']['output'];
   /** An array relationship */
   components: Array<ApplicationComponentFunctionMap>;
@@ -10870,7 +7307,7 @@ export type FunctionGeneric = {
 
 
 /** columns and relationships of "functions" */
-export type FunctionGenericComponentsArgs = {
+export type FunctionComponentsArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10880,7 +7317,7 @@ export type FunctionGenericComponentsArgs = {
 
 
 /** columns and relationships of "functions" */
-export type FunctionGenericComponents_AggregateArgs = {
+export type FunctionComponents_AggregateArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10890,7 +7327,7 @@ export type FunctionGenericComponents_AggregateArgs = {
 
 
 /** columns and relationships of "functions" */
-export type FunctionGenericProcessesArgs = {
+export type FunctionProcessesArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10900,7 +7337,7 @@ export type FunctionGenericProcessesArgs = {
 
 
 /** columns and relationships of "functions" */
-export type FunctionGenericProcesses_AggregateArgs = {
+export type FunctionProcesses_AggregateArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10909,32 +7346,32 @@ export type FunctionGenericProcesses_AggregateArgs = {
 };
 
 /** aggregated selection of "functions" */
-export type FunctionGeneric_Aggregate = {
-  __typename?: 'FunctionGeneric_aggregate';
-  aggregate?: Maybe<FunctionGeneric_Aggregate_Fields>;
-  nodes: Array<FunctionGeneric>;
+export type Function_Aggregate = {
+  __typename?: 'Function_aggregate';
+  aggregate?: Maybe<Function_Aggregate_Fields>;
+  nodes: Array<Function>;
 };
 
 /** aggregate fields of "functions" */
-export type FunctionGeneric_Aggregate_Fields = {
-  __typename?: 'FunctionGeneric_aggregate_fields';
+export type Function_Aggregate_Fields = {
+  __typename?: 'Function_aggregate_fields';
   count: Scalars['Int']['output'];
-  max?: Maybe<FunctionGeneric_Max_Fields>;
-  min?: Maybe<FunctionGeneric_Min_Fields>;
+  max?: Maybe<Function_Max_Fields>;
+  min?: Maybe<Function_Min_Fields>;
 };
 
 
 /** aggregate fields of "functions" */
-export type FunctionGeneric_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<FunctionGeneric_Select_Column>>;
+export type Function_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Function_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Boolean expression to filter rows from the table "functions". All fields are combined with a logical 'AND'. */
-export type FunctionGeneric_Bool_Exp = {
-  _and?: InputMaybe<Array<FunctionGeneric_Bool_Exp>>;
-  _not?: InputMaybe<FunctionGeneric_Bool_Exp>;
-  _or?: InputMaybe<Array<FunctionGeneric_Bool_Exp>>;
+export type Function_Bool_Exp = {
+  _and?: InputMaybe<Array<Function_Bool_Exp>>;
+  _not?: InputMaybe<Function_Bool_Exp>;
+  _or?: InputMaybe<Array<Function_Bool_Exp>>;
   code?: InputMaybe<String_Comparison_Exp>;
   components?: InputMaybe<ApplicationComponentFunctionMap_Bool_Exp>;
   components_aggregate?: InputMaybe<ApplicationComponentFunctionMap_Aggregate_Bool_Exp>;
@@ -10953,35 +7390,9 @@ export type FunctionGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "functions" */
-export enum FunctionGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  FunctionsCodeUnique = 'functions_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  FunctionsPkey = 'functions_pkey'
-}
-
-/** input type for inserting data into table "functions" */
-export type FunctionGeneric_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentFunctionMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  processes?: InputMaybe<BusinessProcessFunctionMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
-export type FunctionGeneric_Max_Fields = {
-  __typename?: 'FunctionGeneric_max_fields';
+export type Function_Max_Fields = {
+  __typename?: 'Function_max_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -10997,8 +7408,8 @@ export type FunctionGeneric_Max_Fields = {
 };
 
 /** aggregate min on columns */
-export type FunctionGeneric_Min_Fields = {
-  __typename?: 'FunctionGeneric_min_fields';
+export type Function_Min_Fields = {
+  __typename?: 'Function_min_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -11013,31 +7424,8 @@ export type FunctionGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "functions" */
-export type FunctionGeneric_Mutation_Response = {
-  __typename?: 'FunctionGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<FunctionGeneric>;
-};
-
-/** input type for inserting object relation for remote table "functions" */
-export type FunctionGeneric_Obj_Rel_Insert_Input = {
-  data: FunctionGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<FunctionGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "functions" */
-export type FunctionGeneric_On_Conflict = {
-  constraint: FunctionGeneric_Constraint;
-  update_columns?: Array<FunctionGeneric_Update_Column>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "functions". */
-export type FunctionGeneric_Order_By = {
+export type Function_Order_By = {
   code?: InputMaybe<Order_By>;
   components_aggregate?: InputMaybe<ApplicationComponentFunctionMap_Aggregate_Order_By>;
   createdAt?: InputMaybe<Order_By>;
@@ -11054,13 +7442,8 @@ export type FunctionGeneric_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: functions */
-export type FunctionGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
 /** select columns of table "functions" */
-export enum FunctionGeneric_Select_Column {
+export enum Function_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -11087,32 +7470,16 @@ export enum FunctionGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "functions" */
-export type FunctionGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "FunctionGeneric" */
-export type FunctionGeneric_Stream_Cursor_Input = {
+/** Streaming cursor of the table "Function" */
+export type Function_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: FunctionGeneric_Stream_Cursor_Value_Input;
+  initial_value: Function_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type FunctionGeneric_Stream_Cursor_Value_Input = {
+export type Function_Stream_Cursor_Value_Input = {
   code?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -11125,41 +7492,6 @@ export type FunctionGeneric_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "functions" */
-export enum FunctionGeneric_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Layer = 'layer',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type FunctionGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<FunctionGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: FunctionGeneric_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
@@ -11176,8 +7508,8 @@ export type Int_Comparison_Exp = {
 };
 
 /** columns and relationships of "interfaces" */
-export type InterfaceGeneric = {
-  __typename?: 'InterfaceGeneric';
+export type Interface = {
+  __typename?: 'Interface';
   code: Scalars['String']['output'];
   /** An array relationship */
   componentFunctions: Array<ApplicationFunctionInterfaceMap>;
@@ -11206,7 +7538,7 @@ export type InterfaceGeneric = {
 
 
 /** columns and relationships of "interfaces" */
-export type InterfaceGenericComponentFunctionsArgs = {
+export type InterfaceComponentFunctionsArgs = {
   distinct_on?: InputMaybe<Array<ApplicationFunctionInterfaceMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -11216,7 +7548,7 @@ export type InterfaceGenericComponentFunctionsArgs = {
 
 
 /** columns and relationships of "interfaces" */
-export type InterfaceGenericComponentFunctions_AggregateArgs = {
+export type InterfaceComponentFunctions_AggregateArgs = {
   distinct_on?: InputMaybe<Array<ApplicationFunctionInterfaceMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -11226,7 +7558,7 @@ export type InterfaceGenericComponentFunctions_AggregateArgs = {
 
 
 /** columns and relationships of "interfaces" */
-export type InterfaceGenericComponentsArgs = {
+export type InterfaceComponentsArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentInterfaceMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -11236,7 +7568,7 @@ export type InterfaceGenericComponentsArgs = {
 
 
 /** columns and relationships of "interfaces" */
-export type InterfaceGenericComponents_AggregateArgs = {
+export type InterfaceComponents_AggregateArgs = {
   distinct_on?: InputMaybe<Array<ApplicationComponentInterfaceMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -11245,32 +7577,32 @@ export type InterfaceGenericComponents_AggregateArgs = {
 };
 
 /** aggregated selection of "interfaces" */
-export type InterfaceGeneric_Aggregate = {
-  __typename?: 'InterfaceGeneric_aggregate';
-  aggregate?: Maybe<InterfaceGeneric_Aggregate_Fields>;
-  nodes: Array<InterfaceGeneric>;
+export type Interface_Aggregate = {
+  __typename?: 'Interface_aggregate';
+  aggregate?: Maybe<Interface_Aggregate_Fields>;
+  nodes: Array<Interface>;
 };
 
 /** aggregate fields of "interfaces" */
-export type InterfaceGeneric_Aggregate_Fields = {
-  __typename?: 'InterfaceGeneric_aggregate_fields';
+export type Interface_Aggregate_Fields = {
+  __typename?: 'Interface_aggregate_fields';
   count: Scalars['Int']['output'];
-  max?: Maybe<InterfaceGeneric_Max_Fields>;
-  min?: Maybe<InterfaceGeneric_Min_Fields>;
+  max?: Maybe<Interface_Max_Fields>;
+  min?: Maybe<Interface_Min_Fields>;
 };
 
 
 /** aggregate fields of "interfaces" */
-export type InterfaceGeneric_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<InterfaceGeneric_Select_Column>>;
+export type Interface_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Interface_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Boolean expression to filter rows from the table "interfaces". All fields are combined with a logical 'AND'. */
-export type InterfaceGeneric_Bool_Exp = {
-  _and?: InputMaybe<Array<InterfaceGeneric_Bool_Exp>>;
-  _not?: InputMaybe<InterfaceGeneric_Bool_Exp>;
-  _or?: InputMaybe<Array<InterfaceGeneric_Bool_Exp>>;
+export type Interface_Bool_Exp = {
+  _and?: InputMaybe<Array<Interface_Bool_Exp>>;
+  _not?: InputMaybe<Interface_Bool_Exp>;
+  _or?: InputMaybe<Array<Interface_Bool_Exp>>;
   code?: InputMaybe<String_Comparison_Exp>;
   componentFunctions?: InputMaybe<ApplicationFunctionInterfaceMap_Bool_Exp>;
   componentFunctions_aggregate?: InputMaybe<ApplicationFunctionInterfaceMap_Aggregate_Bool_Exp>;
@@ -11292,38 +7624,9 @@ export type InterfaceGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "interfaces" */
-export enum InterfaceGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  InterfacesCodeUnique = 'interfaces_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  InterfacesPkey = 'interfaces_pkey'
-}
-
-/** input type for inserting data into table "interfaces" */
-export type InterfaceGeneric_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  componentFunctions?: InputMaybe<ApplicationFunctionInterfaceMap_Arr_Rel_Insert_Input>;
-  components?: InputMaybe<ApplicationComponentInterfaceMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  methods?: InputMaybe<Array<Scalars['interface_method_enum']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  protocol?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  protocolId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
-export type InterfaceGeneric_Max_Fields = {
-  __typename?: 'InterfaceGeneric_max_fields';
+export type Interface_Max_Fields = {
+  __typename?: 'Interface_max_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -11341,8 +7644,8 @@ export type InterfaceGeneric_Max_Fields = {
 };
 
 /** aggregate min on columns */
-export type InterfaceGeneric_Min_Fields = {
-  __typename?: 'InterfaceGeneric_min_fields';
+export type Interface_Min_Fields = {
+  __typename?: 'Interface_min_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -11359,31 +7662,8 @@ export type InterfaceGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "interfaces" */
-export type InterfaceGeneric_Mutation_Response = {
-  __typename?: 'InterfaceGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<InterfaceGeneric>;
-};
-
-/** input type for inserting object relation for remote table "interfaces" */
-export type InterfaceGeneric_Obj_Rel_Insert_Input = {
-  data: InterfaceGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<InterfaceGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "interfaces" */
-export type InterfaceGeneric_On_Conflict = {
-  constraint: InterfaceGeneric_Constraint;
-  update_columns?: Array<InterfaceGeneric_Update_Column>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "interfaces". */
-export type InterfaceGeneric_Order_By = {
+export type Interface_Order_By = {
   code?: InputMaybe<Order_By>;
   componentFunctions_aggregate?: InputMaybe<ApplicationFunctionInterfaceMap_Aggregate_Order_By>;
   components_aggregate?: InputMaybe<ApplicationComponentInterfaceMap_Aggregate_Order_By>;
@@ -11403,13 +7683,8 @@ export type InterfaceGeneric_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: interfaces */
-export type InterfaceGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
 /** select columns of table "interfaces" */
-export enum InterfaceGeneric_Select_Column {
+export enum Interface_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -11440,34 +7715,16 @@ export enum InterfaceGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "interfaces" */
-export type InterfaceGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  methods?: InputMaybe<Array<Scalars['interface_method_enum']['input']>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  protocolId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "InterfaceGeneric" */
-export type InterfaceGeneric_Stream_Cursor_Input = {
+/** Streaming cursor of the table "Interface" */
+export type Interface_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: InterfaceGeneric_Stream_Cursor_Value_Input;
+  initial_value: Interface_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type InterfaceGeneric_Stream_Cursor_Value_Input = {
+export type Interface_Stream_Cursor_Value_Input = {
   code?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -11484,8 +7741,133 @@ export type InterfaceGeneric_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "interfaces" */
-export enum InterfaceGeneric_Update_Column {
+/** columns and relationships of "locations" */
+export type Location = {
+  __typename?: 'Location';
+  code: Scalars['String']['output'];
+  createdAt: Scalars['timestamptz']['output'];
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  name: Scalars['String']['output'];
+  /** An array relationship */
+  networks: Array<TechnologyNetwork>;
+  /** An aggregate relationship */
+  networks_aggregate: TechnologyNetwork_Aggregate;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "locations" */
+export type LocationNetworksArgs = {
+  distinct_on?: InputMaybe<Array<TechnologyNetwork_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<TechnologyNetwork_Order_By>>;
+  where?: InputMaybe<TechnologyNetwork_Bool_Exp>;
+};
+
+
+/** columns and relationships of "locations" */
+export type LocationNetworks_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<TechnologyNetwork_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<TechnologyNetwork_Order_By>>;
+  where?: InputMaybe<TechnologyNetwork_Bool_Exp>;
+};
+
+/** aggregated selection of "locations" */
+export type Location_Aggregate = {
+  __typename?: 'Location_aggregate';
+  aggregate?: Maybe<Location_Aggregate_Fields>;
+  nodes: Array<Location>;
+};
+
+/** aggregate fields of "locations" */
+export type Location_Aggregate_Fields = {
+  __typename?: 'Location_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<Location_Max_Fields>;
+  min?: Maybe<Location_Min_Fields>;
+};
+
+
+/** aggregate fields of "locations" */
+export type Location_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Location_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "locations". All fields are combined with a logical 'AND'. */
+export type Location_Bool_Exp = {
+  _and?: InputMaybe<Array<Location_Bool_Exp>>;
+  _not?: InputMaybe<Location_Bool_Exp>;
+  _or?: InputMaybe<Array<Location_Bool_Exp>>;
+  code?: InputMaybe<String_Comparison_Exp>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
+  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
+  description?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  name?: InputMaybe<String_Comparison_Exp>;
+  networks?: InputMaybe<TechnologyNetwork_Bool_Exp>;
+  networks_aggregate?: InputMaybe<TechnologyNetwork_Aggregate_Bool_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Location_Max_Fields = {
+  __typename?: 'Location_max_fields';
+  code?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Location_Min_Fields = {
+  __typename?: 'Location_min_fields';
+  code?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** Ordering options when selecting data from "locations". */
+export type Location_Order_By = {
+  code?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  description?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  networks_aggregate?: InputMaybe<TechnologyNetwork_Aggregate_Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "locations" */
+export enum Location_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -11501,26 +7883,33 @@ export enum InterfaceGeneric_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  Layer = 'layer',
-  /** column name */
-  Methods = 'methods',
-  /** column name */
   Name = 'name',
-  /** column name */
-  ProtocolId = 'protocolId',
-  /** column name */
-  TenantId = 'tenantId',
   /** column name */
   UpdatedAt = 'updatedAt',
   /** column name */
   UpdatedBy = 'updatedBy'
 }
 
-export type InterfaceGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<InterfaceGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: InterfaceGeneric_Bool_Exp;
+/** Streaming cursor of the table "Location" */
+export type Location_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Location_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Location_Stream_Cursor_Value_Input = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** columns and relationships of "motivations" */
@@ -11693,49 +8082,6 @@ export type MotivationElementGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "motivations" */
-export enum MotivationElementGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  MotivationsCodeUnique = 'motivations_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  MotivationsPkey = 'motivations_pkey'
-}
-
-/** input type for incrementing numeric columns in table "motivations" */
-export type MotivationElementGeneric_Inc_Input = {
-  impact?: InputMaybe<Scalars['smallint']['input']>;
-  probability?: InputMaybe<Scalars['smallint']['input']>;
-  severity?: InputMaybe<Scalars['smallint']['input']>;
-};
-
-/** input type for inserting data into table "motivations" */
-export type MotivationElementGeneric_Insert_Input = {
-  capabilityAssessmentType?: InputMaybe<Scalars['capability_assessment_type_enum']['input']>;
-  children?: InputMaybe<MotivationItemHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  impact?: InputMaybe<Scalars['smallint']['input']>;
-  kind?: InputMaybe<Scalars['motivation_kind_enum']['input']>;
-  mitigationNotes?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parents?: InputMaybe<MotivationItemHierarchyMap_Arr_Rel_Insert_Input>;
-  priority?: InputMaybe<Scalars['motivation_priority_enum']['input']>;
-  probability?: InputMaybe<Scalars['smallint']['input']>;
-  processes?: InputMaybe<BusinessProcessMotivationItemMap_Arr_Rel_Insert_Input>;
-  riskCategory?: InputMaybe<Scalars['risk_category_enum']['input']>;
-  severity?: InputMaybe<Scalars['smallint']['input']>;
-  state?: InputMaybe<Scalars['motivation_status_enum']['input']>;
-  status?: InputMaybe<Scalars['risk_status_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type MotivationElementGeneric_Max_Fields = {
   __typename?: 'MotivationElementGeneric_max_fields';
@@ -11788,29 +8134,6 @@ export type MotivationElementGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "motivations" */
-export type MotivationElementGeneric_Mutation_Response = {
-  __typename?: 'MotivationElementGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<MotivationElementGeneric>;
-};
-
-/** input type for inserting object relation for remote table "motivations" */
-export type MotivationElementGeneric_Obj_Rel_Insert_Input = {
-  data: MotivationElementGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<MotivationElementGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "motivations" */
-export type MotivationElementGeneric_On_Conflict = {
-  constraint: MotivationElementGeneric_Constraint;
-  update_columns?: Array<MotivationElementGeneric_Update_Column>;
-  where?: InputMaybe<MotivationElementGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "motivations". */
 export type MotivationElementGeneric_Order_By = {
   capabilityAssessmentType?: InputMaybe<Order_By>;
@@ -11837,11 +8160,6 @@ export type MotivationElementGeneric_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: motivations */
-export type MotivationElementGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "motivations" */
@@ -11889,31 +8207,6 @@ export enum MotivationElementGeneric_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "motivations" */
-export type MotivationElementGeneric_Set_Input = {
-  capabilityAssessmentType?: InputMaybe<Scalars['capability_assessment_type_enum']['input']>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  impact?: InputMaybe<Scalars['smallint']['input']>;
-  kind?: InputMaybe<Scalars['motivation_kind_enum']['input']>;
-  mitigationNotes?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  priority?: InputMaybe<Scalars['motivation_priority_enum']['input']>;
-  probability?: InputMaybe<Scalars['smallint']['input']>;
-  riskCategory?: InputMaybe<Scalars['risk_category_enum']['input']>;
-  severity?: InputMaybe<Scalars['smallint']['input']>;
-  state?: InputMaybe<Scalars['motivation_status_enum']['input']>;
-  status?: InputMaybe<Scalars['risk_status_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type MotivationElementGeneric_Stddev_Fields = {
@@ -11978,61 +8271,6 @@ export type MotivationElementGeneric_Sum_Fields = {
   impact?: Maybe<Scalars['smallint']['output']>;
   probability?: Maybe<Scalars['smallint']['output']>;
   severity?: Maybe<Scalars['smallint']['output']>;
-};
-
-/** update columns of table "motivations" */
-export enum MotivationElementGeneric_Update_Column {
-  /** column name */
-  CapabilityAssessmentType = 'capabilityAssessmentType',
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Impact = 'impact',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  MitigationNotes = 'mitigationNotes',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Priority = 'priority',
-  /** column name */
-  Probability = 'probability',
-  /** column name */
-  RiskCategory = 'riskCategory',
-  /** column name */
-  Severity = 'severity',
-  /** column name */
-  State = 'state',
-  /** column name */
-  Status = 'status',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type MotivationElementGeneric_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<MotivationElementGeneric_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<MotivationElementGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: MotivationElementGeneric_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
@@ -12117,13 +8355,6 @@ export type MotivationItemHierarchyMap_Aggregate_Order_By = {
   min?: InputMaybe<MotivationItemHierarchyMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_motivation_item_hierarchy" */
-export type MotivationItemHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<MotivationItemHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<MotivationItemHierarchyMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_motivation_item_hierarchy". All fields are combined with a logical 'AND'. */
 export type MotivationItemHierarchyMap_Bool_Exp = {
   _and?: InputMaybe<Array<MotivationItemHierarchyMap_Bool_Exp>>;
@@ -12140,29 +8371,6 @@ export type MotivationItemHierarchyMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_motivation_item_hierarchy" */
-export enum MotivationItemHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "child_id", "parent_id" */
-  MapMotivationItemHierarchyParentIdChildIdUnique = 'map_motivation_item_hierarchy_parent_id_child_id_unique',
-  /** unique or primary key constraint on columns "child_id", "parent_id" */
-  MapMotivationItemHierarchyPkey = 'map_motivation_item_hierarchy_pkey'
-}
-
-/** input type for inserting data into table "map_motivation_item_hierarchy" */
-export type MotivationItemHierarchyMap_Insert_Input = {
-  child?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  childId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  parent?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -12219,22 +8427,6 @@ export type MotivationItemHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_motivation_item_hierarchy" */
-export type MotivationItemHierarchyMap_Mutation_Response = {
-  __typename?: 'MotivationItemHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<MotivationItemHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_motivation_item_hierarchy" */
-export type MotivationItemHierarchyMap_On_Conflict = {
-  constraint: MotivationItemHierarchyMap_Constraint;
-  update_columns?: Array<MotivationItemHierarchyMap_Update_Column>;
-  where?: InputMaybe<MotivationItemHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_motivation_item_hierarchy". */
 export type MotivationItemHierarchyMap_Order_By = {
   child?: InputMaybe<MotivationElementGeneric_Order_By>;
@@ -12248,12 +8440,6 @@ export type MotivationItemHierarchyMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_motivation_item_hierarchy */
-export type MotivationItemHierarchyMap_Pk_Columns_Input = {
-  childId: Scalars['uuid']['input'];
-  parentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_motivation_item_hierarchy" */
@@ -12278,19 +8464,6 @@ export enum MotivationItemHierarchyMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_motivation_item_hierarchy" */
-export type MotivationItemHierarchyMap_Set_Input = {
-  childId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  parentId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "MotivationItemHierarchyMap" */
 export type MotivationItemHierarchyMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -12310,302 +8483,6 @@ export type MotivationItemHierarchyMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_motivation_item_hierarchy" */
-export enum MotivationItemHierarchyMap_Update_Column {
-  /** column name */
-  ChildId = 'childId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  ParentId = 'parentId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type MotivationItemHierarchyMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<MotivationItemHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: MotivationItemHierarchyMap_Bool_Exp;
-};
-
-/** columns and relationships of "locations" */
-export type PhysicalLocation = {
-  __typename?: 'PhysicalLocation';
-  code: Scalars['String']['output'];
-  createdAt: Scalars['timestamptz']['output'];
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['uuid']['output'];
-  name: Scalars['String']['output'];
-  /** An array relationship */
-  networks: Array<TechnologyNetwork>;
-  /** An aggregate relationship */
-  networks_aggregate: TechnologyNetwork_Aggregate;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-
-/** columns and relationships of "locations" */
-export type PhysicalLocationNetworksArgs = {
-  distinct_on?: InputMaybe<Array<TechnologyNetwork_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<TechnologyNetwork_Order_By>>;
-  where?: InputMaybe<TechnologyNetwork_Bool_Exp>;
-};
-
-
-/** columns and relationships of "locations" */
-export type PhysicalLocationNetworks_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<TechnologyNetwork_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<TechnologyNetwork_Order_By>>;
-  where?: InputMaybe<TechnologyNetwork_Bool_Exp>;
-};
-
-/** aggregated selection of "locations" */
-export type PhysicalLocation_Aggregate = {
-  __typename?: 'PhysicalLocation_aggregate';
-  aggregate?: Maybe<PhysicalLocation_Aggregate_Fields>;
-  nodes: Array<PhysicalLocation>;
-};
-
-/** aggregate fields of "locations" */
-export type PhysicalLocation_Aggregate_Fields = {
-  __typename?: 'PhysicalLocation_aggregate_fields';
-  count: Scalars['Int']['output'];
-  max?: Maybe<PhysicalLocation_Max_Fields>;
-  min?: Maybe<PhysicalLocation_Min_Fields>;
-};
-
-
-/** aggregate fields of "locations" */
-export type PhysicalLocation_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<PhysicalLocation_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** Boolean expression to filter rows from the table "locations". All fields are combined with a logical 'AND'. */
-export type PhysicalLocation_Bool_Exp = {
-  _and?: InputMaybe<Array<PhysicalLocation_Bool_Exp>>;
-  _not?: InputMaybe<PhysicalLocation_Bool_Exp>;
-  _or?: InputMaybe<Array<PhysicalLocation_Bool_Exp>>;
-  code?: InputMaybe<String_Comparison_Exp>;
-  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
-  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
-  description?: InputMaybe<String_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  name?: InputMaybe<String_Comparison_Exp>;
-  networks?: InputMaybe<TechnologyNetwork_Bool_Exp>;
-  networks_aggregate?: InputMaybe<TechnologyNetwork_Aggregate_Bool_Exp>;
-  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
-  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "locations" */
-export enum PhysicalLocation_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  LocationsCodeUnique = 'locations_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  LocationsPkey = 'locations_pkey'
-}
-
-/** input type for inserting data into table "locations" */
-export type PhysicalLocation_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  networks?: InputMaybe<TechnologyNetwork_Arr_Rel_Insert_Input>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** aggregate max on columns */
-export type PhysicalLocation_Max_Fields = {
-  __typename?: 'PhysicalLocation_max_fields';
-  code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-/** aggregate min on columns */
-export type PhysicalLocation_Min_Fields = {
-  __typename?: 'PhysicalLocation_min_fields';
-  code?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  createdBy?: Maybe<Scalars['uuid']['output']>;
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  deletedBy?: Maybe<Scalars['uuid']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  updatedBy?: Maybe<Scalars['uuid']['output']>;
-};
-
-/** response of any mutation on the table "locations" */
-export type PhysicalLocation_Mutation_Response = {
-  __typename?: 'PhysicalLocation_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<PhysicalLocation>;
-};
-
-/** input type for inserting object relation for remote table "locations" */
-export type PhysicalLocation_Obj_Rel_Insert_Input = {
-  data: PhysicalLocation_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<PhysicalLocation_On_Conflict>;
-};
-
-/** on_conflict condition type for table "locations" */
-export type PhysicalLocation_On_Conflict = {
-  constraint: PhysicalLocation_Constraint;
-  update_columns?: Array<PhysicalLocation_Update_Column>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "locations". */
-export type PhysicalLocation_Order_By = {
-  code?: InputMaybe<Order_By>;
-  createdAt?: InputMaybe<Order_By>;
-  createdBy?: InputMaybe<Order_By>;
-  deletedAt?: InputMaybe<Order_By>;
-  deletedBy?: InputMaybe<Order_By>;
-  description?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  name?: InputMaybe<Order_By>;
-  networks_aggregate?: InputMaybe<TechnologyNetwork_Aggregate_Order_By>;
-  updatedAt?: InputMaybe<Order_By>;
-  updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: locations */
-export type PhysicalLocation_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
-/** select columns of table "locations" */
-export enum PhysicalLocation_Select_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-/** input type for updating data in table "locations" */
-export type PhysicalLocation_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "PhysicalLocation" */
-export type PhysicalLocation_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: PhysicalLocation_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type PhysicalLocation_Stream_Cursor_Value_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "locations" */
-export enum PhysicalLocation_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type PhysicalLocation_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<PhysicalLocation_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: PhysicalLocation_Bool_Exp;
 };
 
 /** columns and relationships of "plateaus" */
@@ -12664,29 +8541,6 @@ export type Plateau_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "plateaus" */
-export enum Plateau_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  PlateausCodeUnique = 'plateaus_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  PlateausPkey = 'plateaus_pkey'
-}
-
-/** input type for inserting data into table "plateaus" */
-export type Plateau_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Plateau_Max_Fields = {
   __typename?: 'Plateau_max_fields';
@@ -12719,22 +8573,6 @@ export type Plateau_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "plateaus" */
-export type Plateau_Mutation_Response = {
-  __typename?: 'Plateau_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Plateau>;
-};
-
-/** on_conflict condition type for table "plateaus" */
-export type Plateau_On_Conflict = {
-  constraint: Plateau_Constraint;
-  update_columns?: Array<Plateau_Update_Column>;
-  where?: InputMaybe<Plateau_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "plateaus". */
 export type Plateau_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -12748,11 +8586,6 @@ export type Plateau_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: plateaus */
-export type Plateau_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "plateaus" */
@@ -12781,21 +8614,6 @@ export enum Plateau_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "plateaus" */
-export type Plateau_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Plateau" */
 export type Plateau_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -12819,42 +8637,9 @@ export type Plateau_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "plateaus" */
-export enum Plateau_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Plateau_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Plateau_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Plateau_Bool_Exp;
-};
-
 /** columns and relationships of "processes" */
-export type ProcessGeneric = {
-  __typename?: 'ProcessGeneric';
+export type Process = {
+  __typename?: 'Process';
   /** An array relationship */
   capabilities: Array<CapabilityBusinessProcessMap>;
   /** An aggregate relationship */
@@ -12891,7 +8676,7 @@ export type ProcessGeneric = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericCapabilitiesArgs = {
+export type ProcessCapabilitiesArgs = {
   distinct_on?: InputMaybe<Array<CapabilityBusinessProcessMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12901,7 +8686,7 @@ export type ProcessGenericCapabilitiesArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericCapabilities_AggregateArgs = {
+export type ProcessCapabilities_AggregateArgs = {
   distinct_on?: InputMaybe<Array<CapabilityBusinessProcessMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12911,7 +8696,7 @@ export type ProcessGenericCapabilities_AggregateArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericChildrenArgs = {
+export type ProcessChildrenArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessHierarchyMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12921,7 +8706,7 @@ export type ProcessGenericChildrenArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericChildren_AggregateArgs = {
+export type ProcessChildren_AggregateArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessHierarchyMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12931,7 +8716,7 @@ export type ProcessGenericChildren_AggregateArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericFunctionsArgs = {
+export type ProcessFunctionsArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12941,7 +8726,7 @@ export type ProcessGenericFunctionsArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericFunctions_AggregateArgs = {
+export type ProcessFunctions_AggregateArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessFunctionMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12951,7 +8736,7 @@ export type ProcessGenericFunctions_AggregateArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericMotivationsArgs = {
+export type ProcessMotivationsArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessMotivationItemMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12961,7 +8746,7 @@ export type ProcessGenericMotivationsArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericMotivations_AggregateArgs = {
+export type ProcessMotivations_AggregateArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessMotivationItemMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12971,7 +8756,7 @@ export type ProcessGenericMotivations_AggregateArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericParentsArgs = {
+export type ProcessParentsArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessHierarchyMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12981,7 +8766,7 @@ export type ProcessGenericParentsArgs = {
 
 
 /** columns and relationships of "processes" */
-export type ProcessGenericParents_AggregateArgs = {
+export type ProcessParents_AggregateArgs = {
   distinct_on?: InputMaybe<Array<BusinessProcessHierarchyMap_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -12990,32 +8775,32 @@ export type ProcessGenericParents_AggregateArgs = {
 };
 
 /** aggregated selection of "processes" */
-export type ProcessGeneric_Aggregate = {
-  __typename?: 'ProcessGeneric_aggregate';
-  aggregate?: Maybe<ProcessGeneric_Aggregate_Fields>;
-  nodes: Array<ProcessGeneric>;
+export type Process_Aggregate = {
+  __typename?: 'Process_aggregate';
+  aggregate?: Maybe<Process_Aggregate_Fields>;
+  nodes: Array<Process>;
 };
 
 /** aggregate fields of "processes" */
-export type ProcessGeneric_Aggregate_Fields = {
-  __typename?: 'ProcessGeneric_aggregate_fields';
+export type Process_Aggregate_Fields = {
+  __typename?: 'Process_aggregate_fields';
   count: Scalars['Int']['output'];
-  max?: Maybe<ProcessGeneric_Max_Fields>;
-  min?: Maybe<ProcessGeneric_Min_Fields>;
+  max?: Maybe<Process_Max_Fields>;
+  min?: Maybe<Process_Min_Fields>;
 };
 
 
 /** aggregate fields of "processes" */
-export type ProcessGeneric_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<ProcessGeneric_Select_Column>>;
+export type Process_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Process_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Boolean expression to filter rows from the table "processes". All fields are combined with a logical 'AND'. */
-export type ProcessGeneric_Bool_Exp = {
-  _and?: InputMaybe<Array<ProcessGeneric_Bool_Exp>>;
-  _not?: InputMaybe<ProcessGeneric_Bool_Exp>;
-  _or?: InputMaybe<Array<ProcessGeneric_Bool_Exp>>;
+export type Process_Bool_Exp = {
+  _and?: InputMaybe<Array<Process_Bool_Exp>>;
+  _not?: InputMaybe<Process_Bool_Exp>;
+  _or?: InputMaybe<Array<Process_Bool_Exp>>;
   capabilities?: InputMaybe<CapabilityBusinessProcessMap_Bool_Exp>;
   capabilities_aggregate?: InputMaybe<CapabilityBusinessProcessMap_Aggregate_Bool_Exp>;
   children?: InputMaybe<BusinessProcessHierarchyMap_Bool_Exp>;
@@ -13040,38 +8825,9 @@ export type ProcessGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "processes" */
-export enum ProcessGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ProcessesCodeUnique = 'processes_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ProcessesPkey = 'processes_pkey'
-}
-
-/** input type for inserting data into table "processes" */
-export type ProcessGeneric_Insert_Input = {
-  capabilities?: InputMaybe<CapabilityBusinessProcessMap_Arr_Rel_Insert_Input>;
-  children?: InputMaybe<BusinessProcessHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  functions?: InputMaybe<BusinessProcessFunctionMap_Arr_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  motivations?: InputMaybe<BusinessProcessMotivationItemMap_Arr_Rel_Insert_Input>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  parents?: InputMaybe<BusinessProcessHierarchyMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
-export type ProcessGeneric_Max_Fields = {
-  __typename?: 'ProcessGeneric_max_fields';
+export type Process_Max_Fields = {
+  __typename?: 'Process_max_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -13087,8 +8843,8 @@ export type ProcessGeneric_Max_Fields = {
 };
 
 /** aggregate min on columns */
-export type ProcessGeneric_Min_Fields = {
-  __typename?: 'ProcessGeneric_min_fields';
+export type Process_Min_Fields = {
+  __typename?: 'Process_min_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -13103,31 +8859,8 @@ export type ProcessGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "processes" */
-export type ProcessGeneric_Mutation_Response = {
-  __typename?: 'ProcessGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ProcessGeneric>;
-};
-
-/** input type for inserting object relation for remote table "processes" */
-export type ProcessGeneric_Obj_Rel_Insert_Input = {
-  data: ProcessGeneric_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<ProcessGeneric_On_Conflict>;
-};
-
-/** on_conflict condition type for table "processes" */
-export type ProcessGeneric_On_Conflict = {
-  constraint: ProcessGeneric_Constraint;
-  update_columns?: Array<ProcessGeneric_Update_Column>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "processes". */
-export type ProcessGeneric_Order_By = {
+export type Process_Order_By = {
   capabilities_aggregate?: InputMaybe<CapabilityBusinessProcessMap_Aggregate_Order_By>;
   children_aggregate?: InputMaybe<BusinessProcessHierarchyMap_Aggregate_Order_By>;
   code?: InputMaybe<Order_By>;
@@ -13147,13 +8880,8 @@ export type ProcessGeneric_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: processes */
-export type ProcessGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
 /** select columns of table "processes" */
-export enum ProcessGeneric_Select_Column {
+export enum Process_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -13180,32 +8908,16 @@ export enum ProcessGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "processes" */
-export type ProcessGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "ProcessGeneric" */
-export type ProcessGeneric_Stream_Cursor_Input = {
+/** Streaming cursor of the table "Process" */
+export type Process_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: ProcessGeneric_Stream_Cursor_Value_Input;
+  initial_value: Process_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type ProcessGeneric_Stream_Cursor_Value_Input = {
+export type Process_Stream_Cursor_Value_Input = {
   code?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -13220,44 +8932,13 @@ export type ProcessGeneric_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "processes" */
-export enum ProcessGeneric_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Layer = 'layer',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type ProcessGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ProcessGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ProcessGeneric_Bool_Exp;
-};
-
-/** columns and relationships of "services" */
-export type ServiceGeneric = {
-  __typename?: 'ServiceGeneric';
+/** columns and relationships of "roles" */
+export type Role = {
+  __typename?: 'Role';
+  /** An array relationship */
+  actors: Array<BusinessActorRoleMap>;
+  /** An aggregate relationship */
+  actors_aggregate: BusinessActorRoleMap_Aggregate;
   code: Scalars['String']['output'];
   createdAt: Scalars['timestamptz']['output'];
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -13272,33 +8953,55 @@ export type ServiceGeneric = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** aggregated selection of "services" */
-export type ServiceGeneric_Aggregate = {
-  __typename?: 'ServiceGeneric_aggregate';
-  aggregate?: Maybe<ServiceGeneric_Aggregate_Fields>;
-  nodes: Array<ServiceGeneric>;
+
+/** columns and relationships of "roles" */
+export type RoleActorsArgs = {
+  distinct_on?: InputMaybe<Array<BusinessActorRoleMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<BusinessActorRoleMap_Order_By>>;
+  where?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
 };
 
-/** aggregate fields of "services" */
-export type ServiceGeneric_Aggregate_Fields = {
-  __typename?: 'ServiceGeneric_aggregate_fields';
+
+/** columns and relationships of "roles" */
+export type RoleActors_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<BusinessActorRoleMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<BusinessActorRoleMap_Order_By>>;
+  where?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
+};
+
+/** aggregated selection of "roles" */
+export type Role_Aggregate = {
+  __typename?: 'Role_aggregate';
+  aggregate?: Maybe<Role_Aggregate_Fields>;
+  nodes: Array<Role>;
+};
+
+/** aggregate fields of "roles" */
+export type Role_Aggregate_Fields = {
+  __typename?: 'Role_aggregate_fields';
   count: Scalars['Int']['output'];
-  max?: Maybe<ServiceGeneric_Max_Fields>;
-  min?: Maybe<ServiceGeneric_Min_Fields>;
+  max?: Maybe<Role_Max_Fields>;
+  min?: Maybe<Role_Min_Fields>;
 };
 
 
-/** aggregate fields of "services" */
-export type ServiceGeneric_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<ServiceGeneric_Select_Column>>;
+/** aggregate fields of "roles" */
+export type Role_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Role_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'. */
-export type ServiceGeneric_Bool_Exp = {
-  _and?: InputMaybe<Array<ServiceGeneric_Bool_Exp>>;
-  _not?: InputMaybe<ServiceGeneric_Bool_Exp>;
-  _or?: InputMaybe<Array<ServiceGeneric_Bool_Exp>>;
+/** Boolean expression to filter rows from the table "roles". All fields are combined with a logical 'AND'. */
+export type Role_Bool_Exp = {
+  _and?: InputMaybe<Array<Role_Bool_Exp>>;
+  _not?: InputMaybe<Role_Bool_Exp>;
+  _or?: InputMaybe<Array<Role_Bool_Exp>>;
+  actors?: InputMaybe<BusinessActorRoleMap_Bool_Exp>;
+  actors_aggregate?: InputMaybe<BusinessActorRoleMap_Aggregate_Bool_Exp>;
   code?: InputMaybe<String_Comparison_Exp>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   createdBy?: InputMaybe<Uuid_Comparison_Exp>;
@@ -13313,33 +9016,9 @@ export type ServiceGeneric_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "services" */
-export enum ServiceGeneric_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ServicesCodeUnique = 'services_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ServicesPkey = 'services_pkey'
-}
-
-/** input type for inserting data into table "services" */
-export type ServiceGeneric_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
-export type ServiceGeneric_Max_Fields = {
-  __typename?: 'ServiceGeneric_max_fields';
+export type Role_Max_Fields = {
+  __typename?: 'Role_max_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -13355,8 +9034,8 @@ export type ServiceGeneric_Max_Fields = {
 };
 
 /** aggregate min on columns */
-export type ServiceGeneric_Min_Fields = {
-  __typename?: 'ServiceGeneric_min_fields';
+export type Role_Min_Fields = {
+  __typename?: 'Role_min_fields';
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   createdBy?: Maybe<Scalars['uuid']['output']>;
@@ -13371,24 +9050,9 @@ export type ServiceGeneric_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "services" */
-export type ServiceGeneric_Mutation_Response = {
-  __typename?: 'ServiceGeneric_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<ServiceGeneric>;
-};
-
-/** on_conflict condition type for table "services" */
-export type ServiceGeneric_On_Conflict = {
-  constraint: ServiceGeneric_Constraint;
-  update_columns?: Array<ServiceGeneric_Update_Column>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "services". */
-export type ServiceGeneric_Order_By = {
+/** Ordering options when selecting data from "roles". */
+export type Role_Order_By = {
+  actors_aggregate?: InputMaybe<BusinessActorRoleMap_Aggregate_Order_By>;
   code?: InputMaybe<Order_By>;
   createdAt?: InputMaybe<Order_By>;
   createdBy?: InputMaybe<Order_By>;
@@ -13403,13 +9067,8 @@ export type ServiceGeneric_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: services */
-export type ServiceGeneric_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
-};
-
-/** select columns of table "services" */
-export enum ServiceGeneric_Select_Column {
+/** select columns of table "roles" */
+export enum Role_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -13436,32 +9095,16 @@ export enum ServiceGeneric_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "services" */
-export type ServiceGeneric_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** Streaming cursor of the table "ServiceGeneric" */
-export type ServiceGeneric_Stream_Cursor_Input = {
+/** Streaming cursor of the table "Role" */
+export type Role_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: ServiceGeneric_Stream_Cursor_Value_Input;
+  initial_value: Role_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type ServiceGeneric_Stream_Cursor_Value_Input = {
+export type Role_Stream_Cursor_Value_Input = {
   code?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -13476,8 +9119,116 @@ export type ServiceGeneric_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "services" */
-export enum ServiceGeneric_Update_Column {
+/** columns and relationships of "services" */
+export type Service = {
+  __typename?: 'Service';
+  code: Scalars['String']['output'];
+  createdAt: Scalars['timestamptz']['output'];
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  layer: Scalars['layer_kind_enum']['output'];
+  name: Scalars['String']['output'];
+  tenantId: Scalars['uuid']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "services" */
+export type Service_Aggregate = {
+  __typename?: 'Service_aggregate';
+  aggregate?: Maybe<Service_Aggregate_Fields>;
+  nodes: Array<Service>;
+};
+
+/** aggregate fields of "services" */
+export type Service_Aggregate_Fields = {
+  __typename?: 'Service_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<Service_Max_Fields>;
+  min?: Maybe<Service_Min_Fields>;
+};
+
+
+/** aggregate fields of "services" */
+export type Service_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Service_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'. */
+export type Service_Bool_Exp = {
+  _and?: InputMaybe<Array<Service_Bool_Exp>>;
+  _not?: InputMaybe<Service_Bool_Exp>;
+  _or?: InputMaybe<Array<Service_Bool_Exp>>;
+  code?: InputMaybe<String_Comparison_Exp>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
+  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
+  description?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  layer?: InputMaybe<Layer_Kind_Enum_Comparison_Exp>;
+  name?: InputMaybe<String_Comparison_Exp>;
+  tenantId?: InputMaybe<Uuid_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Service_Max_Fields = {
+  __typename?: 'Service_max_fields';
+  code?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  layer?: Maybe<Scalars['layer_kind_enum']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Service_Min_Fields = {
+  __typename?: 'Service_min_fields';
+  code?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  layer?: Maybe<Scalars['layer_kind_enum']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** Ordering options when selecting data from "services". */
+export type Service_Order_By = {
+  code?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  description?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  layer?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  tenantId?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "services" */
+export enum Service_Select_Column {
   /** column name */
   Code = 'code',
   /** column name */
@@ -13504,11 +9255,28 @@ export enum ServiceGeneric_Update_Column {
   UpdatedBy = 'updatedBy'
 }
 
-export type ServiceGeneric_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<ServiceGeneric_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: ServiceGeneric_Bool_Exp;
+/** Streaming cursor of the table "Service" */
+export type Service_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Service_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Service_Stream_Cursor_Value_Input = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  layer?: InputMaybe<Scalars['layer_kind_enum']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  tenantId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** columns and relationships of "solutions" */
@@ -13835,13 +9603,6 @@ export type SolutionApplicationComponentMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionApplicationComponentMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_application_component" */
-export type SolutionApplicationComponentMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionApplicationComponentMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionApplicationComponentMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_application_component". All fields are combined with a logical 'AND'. */
 export type SolutionApplicationComponentMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionApplicationComponentMap_Bool_Exp>>;
@@ -13862,32 +9623,6 @@ export type SolutionApplicationComponentMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_application_component" */
-export enum SolutionApplicationComponentMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "solution_id" */
-  MapSolutionApplicationComponentComponentIdS_23157Unique = 'map_solution_application_component_component_id_s_23157_unique',
-  /** unique or primary key constraint on columns "component_id", "solution_id" */
-  MapSolutionApplicationComponentPkey = 'map_solution_application_component_pkey'
-}
-
-/** input type for inserting data into table "map_solution_application_component" */
-export type SolutionApplicationComponentMap_Insert_Input = {
-  component?: InputMaybe<ApplicationComponent_Obj_Rel_Insert_Input>;
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  motivationsInSolution?: InputMaybe<SolutionMotivationComponentMap_Arr_Rel_Insert_Input>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -13952,22 +9687,6 @@ export type SolutionApplicationComponentMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_application_component" */
-export type SolutionApplicationComponentMap_Mutation_Response = {
-  __typename?: 'SolutionApplicationComponentMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionApplicationComponentMap>;
-};
-
-/** on_conflict condition type for table "map_solution_application_component" */
-export type SolutionApplicationComponentMap_On_Conflict = {
-  constraint: SolutionApplicationComponentMap_Constraint;
-  update_columns?: Array<SolutionApplicationComponentMap_Update_Column>;
-  where?: InputMaybe<SolutionApplicationComponentMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_application_component". */
 export type SolutionApplicationComponentMap_Order_By = {
   component?: InputMaybe<ApplicationComponent_Order_By>;
@@ -13984,12 +9703,6 @@ export type SolutionApplicationComponentMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_application_component */
-export type SolutionApplicationComponentMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_application_component" */
@@ -14018,21 +9731,6 @@ export enum SolutionApplicationComponentMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_application_component" */
-export type SolutionApplicationComponentMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionApplicationComponentMap" */
 export type SolutionApplicationComponentMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -14054,39 +9752,6 @@ export type SolutionApplicationComponentMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_application_component" */
-export enum SolutionApplicationComponentMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionApplicationComponentMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionApplicationComponentMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionApplicationComponentMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_application_function" */
@@ -14148,13 +9813,6 @@ export type SolutionApplicationFunctionMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionApplicationFunctionMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_application_function" */
-export type SolutionApplicationFunctionMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionApplicationFunctionMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionApplicationFunctionMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_application_function". All fields are combined with a logical 'AND'. */
 export type SolutionApplicationFunctionMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionApplicationFunctionMap_Bool_Exp>>;
@@ -14173,29 +9831,6 @@ export type SolutionApplicationFunctionMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_application_function" */
-export enum SolutionApplicationFunctionMap_Constraint {
-  /** unique or primary key constraint on columns "component_id", "function_id", "solution_id" */
-  MapSolutionApplicationFunctionPkey = 'map_solution_application_function_pkey'
-}
-
-/** input type for inserting data into table "map_solution_application_function" */
-export type SolutionApplicationFunctionMap_Insert_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -14264,22 +9899,6 @@ export type SolutionApplicationFunctionMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_application_function" */
-export type SolutionApplicationFunctionMap_Mutation_Response = {
-  __typename?: 'SolutionApplicationFunctionMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionApplicationFunctionMap>;
-};
-
-/** on_conflict condition type for table "map_solution_application_function" */
-export type SolutionApplicationFunctionMap_On_Conflict = {
-  constraint: SolutionApplicationFunctionMap_Constraint;
-  update_columns?: Array<SolutionApplicationFunctionMap_Update_Column>;
-  where?: InputMaybe<SolutionApplicationFunctionMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_application_function". */
 export type SolutionApplicationFunctionMap_Order_By = {
   componentId?: InputMaybe<Order_By>;
@@ -14295,13 +9914,6 @@ export type SolutionApplicationFunctionMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_application_function */
-export type SolutionApplicationFunctionMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_application_function" */
@@ -14332,22 +9944,6 @@ export enum SolutionApplicationFunctionMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_application_function" */
-export type SolutionApplicationFunctionMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  functionId?: InputMaybe<Scalars['uuid']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionApplicationFunctionMap" */
 export type SolutionApplicationFunctionMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -14372,10 +9968,109 @@ export type SolutionApplicationFunctionMap_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "map_solution_application_function" */
-export enum SolutionApplicationFunctionMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
+/** columns and relationships of "map_solution_constraint" */
+export type SolutionConstraintMap = {
+  __typename?: 'SolutionConstraintMap';
+  createdAt: Scalars['timestamptz']['output'];
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  motivation: MotivationElementGeneric;
+  motivationId: Scalars['uuid']['output'];
+  /** An object relationship */
+  solution: Solution;
+  solutionId: Scalars['uuid']['output'];
+  tenantId: Scalars['uuid']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "map_solution_constraint" */
+export type SolutionConstraintMap_Aggregate = {
+  __typename?: 'SolutionConstraintMap_aggregate';
+  aggregate?: Maybe<SolutionConstraintMap_Aggregate_Fields>;
+  nodes: Array<SolutionConstraintMap>;
+};
+
+/** aggregate fields of "map_solution_constraint" */
+export type SolutionConstraintMap_Aggregate_Fields = {
+  __typename?: 'SolutionConstraintMap_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<SolutionConstraintMap_Max_Fields>;
+  min?: Maybe<SolutionConstraintMap_Min_Fields>;
+};
+
+
+/** aggregate fields of "map_solution_constraint" */
+export type SolutionConstraintMap_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<SolutionConstraintMap_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "map_solution_constraint". All fields are combined with a logical 'AND'. */
+export type SolutionConstraintMap_Bool_Exp = {
+  _and?: InputMaybe<Array<SolutionConstraintMap_Bool_Exp>>;
+  _not?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
+  _or?: InputMaybe<Array<SolutionConstraintMap_Bool_Exp>>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  createdBy?: InputMaybe<Uuid_Comparison_Exp>;
+  deletedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  deletedBy?: InputMaybe<Uuid_Comparison_Exp>;
+  motivation?: InputMaybe<MotivationElementGeneric_Bool_Exp>;
+  motivationId?: InputMaybe<Uuid_Comparison_Exp>;
+  solution?: InputMaybe<Solution_Bool_Exp>;
+  solutionId?: InputMaybe<Uuid_Comparison_Exp>;
+  tenantId?: InputMaybe<Uuid_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type SolutionConstraintMap_Max_Fields = {
+  __typename?: 'SolutionConstraintMap_max_fields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  motivationId?: Maybe<Scalars['uuid']['output']>;
+  solutionId?: Maybe<Scalars['uuid']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type SolutionConstraintMap_Min_Fields = {
+  __typename?: 'SolutionConstraintMap_min_fields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
+  deletedBy?: Maybe<Scalars['uuid']['output']>;
+  motivationId?: Maybe<Scalars['uuid']['output']>;
+  solutionId?: Maybe<Scalars['uuid']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** Ordering options when selecting data from "map_solution_constraint". */
+export type SolutionConstraintMap_Order_By = {
+  createdAt?: InputMaybe<Order_By>;
+  createdBy?: InputMaybe<Order_By>;
+  deletedAt?: InputMaybe<Order_By>;
+  deletedBy?: InputMaybe<Order_By>;
+  motivation?: InputMaybe<MotivationElementGeneric_Order_By>;
+  motivationId?: InputMaybe<Order_By>;
+  solution?: InputMaybe<Solution_Order_By>;
+  solutionId?: InputMaybe<Order_By>;
+  tenantId?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  updatedBy?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "map_solution_constraint" */
+export enum SolutionConstraintMap_Select_Column {
   /** column name */
   CreatedAt = 'createdAt',
   /** column name */
@@ -14385,13 +10080,9 @@ export enum SolutionApplicationFunctionMap_Update_Column {
   /** column name */
   DeletedBy = 'deletedBy',
   /** column name */
-  Description = 'description',
-  /** column name */
-  FunctionId = 'functionId',
+  MotivationId = 'motivationId',
   /** column name */
   SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
   /** column name */
   TenantId = 'tenantId',
   /** column name */
@@ -14400,11 +10091,25 @@ export enum SolutionApplicationFunctionMap_Update_Column {
   UpdatedBy = 'updatedBy'
 }
 
-export type SolutionApplicationFunctionMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionApplicationFunctionMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionApplicationFunctionMap_Bool_Exp;
+/** Streaming cursor of the table "SolutionConstraintMap" */
+export type SolutionConstraintMap_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: SolutionConstraintMap_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type SolutionConstraintMap_Stream_Cursor_Value_Input = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
+  motivationId?: InputMaybe<Scalars['uuid']['input']>;
+  solutionId?: InputMaybe<Scalars['uuid']['input']>;
+  tenantId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** columns and relationships of "map_solution_data_object" */
@@ -14466,13 +10171,6 @@ export type SolutionDataObjectMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionDataObjectMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_data_object" */
-export type SolutionDataObjectMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionDataObjectMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionDataObjectMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_data_object". All fields are combined with a logical 'AND'. */
 export type SolutionDataObjectMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionDataObjectMap_Bool_Exp>>;
@@ -14491,29 +10189,6 @@ export type SolutionDataObjectMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_data_object" */
-export enum SolutionDataObjectMap_Constraint {
-  /** unique or primary key constraint on columns "data_object_id", "component_id", "solution_id" */
-  MapSolutionDataObjectPkey = 'map_solution_data_object_pkey'
-}
-
-/** input type for inserting data into table "map_solution_data_object" */
-export type SolutionDataObjectMap_Insert_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -14582,22 +10257,6 @@ export type SolutionDataObjectMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_data_object" */
-export type SolutionDataObjectMap_Mutation_Response = {
-  __typename?: 'SolutionDataObjectMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionDataObjectMap>;
-};
-
-/** on_conflict condition type for table "map_solution_data_object" */
-export type SolutionDataObjectMap_On_Conflict = {
-  constraint: SolutionDataObjectMap_Constraint;
-  update_columns?: Array<SolutionDataObjectMap_Update_Column>;
-  where?: InputMaybe<SolutionDataObjectMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_data_object". */
 export type SolutionDataObjectMap_Order_By = {
   componentId?: InputMaybe<Order_By>;
@@ -14613,13 +10272,6 @@ export type SolutionDataObjectMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_data_object */
-export type SolutionDataObjectMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_data_object" */
@@ -14650,22 +10302,6 @@ export enum SolutionDataObjectMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_data_object" */
-export type SolutionDataObjectMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjectId?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionDataObjectMap" */
 export type SolutionDataObjectMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -14688,41 +10324,6 @@ export type SolutionDataObjectMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_data_object" */
-export enum SolutionDataObjectMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DataObjectId = 'dataObjectId',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionDataObjectMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionDataObjectMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionDataObjectMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_flow" */
@@ -14786,13 +10387,6 @@ export type SolutionFlowMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionFlowMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_flow" */
-export type SolutionFlowMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionFlowMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionFlowMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_flow". All fields are combined with a logical 'AND'. */
 export type SolutionFlowMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionFlowMap_Bool_Exp>>;
@@ -14812,30 +10406,6 @@ export type SolutionFlowMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_flow" */
-export enum SolutionFlowMap_Constraint {
-  /** unique or primary key constraint on columns "flow_id", "solution_id" */
-  MapSolutionFlowPkey = 'map_solution_flow_pkey'
-}
-
-/** input type for inserting data into table "map_solution_flow" */
-export type SolutionFlowMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  flow?: InputMaybe<FlowGeneric_Obj_Rel_Insert_Input>;
-  flowId?: InputMaybe<Scalars['uuid']['input']>;
-  label?: InputMaybe<Scalars['String']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -14904,22 +10474,6 @@ export type SolutionFlowMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_flow" */
-export type SolutionFlowMap_Mutation_Response = {
-  __typename?: 'SolutionFlowMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionFlowMap>;
-};
-
-/** on_conflict condition type for table "map_solution_flow" */
-export type SolutionFlowMap_On_Conflict = {
-  constraint: SolutionFlowMap_Constraint;
-  update_columns?: Array<SolutionFlowMap_Update_Column>;
-  where?: InputMaybe<SolutionFlowMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_flow". */
 export type SolutionFlowMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -14936,12 +10490,6 @@ export type SolutionFlowMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_flow */
-export type SolutionFlowMap_Pk_Columns_Input = {
-  flowId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_flow" */
@@ -14972,22 +10520,6 @@ export enum SolutionFlowMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_flow" */
-export type SolutionFlowMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  flowId?: InputMaybe<Scalars['uuid']['input']>;
-  label?: InputMaybe<Scalars['String']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionFlowMap" */
 export type SolutionFlowMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -15010,41 +10542,6 @@ export type SolutionFlowMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_flow" */
-export enum SolutionFlowMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  FlowId = 'flowId',
-  /** column name */
-  Label = 'label',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionFlowMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionFlowMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionFlowMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_motivation_component" */
@@ -15104,13 +10601,6 @@ export type SolutionMotivationComponentMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionMotivationComponentMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_motivation_component" */
-export type SolutionMotivationComponentMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionMotivationComponentMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionMotivationComponentMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_motivation_component". All fields are combined with a logical 'AND'. */
 export type SolutionMotivationComponentMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionMotivationComponentMap_Bool_Exp>>;
@@ -15128,28 +10618,6 @@ export type SolutionMotivationComponentMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_motivation_component" */
-export enum SolutionMotivationComponentMap_Constraint {
-  /** unique or primary key constraint on columns "motivation_id", "component_id", "solution_id" */
-  MapSolutionMotivationComponentPkey = 'map_solution_motivation_component_pkey'
-}
-
-/** input type for inserting data into table "map_solution_motivation_component" */
-export type SolutionMotivationComponentMap_Insert_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -15218,22 +10686,6 @@ export type SolutionMotivationComponentMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_motivation_component" */
-export type SolutionMotivationComponentMap_Mutation_Response = {
-  __typename?: 'SolutionMotivationComponentMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionMotivationComponentMap>;
-};
-
-/** on_conflict condition type for table "map_solution_motivation_component" */
-export type SolutionMotivationComponentMap_On_Conflict = {
-  constraint: SolutionMotivationComponentMap_Constraint;
-  update_columns?: Array<SolutionMotivationComponentMap_Update_Column>;
-  where?: InputMaybe<SolutionMotivationComponentMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_motivation_component". */
 export type SolutionMotivationComponentMap_Order_By = {
   componentId?: InputMaybe<Order_By>;
@@ -15248,13 +10700,6 @@ export type SolutionMotivationComponentMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_motivation_component */
-export type SolutionMotivationComponentMap_Pk_Columns_Input = {
-  componentId: Scalars['uuid']['input'];
-  motivationId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_motivation_component" */
@@ -15285,22 +10730,6 @@ export enum SolutionMotivationComponentMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_motivation_component" */
-export type SolutionMotivationComponentMap_Set_Input = {
-  componentId?: InputMaybe<Scalars['uuid']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionMotivationComponentMap" */
 export type SolutionMotivationComponentMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -15323,41 +10752,6 @@ export type SolutionMotivationComponentMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_motivation_component" */
-export enum SolutionMotivationComponentMap_Update_Column {
-  /** column name */
-  ComponentId = 'componentId',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  MotivationId = 'motivationId',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionMotivationComponentMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionMotivationComponentMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionMotivationComponentMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_motivation" */
@@ -15442,13 +10836,6 @@ export type SolutionMotivationElementMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionMotivationElementMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_motivation" */
-export type SolutionMotivationElementMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionMotivationElementMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionMotivationElementMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_motivation". All fields are combined with a logical 'AND'. */
 export type SolutionMotivationElementMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionMotivationElementMap_Bool_Exp>>;
@@ -15467,30 +10854,6 @@ export type SolutionMotivationElementMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_motivation" */
-export enum SolutionMotivationElementMap_Constraint {
-  /** unique or primary key constraint on columns "motivation_id", "solution_id" */
-  MapSolutionMotivationMotivationIdSolutionIdUnique = 'map_solution_motivation_motivation_id_solution_id_unique',
-  /** unique or primary key constraint on columns "motivation_id", "solution_id" */
-  MapSolutionMotivationPkey = 'map_solution_motivation_pkey'
-}
-
-/** input type for inserting data into table "map_solution_motivation" */
-export type SolutionMotivationElementMap_Insert_Input = {
-  componentsInSolution?: InputMaybe<SolutionMotivationComponentMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivation?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -15547,22 +10910,6 @@ export type SolutionMotivationElementMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_motivation" */
-export type SolutionMotivationElementMap_Mutation_Response = {
-  __typename?: 'SolutionMotivationElementMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionMotivationElementMap>;
-};
-
-/** on_conflict condition type for table "map_solution_motivation" */
-export type SolutionMotivationElementMap_On_Conflict = {
-  constraint: SolutionMotivationElementMap_Constraint;
-  update_columns?: Array<SolutionMotivationElementMap_Update_Column>;
-  where?: InputMaybe<SolutionMotivationElementMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_motivation". */
 export type SolutionMotivationElementMap_Order_By = {
   componentsInSolution_aggregate?: InputMaybe<SolutionMotivationComponentMap_Aggregate_Order_By>;
@@ -15577,12 +10924,6 @@ export type SolutionMotivationElementMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_motivation */
-export type SolutionMotivationElementMap_Pk_Columns_Input = {
-  motivationId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_motivation" */
@@ -15607,19 +10948,6 @@ export enum SolutionMotivationElementMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_motivation" */
-export type SolutionMotivationElementMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionMotivationElementMap" */
 export type SolutionMotivationElementMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -15639,35 +10967,6 @@ export type SolutionMotivationElementMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_motivation" */
-export enum SolutionMotivationElementMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  MotivationId = 'motivationId',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionMotivationElementMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionMotivationElementMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionMotivationElementMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_stakeholder" */
@@ -15731,13 +11030,6 @@ export type SolutionStakeholderMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionStakeholderMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_stakeholder" */
-export type SolutionStakeholderMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionStakeholderMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionStakeholderMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_stakeholder". All fields are combined with a logical 'AND'. */
 export type SolutionStakeholderMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionStakeholderMap_Bool_Exp>>;
@@ -15757,32 +11049,6 @@ export type SolutionStakeholderMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_stakeholder" */
-export enum SolutionStakeholderMap_Constraint {
-  /** unique or primary key constraint on columns "stakeholder_id", "solution_id" */
-  MapSolutionStakeholderPkey = 'map_solution_stakeholder_pkey',
-  /** unique or primary key constraint on columns "stakeholder_id", "solution_id" */
-  MapSolutionStakeholderStakeholderIdSolutionIdUnique = 'map_solution_stakeholder_stakeholder_id_solution_id_unique'
-}
-
-/** input type for inserting data into table "map_solution_stakeholder" */
-export type SolutionStakeholderMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['stakeholder_role_enum']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  stakeholder?: InputMaybe<Stakeholder_Obj_Rel_Insert_Input>;
-  stakeholderId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -15851,22 +11117,6 @@ export type SolutionStakeholderMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_stakeholder" */
-export type SolutionStakeholderMap_Mutation_Response = {
-  __typename?: 'SolutionStakeholderMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionStakeholderMap>;
-};
-
-/** on_conflict condition type for table "map_solution_stakeholder" */
-export type SolutionStakeholderMap_On_Conflict = {
-  constraint: SolutionStakeholderMap_Constraint;
-  update_columns?: Array<SolutionStakeholderMap_Update_Column>;
-  where?: InputMaybe<SolutionStakeholderMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_stakeholder". */
 export type SolutionStakeholderMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -15883,12 +11133,6 @@ export type SolutionStakeholderMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_stakeholder */
-export type SolutionStakeholderMap_Pk_Columns_Input = {
-  solutionId: Scalars['uuid']['input'];
-  stakeholderId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_stakeholder" */
@@ -15919,22 +11163,6 @@ export enum SolutionStakeholderMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_stakeholder" */
-export type SolutionStakeholderMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['stakeholder_role_enum']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  stakeholderId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionStakeholderMap" */
 export type SolutionStakeholderMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -15957,41 +11185,6 @@ export type SolutionStakeholderMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_stakeholder" */
-export enum SolutionStakeholderMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Role = 'role',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  StakeholderId = 'stakeholderId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionStakeholderMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionStakeholderMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionStakeholderMap_Bool_Exp;
 };
 
 /** columns and relationships of "map_solution_technology_node" */
@@ -16054,13 +11247,6 @@ export type SolutionTechnologyNodeMap_Aggregate_Order_By = {
   min?: InputMaybe<SolutionTechnologyNodeMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_solution_technology_node" */
-export type SolutionTechnologyNodeMap_Arr_Rel_Insert_Input = {
-  data: Array<SolutionTechnologyNodeMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SolutionTechnologyNodeMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_solution_technology_node". All fields are combined with a logical 'AND'. */
 export type SolutionTechnologyNodeMap_Bool_Exp = {
   _and?: InputMaybe<Array<SolutionTechnologyNodeMap_Bool_Exp>>;
@@ -16079,31 +11265,6 @@ export type SolutionTechnologyNodeMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_solution_technology_node" */
-export enum SolutionTechnologyNodeMap_Constraint {
-  /** unique or primary key constraint on columns "node_id", "solution_id" */
-  MapSolutionTechnologyNodeNodeIdSolutionIdUnique = 'map_solution_technology_node_node_id_solution_id_unique',
-  /** unique or primary key constraint on columns "node_id", "solution_id" */
-  MapSolutionTechnologyNodePkey = 'map_solution_technology_node_pkey'
-}
-
-/** input type for inserting data into table "map_solution_technology_node" */
-export type SolutionTechnologyNodeMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  node?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -16168,22 +11329,6 @@ export type SolutionTechnologyNodeMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_solution_technology_node" */
-export type SolutionTechnologyNodeMap_Mutation_Response = {
-  __typename?: 'SolutionTechnologyNodeMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SolutionTechnologyNodeMap>;
-};
-
-/** on_conflict condition type for table "map_solution_technology_node" */
-export type SolutionTechnologyNodeMap_On_Conflict = {
-  constraint: SolutionTechnologyNodeMap_Constraint;
-  update_columns?: Array<SolutionTechnologyNodeMap_Update_Column>;
-  where?: InputMaybe<SolutionTechnologyNodeMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_solution_technology_node". */
 export type SolutionTechnologyNodeMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -16199,12 +11344,6 @@ export type SolutionTechnologyNodeMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_solution_technology_node */
-export type SolutionTechnologyNodeMap_Pk_Columns_Input = {
-  nodeId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_solution_technology_node" */
@@ -16233,21 +11372,6 @@ export enum SolutionTechnologyNodeMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_solution_technology_node" */
-export type SolutionTechnologyNodeMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  state?: InputMaybe<Scalars['solution_item_impact_type_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "SolutionTechnologyNodeMap" */
 export type SolutionTechnologyNodeMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -16269,39 +11393,6 @@ export type SolutionTechnologyNodeMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_solution_technology_node" */
-export enum SolutionTechnologyNodeMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  NodeId = 'nodeId',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  State = 'state',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type SolutionTechnologyNodeMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SolutionTechnologyNodeMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SolutionTechnologyNodeMap_Bool_Exp;
 };
 
 /** aggregated selection of "solutions" */
@@ -16370,46 +11461,6 @@ export type Solution_Bool_Exp = {
   views_aggregate?: InputMaybe<View_Aggregate_Bool_Exp>;
 };
 
-/** unique or primary key constraints on table "solutions" */
-export enum Solution_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  SolutionsCodeUnique = 'solutions_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  SolutionsPkey = 'solutions_pkey'
-}
-
-/** input type for inserting data into table "solutions" */
-export type Solution_Insert_Input = {
-  acceptedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  acceptedBy?: InputMaybe<Scalars['uuid']['input']>;
-  alternatives?: InputMaybe<Scalars['String']['input']>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<SolutionApplicationComponentMap_Arr_Rel_Insert_Input>;
-  consequences?: InputMaybe<Scalars['String']['input']>;
-  context?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  dataObjectsInComponent?: InputMaybe<SolutionDataObjectMap_Arr_Rel_Insert_Input>;
-  decision?: InputMaybe<Scalars['String']['input']>;
-  decisionStatus?: InputMaybe<Scalars['solution_life_cycle_enum']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  flows?: InputMaybe<SolutionFlowMap_Arr_Rel_Insert_Input>;
-  functions?: InputMaybe<SolutionApplicationFunctionMap_Arr_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  implementationStatus?: InputMaybe<Scalars['solution_implementation_status_enum']['input']>;
-  motivations?: InputMaybe<SolutionMotivationElementMap_Arr_Rel_Insert_Input>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  nodes?: InputMaybe<SolutionTechnologyNodeMap_Arr_Rel_Insert_Input>;
-  stakeholders?: InputMaybe<SolutionStakeholderMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  variants?: InputMaybe<Variant_Arr_Rel_Insert_Input>;
-  views?: InputMaybe<View_Arr_Rel_Insert_Input>;
-};
-
 /** aggregate max on columns */
 export type Solution_Max_Fields = {
   __typename?: 'Solution_max_fields';
@@ -16458,29 +11509,6 @@ export type Solution_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "solutions" */
-export type Solution_Mutation_Response = {
-  __typename?: 'Solution_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Solution>;
-};
-
-/** input type for inserting object relation for remote table "solutions" */
-export type Solution_Obj_Rel_Insert_Input = {
-  data: Solution_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Solution_On_Conflict>;
-};
-
-/** on_conflict condition type for table "solutions" */
-export type Solution_On_Conflict = {
-  constraint: Solution_Constraint;
-  update_columns?: Array<Solution_Update_Column>;
-  where?: InputMaybe<Solution_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "solutions". */
 export type Solution_Order_By = {
   acceptedAt?: InputMaybe<Order_By>;
@@ -16511,11 +11539,6 @@ export type Solution_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
   variants_aggregate?: InputMaybe<Variant_Aggregate_Order_By>;
   views_aggregate?: InputMaybe<View_Aggregate_Order_By>;
-};
-
-/** primary key columns input for table: solutions */
-export type Solution_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "solutions" */
@@ -16560,29 +11583,6 @@ export enum Solution_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "solutions" */
-export type Solution_Set_Input = {
-  acceptedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  acceptedBy?: InputMaybe<Scalars['uuid']['input']>;
-  alternatives?: InputMaybe<Scalars['String']['input']>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  consequences?: InputMaybe<Scalars['String']['input']>;
-  context?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  decision?: InputMaybe<Scalars['String']['input']>;
-  decisionStatus?: InputMaybe<Scalars['solution_life_cycle_enum']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  implementationStatus?: InputMaybe<Scalars['solution_implementation_status_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Solution" */
 export type Solution_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -16612,55 +11612,6 @@ export type Solution_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "solutions" */
-export enum Solution_Update_Column {
-  /** column name */
-  AcceptedAt = 'acceptedAt',
-  /** column name */
-  AcceptedBy = 'acceptedBy',
-  /** column name */
-  Alternatives = 'alternatives',
-  /** column name */
-  Code = 'code',
-  /** column name */
-  Consequences = 'consequences',
-  /** column name */
-  Context = 'context',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  Decision = 'decision',
-  /** column name */
-  DecisionStatus = 'decisionStatus',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  ImplementationStatus = 'implementationStatus',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Solution_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Solution_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Solution_Bool_Exp;
 };
 
 /** columns and relationships of "stakeholders" */
@@ -16771,31 +11722,6 @@ export type Stakeholder_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "stakeholders" */
-export enum Stakeholder_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  StakeholdersCodeUnique = 'stakeholders_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  StakeholdersPkey = 'stakeholders_pkey'
-}
-
-/** input type for inserting data into table "stakeholders" */
-export type Stakeholder_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentStakeholderMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  solutions?: InputMaybe<SolutionStakeholderMap_Arr_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Stakeholder_Max_Fields = {
   __typename?: 'Stakeholder_max_fields';
@@ -16828,29 +11754,6 @@ export type Stakeholder_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "stakeholders" */
-export type Stakeholder_Mutation_Response = {
-  __typename?: 'Stakeholder_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Stakeholder>;
-};
-
-/** input type for inserting object relation for remote table "stakeholders" */
-export type Stakeholder_Obj_Rel_Insert_Input = {
-  data: Stakeholder_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Stakeholder_On_Conflict>;
-};
-
-/** on_conflict condition type for table "stakeholders" */
-export type Stakeholder_On_Conflict = {
-  constraint: Stakeholder_Constraint;
-  update_columns?: Array<Stakeholder_Update_Column>;
-  where?: InputMaybe<Stakeholder_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "stakeholders". */
 export type Stakeholder_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -16866,11 +11769,6 @@ export type Stakeholder_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: stakeholders */
-export type Stakeholder_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "stakeholders" */
@@ -16899,21 +11797,6 @@ export enum Stakeholder_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "stakeholders" */
-export type Stakeholder_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Stakeholder" */
 export type Stakeholder_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -16935,39 +11818,6 @@ export type Stakeholder_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "stakeholders" */
-export enum Stakeholder_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Stakeholder_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Stakeholder_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Stakeholder_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -17127,38 +11977,6 @@ export type SystemSoftware_Bool_Exp = {
   version?: InputMaybe<String_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "system_software" */
-export enum SystemSoftware_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  SystemSoftwareCodeUnique = 'system_software_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  SystemSoftwarePkey = 'system_software_pkey'
-}
-
-/** input type for inserting data into table "system_software" */
-export type SystemSoftware_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentSystemSoftwareMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  licenseType?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  licenseTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  nodes?: InputMaybe<TechnologyNodeSystemSoftwareMap_Arr_Rel_Insert_Input>;
-  radarArea?: InputMaybe<Scalars['technology_radar_zone']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  type?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  typeId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  version?: InputMaybe<Scalars['String']['input']>;
-};
-
 /** aggregate max on columns */
 export type SystemSoftware_Max_Fields = {
   __typename?: 'SystemSoftware_max_fields';
@@ -17201,29 +12019,6 @@ export type SystemSoftware_Min_Fields = {
   version?: Maybe<Scalars['String']['output']>;
 };
 
-/** response of any mutation on the table "system_software" */
-export type SystemSoftware_Mutation_Response = {
-  __typename?: 'SystemSoftware_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<SystemSoftware>;
-};
-
-/** input type for inserting object relation for remote table "system_software" */
-export type SystemSoftware_Obj_Rel_Insert_Input = {
-  data: SystemSoftware_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<SystemSoftware_On_Conflict>;
-};
-
-/** on_conflict condition type for table "system_software" */
-export type SystemSoftware_On_Conflict = {
-  constraint: SystemSoftware_Constraint;
-  update_columns?: Array<SystemSoftware_Update_Column>;
-  where?: InputMaybe<SystemSoftware_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "system_software". */
 export type SystemSoftware_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -17246,11 +12041,6 @@ export type SystemSoftware_Order_By = {
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
   version?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: system_software */
-export type SystemSoftware_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "system_software" */
@@ -17289,26 +12079,6 @@ export enum SystemSoftware_Select_Column {
   Version = 'version'
 }
 
-/** input type for updating data in table "system_software" */
-export type SystemSoftware_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  licenseTypeId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  radarArea?: InputMaybe<Scalars['technology_radar_zone']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  typeId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  version?: InputMaybe<Scalars['String']['input']>;
-};
-
 /** Streaming cursor of the table "SystemSoftware" */
 export type SystemSoftware_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -17337,49 +12107,6 @@ export type SystemSoftware_Stream_Cursor_Value_Input = {
   version?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** update columns of table "system_software" */
-export enum SystemSoftware_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  LicenseTypeId = 'licenseTypeId',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RadarArea = 'radarArea',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  TypeId = 'typeId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  Version = 'version'
-}
-
-export type SystemSoftware_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<SystemSoftware_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: SystemSoftware_Bool_Exp;
-};
-
 /** columns and relationships of "technology_networks" */
 export type TechnologyNetwork = {
   __typename?: 'TechnologyNetwork';
@@ -17401,7 +12128,7 @@ export type TechnologyNetwork = {
   id: Scalars['uuid']['output'];
   level: Scalars['network_abstraction_level_enum']['output'];
   /** An object relationship */
-  location?: Maybe<PhysicalLocation>;
+  location?: Maybe<Location>;
   locationId?: Maybe<Scalars['uuid']['output']>;
   name: Scalars['String']['output'];
   /** An array relationship */
@@ -17573,13 +12300,6 @@ export type TechnologyNetworkHierarchyMap_Aggregate_Order_By = {
   variance?: InputMaybe<TechnologyNetworkHierarchyMap_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<TechnologyNetworkHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNetworkHierarchyMap_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type TechnologyNetworkHierarchyMap_Avg_Fields = {
   __typename?: 'TechnologyNetworkHierarchyMap_avg_fields';
@@ -17608,35 +12328,6 @@ export type TechnologyNetworkHierarchyMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_technology_network_hierarchy" */
-export enum TechnologyNetworkHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "network_child_id", "network_parent_id" */
-  MapTechnologyNetworkHierarchyNetworkParentI_7f01cUnique = 'map_technology_network_hierarchy_network_parent_i_7f01c_unique',
-  /** unique or primary key constraint on columns "network_child_id", "network_parent_id" */
-  MapTechnologyNetworkHierarchyPkey = 'map_technology_network_hierarchy_pkey'
-}
-
-/** input type for incrementing numeric columns in table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_Inc_Input = {
-  order?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** input type for inserting data into table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_Insert_Input = {
-  child?: InputMaybe<TechnologyNetwork_Obj_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  networkChildId?: InputMaybe<Scalars['uuid']['input']>;
-  networkParentId?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  parent?: InputMaybe<TechnologyNetwork_Obj_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -17697,22 +12388,6 @@ export type TechnologyNetworkHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_Mutation_Response = {
-  __typename?: 'TechnologyNetworkHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<TechnologyNetworkHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_On_Conflict = {
-  constraint: TechnologyNetworkHierarchyMap_Constraint;
-  update_columns?: Array<TechnologyNetworkHierarchyMap_Update_Column>;
-  where?: InputMaybe<TechnologyNetworkHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_technology_network_hierarchy". */
 export type TechnologyNetworkHierarchyMap_Order_By = {
   child?: InputMaybe<TechnologyNetwork_Order_By>;
@@ -17727,12 +12402,6 @@ export type TechnologyNetworkHierarchyMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_technology_network_hierarchy */
-export type TechnologyNetworkHierarchyMap_Pk_Columns_Input = {
-  networkChildId: Scalars['uuid']['input'];
-  networkParentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_technology_network_hierarchy" */
@@ -17758,20 +12427,6 @@ export enum TechnologyNetworkHierarchyMap_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "map_technology_network_hierarchy" */
-export type TechnologyNetworkHierarchyMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  networkChildId?: InputMaybe<Scalars['uuid']['input']>;
-  networkParentId?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type TechnologyNetworkHierarchyMap_Stddev_Fields = {
@@ -17837,39 +12492,6 @@ export type TechnologyNetworkHierarchyMap_Sum_Fields = {
 /** order by sum() on columns of table "map_technology_network_hierarchy" */
 export type TechnologyNetworkHierarchyMap_Sum_Order_By = {
   order?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "map_technology_network_hierarchy" */
-export enum TechnologyNetworkHierarchyMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  NetworkChildId = 'networkChildId',
-  /** column name */
-  NetworkParentId = 'networkParentId',
-  /** column name */
-  Order = 'order',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type TechnologyNetworkHierarchyMap_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<TechnologyNetworkHierarchyMap_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<TechnologyNetworkHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: TechnologyNetworkHierarchyMap_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
@@ -17945,13 +12567,6 @@ export type TechnologyNetwork_Aggregate_Order_By = {
   min?: InputMaybe<TechnologyNetwork_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "technology_networks" */
-export type TechnologyNetwork_Arr_Rel_Insert_Input = {
-  data: Array<TechnologyNetwork_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNetwork_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "technology_networks". All fields are combined with a logical 'AND'. */
 export type TechnologyNetwork_Bool_Exp = {
   _and?: InputMaybe<Array<TechnologyNetwork_Bool_Exp>>;
@@ -17970,7 +12585,7 @@ export type TechnologyNetwork_Bool_Exp = {
   environment?: InputMaybe<Environment_Enum_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   level?: InputMaybe<Network_Abstraction_Level_Enum_Comparison_Exp>;
-  location?: InputMaybe<PhysicalLocation_Bool_Exp>;
+  location?: InputMaybe<Location_Bool_Exp>;
   locationId?: InputMaybe<Uuid_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
   nodes?: InputMaybe<TechnologyNode_Bool_Exp>;
@@ -17981,38 +12596,6 @@ export type TechnologyNetwork_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "technology_networks" */
-export enum TechnologyNetwork_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  TechnologyNetworksCodeUnique = 'technology_networks_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  TechnologyNetworksPkey = 'technology_networks_pkey'
-}
-
-/** input type for inserting data into table "technology_networks" */
-export type TechnologyNetwork_Insert_Input = {
-  children?: InputMaybe<TechnologyNetworkHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Arr_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  level?: InputMaybe<Scalars['network_abstraction_level_enum']['input']>;
-  location?: InputMaybe<PhysicalLocation_Obj_Rel_Insert_Input>;
-  locationId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  nodes?: InputMaybe<TechnologyNode_Arr_Rel_Insert_Input>;
-  parents?: InputMaybe<TechnologyNetworkHierarchyMap_Arr_Rel_Insert_Input>;
-  scope?: InputMaybe<Scalars['network_scope_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -18093,29 +12676,6 @@ export type TechnologyNetwork_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "technology_networks" */
-export type TechnologyNetwork_Mutation_Response = {
-  __typename?: 'TechnologyNetwork_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<TechnologyNetwork>;
-};
-
-/** input type for inserting object relation for remote table "technology_networks" */
-export type TechnologyNetwork_Obj_Rel_Insert_Input = {
-  data: TechnologyNetwork_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNetwork_On_Conflict>;
-};
-
-/** on_conflict condition type for table "technology_networks" */
-export type TechnologyNetwork_On_Conflict = {
-  constraint: TechnologyNetwork_Constraint;
-  update_columns?: Array<TechnologyNetwork_Update_Column>;
-  where?: InputMaybe<TechnologyNetwork_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "technology_networks". */
 export type TechnologyNetwork_Order_By = {
   children_aggregate?: InputMaybe<TechnologyNetworkHierarchyMap_Aggregate_Order_By>;
@@ -18129,7 +12689,7 @@ export type TechnologyNetwork_Order_By = {
   environment?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   level?: InputMaybe<Order_By>;
-  location?: InputMaybe<PhysicalLocation_Order_By>;
+  location?: InputMaybe<Location_Order_By>;
   locationId?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
   nodes_aggregate?: InputMaybe<TechnologyNode_Aggregate_Order_By>;
@@ -18138,11 +12698,6 @@ export type TechnologyNetwork_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: technology_networks */
-export type TechnologyNetwork_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "technology_networks" */
@@ -18179,25 +12734,6 @@ export enum TechnologyNetwork_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "technology_networks" */
-export type TechnologyNetwork_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  level?: InputMaybe<Scalars['network_abstraction_level_enum']['input']>;
-  locationId?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  scope?: InputMaybe<Scalars['network_scope_enum']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "TechnologyNetwork" */
 export type TechnologyNetwork_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -18223,47 +12759,6 @@ export type TechnologyNetwork_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "technology_networks" */
-export enum TechnologyNetwork_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Environment = 'environment',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Level = 'level',
-  /** column name */
-  LocationId = 'locationId',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Scope = 'scope',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type TechnologyNetwork_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<TechnologyNetwork_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: TechnologyNetwork_Bool_Exp;
 };
 
 /** columns and relationships of "technology_nodes" */
@@ -18310,6 +12805,7 @@ export type TechnologyNode = {
   systemSoftware: Array<TechnologyNodeSystemSoftwareMap>;
   /** An aggregate relationship */
   systemSoftware_aggregate: TechnologyNodeSystemSoftwareMap_Aggregate;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
   totalCpuCores?: Maybe<Scalars['Int']['output']>;
   totalRamGb?: Maybe<Scalars['Int']['output']>;
   totalStorageGb?: Maybe<Scalars['Int']['output']>;
@@ -18495,13 +12991,6 @@ export type TechnologyNodeHierarchyMap_Aggregate_Order_By = {
   variance?: InputMaybe<TechnologyNodeHierarchyMap_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_Arr_Rel_Insert_Input = {
-  data: Array<TechnologyNodeHierarchyMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNodeHierarchyMap_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type TechnologyNodeHierarchyMap_Avg_Fields = {
   __typename?: 'TechnologyNodeHierarchyMap_avg_fields';
@@ -18530,35 +13019,6 @@ export type TechnologyNodeHierarchyMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_technology_node_hierarchy" */
-export enum TechnologyNodeHierarchyMap_Constraint {
-  /** unique or primary key constraint on columns "node_parent_id", "node_child_id" */
-  MapTechnologyNodeHierarchyNodeParentIdNodeAea06Unique = 'map_technology_node_hierarchy_node_parent_id_node_aea06_unique',
-  /** unique or primary key constraint on columns "node_parent_id", "node_child_id" */
-  MapTechnologyNodeHierarchyPkey = 'map_technology_node_hierarchy_pkey'
-}
-
-/** input type for incrementing numeric columns in table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_Inc_Input = {
-  order?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** input type for inserting data into table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_Insert_Input = {
-  child?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  nodeChildId?: InputMaybe<Scalars['uuid']['input']>;
-  nodeParentId?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  parent?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -18619,22 +13079,6 @@ export type TechnologyNodeHierarchyMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_Mutation_Response = {
-  __typename?: 'TechnologyNodeHierarchyMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<TechnologyNodeHierarchyMap>;
-};
-
-/** on_conflict condition type for table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_On_Conflict = {
-  constraint: TechnologyNodeHierarchyMap_Constraint;
-  update_columns?: Array<TechnologyNodeHierarchyMap_Update_Column>;
-  where?: InputMaybe<TechnologyNodeHierarchyMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_technology_node_hierarchy". */
 export type TechnologyNodeHierarchyMap_Order_By = {
   child?: InputMaybe<TechnologyNode_Order_By>;
@@ -18649,12 +13093,6 @@ export type TechnologyNodeHierarchyMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_technology_node_hierarchy */
-export type TechnologyNodeHierarchyMap_Pk_Columns_Input = {
-  nodeChildId: Scalars['uuid']['input'];
-  nodeParentId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_technology_node_hierarchy" */
@@ -18680,20 +13118,6 @@ export enum TechnologyNodeHierarchyMap_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "map_technology_node_hierarchy" */
-export type TechnologyNodeHierarchyMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  nodeChildId?: InputMaybe<Scalars['uuid']['input']>;
-  nodeParentId?: InputMaybe<Scalars['uuid']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type TechnologyNodeHierarchyMap_Stddev_Fields = {
@@ -18759,39 +13183,6 @@ export type TechnologyNodeHierarchyMap_Sum_Fields = {
 /** order by sum() on columns of table "map_technology_node_hierarchy" */
 export type TechnologyNodeHierarchyMap_Sum_Order_By = {
   order?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "map_technology_node_hierarchy" */
-export enum TechnologyNodeHierarchyMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  NodeChildId = 'nodeChildId',
-  /** column name */
-  NodeParentId = 'nodeParentId',
-  /** column name */
-  Order = 'order',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type TechnologyNodeHierarchyMap_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<TechnologyNodeHierarchyMap_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<TechnologyNodeHierarchyMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: TechnologyNodeHierarchyMap_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
@@ -18886,13 +13277,6 @@ export type TechnologyNodeSystemSoftwareMap_Aggregate_Order_By = {
   min?: InputMaybe<TechnologyNodeSystemSoftwareMap_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "map_technology_node_system_software" */
-export type TechnologyNodeSystemSoftwareMap_Arr_Rel_Insert_Input = {
-  data: Array<TechnologyNodeSystemSoftwareMap_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNodeSystemSoftwareMap_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "map_technology_node_system_software". All fields are combined with a logical 'AND'. */
 export type TechnologyNodeSystemSoftwareMap_Bool_Exp = {
   _and?: InputMaybe<Array<TechnologyNodeSystemSoftwareMap_Bool_Exp>>;
@@ -18910,30 +13294,6 @@ export type TechnologyNodeSystemSoftwareMap_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "map_technology_node_system_software" */
-export enum TechnologyNodeSystemSoftwareMap_Constraint {
-  /** unique or primary key constraint on columns "node_id", "system_software_id" */
-  MapTechnologyNodeSystemSoftwareNodeIdSyste_37a00Unique = 'map_technology_node_system_software_node_id_syste_37a00_unique',
-  /** unique or primary key constraint on columns "node_id", "system_software_id" */
-  MapTechnologyNodeSystemSoftwarePkey = 'map_technology_node_system_software_pkey'
-}
-
-/** input type for inserting data into table "map_technology_node_system_software" */
-export type TechnologyNodeSystemSoftwareMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  node?: InputMaybe<TechnologyNode_Obj_Rel_Insert_Input>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  systemSoftware?: InputMaybe<SystemSoftware_Obj_Rel_Insert_Input>;
-  systemSoftwareId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -18994,22 +13354,6 @@ export type TechnologyNodeSystemSoftwareMap_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "map_technology_node_system_software" */
-export type TechnologyNodeSystemSoftwareMap_Mutation_Response = {
-  __typename?: 'TechnologyNodeSystemSoftwareMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<TechnologyNodeSystemSoftwareMap>;
-};
-
-/** on_conflict condition type for table "map_technology_node_system_software" */
-export type TechnologyNodeSystemSoftwareMap_On_Conflict = {
-  constraint: TechnologyNodeSystemSoftwareMap_Constraint;
-  update_columns?: Array<TechnologyNodeSystemSoftwareMap_Update_Column>;
-  where?: InputMaybe<TechnologyNodeSystemSoftwareMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_technology_node_system_software". */
 export type TechnologyNodeSystemSoftwareMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -19024,12 +13368,6 @@ export type TechnologyNodeSystemSoftwareMap_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_technology_node_system_software */
-export type TechnologyNodeSystemSoftwareMap_Pk_Columns_Input = {
-  nodeId: Scalars['uuid']['input'];
-  systemSoftwareId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_technology_node_system_software" */
@@ -19056,20 +13394,6 @@ export enum TechnologyNodeSystemSoftwareMap_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "map_technology_node_system_software" */
-export type TechnologyNodeSystemSoftwareMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['system_software_kind_enum']['input']>;
-  nodeId?: InputMaybe<Scalars['uuid']['input']>;
-  systemSoftwareId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "TechnologyNodeSystemSoftwareMap" */
 export type TechnologyNodeSystemSoftwareMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -19090,37 +13414,6 @@ export type TechnologyNodeSystemSoftwareMap_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_technology_node_system_software" */
-export enum TechnologyNodeSystemSoftwareMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  NodeId = 'nodeId',
-  /** column name */
-  SystemSoftwareId = 'systemSoftwareId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type TechnologyNodeSystemSoftwareMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<TechnologyNodeSystemSoftwareMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: TechnologyNodeSystemSoftwareMap_Bool_Exp;
 };
 
 /** aggregated selection of "technology_nodes" */
@@ -19177,13 +13470,6 @@ export type TechnologyNode_Aggregate_Order_By = {
   var_pop?: InputMaybe<TechnologyNode_Var_Pop_Order_By>;
   var_samp?: InputMaybe<TechnologyNode_Var_Samp_Order_By>;
   variance?: InputMaybe<TechnologyNode_Variance_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "technology_nodes" */
-export type TechnologyNode_Arr_Rel_Insert_Input = {
-  data: Array<TechnologyNode_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNode_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -19243,6 +13529,7 @@ export type TechnologyNode_Bool_Exp = {
   storageGb?: InputMaybe<Int_Comparison_Exp>;
   systemSoftware?: InputMaybe<TechnologyNodeSystemSoftwareMap_Bool_Exp>;
   systemSoftware_aggregate?: InputMaybe<TechnologyNodeSystemSoftwareMap_Aggregate_Bool_Exp>;
+  tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   totalCpuCores?: InputMaybe<Int_Comparison_Exp>;
   totalRamGb?: InputMaybe<Int_Comparison_Exp>;
   totalStorageGb?: InputMaybe<Int_Comparison_Exp>;
@@ -19250,60 +13537,6 @@ export type TechnologyNode_Bool_Exp = {
   typeId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "technology_nodes" */
-export enum TechnologyNode_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  TechnologyNodesCodeUnique = 'technology_nodes_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  TechnologyNodesPkey = 'technology_nodes_pkey'
-}
-
-/** input type for incrementing numeric columns in table "technology_nodes" */
-export type TechnologyNode_Inc_Input = {
-  cpuCores?: InputMaybe<Scalars['Int']['input']>;
-  nodeCount?: InputMaybe<Scalars['Int']['input']>;
-  ramGb?: InputMaybe<Scalars['Int']['input']>;
-  storageGb?: InputMaybe<Scalars['Int']['input']>;
-  totalCpuCores?: InputMaybe<Scalars['Int']['input']>;
-  totalRamGb?: InputMaybe<Scalars['Int']['input']>;
-  totalStorageGb?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** input type for inserting data into table "technology_nodes" */
-export type TechnologyNode_Insert_Input = {
-  architecture?: InputMaybe<Scalars['system_architecture_kind_enum']['input']>;
-  children?: InputMaybe<TechnologyNodeHierarchyMap_Arr_Rel_Insert_Input>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  components?: InputMaybe<ApplicationComponentTechnologyNodeMap_Arr_Rel_Insert_Input>;
-  cpuCores?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['node_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  network?: InputMaybe<TechnologyNetwork_Obj_Rel_Insert_Input>;
-  networkId?: InputMaybe<Scalars['uuid']['input']>;
-  nodeCount?: InputMaybe<Scalars['Int']['input']>;
-  operatingSystem?: InputMaybe<SystemSoftware_Obj_Rel_Insert_Input>;
-  operatingSystemId?: InputMaybe<Scalars['uuid']['input']>;
-  parents?: InputMaybe<TechnologyNodeHierarchyMap_Arr_Rel_Insert_Input>;
-  ramGb?: InputMaybe<Scalars['Int']['input']>;
-  solutions?: InputMaybe<SolutionTechnologyNodeMap_Arr_Rel_Insert_Input>;
-  storageGb?: InputMaybe<Scalars['Int']['input']>;
-  systemSoftware?: InputMaybe<TechnologyNodeSystemSoftwareMap_Arr_Rel_Insert_Input>;
-  totalCpuCores?: InputMaybe<Scalars['Int']['input']>;
-  totalRamGb?: InputMaybe<Scalars['Int']['input']>;
-  totalStorageGb?: InputMaybe<Scalars['Int']['input']>;
-  type?: InputMaybe<DirectoryObject_Obj_Rel_Insert_Input>;
-  typeId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -19326,6 +13559,7 @@ export type TechnologyNode_Max_Fields = {
   operatingSystemId?: Maybe<Scalars['uuid']['output']>;
   ramGb?: Maybe<Scalars['Int']['output']>;
   storageGb?: Maybe<Scalars['Int']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
   totalCpuCores?: Maybe<Scalars['Int']['output']>;
   totalRamGb?: Maybe<Scalars['Int']['output']>;
   totalStorageGb?: Maybe<Scalars['Int']['output']>;
@@ -19353,6 +13587,7 @@ export type TechnologyNode_Max_Order_By = {
   operatingSystemId?: InputMaybe<Order_By>;
   ramGb?: InputMaybe<Order_By>;
   storageGb?: InputMaybe<Order_By>;
+  tenantId?: InputMaybe<Order_By>;
   totalCpuCores?: InputMaybe<Order_By>;
   totalRamGb?: InputMaybe<Order_By>;
   totalStorageGb?: InputMaybe<Order_By>;
@@ -19381,6 +13616,7 @@ export type TechnologyNode_Min_Fields = {
   operatingSystemId?: Maybe<Scalars['uuid']['output']>;
   ramGb?: Maybe<Scalars['Int']['output']>;
   storageGb?: Maybe<Scalars['Int']['output']>;
+  tenantId?: Maybe<Scalars['uuid']['output']>;
   totalCpuCores?: Maybe<Scalars['Int']['output']>;
   totalRamGb?: Maybe<Scalars['Int']['output']>;
   totalStorageGb?: Maybe<Scalars['Int']['output']>;
@@ -19408,35 +13644,13 @@ export type TechnologyNode_Min_Order_By = {
   operatingSystemId?: InputMaybe<Order_By>;
   ramGb?: InputMaybe<Order_By>;
   storageGb?: InputMaybe<Order_By>;
+  tenantId?: InputMaybe<Order_By>;
   totalCpuCores?: InputMaybe<Order_By>;
   totalRamGb?: InputMaybe<Order_By>;
   totalStorageGb?: InputMaybe<Order_By>;
   typeId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** response of any mutation on the table "technology_nodes" */
-export type TechnologyNode_Mutation_Response = {
-  __typename?: 'TechnologyNode_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<TechnologyNode>;
-};
-
-/** input type for inserting object relation for remote table "technology_nodes" */
-export type TechnologyNode_Obj_Rel_Insert_Input = {
-  data: TechnologyNode_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<TechnologyNode_On_Conflict>;
-};
-
-/** on_conflict condition type for table "technology_nodes" */
-export type TechnologyNode_On_Conflict = {
-  constraint: TechnologyNode_Constraint;
-  update_columns?: Array<TechnologyNode_Update_Column>;
-  where?: InputMaybe<TechnologyNode_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "technology_nodes". */
@@ -19465,6 +13679,7 @@ export type TechnologyNode_Order_By = {
   solutions_aggregate?: InputMaybe<SolutionTechnologyNodeMap_Aggregate_Order_By>;
   storageGb?: InputMaybe<Order_By>;
   systemSoftware_aggregate?: InputMaybe<TechnologyNodeSystemSoftwareMap_Aggregate_Order_By>;
+  tenantId?: InputMaybe<Order_By>;
   totalCpuCores?: InputMaybe<Order_By>;
   totalRamGb?: InputMaybe<Order_By>;
   totalStorageGb?: InputMaybe<Order_By>;
@@ -19472,11 +13687,6 @@ export type TechnologyNode_Order_By = {
   typeId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: technology_nodes */
-export type TechnologyNode_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "technology_nodes" */
@@ -19516,6 +13726,8 @@ export enum TechnologyNode_Select_Column {
   /** column name */
   StorageGb = 'storageGb',
   /** column name */
+  TenantId = 'tenantId',
+  /** column name */
   TotalCpuCores = 'totalCpuCores',
   /** column name */
   TotalRamGb = 'totalRamGb',
@@ -19528,33 +13740,6 @@ export enum TechnologyNode_Select_Column {
   /** column name */
   UpdatedBy = 'updatedBy'
 }
-
-/** input type for updating data in table "technology_nodes" */
-export type TechnologyNode_Set_Input = {
-  architecture?: InputMaybe<Scalars['system_architecture_kind_enum']['input']>;
-  code?: InputMaybe<Scalars['String']['input']>;
-  cpuCores?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  environment?: InputMaybe<Scalars['environment_enum']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  kind?: InputMaybe<Scalars['node_kind_enum']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  networkId?: InputMaybe<Scalars['uuid']['input']>;
-  nodeCount?: InputMaybe<Scalars['Int']['input']>;
-  operatingSystemId?: InputMaybe<Scalars['uuid']['input']>;
-  ramGb?: InputMaybe<Scalars['Int']['input']>;
-  storageGb?: InputMaybe<Scalars['Int']['input']>;
-  totalCpuCores?: InputMaybe<Scalars['Int']['input']>;
-  totalRamGb?: InputMaybe<Scalars['Int']['input']>;
-  totalStorageGb?: InputMaybe<Scalars['Int']['input']>;
-  typeId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
 
 /** aggregate stddev on columns */
 export type TechnologyNode_Stddev_Fields = {
@@ -19652,6 +13837,7 @@ export type TechnologyNode_Stream_Cursor_Value_Input = {
   operatingSystemId?: InputMaybe<Scalars['uuid']['input']>;
   ramGb?: InputMaybe<Scalars['Int']['input']>;
   storageGb?: InputMaybe<Scalars['Int']['input']>;
+  tenantId?: InputMaybe<Scalars['uuid']['input']>;
   totalCpuCores?: InputMaybe<Scalars['Int']['input']>;
   totalRamGb?: InputMaybe<Scalars['Int']['input']>;
   totalStorageGb?: InputMaybe<Scalars['Int']['input']>;
@@ -19681,65 +13867,6 @@ export type TechnologyNode_Sum_Order_By = {
   totalCpuCores?: InputMaybe<Order_By>;
   totalRamGb?: InputMaybe<Order_By>;
   totalStorageGb?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "technology_nodes" */
-export enum TechnologyNode_Update_Column {
-  /** column name */
-  Architecture = 'architecture',
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CpuCores = 'cpuCores',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Environment = 'environment',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Kind = 'kind',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  NetworkId = 'networkId',
-  /** column name */
-  NodeCount = 'nodeCount',
-  /** column name */
-  OperatingSystemId = 'operatingSystemId',
-  /** column name */
-  RamGb = 'ramGb',
-  /** column name */
-  StorageGb = 'storageGb',
-  /** column name */
-  TotalCpuCores = 'totalCpuCores',
-  /** column name */
-  TotalRamGb = 'totalRamGb',
-  /** column name */
-  TotalStorageGb = 'totalStorageGb',
-  /** column name */
-  TypeId = 'typeId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type TechnologyNode_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<TechnologyNode_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<TechnologyNode_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: TechnologyNode_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
@@ -19870,30 +13997,6 @@ export type Tenant_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "tenants" */
-export enum Tenant_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  TenantsCodeUnique = 'tenants_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  TenantsPkey = 'tenants_pkey'
-}
-
-/** input type for inserting data into table "tenants" */
-export type Tenant_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  owner?: InputMaybe<UserProfile_Obj_Rel_Insert_Input>;
-  ownerId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Tenant_Max_Fields = {
   __typename?: 'Tenant_max_fields';
@@ -19926,29 +14029,6 @@ export type Tenant_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "tenants" */
-export type Tenant_Mutation_Response = {
-  __typename?: 'Tenant_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Tenant>;
-};
-
-/** input type for inserting object relation for remote table "tenants" */
-export type Tenant_Obj_Rel_Insert_Input = {
-  data: Tenant_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Tenant_On_Conflict>;
-};
-
-/** on_conflict condition type for table "tenants" */
-export type Tenant_On_Conflict = {
-  constraint: Tenant_Constraint;
-  update_columns?: Array<Tenant_Update_Column>;
-  where?: InputMaybe<Tenant_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "tenants". */
 export type Tenant_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -19963,11 +14043,6 @@ export type Tenant_Order_By = {
   ownerId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: tenants */
-export type Tenant_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "tenants" */
@@ -19996,21 +14071,6 @@ export enum Tenant_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "tenants" */
-export type Tenant_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  ownerId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Tenant" */
 export type Tenant_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -20032,39 +14092,6 @@ export type Tenant_Stream_Cursor_Value_Input = {
   ownerId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "tenants" */
-export enum Tenant_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  OwnerId = 'ownerId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Tenant_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Tenant_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Tenant_Bool_Exp;
 };
 
 /** columns and relationships of "user_profiles" */
@@ -20127,31 +14154,6 @@ export type UserProfile_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "user_profiles" */
-export enum UserProfile_Constraint {
-  /** unique or primary key constraint on columns "keycloak_id" */
-  UserProfilesKeycloakIdUnique = 'user_profiles_keycloak_id_unique',
-  /** unique or primary key constraint on columns "id" */
-  UserProfilesPkey = 'user_profiles_pkey'
-}
-
-/** input type for inserting data into table "user_profiles" */
-export type UserProfile_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  department?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  keycloakId?: InputMaybe<Scalars['String']['input']>;
-  middleName?: InputMaybe<Scalars['String']['input']>;
-  position?: InputMaybe<Scalars['String']['input']>;
-  state?: InputMaybe<Scalars['user_state']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type UserProfile_Max_Fields = {
   __typename?: 'UserProfile_max_fields';
@@ -20188,29 +14190,6 @@ export type UserProfile_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "user_profiles" */
-export type UserProfile_Mutation_Response = {
-  __typename?: 'UserProfile_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<UserProfile>;
-};
-
-/** input type for inserting object relation for remote table "user_profiles" */
-export type UserProfile_Obj_Rel_Insert_Input = {
-  data: UserProfile_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<UserProfile_On_Conflict>;
-};
-
-/** on_conflict condition type for table "user_profiles" */
-export type UserProfile_On_Conflict = {
-  constraint: UserProfile_Constraint;
-  update_columns?: Array<UserProfile_Update_Column>;
-  where?: InputMaybe<UserProfile_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "user_profiles". */
 export type UserProfile_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -20226,11 +14205,6 @@ export type UserProfile_Order_By = {
   state?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: user_profiles */
-export type UserProfile_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "user_profiles" */
@@ -20263,23 +14237,6 @@ export enum UserProfile_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "user_profiles" */
-export type UserProfile_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  department?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  keycloakId?: InputMaybe<Scalars['String']['input']>;
-  middleName?: InputMaybe<Scalars['String']['input']>;
-  position?: InputMaybe<Scalars['String']['input']>;
-  state?: InputMaybe<Scalars['user_state']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "UserProfile" */
 export type UserProfile_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -20303,43 +14260,6 @@ export type UserProfile_Stream_Cursor_Value_Input = {
   state?: InputMaybe<Scalars['user_state']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "user_profiles" */
-export enum UserProfile_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Department = 'department',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  KeycloakId = 'keycloakId',
-  /** column name */
-  MiddleName = 'middleName',
-  /** column name */
-  Position = 'position',
-  /** column name */
-  State = 'state',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type UserProfile_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<UserProfile_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: UserProfile_Bool_Exp;
 };
 
 /** columns and relationships of "variants" */
@@ -20419,29 +14339,6 @@ export type VariantMotivationElementMap_Bool_Exp = {
   variantId?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "map_variant_motivation" */
-export enum VariantMotivationElementMap_Constraint {
-  /** unique or primary key constraint on columns "motivation_id", "variant_id" */
-  MapVariantMotivationMotivationIdVariantIdUnique = 'map_variant_motivation_motivation_id_variant_id_unique',
-  /** unique or primary key constraint on columns "motivation_id", "variant_id" */
-  MapVariantMotivationPkey = 'map_variant_motivation_pkey'
-}
-
-/** input type for inserting data into table "map_variant_motivation" */
-export type VariantMotivationElementMap_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivation?: InputMaybe<MotivationElementGeneric_Obj_Rel_Insert_Input>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  variant?: InputMaybe<Variant_Obj_Rel_Insert_Input>;
-  variantId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type VariantMotivationElementMap_Max_Fields = {
   __typename?: 'VariantMotivationElementMap_max_fields';
@@ -20470,22 +14367,6 @@ export type VariantMotivationElementMap_Min_Fields = {
   variantId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "map_variant_motivation" */
-export type VariantMotivationElementMap_Mutation_Response = {
-  __typename?: 'VariantMotivationElementMap_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<VariantMotivationElementMap>;
-};
-
-/** on_conflict condition type for table "map_variant_motivation" */
-export type VariantMotivationElementMap_On_Conflict = {
-  constraint: VariantMotivationElementMap_Constraint;
-  update_columns?: Array<VariantMotivationElementMap_Update_Column>;
-  where?: InputMaybe<VariantMotivationElementMap_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_variant_motivation". */
 export type VariantMotivationElementMap_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -20499,12 +14380,6 @@ export type VariantMotivationElementMap_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
   variant?: InputMaybe<Variant_Order_By>;
   variantId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_variant_motivation */
-export type VariantMotivationElementMap_Pk_Columns_Input = {
-  motivationId: Scalars['uuid']['input'];
-  variantId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_variant_motivation" */
@@ -20529,19 +14404,6 @@ export enum VariantMotivationElementMap_Select_Column {
   VariantId = 'variantId'
 }
 
-/** input type for updating data in table "map_variant_motivation" */
-export type VariantMotivationElementMap_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  motivationId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  variantId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "VariantMotivationElementMap" */
 export type VariantMotivationElementMap_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -20561,35 +14423,6 @@ export type VariantMotivationElementMap_Stream_Cursor_Value_Input = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
   variantId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_variant_motivation" */
-export enum VariantMotivationElementMap_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  MotivationId = 'motivationId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  VariantId = 'variantId'
-}
-
-export type VariantMotivationElementMap_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<VariantMotivationElementMap_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: VariantMotivationElementMap_Bool_Exp;
 };
 
 /** aggregated selection of "variants" */
@@ -20632,13 +14465,6 @@ export type Variant_Aggregate_Order_By = {
   min?: InputMaybe<Variant_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "variants" */
-export type Variant_Arr_Rel_Insert_Input = {
-  data: Array<Variant_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Variant_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "variants". All fields are combined with a logical 'AND'. */
 export type Variant_Bool_Exp = {
   _and?: InputMaybe<Array<Variant_Bool_Exp>>;
@@ -20657,31 +14483,6 @@ export type Variant_Bool_Exp = {
   tenantId?: InputMaybe<Uuid_Comparison_Exp>;
   updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "variants" */
-export enum Variant_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  VariantsCodeUnique = 'variants_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  VariantsPkey = 'variants_pkey'
-}
-
-/** input type for inserting data into table "variants" */
-export type Variant_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -20750,29 +14551,6 @@ export type Variant_Min_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "variants" */
-export type Variant_Mutation_Response = {
-  __typename?: 'Variant_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Variant>;
-};
-
-/** input type for inserting object relation for remote table "variants" */
-export type Variant_Obj_Rel_Insert_Input = {
-  data: Variant_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Variant_On_Conflict>;
-};
-
-/** on_conflict condition type for table "variants" */
-export type Variant_On_Conflict = {
-  constraint: Variant_Constraint;
-  update_columns?: Array<Variant_Update_Column>;
-  where?: InputMaybe<Variant_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "variants". */
 export type Variant_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -20788,11 +14566,6 @@ export type Variant_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: variants */
-export type Variant_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "variants" */
@@ -20823,22 +14596,6 @@ export enum Variant_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "variants" */
-export type Variant_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Variant" */
 export type Variant_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -20861,41 +14618,6 @@ export type Variant_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "variants" */
-export enum Variant_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Variant_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Variant_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Variant_Bool_Exp;
 };
 
 /** columns and relationships of "views" */
@@ -20960,13 +14682,6 @@ export type View_Aggregate_Order_By = {
   min?: InputMaybe<View_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "views" */
-export type View_Arr_Rel_Insert_Input = {
-  data: Array<View_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<View_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "views". All fields are combined with a logical 'AND'. */
 export type View_Bool_Exp = {
   _and?: InputMaybe<Array<View_Bool_Exp>>;
@@ -20987,33 +14702,6 @@ export type View_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
   variant?: InputMaybe<Variant_Bool_Exp>;
   variantId?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "views" */
-export enum View_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  ViewsCodeUnique = 'views_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  ViewsPkey = 'views_pkey'
-}
-
-/** input type for inserting data into table "views" */
-export type View_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  solution?: InputMaybe<Solution_Obj_Rel_Insert_Input>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  variant?: InputMaybe<Variant_Obj_Rel_Insert_Input>;
-  variantId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
@@ -21086,22 +14774,6 @@ export type View_Min_Order_By = {
   variantId?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "views" */
-export type View_Mutation_Response = {
-  __typename?: 'View_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<View>;
-};
-
-/** on_conflict condition type for table "views" */
-export type View_On_Conflict = {
-  constraint: View_Constraint;
-  update_columns?: Array<View_Update_Column>;
-  where?: InputMaybe<View_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "views". */
 export type View_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -21119,11 +14791,6 @@ export type View_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
   variant?: InputMaybe<Variant_Order_By>;
   variantId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: views */
-export type View_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "views" */
@@ -21156,23 +14823,6 @@ export enum View_Select_Column {
   VariantId = 'variantId'
 }
 
-/** input type for updating data in table "views" */
-export type View_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  solutionId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  variantId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "View" */
 export type View_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -21196,43 +14846,6 @@ export type View_Stream_Cursor_Value_Input = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
   variantId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "views" */
-export enum View_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  SolutionId = 'solutionId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  VariantId = 'variantId'
-}
-
-export type View_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<View_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: View_Bool_Exp;
 };
 
 /** columns and relationships of "workspaces" */
@@ -21299,32 +14912,6 @@ export type Workspace_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "workspaces" */
-export enum Workspace_Constraint {
-  /** unique or primary key constraint on columns "code" */
-  WorkspacesCodeUnique = 'workspaces_code_unique',
-  /** unique or primary key constraint on columns "id" */
-  WorkspacesPkey = 'workspaces_pkey'
-}
-
-/** input type for inserting data into table "workspaces" */
-export type Workspace_Insert_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  owner?: InputMaybe<UserProfile_Obj_Rel_Insert_Input>;
-  ownerId?: InputMaybe<Scalars['uuid']['input']>;
-  tenant?: InputMaybe<Tenant_Obj_Rel_Insert_Input>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Workspace_Max_Fields = {
   __typename?: 'Workspace_max_fields';
@@ -21359,29 +14946,6 @@ export type Workspace_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "workspaces" */
-export type Workspace_Mutation_Response = {
-  __typename?: 'Workspace_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Workspace>;
-};
-
-/** input type for inserting object relation for remote table "workspaces" */
-export type Workspace_Obj_Rel_Insert_Input = {
-  data: Workspace_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Workspace_On_Conflict>;
-};
-
-/** on_conflict condition type for table "workspaces" */
-export type Workspace_On_Conflict = {
-  constraint: Workspace_Constraint;
-  update_columns?: Array<Workspace_Update_Column>;
-  where?: InputMaybe<Workspace_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "workspaces". */
 export type Workspace_Order_By = {
   code?: InputMaybe<Order_By>;
@@ -21398,11 +14962,6 @@ export type Workspace_Order_By = {
   tenantId?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: workspaces */
-export type Workspace_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "workspaces" */
@@ -21433,22 +14992,6 @@ export enum Workspace_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "workspaces" */
-export type Workspace_Set_Input = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  ownerId?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "Workspace" */
 export type Workspace_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -21471,41 +15014,6 @@ export type Workspace_Stream_Cursor_Value_Input = {
   tenantId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "workspaces" */
-export enum Workspace_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Description = 'description',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  OwnerId = 'ownerId',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Workspace_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Workspace_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Workspace_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "capability_assessment_type_enum". All fields are combined with logical 'AND'. */
@@ -21664,25 +15172,6 @@ export type MapTenantUserProfiles_Bool_Exp = {
   userId?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "map_tenant_user_profiles" */
-export enum MapTenantUserProfiles_Constraint {
-  /** unique or primary key constraint on columns "user_id" */
-  MapTenantUserProfilesPkey = 'map_tenant_user_profiles_pkey'
-}
-
-/** input type for inserting data into table "map_tenant_user_profiles" */
-export type MapTenantUserProfiles_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  user?: InputMaybe<UserProfile_Obj_Rel_Insert_Input>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type MapTenantUserProfiles_Max_Fields = {
   __typename?: 'mapTenantUserProfiles_max_fields';
@@ -21709,22 +15198,6 @@ export type MapTenantUserProfiles_Min_Fields = {
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "map_tenant_user_profiles" */
-export type MapTenantUserProfiles_Mutation_Response = {
-  __typename?: 'mapTenantUserProfiles_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<MapTenantUserProfiles>;
-};
-
-/** on_conflict condition type for table "map_tenant_user_profiles" */
-export type MapTenantUserProfiles_On_Conflict = {
-  constraint: MapTenantUserProfiles_Constraint;
-  update_columns?: Array<MapTenantUserProfiles_Update_Column>;
-  where?: InputMaybe<MapTenantUserProfiles_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_tenant_user_profiles". */
 export type MapTenantUserProfiles_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -21736,11 +15209,6 @@ export type MapTenantUserProfiles_Order_By = {
   updatedBy?: InputMaybe<Order_By>;
   user?: InputMaybe<UserProfile_Order_By>;
   userId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_tenant_user_profiles */
-export type MapTenantUserProfiles_Pk_Columns_Input = {
-  userId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_tenant_user_profiles" */
@@ -21763,18 +15231,6 @@ export enum MapTenantUserProfiles_Select_Column {
   UserId = 'userId'
 }
 
-/** input type for updating data in table "map_tenant_user_profiles" */
-export type MapTenantUserProfiles_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "mapTenantUserProfiles" */
 export type MapTenantUserProfiles_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -21793,33 +15249,6 @@ export type MapTenantUserProfiles_Stream_Cursor_Value_Input = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_tenant_user_profiles" */
-export enum MapTenantUserProfiles_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  UserId = 'userId'
-}
-
-export type MapTenantUserProfiles_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<MapTenantUserProfiles_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: MapTenantUserProfiles_Bool_Exp;
 };
 
 /** columns and relationships of "map_workspace_user_profiles" */
@@ -21880,27 +15309,6 @@ export type MapWorkspaceUserProfiles_Bool_Exp = {
   workspaceId?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "map_workspace_user_profiles" */
-export enum MapWorkspaceUserProfiles_Constraint {
-  /** unique or primary key constraint on columns "user_id", "workspace_id" */
-  MapWorkspaceUserProfilesPkey = 'map_workspace_user_profiles_pkey'
-}
-
-/** input type for inserting data into table "map_workspace_user_profiles" */
-export type MapWorkspaceUserProfiles_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  user?: InputMaybe<UserProfile_Obj_Rel_Insert_Input>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-  workspace?: InputMaybe<Workspace_Obj_Rel_Insert_Input>;
-  workspaceId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type MapWorkspaceUserProfiles_Max_Fields = {
   __typename?: 'mapWorkspaceUserProfiles_max_fields';
@@ -21929,22 +15337,6 @@ export type MapWorkspaceUserProfiles_Min_Fields = {
   workspaceId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "map_workspace_user_profiles" */
-export type MapWorkspaceUserProfiles_Mutation_Response = {
-  __typename?: 'mapWorkspaceUserProfiles_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<MapWorkspaceUserProfiles>;
-};
-
-/** on_conflict condition type for table "map_workspace_user_profiles" */
-export type MapWorkspaceUserProfiles_On_Conflict = {
-  constraint: MapWorkspaceUserProfiles_Constraint;
-  update_columns?: Array<MapWorkspaceUserProfiles_Update_Column>;
-  where?: InputMaybe<MapWorkspaceUserProfiles_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "map_workspace_user_profiles". */
 export type MapWorkspaceUserProfiles_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -21958,12 +15350,6 @@ export type MapWorkspaceUserProfiles_Order_By = {
   userId?: InputMaybe<Order_By>;
   workspace?: InputMaybe<Workspace_Order_By>;
   workspaceId?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: map_workspace_user_profiles */
-export type MapWorkspaceUserProfiles_Pk_Columns_Input = {
-  userId: Scalars['uuid']['input'];
-  workspaceId: Scalars['uuid']['input'];
 };
 
 /** select columns of table "map_workspace_user_profiles" */
@@ -21988,19 +15374,6 @@ export enum MapWorkspaceUserProfiles_Select_Column {
   WorkspaceId = 'workspaceId'
 }
 
-/** input type for updating data in table "map_workspace_user_profiles" */
-export type MapWorkspaceUserProfiles_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  tenantId?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-  userId?: InputMaybe<Scalars['uuid']['input']>;
-  workspaceId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "mapWorkspaceUserProfiles" */
 export type MapWorkspaceUserProfiles_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -22020,35 +15393,6 @@ export type MapWorkspaceUserProfiles_Stream_Cursor_Value_Input = {
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   workspaceId?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "map_workspace_user_profiles" */
-export enum MapWorkspaceUserProfiles_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  TenantId = 'tenantId',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy',
-  /** column name */
-  UserId = 'userId',
-  /** column name */
-  WorkspaceId = 'workspaceId'
-}
-
-export type MapWorkspaceUserProfiles_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<MapWorkspaceUserProfiles_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: MapWorkspaceUserProfiles_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "motivation_kind_enum". All fields are combined with logical 'AND'. */
@@ -22088,4149 +15432,6 @@ export type Motivation_Status_Enum_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['motivation_status_enum']['input']>;
   _neq?: InputMaybe<Scalars['motivation_status_enum']['input']>;
   _nin?: InputMaybe<Array<Scalars['motivation_status_enum']['input']>>;
-};
-
-/** mutation root */
-export type Mutation_Root = {
-  __typename?: 'mutation_root';
-  /** delete data from the table: "components" */
-  deleteApplicationComponent?: Maybe<ApplicationComponent_Mutation_Response>;
-  /** delete data from the table: "map_application_component_actor_role" */
-  deleteApplicationComponentBusinessActorRoleMap?: Maybe<ApplicationComponentBusinessActorRoleMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_actor_role" */
-  deleteApplicationComponentBusinessActorRoleMapByPk?: Maybe<ApplicationComponentBusinessActorRoleMap>;
-  /** delete single row from the table: "components" */
-  deleteApplicationComponentByPk?: Maybe<ApplicationComponent>;
-  /** delete data from the table: "map_application_component_data_object" */
-  deleteApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_data_object" */
-  deleteApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
-  /** delete data from the table: "map_application_component_directory" */
-  deleteApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_directory" */
-  deleteApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
-  /** delete data from the table: "map_application_component_event" */
-  deleteApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_event" */
-  deleteApplicationComponentEventMapByPk?: Maybe<ApplicationComponentEventMap>;
-  /** delete data from the table: "map_application_component_function" */
-  deleteApplicationComponentFunctionMap?: Maybe<ApplicationComponentFunctionMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_function" */
-  deleteApplicationComponentFunctionMapByPk?: Maybe<ApplicationComponentFunctionMap>;
-  /** delete data from the table: "map_application_component_hierarchy" */
-  deleteApplicationComponentHierarchyMap?: Maybe<ApplicationComponentHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_hierarchy" */
-  deleteApplicationComponentHierarchyMapByPk?: Maybe<ApplicationComponentHierarchyMap>;
-  /** delete data from the table: "map_application_component_interface" */
-  deleteApplicationComponentInterfaceMap?: Maybe<ApplicationComponentInterfaceMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_interface" */
-  deleteApplicationComponentInterfaceMapByPk?: Maybe<ApplicationComponentInterfaceMap>;
-  /** delete data from the table: "map_application_component_product" */
-  deleteApplicationComponentProductMap?: Maybe<ApplicationComponentProductMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_product" */
-  deleteApplicationComponentProductMapByPk?: Maybe<ApplicationComponentProductMap>;
-  /** delete data from the table: "map_application_component_stakeholder" */
-  deleteApplicationComponentStakeholderMap?: Maybe<ApplicationComponentStakeholderMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_stakeholder" */
-  deleteApplicationComponentStakeholderMapByPk?: Maybe<ApplicationComponentStakeholderMap>;
-  /** delete data from the table: "map_application_component_system_software" */
-  deleteApplicationComponentSystemSoftwareMap?: Maybe<ApplicationComponentSystemSoftwareMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_system_software" */
-  deleteApplicationComponentSystemSoftwareMapByPk?: Maybe<ApplicationComponentSystemSoftwareMap>;
-  /** delete data from the table: "map_application_component_technology_logical_network" */
-  deleteApplicationComponentTechnologyLogicalNetworkMap?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_technology_logical_network" */
-  deleteApplicationComponentTechnologyLogicalNetworkMapByPk?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap>;
-  /** delete data from the table: "map_application_component_technology_node" */
-  deleteApplicationComponentTechnologyNodeMap?: Maybe<ApplicationComponentTechnologyNodeMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_component_technology_node" */
-  deleteApplicationComponentTechnologyNodeMapByPk?: Maybe<ApplicationComponentTechnologyNodeMap>;
-  /** delete data from the table: "map_application_function_data_object" */
-  deleteApplicationFunctionDataObjectMap?: Maybe<ApplicationFunctionDataObjectMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_function_data_object" */
-  deleteApplicationFunctionDataObjectMapByPk?: Maybe<ApplicationFunctionDataObjectMap>;
-  /** delete data from the table: "map_application_interface_function" */
-  deleteApplicationFunctionInterfaceMap?: Maybe<ApplicationFunctionInterfaceMap_Mutation_Response>;
-  /** delete single row from the table: "map_application_interface_function" */
-  deleteApplicationFunctionInterfaceMapByPk?: Maybe<ApplicationFunctionInterfaceMap>;
-  /** delete data from the table: "actors" */
-  deleteBusinessActor?: Maybe<BusinessActor_Mutation_Response>;
-  /** delete single row from the table: "actors" */
-  deleteBusinessActorByPk?: Maybe<BusinessActor>;
-  /** delete data from the table: "map_business_actor_role" */
-  deleteBusinessActorRoleMap?: Maybe<BusinessActorRoleMap_Mutation_Response>;
-  /** delete single row from the table: "map_business_actor_role" */
-  deleteBusinessActorRoleMapByPk?: Maybe<BusinessActorRoleMap>;
-  /** delete data from the table: "map_business_process_function" */
-  deleteBusinessProcessFunctionMap?: Maybe<BusinessProcessFunctionMap_Mutation_Response>;
-  /** delete single row from the table: "map_business_process_function" */
-  deleteBusinessProcessFunctionMapByPk?: Maybe<BusinessProcessFunctionMap>;
-  /** delete data from the table: "map_business_process_hierarchy" */
-  deleteBusinessProcessHierarchyMap?: Maybe<BusinessProcessHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_business_process_hierarchy" */
-  deleteBusinessProcessHierarchyMapByPk?: Maybe<BusinessProcessHierarchyMap>;
-  /** delete data from the table: "map_business_process_motivation_item" */
-  deleteBusinessProcessMotivationItemMap?: Maybe<BusinessProcessMotivationItemMap_Mutation_Response>;
-  /** delete single row from the table: "map_business_process_motivation_item" */
-  deleteBusinessProcessMotivationItemMapByPk?: Maybe<BusinessProcessMotivationItemMap>;
-  /** delete data from the table: "products" */
-  deleteBusinessProduct?: Maybe<BusinessProduct_Mutation_Response>;
-  /** delete single row from the table: "products" */
-  deleteBusinessProductByPk?: Maybe<BusinessProduct>;
-  /** delete data from the table: "roles" */
-  deleteBusinessRole?: Maybe<BusinessRole_Mutation_Response>;
-  /** delete single row from the table: "roles" */
-  deleteBusinessRoleByPk?: Maybe<BusinessRole>;
-  /** delete data from the table: "capabilities" */
-  deleteCapability?: Maybe<Capability_Mutation_Response>;
-  /** delete data from the table: "map_capability_application_component_assessment" */
-  deleteCapabilityApplicationComponentAssessmentMap?: Maybe<CapabilityApplicationComponentAssessmentMap_Mutation_Response>;
-  /** delete single row from the table: "map_capability_application_component_assessment" */
-  deleteCapabilityApplicationComponentAssessmentMapByPk?: Maybe<CapabilityApplicationComponentAssessmentMap>;
-  /** delete data from the table: "map_capability_application_component" */
-  deleteCapabilityApplicationComponentMap?: Maybe<CapabilityApplicationComponentMap_Mutation_Response>;
-  /** delete single row from the table: "map_capability_application_component" */
-  deleteCapabilityApplicationComponentMapByPk?: Maybe<CapabilityApplicationComponentMap>;
-  /** delete data from the table: "map_capability_business_process_assessment" */
-  deleteCapabilityBusinessProcessAssessmentMap?: Maybe<CapabilityBusinessProcessAssessmentMap_Mutation_Response>;
-  /** delete single row from the table: "map_capability_business_process_assessment" */
-  deleteCapabilityBusinessProcessAssessmentMapByPk?: Maybe<CapabilityBusinessProcessAssessmentMap>;
-  /** delete data from the table: "map_capability_business_process" */
-  deleteCapabilityBusinessProcessMap?: Maybe<CapabilityBusinessProcessMap_Mutation_Response>;
-  /** delete single row from the table: "map_capability_business_process" */
-  deleteCapabilityBusinessProcessMapByPk?: Maybe<CapabilityBusinessProcessMap>;
-  /** delete single row from the table: "capabilities" */
-  deleteCapabilityByPk?: Maybe<Capability>;
-  /** delete data from the table: "map_capability_hierarchy" */
-  deleteCapabilityHierarchyMap?: Maybe<CapabilityHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_capability_hierarchy" */
-  deleteCapabilityHierarchyMapByPk?: Maybe<CapabilityHierarchyMap>;
-  /** delete data from the table: "data_objects" */
-  deleteDataObject?: Maybe<DataObject_Mutation_Response>;
-  /** delete single row from the table: "data_objects" */
-  deleteDataObjectByPk?: Maybe<DataObject>;
-  /** delete data from the table: "map_directory_items" */
-  deleteDirectoryItemsMap?: Maybe<DirectoryItemsMap_Mutation_Response>;
-  /** delete single row from the table: "map_directory_items" */
-  deleteDirectoryItemsMapByPk?: Maybe<DirectoryItemsMap>;
-  /** delete data from the table: "directories" */
-  deleteDirectoryObject?: Maybe<DirectoryObject_Mutation_Response>;
-  /** delete single row from the table: "directories" */
-  deleteDirectoryObjectByPk?: Maybe<DirectoryObject>;
-  /** delete data from the table: "employees" */
-  deleteEmployee?: Maybe<Employee_Mutation_Response>;
-  /** delete single row from the table: "employees" */
-  deleteEmployeeByPk?: Maybe<Employee>;
-  /** delete data from the table: "events" */
-  deleteEventGeneric?: Maybe<EventGeneric_Mutation_Response>;
-  /** delete single row from the table: "events" */
-  deleteEventGenericByPk?: Maybe<EventGeneric>;
-  /** delete data from the table: "flows" */
-  deleteFlowGeneric?: Maybe<FlowGeneric_Mutation_Response>;
-  /** delete single row from the table: "flows" */
-  deleteFlowGenericByPk?: Maybe<FlowGeneric>;
-  /** delete data from the table: "functions" */
-  deleteFunctionGeneric?: Maybe<FunctionGeneric_Mutation_Response>;
-  /** delete single row from the table: "functions" */
-  deleteFunctionGenericByPk?: Maybe<FunctionGeneric>;
-  /** delete data from the table: "interfaces" */
-  deleteInterfaceGeneric?: Maybe<InterfaceGeneric_Mutation_Response>;
-  /** delete single row from the table: "interfaces" */
-  deleteInterfaceGenericByPk?: Maybe<InterfaceGeneric>;
-  /** delete data from the table: "motivations" */
-  deleteMotivationElementGeneric?: Maybe<MotivationElementGeneric_Mutation_Response>;
-  /** delete single row from the table: "motivations" */
-  deleteMotivationElementGenericByPk?: Maybe<MotivationElementGeneric>;
-  /** delete data from the table: "map_motivation_item_hierarchy" */
-  deleteMotivationItemHierarchyMap?: Maybe<MotivationItemHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_motivation_item_hierarchy" */
-  deleteMotivationItemHierarchyMapByPk?: Maybe<MotivationItemHierarchyMap>;
-  /** delete data from the table: "locations" */
-  deletePhysicalLocation?: Maybe<PhysicalLocation_Mutation_Response>;
-  /** delete single row from the table: "locations" */
-  deletePhysicalLocationByPk?: Maybe<PhysicalLocation>;
-  /** delete data from the table: "plateaus" */
-  deletePlateau?: Maybe<Plateau_Mutation_Response>;
-  /** delete single row from the table: "plateaus" */
-  deletePlateauByPk?: Maybe<Plateau>;
-  /** delete data from the table: "processes" */
-  deleteProcessGeneric?: Maybe<ProcessGeneric_Mutation_Response>;
-  /** delete single row from the table: "processes" */
-  deleteProcessGenericByPk?: Maybe<ProcessGeneric>;
-  /** delete data from the table: "services" */
-  deleteServiceGeneric?: Maybe<ServiceGeneric_Mutation_Response>;
-  /** delete single row from the table: "services" */
-  deleteServiceGenericByPk?: Maybe<ServiceGeneric>;
-  /** delete data from the table: "solutions" */
-  deleteSolution?: Maybe<Solution_Mutation_Response>;
-  /** delete data from the table: "map_solution_application_component" */
-  deleteSolutionApplicationComponentMap?: Maybe<SolutionApplicationComponentMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_application_component" */
-  deleteSolutionApplicationComponentMapByPk?: Maybe<SolutionApplicationComponentMap>;
-  /** delete data from the table: "map_solution_application_function" */
-  deleteSolutionApplicationFunctionMap?: Maybe<SolutionApplicationFunctionMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_application_function" */
-  deleteSolutionApplicationFunctionMapByPk?: Maybe<SolutionApplicationFunctionMap>;
-  /** delete single row from the table: "solutions" */
-  deleteSolutionByPk?: Maybe<Solution>;
-  /** delete data from the table: "map_solution_data_object" */
-  deleteSolutionDataObjectMap?: Maybe<SolutionDataObjectMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_data_object" */
-  deleteSolutionDataObjectMapByPk?: Maybe<SolutionDataObjectMap>;
-  /** delete data from the table: "map_solution_flow" */
-  deleteSolutionFlowMap?: Maybe<SolutionFlowMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_flow" */
-  deleteSolutionFlowMapByPk?: Maybe<SolutionFlowMap>;
-  /** delete data from the table: "map_solution_motivation_component" */
-  deleteSolutionMotivationComponentMap?: Maybe<SolutionMotivationComponentMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_motivation_component" */
-  deleteSolutionMotivationComponentMapByPk?: Maybe<SolutionMotivationComponentMap>;
-  /** delete data from the table: "map_solution_motivation" */
-  deleteSolutionMotivationElementMap?: Maybe<SolutionMotivationElementMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_motivation" */
-  deleteSolutionMotivationElementMapByPk?: Maybe<SolutionMotivationElementMap>;
-  /** delete data from the table: "map_solution_stakeholder" */
-  deleteSolutionStakeholderMap?: Maybe<SolutionStakeholderMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_stakeholder" */
-  deleteSolutionStakeholderMapByPk?: Maybe<SolutionStakeholderMap>;
-  /** delete data from the table: "map_solution_technology_node" */
-  deleteSolutionTechnologyNodeMap?: Maybe<SolutionTechnologyNodeMap_Mutation_Response>;
-  /** delete single row from the table: "map_solution_technology_node" */
-  deleteSolutionTechnologyNodeMapByPk?: Maybe<SolutionTechnologyNodeMap>;
-  /** delete data from the table: "stakeholders" */
-  deleteStakeholder?: Maybe<Stakeholder_Mutation_Response>;
-  /** delete single row from the table: "stakeholders" */
-  deleteStakeholderByPk?: Maybe<Stakeholder>;
-  /** delete data from the table: "system_software" */
-  deleteSystemSoftware?: Maybe<SystemSoftware_Mutation_Response>;
-  /** delete single row from the table: "system_software" */
-  deleteSystemSoftwareByPk?: Maybe<SystemSoftware>;
-  /** delete data from the table: "technology_networks" */
-  deleteTechnologyNetwork?: Maybe<TechnologyNetwork_Mutation_Response>;
-  /** delete single row from the table: "technology_networks" */
-  deleteTechnologyNetworkByPk?: Maybe<TechnologyNetwork>;
-  /** delete data from the table: "map_technology_network_hierarchy" */
-  deleteTechnologyNetworkHierarchyMap?: Maybe<TechnologyNetworkHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_technology_network_hierarchy" */
-  deleteTechnologyNetworkHierarchyMapByPk?: Maybe<TechnologyNetworkHierarchyMap>;
-  /** delete data from the table: "technology_nodes" */
-  deleteTechnologyNode?: Maybe<TechnologyNode_Mutation_Response>;
-  /** delete single row from the table: "technology_nodes" */
-  deleteTechnologyNodeByPk?: Maybe<TechnologyNode>;
-  /** delete data from the table: "map_technology_node_hierarchy" */
-  deleteTechnologyNodeHierarchyMap?: Maybe<TechnologyNodeHierarchyMap_Mutation_Response>;
-  /** delete single row from the table: "map_technology_node_hierarchy" */
-  deleteTechnologyNodeHierarchyMapByPk?: Maybe<TechnologyNodeHierarchyMap>;
-  /** delete data from the table: "map_technology_node_system_software" */
-  deleteTechnologyNodeSystemSoftwareMap?: Maybe<TechnologyNodeSystemSoftwareMap_Mutation_Response>;
-  /** delete single row from the table: "map_technology_node_system_software" */
-  deleteTechnologyNodeSystemSoftwareMapByPk?: Maybe<TechnologyNodeSystemSoftwareMap>;
-  /** delete data from the table: "tenants" */
-  deleteTenant?: Maybe<Tenant_Mutation_Response>;
-  /** delete single row from the table: "tenants" */
-  deleteTenantByPk?: Maybe<Tenant>;
-  /** delete data from the table: "user_profiles" */
-  deleteUserProfile?: Maybe<UserProfile_Mutation_Response>;
-  /** delete single row from the table: "user_profiles" */
-  deleteUserProfileByPk?: Maybe<UserProfile>;
-  /** delete data from the table: "variants" */
-  deleteVariant?: Maybe<Variant_Mutation_Response>;
-  /** delete single row from the table: "variants" */
-  deleteVariantByPk?: Maybe<Variant>;
-  /** delete data from the table: "map_variant_motivation" */
-  deleteVariantMotivationElementMap?: Maybe<VariantMotivationElementMap_Mutation_Response>;
-  /** delete single row from the table: "map_variant_motivation" */
-  deleteVariantMotivationElementMapByPk?: Maybe<VariantMotivationElementMap>;
-  /** delete data from the table: "views" */
-  deleteView?: Maybe<View_Mutation_Response>;
-  /** delete single row from the table: "views" */
-  deleteViewByPk?: Maybe<View>;
-  /** delete data from the table: "workspaces" */
-  deleteWorkspace?: Maybe<Workspace_Mutation_Response>;
-  /** delete single row from the table: "workspaces" */
-  deleteWorkspaceByPk?: Maybe<Workspace>;
-  /** delete data from the table: "map_tenant_user_profiles" */
-  delete_mapTenantUserProfiles?: Maybe<MapTenantUserProfiles_Mutation_Response>;
-  /** delete single row from the table: "map_tenant_user_profiles" */
-  delete_mapTenantUserProfiles_by_pk?: Maybe<MapTenantUserProfiles>;
-  /** delete data from the table: "map_workspace_user_profiles" */
-  delete_mapWorkspaceUserProfiles?: Maybe<MapWorkspaceUserProfiles_Mutation_Response>;
-  /** delete single row from the table: "map_workspace_user_profiles" */
-  delete_mapWorkspaceUserProfiles_by_pk?: Maybe<MapWorkspaceUserProfiles>;
-  /** delete data from the table: "states" */
-  delete_states?: Maybe<States_Mutation_Response>;
-  /** delete single row from the table: "states" */
-  delete_states_by_pk?: Maybe<States>;
-  /** delete data from the table: "transitions" */
-  delete_transitions?: Maybe<Transitions_Mutation_Response>;
-  /** delete single row from the table: "transitions" */
-  delete_transitions_by_pk?: Maybe<Transitions>;
-  /** insert data into the table: "components" */
-  insertApplicationComponent?: Maybe<ApplicationComponent_Mutation_Response>;
-  /** insert data into the table: "map_application_component_actor_role" */
-  insertApplicationComponentBusinessActorRoleMap?: Maybe<ApplicationComponentBusinessActorRoleMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_actor_role" */
-  insertApplicationComponentBusinessActorRoleMapOne?: Maybe<ApplicationComponentBusinessActorRoleMap>;
-  /** insert data into the table: "map_application_component_data_object" */
-  insertApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_data_object" */
-  insertApplicationComponentDataObjectMapOne?: Maybe<ApplicationComponentDataObjectMap>;
-  /** insert data into the table: "map_application_component_directory" */
-  insertApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_directory" */
-  insertApplicationComponentDirectoryMapOne?: Maybe<ApplicationComponentDirectoryMap>;
-  /** insert data into the table: "map_application_component_event" */
-  insertApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_event" */
-  insertApplicationComponentEventMapOne?: Maybe<ApplicationComponentEventMap>;
-  /** insert data into the table: "map_application_component_function" */
-  insertApplicationComponentFunctionMap?: Maybe<ApplicationComponentFunctionMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_function" */
-  insertApplicationComponentFunctionMapOne?: Maybe<ApplicationComponentFunctionMap>;
-  /** insert data into the table: "map_application_component_hierarchy" */
-  insertApplicationComponentHierarchyMap?: Maybe<ApplicationComponentHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_hierarchy" */
-  insertApplicationComponentHierarchyMapOne?: Maybe<ApplicationComponentHierarchyMap>;
-  /** insert data into the table: "map_application_component_interface" */
-  insertApplicationComponentInterfaceMap?: Maybe<ApplicationComponentInterfaceMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_interface" */
-  insertApplicationComponentInterfaceMapOne?: Maybe<ApplicationComponentInterfaceMap>;
-  /** insert a single row into the table: "components" */
-  insertApplicationComponentOne?: Maybe<ApplicationComponent>;
-  /** insert data into the table: "map_application_component_product" */
-  insertApplicationComponentProductMap?: Maybe<ApplicationComponentProductMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_product" */
-  insertApplicationComponentProductMapOne?: Maybe<ApplicationComponentProductMap>;
-  /** insert data into the table: "map_application_component_stakeholder" */
-  insertApplicationComponentStakeholderMap?: Maybe<ApplicationComponentStakeholderMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_stakeholder" */
-  insertApplicationComponentStakeholderMapOne?: Maybe<ApplicationComponentStakeholderMap>;
-  /** insert data into the table: "map_application_component_system_software" */
-  insertApplicationComponentSystemSoftwareMap?: Maybe<ApplicationComponentSystemSoftwareMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_system_software" */
-  insertApplicationComponentSystemSoftwareMapOne?: Maybe<ApplicationComponentSystemSoftwareMap>;
-  /** insert data into the table: "map_application_component_technology_logical_network" */
-  insertApplicationComponentTechnologyLogicalNetworkMap?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_technology_logical_network" */
-  insertApplicationComponentTechnologyLogicalNetworkMapOne?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap>;
-  /** insert data into the table: "map_application_component_technology_node" */
-  insertApplicationComponentTechnologyNodeMap?: Maybe<ApplicationComponentTechnologyNodeMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_component_technology_node" */
-  insertApplicationComponentTechnologyNodeMapOne?: Maybe<ApplicationComponentTechnologyNodeMap>;
-  /** insert data into the table: "map_application_function_data_object" */
-  insertApplicationFunctionDataObjectMap?: Maybe<ApplicationFunctionDataObjectMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_function_data_object" */
-  insertApplicationFunctionDataObjectMapOne?: Maybe<ApplicationFunctionDataObjectMap>;
-  /** insert data into the table: "map_application_interface_function" */
-  insertApplicationFunctionInterfaceMap?: Maybe<ApplicationFunctionInterfaceMap_Mutation_Response>;
-  /** insert a single row into the table: "map_application_interface_function" */
-  insertApplicationFunctionInterfaceMapOne?: Maybe<ApplicationFunctionInterfaceMap>;
-  /** insert data into the table: "actors" */
-  insertBusinessActor?: Maybe<BusinessActor_Mutation_Response>;
-  /** insert a single row into the table: "actors" */
-  insertBusinessActorOne?: Maybe<BusinessActor>;
-  /** insert data into the table: "map_business_actor_role" */
-  insertBusinessActorRoleMap?: Maybe<BusinessActorRoleMap_Mutation_Response>;
-  /** insert a single row into the table: "map_business_actor_role" */
-  insertBusinessActorRoleMapOne?: Maybe<BusinessActorRoleMap>;
-  /** insert data into the table: "map_business_process_function" */
-  insertBusinessProcessFunctionMap?: Maybe<BusinessProcessFunctionMap_Mutation_Response>;
-  /** insert a single row into the table: "map_business_process_function" */
-  insertBusinessProcessFunctionMapOne?: Maybe<BusinessProcessFunctionMap>;
-  /** insert data into the table: "map_business_process_hierarchy" */
-  insertBusinessProcessHierarchyMap?: Maybe<BusinessProcessHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_business_process_hierarchy" */
-  insertBusinessProcessHierarchyMapOne?: Maybe<BusinessProcessHierarchyMap>;
-  /** insert data into the table: "map_business_process_motivation_item" */
-  insertBusinessProcessMotivationItemMap?: Maybe<BusinessProcessMotivationItemMap_Mutation_Response>;
-  /** insert a single row into the table: "map_business_process_motivation_item" */
-  insertBusinessProcessMotivationItemMapOne?: Maybe<BusinessProcessMotivationItemMap>;
-  /** insert data into the table: "products" */
-  insertBusinessProduct?: Maybe<BusinessProduct_Mutation_Response>;
-  /** insert a single row into the table: "products" */
-  insertBusinessProductOne?: Maybe<BusinessProduct>;
-  /** insert data into the table: "roles" */
-  insertBusinessRole?: Maybe<BusinessRole_Mutation_Response>;
-  /** insert a single row into the table: "roles" */
-  insertBusinessRoleOne?: Maybe<BusinessRole>;
-  /** insert data into the table: "capabilities" */
-  insertCapability?: Maybe<Capability_Mutation_Response>;
-  /** insert data into the table: "map_capability_application_component_assessment" */
-  insertCapabilityApplicationComponentAssessmentMap?: Maybe<CapabilityApplicationComponentAssessmentMap_Mutation_Response>;
-  /** insert a single row into the table: "map_capability_application_component_assessment" */
-  insertCapabilityApplicationComponentAssessmentMapOne?: Maybe<CapabilityApplicationComponentAssessmentMap>;
-  /** insert data into the table: "map_capability_application_component" */
-  insertCapabilityApplicationComponentMap?: Maybe<CapabilityApplicationComponentMap_Mutation_Response>;
-  /** insert a single row into the table: "map_capability_application_component" */
-  insertCapabilityApplicationComponentMapOne?: Maybe<CapabilityApplicationComponentMap>;
-  /** insert data into the table: "map_capability_business_process_assessment" */
-  insertCapabilityBusinessProcessAssessmentMap?: Maybe<CapabilityBusinessProcessAssessmentMap_Mutation_Response>;
-  /** insert a single row into the table: "map_capability_business_process_assessment" */
-  insertCapabilityBusinessProcessAssessmentMapOne?: Maybe<CapabilityBusinessProcessAssessmentMap>;
-  /** insert data into the table: "map_capability_business_process" */
-  insertCapabilityBusinessProcessMap?: Maybe<CapabilityBusinessProcessMap_Mutation_Response>;
-  /** insert a single row into the table: "map_capability_business_process" */
-  insertCapabilityBusinessProcessMapOne?: Maybe<CapabilityBusinessProcessMap>;
-  /** insert data into the table: "map_capability_hierarchy" */
-  insertCapabilityHierarchyMap?: Maybe<CapabilityHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_capability_hierarchy" */
-  insertCapabilityHierarchyMapOne?: Maybe<CapabilityHierarchyMap>;
-  /** insert a single row into the table: "capabilities" */
-  insertCapabilityOne?: Maybe<Capability>;
-  /** insert data into the table: "data_objects" */
-  insertDataObject?: Maybe<DataObject_Mutation_Response>;
-  /** insert a single row into the table: "data_objects" */
-  insertDataObjectOne?: Maybe<DataObject>;
-  /** insert data into the table: "map_directory_items" */
-  insertDirectoryItemsMap?: Maybe<DirectoryItemsMap_Mutation_Response>;
-  /** insert a single row into the table: "map_directory_items" */
-  insertDirectoryItemsMapOne?: Maybe<DirectoryItemsMap>;
-  /** insert data into the table: "directories" */
-  insertDirectoryObject?: Maybe<DirectoryObject_Mutation_Response>;
-  /** insert a single row into the table: "directories" */
-  insertDirectoryObjectOne?: Maybe<DirectoryObject>;
-  /** insert data into the table: "employees" */
-  insertEmployee?: Maybe<Employee_Mutation_Response>;
-  /** insert a single row into the table: "employees" */
-  insertEmployeeOne?: Maybe<Employee>;
-  /** insert data into the table: "events" */
-  insertEventGeneric?: Maybe<EventGeneric_Mutation_Response>;
-  /** insert a single row into the table: "events" */
-  insertEventGenericOne?: Maybe<EventGeneric>;
-  /** insert data into the table: "flows" */
-  insertFlowGeneric?: Maybe<FlowGeneric_Mutation_Response>;
-  /** insert a single row into the table: "flows" */
-  insertFlowGenericOne?: Maybe<FlowGeneric>;
-  /** insert data into the table: "functions" */
-  insertFunctionGeneric?: Maybe<FunctionGeneric_Mutation_Response>;
-  /** insert a single row into the table: "functions" */
-  insertFunctionGenericOne?: Maybe<FunctionGeneric>;
-  /** insert data into the table: "interfaces" */
-  insertInterfaceGeneric?: Maybe<InterfaceGeneric_Mutation_Response>;
-  /** insert a single row into the table: "interfaces" */
-  insertInterfaceGenericOne?: Maybe<InterfaceGeneric>;
-  /** insert data into the table: "motivations" */
-  insertMotivationElementGeneric?: Maybe<MotivationElementGeneric_Mutation_Response>;
-  /** insert a single row into the table: "motivations" */
-  insertMotivationElementGenericOne?: Maybe<MotivationElementGeneric>;
-  /** insert data into the table: "map_motivation_item_hierarchy" */
-  insertMotivationItemHierarchyMap?: Maybe<MotivationItemHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_motivation_item_hierarchy" */
-  insertMotivationItemHierarchyMapOne?: Maybe<MotivationItemHierarchyMap>;
-  /** insert data into the table: "locations" */
-  insertPhysicalLocation?: Maybe<PhysicalLocation_Mutation_Response>;
-  /** insert a single row into the table: "locations" */
-  insertPhysicalLocationOne?: Maybe<PhysicalLocation>;
-  /** insert data into the table: "plateaus" */
-  insertPlateau?: Maybe<Plateau_Mutation_Response>;
-  /** insert a single row into the table: "plateaus" */
-  insertPlateauOne?: Maybe<Plateau>;
-  /** insert data into the table: "processes" */
-  insertProcessGeneric?: Maybe<ProcessGeneric_Mutation_Response>;
-  /** insert a single row into the table: "processes" */
-  insertProcessGenericOne?: Maybe<ProcessGeneric>;
-  /** insert data into the table: "services" */
-  insertServiceGeneric?: Maybe<ServiceGeneric_Mutation_Response>;
-  /** insert a single row into the table: "services" */
-  insertServiceGenericOne?: Maybe<ServiceGeneric>;
-  /** insert data into the table: "solutions" */
-  insertSolution?: Maybe<Solution_Mutation_Response>;
-  /** insert data into the table: "map_solution_application_component" */
-  insertSolutionApplicationComponentMap?: Maybe<SolutionApplicationComponentMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_application_component" */
-  insertSolutionApplicationComponentMapOne?: Maybe<SolutionApplicationComponentMap>;
-  /** insert data into the table: "map_solution_application_function" */
-  insertSolutionApplicationFunctionMap?: Maybe<SolutionApplicationFunctionMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_application_function" */
-  insertSolutionApplicationFunctionMapOne?: Maybe<SolutionApplicationFunctionMap>;
-  /** insert data into the table: "map_solution_data_object" */
-  insertSolutionDataObjectMap?: Maybe<SolutionDataObjectMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_data_object" */
-  insertSolutionDataObjectMapOne?: Maybe<SolutionDataObjectMap>;
-  /** insert data into the table: "map_solution_flow" */
-  insertSolutionFlowMap?: Maybe<SolutionFlowMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_flow" */
-  insertSolutionFlowMapOne?: Maybe<SolutionFlowMap>;
-  /** insert data into the table: "map_solution_motivation_component" */
-  insertSolutionMotivationComponentMap?: Maybe<SolutionMotivationComponentMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_motivation_component" */
-  insertSolutionMotivationComponentMapOne?: Maybe<SolutionMotivationComponentMap>;
-  /** insert data into the table: "map_solution_motivation" */
-  insertSolutionMotivationElementMap?: Maybe<SolutionMotivationElementMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_motivation" */
-  insertSolutionMotivationElementMapOne?: Maybe<SolutionMotivationElementMap>;
-  /** insert a single row into the table: "solutions" */
-  insertSolutionOne?: Maybe<Solution>;
-  /** insert data into the table: "map_solution_stakeholder" */
-  insertSolutionStakeholderMap?: Maybe<SolutionStakeholderMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_stakeholder" */
-  insertSolutionStakeholderMapOne?: Maybe<SolutionStakeholderMap>;
-  /** insert data into the table: "map_solution_technology_node" */
-  insertSolutionTechnologyNodeMap?: Maybe<SolutionTechnologyNodeMap_Mutation_Response>;
-  /** insert a single row into the table: "map_solution_technology_node" */
-  insertSolutionTechnologyNodeMapOne?: Maybe<SolutionTechnologyNodeMap>;
-  /** insert data into the table: "stakeholders" */
-  insertStakeholder?: Maybe<Stakeholder_Mutation_Response>;
-  /** insert a single row into the table: "stakeholders" */
-  insertStakeholderOne?: Maybe<Stakeholder>;
-  /** insert data into the table: "system_software" */
-  insertSystemSoftware?: Maybe<SystemSoftware_Mutation_Response>;
-  /** insert a single row into the table: "system_software" */
-  insertSystemSoftwareOne?: Maybe<SystemSoftware>;
-  /** insert data into the table: "technology_networks" */
-  insertTechnologyNetwork?: Maybe<TechnologyNetwork_Mutation_Response>;
-  /** insert data into the table: "map_technology_network_hierarchy" */
-  insertTechnologyNetworkHierarchyMap?: Maybe<TechnologyNetworkHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_technology_network_hierarchy" */
-  insertTechnologyNetworkHierarchyMapOne?: Maybe<TechnologyNetworkHierarchyMap>;
-  /** insert a single row into the table: "technology_networks" */
-  insertTechnologyNetworkOne?: Maybe<TechnologyNetwork>;
-  /** insert data into the table: "technology_nodes" */
-  insertTechnologyNode?: Maybe<TechnologyNode_Mutation_Response>;
-  /** insert data into the table: "map_technology_node_hierarchy" */
-  insertTechnologyNodeHierarchyMap?: Maybe<TechnologyNodeHierarchyMap_Mutation_Response>;
-  /** insert a single row into the table: "map_technology_node_hierarchy" */
-  insertTechnologyNodeHierarchyMapOne?: Maybe<TechnologyNodeHierarchyMap>;
-  /** insert a single row into the table: "technology_nodes" */
-  insertTechnologyNodeOne?: Maybe<TechnologyNode>;
-  /** insert data into the table: "map_technology_node_system_software" */
-  insertTechnologyNodeSystemSoftwareMap?: Maybe<TechnologyNodeSystemSoftwareMap_Mutation_Response>;
-  /** insert a single row into the table: "map_technology_node_system_software" */
-  insertTechnologyNodeSystemSoftwareMapOne?: Maybe<TechnologyNodeSystemSoftwareMap>;
-  /** insert data into the table: "tenants" */
-  insertTenant?: Maybe<Tenant_Mutation_Response>;
-  /** insert a single row into the table: "tenants" */
-  insertTenantOne?: Maybe<Tenant>;
-  /** insert data into the table: "user_profiles" */
-  insertUserProfile?: Maybe<UserProfile_Mutation_Response>;
-  /** insert a single row into the table: "user_profiles" */
-  insertUserProfileOne?: Maybe<UserProfile>;
-  /** insert data into the table: "variants" */
-  insertVariant?: Maybe<Variant_Mutation_Response>;
-  /** insert data into the table: "map_variant_motivation" */
-  insertVariantMotivationElementMap?: Maybe<VariantMotivationElementMap_Mutation_Response>;
-  /** insert a single row into the table: "map_variant_motivation" */
-  insertVariantMotivationElementMapOne?: Maybe<VariantMotivationElementMap>;
-  /** insert a single row into the table: "variants" */
-  insertVariantOne?: Maybe<Variant>;
-  /** insert data into the table: "views" */
-  insertView?: Maybe<View_Mutation_Response>;
-  /** insert a single row into the table: "views" */
-  insertViewOne?: Maybe<View>;
-  /** insert data into the table: "workspaces" */
-  insertWorkspace?: Maybe<Workspace_Mutation_Response>;
-  /** insert a single row into the table: "workspaces" */
-  insertWorkspaceOne?: Maybe<Workspace>;
-  /** insert data into the table: "map_tenant_user_profiles" */
-  insert_mapTenantUserProfiles?: Maybe<MapTenantUserProfiles_Mutation_Response>;
-  /** insert a single row into the table: "map_tenant_user_profiles" */
-  insert_mapTenantUserProfiles_one?: Maybe<MapTenantUserProfiles>;
-  /** insert data into the table: "map_workspace_user_profiles" */
-  insert_mapWorkspaceUserProfiles?: Maybe<MapWorkspaceUserProfiles_Mutation_Response>;
-  /** insert a single row into the table: "map_workspace_user_profiles" */
-  insert_mapWorkspaceUserProfiles_one?: Maybe<MapWorkspaceUserProfiles>;
-  /** insert data into the table: "states" */
-  insert_states?: Maybe<States_Mutation_Response>;
-  /** insert a single row into the table: "states" */
-  insert_states_one?: Maybe<States>;
-  /** insert data into the table: "transitions" */
-  insert_transitions?: Maybe<Transitions_Mutation_Response>;
-  /** insert a single row into the table: "transitions" */
-  insert_transitions_one?: Maybe<Transitions>;
-  /** update data of the table: "components" */
-  updateApplicationComponent?: Maybe<ApplicationComponent_Mutation_Response>;
-  /** update data of the table: "map_application_component_actor_role" */
-  updateApplicationComponentBusinessActorRoleMap?: Maybe<ApplicationComponentBusinessActorRoleMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_actor_role" */
-  updateApplicationComponentBusinessActorRoleMapByPk?: Maybe<ApplicationComponentBusinessActorRoleMap>;
-  /** update single row of the table: "components" */
-  updateApplicationComponentByPk?: Maybe<ApplicationComponent>;
-  /** update data of the table: "map_application_component_data_object" */
-  updateApplicationComponentDataObjectMap?: Maybe<ApplicationComponentDataObjectMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_data_object" */
-  updateApplicationComponentDataObjectMapByPk?: Maybe<ApplicationComponentDataObjectMap>;
-  /** update data of the table: "map_application_component_directory" */
-  updateApplicationComponentDirectoryMap?: Maybe<ApplicationComponentDirectoryMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_directory" */
-  updateApplicationComponentDirectoryMapByPk?: Maybe<ApplicationComponentDirectoryMap>;
-  /** update data of the table: "map_application_component_event" */
-  updateApplicationComponentEventMap?: Maybe<ApplicationComponentEventMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_event" */
-  updateApplicationComponentEventMapByPk?: Maybe<ApplicationComponentEventMap>;
-  /** update data of the table: "map_application_component_function" */
-  updateApplicationComponentFunctionMap?: Maybe<ApplicationComponentFunctionMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_function" */
-  updateApplicationComponentFunctionMapByPk?: Maybe<ApplicationComponentFunctionMap>;
-  /** update data of the table: "map_application_component_hierarchy" */
-  updateApplicationComponentHierarchyMap?: Maybe<ApplicationComponentHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_hierarchy" */
-  updateApplicationComponentHierarchyMapByPk?: Maybe<ApplicationComponentHierarchyMap>;
-  /** update data of the table: "map_application_component_interface" */
-  updateApplicationComponentInterfaceMap?: Maybe<ApplicationComponentInterfaceMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_interface" */
-  updateApplicationComponentInterfaceMapByPk?: Maybe<ApplicationComponentInterfaceMap>;
-  /** update data of the table: "map_application_component_product" */
-  updateApplicationComponentProductMap?: Maybe<ApplicationComponentProductMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_product" */
-  updateApplicationComponentProductMapByPk?: Maybe<ApplicationComponentProductMap>;
-  /** update data of the table: "map_application_component_stakeholder" */
-  updateApplicationComponentStakeholderMap?: Maybe<ApplicationComponentStakeholderMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_stakeholder" */
-  updateApplicationComponentStakeholderMapByPk?: Maybe<ApplicationComponentStakeholderMap>;
-  /** update data of the table: "map_application_component_system_software" */
-  updateApplicationComponentSystemSoftwareMap?: Maybe<ApplicationComponentSystemSoftwareMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_system_software" */
-  updateApplicationComponentSystemSoftwareMapByPk?: Maybe<ApplicationComponentSystemSoftwareMap>;
-  /** update data of the table: "map_application_component_technology_logical_network" */
-  updateApplicationComponentTechnologyLogicalNetworkMap?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_technology_logical_network" */
-  updateApplicationComponentTechnologyLogicalNetworkMapByPk?: Maybe<ApplicationComponentTechnologyLogicalNetworkMap>;
-  /** update data of the table: "map_application_component_technology_node" */
-  updateApplicationComponentTechnologyNodeMap?: Maybe<ApplicationComponentTechnologyNodeMap_Mutation_Response>;
-  /** update single row of the table: "map_application_component_technology_node" */
-  updateApplicationComponentTechnologyNodeMapByPk?: Maybe<ApplicationComponentTechnologyNodeMap>;
-  /** update data of the table: "map_application_function_data_object" */
-  updateApplicationFunctionDataObjectMap?: Maybe<ApplicationFunctionDataObjectMap_Mutation_Response>;
-  /** update single row of the table: "map_application_function_data_object" */
-  updateApplicationFunctionDataObjectMapByPk?: Maybe<ApplicationFunctionDataObjectMap>;
-  /** update data of the table: "map_application_interface_function" */
-  updateApplicationFunctionInterfaceMap?: Maybe<ApplicationFunctionInterfaceMap_Mutation_Response>;
-  /** update single row of the table: "map_application_interface_function" */
-  updateApplicationFunctionInterfaceMapByPk?: Maybe<ApplicationFunctionInterfaceMap>;
-  /** update data of the table: "actors" */
-  updateBusinessActor?: Maybe<BusinessActor_Mutation_Response>;
-  /** update single row of the table: "actors" */
-  updateBusinessActorByPk?: Maybe<BusinessActor>;
-  /** update data of the table: "map_business_actor_role" */
-  updateBusinessActorRoleMap?: Maybe<BusinessActorRoleMap_Mutation_Response>;
-  /** update single row of the table: "map_business_actor_role" */
-  updateBusinessActorRoleMapByPk?: Maybe<BusinessActorRoleMap>;
-  /** update data of the table: "map_business_process_function" */
-  updateBusinessProcessFunctionMap?: Maybe<BusinessProcessFunctionMap_Mutation_Response>;
-  /** update single row of the table: "map_business_process_function" */
-  updateBusinessProcessFunctionMapByPk?: Maybe<BusinessProcessFunctionMap>;
-  /** update data of the table: "map_business_process_hierarchy" */
-  updateBusinessProcessHierarchyMap?: Maybe<BusinessProcessHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_business_process_hierarchy" */
-  updateBusinessProcessHierarchyMapByPk?: Maybe<BusinessProcessHierarchyMap>;
-  /** update data of the table: "map_business_process_motivation_item" */
-  updateBusinessProcessMotivationItemMap?: Maybe<BusinessProcessMotivationItemMap_Mutation_Response>;
-  /** update single row of the table: "map_business_process_motivation_item" */
-  updateBusinessProcessMotivationItemMapByPk?: Maybe<BusinessProcessMotivationItemMap>;
-  /** update data of the table: "products" */
-  updateBusinessProduct?: Maybe<BusinessProduct_Mutation_Response>;
-  /** update single row of the table: "products" */
-  updateBusinessProductByPk?: Maybe<BusinessProduct>;
-  /** update data of the table: "roles" */
-  updateBusinessRole?: Maybe<BusinessRole_Mutation_Response>;
-  /** update single row of the table: "roles" */
-  updateBusinessRoleByPk?: Maybe<BusinessRole>;
-  /** update data of the table: "capabilities" */
-  updateCapability?: Maybe<Capability_Mutation_Response>;
-  /** update data of the table: "map_capability_application_component_assessment" */
-  updateCapabilityApplicationComponentAssessmentMap?: Maybe<CapabilityApplicationComponentAssessmentMap_Mutation_Response>;
-  /** update single row of the table: "map_capability_application_component_assessment" */
-  updateCapabilityApplicationComponentAssessmentMapByPk?: Maybe<CapabilityApplicationComponentAssessmentMap>;
-  /** update data of the table: "map_capability_application_component" */
-  updateCapabilityApplicationComponentMap?: Maybe<CapabilityApplicationComponentMap_Mutation_Response>;
-  /** update single row of the table: "map_capability_application_component" */
-  updateCapabilityApplicationComponentMapByPk?: Maybe<CapabilityApplicationComponentMap>;
-  /** update data of the table: "map_capability_business_process_assessment" */
-  updateCapabilityBusinessProcessAssessmentMap?: Maybe<CapabilityBusinessProcessAssessmentMap_Mutation_Response>;
-  /** update single row of the table: "map_capability_business_process_assessment" */
-  updateCapabilityBusinessProcessAssessmentMapByPk?: Maybe<CapabilityBusinessProcessAssessmentMap>;
-  /** update data of the table: "map_capability_business_process" */
-  updateCapabilityBusinessProcessMap?: Maybe<CapabilityBusinessProcessMap_Mutation_Response>;
-  /** update single row of the table: "map_capability_business_process" */
-  updateCapabilityBusinessProcessMapByPk?: Maybe<CapabilityBusinessProcessMap>;
-  /** update single row of the table: "capabilities" */
-  updateCapabilityByPk?: Maybe<Capability>;
-  /** update data of the table: "map_capability_hierarchy" */
-  updateCapabilityHierarchyMap?: Maybe<CapabilityHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_capability_hierarchy" */
-  updateCapabilityHierarchyMapByPk?: Maybe<CapabilityHierarchyMap>;
-  /** update data of the table: "data_objects" */
-  updateDataObject?: Maybe<DataObject_Mutation_Response>;
-  /** update single row of the table: "data_objects" */
-  updateDataObjectByPk?: Maybe<DataObject>;
-  /** update data of the table: "map_directory_items" */
-  updateDirectoryItemsMap?: Maybe<DirectoryItemsMap_Mutation_Response>;
-  /** update single row of the table: "map_directory_items" */
-  updateDirectoryItemsMapByPk?: Maybe<DirectoryItemsMap>;
-  /** update data of the table: "directories" */
-  updateDirectoryObject?: Maybe<DirectoryObject_Mutation_Response>;
-  /** update single row of the table: "directories" */
-  updateDirectoryObjectByPk?: Maybe<DirectoryObject>;
-  /** update data of the table: "employees" */
-  updateEmployee?: Maybe<Employee_Mutation_Response>;
-  /** update single row of the table: "employees" */
-  updateEmployeeByPk?: Maybe<Employee>;
-  /** update data of the table: "events" */
-  updateEventGeneric?: Maybe<EventGeneric_Mutation_Response>;
-  /** update single row of the table: "events" */
-  updateEventGenericByPk?: Maybe<EventGeneric>;
-  /** update data of the table: "flows" */
-  updateFlowGeneric?: Maybe<FlowGeneric_Mutation_Response>;
-  /** update single row of the table: "flows" */
-  updateFlowGenericByPk?: Maybe<FlowGeneric>;
-  /** update data of the table: "functions" */
-  updateFunctionGeneric?: Maybe<FunctionGeneric_Mutation_Response>;
-  /** update single row of the table: "functions" */
-  updateFunctionGenericByPk?: Maybe<FunctionGeneric>;
-  /** update data of the table: "interfaces" */
-  updateInterfaceGeneric?: Maybe<InterfaceGeneric_Mutation_Response>;
-  /** update single row of the table: "interfaces" */
-  updateInterfaceGenericByPk?: Maybe<InterfaceGeneric>;
-  /** update data of the table: "motivations" */
-  updateMotivationElementGeneric?: Maybe<MotivationElementGeneric_Mutation_Response>;
-  /** update single row of the table: "motivations" */
-  updateMotivationElementGenericByPk?: Maybe<MotivationElementGeneric>;
-  /** update data of the table: "map_motivation_item_hierarchy" */
-  updateMotivationItemHierarchyMap?: Maybe<MotivationItemHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_motivation_item_hierarchy" */
-  updateMotivationItemHierarchyMapByPk?: Maybe<MotivationItemHierarchyMap>;
-  /** update data of the table: "locations" */
-  updatePhysicalLocation?: Maybe<PhysicalLocation_Mutation_Response>;
-  /** update single row of the table: "locations" */
-  updatePhysicalLocationByPk?: Maybe<PhysicalLocation>;
-  /** update data of the table: "plateaus" */
-  updatePlateau?: Maybe<Plateau_Mutation_Response>;
-  /** update single row of the table: "plateaus" */
-  updatePlateauByPk?: Maybe<Plateau>;
-  /** update data of the table: "processes" */
-  updateProcessGeneric?: Maybe<ProcessGeneric_Mutation_Response>;
-  /** update single row of the table: "processes" */
-  updateProcessGenericByPk?: Maybe<ProcessGeneric>;
-  /** update data of the table: "services" */
-  updateServiceGeneric?: Maybe<ServiceGeneric_Mutation_Response>;
-  /** update single row of the table: "services" */
-  updateServiceGenericByPk?: Maybe<ServiceGeneric>;
-  /** update data of the table: "solutions" */
-  updateSolution?: Maybe<Solution_Mutation_Response>;
-  /** update data of the table: "map_solution_application_component" */
-  updateSolutionApplicationComponentMap?: Maybe<SolutionApplicationComponentMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_application_component" */
-  updateSolutionApplicationComponentMapByPk?: Maybe<SolutionApplicationComponentMap>;
-  /** update data of the table: "map_solution_application_function" */
-  updateSolutionApplicationFunctionMap?: Maybe<SolutionApplicationFunctionMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_application_function" */
-  updateSolutionApplicationFunctionMapByPk?: Maybe<SolutionApplicationFunctionMap>;
-  /** update single row of the table: "solutions" */
-  updateSolutionByPk?: Maybe<Solution>;
-  /** update data of the table: "map_solution_data_object" */
-  updateSolutionDataObjectMap?: Maybe<SolutionDataObjectMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_data_object" */
-  updateSolutionDataObjectMapByPk?: Maybe<SolutionDataObjectMap>;
-  /** update data of the table: "map_solution_flow" */
-  updateSolutionFlowMap?: Maybe<SolutionFlowMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_flow" */
-  updateSolutionFlowMapByPk?: Maybe<SolutionFlowMap>;
-  /** update data of the table: "map_solution_motivation_component" */
-  updateSolutionMotivationComponentMap?: Maybe<SolutionMotivationComponentMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_motivation_component" */
-  updateSolutionMotivationComponentMapByPk?: Maybe<SolutionMotivationComponentMap>;
-  /** update data of the table: "map_solution_motivation" */
-  updateSolutionMotivationElementMap?: Maybe<SolutionMotivationElementMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_motivation" */
-  updateSolutionMotivationElementMapByPk?: Maybe<SolutionMotivationElementMap>;
-  /** update data of the table: "map_solution_stakeholder" */
-  updateSolutionStakeholderMap?: Maybe<SolutionStakeholderMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_stakeholder" */
-  updateSolutionStakeholderMapByPk?: Maybe<SolutionStakeholderMap>;
-  /** update data of the table: "map_solution_technology_node" */
-  updateSolutionTechnologyNodeMap?: Maybe<SolutionTechnologyNodeMap_Mutation_Response>;
-  /** update single row of the table: "map_solution_technology_node" */
-  updateSolutionTechnologyNodeMapByPk?: Maybe<SolutionTechnologyNodeMap>;
-  /** update data of the table: "stakeholders" */
-  updateStakeholder?: Maybe<Stakeholder_Mutation_Response>;
-  /** update single row of the table: "stakeholders" */
-  updateStakeholderByPk?: Maybe<Stakeholder>;
-  /** update data of the table: "system_software" */
-  updateSystemSoftware?: Maybe<SystemSoftware_Mutation_Response>;
-  /** update single row of the table: "system_software" */
-  updateSystemSoftwareByPk?: Maybe<SystemSoftware>;
-  /** update data of the table: "technology_networks" */
-  updateTechnologyNetwork?: Maybe<TechnologyNetwork_Mutation_Response>;
-  /** update single row of the table: "technology_networks" */
-  updateTechnologyNetworkByPk?: Maybe<TechnologyNetwork>;
-  /** update data of the table: "map_technology_network_hierarchy" */
-  updateTechnologyNetworkHierarchyMap?: Maybe<TechnologyNetworkHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_technology_network_hierarchy" */
-  updateTechnologyNetworkHierarchyMapByPk?: Maybe<TechnologyNetworkHierarchyMap>;
-  /** update data of the table: "technology_nodes" */
-  updateTechnologyNode?: Maybe<TechnologyNode_Mutation_Response>;
-  /** update single row of the table: "technology_nodes" */
-  updateTechnologyNodeByPk?: Maybe<TechnologyNode>;
-  /** update data of the table: "map_technology_node_hierarchy" */
-  updateTechnologyNodeHierarchyMap?: Maybe<TechnologyNodeHierarchyMap_Mutation_Response>;
-  /** update single row of the table: "map_technology_node_hierarchy" */
-  updateTechnologyNodeHierarchyMapByPk?: Maybe<TechnologyNodeHierarchyMap>;
-  /** update data of the table: "map_technology_node_system_software" */
-  updateTechnologyNodeSystemSoftwareMap?: Maybe<TechnologyNodeSystemSoftwareMap_Mutation_Response>;
-  /** update single row of the table: "map_technology_node_system_software" */
-  updateTechnologyNodeSystemSoftwareMapByPk?: Maybe<TechnologyNodeSystemSoftwareMap>;
-  /** update data of the table: "tenants" */
-  updateTenant?: Maybe<Tenant_Mutation_Response>;
-  /** update single row of the table: "tenants" */
-  updateTenantByPk?: Maybe<Tenant>;
-  /** update data of the table: "user_profiles" */
-  updateUserProfile?: Maybe<UserProfile_Mutation_Response>;
-  /** update single row of the table: "user_profiles" */
-  updateUserProfileByPk?: Maybe<UserProfile>;
-  /** update data of the table: "variants" */
-  updateVariant?: Maybe<Variant_Mutation_Response>;
-  /** update single row of the table: "variants" */
-  updateVariantByPk?: Maybe<Variant>;
-  /** update data of the table: "map_variant_motivation" */
-  updateVariantMotivationElementMap?: Maybe<VariantMotivationElementMap_Mutation_Response>;
-  /** update single row of the table: "map_variant_motivation" */
-  updateVariantMotivationElementMapByPk?: Maybe<VariantMotivationElementMap>;
-  /** update data of the table: "views" */
-  updateView?: Maybe<View_Mutation_Response>;
-  /** update single row of the table: "views" */
-  updateViewByPk?: Maybe<View>;
-  /** update data of the table: "workspaces" */
-  updateWorkspace?: Maybe<Workspace_Mutation_Response>;
-  /** update single row of the table: "workspaces" */
-  updateWorkspaceByPk?: Maybe<Workspace>;
-  /** update multiples rows of table: "map_application_component_actor_role" */
-  update_ApplicationComponentBusinessActorRoleMap_many?: Maybe<Array<Maybe<ApplicationComponentBusinessActorRoleMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_data_object" */
-  update_ApplicationComponentDataObjectMap_many?: Maybe<Array<Maybe<ApplicationComponentDataObjectMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_directory" */
-  update_ApplicationComponentDirectoryMap_many?: Maybe<Array<Maybe<ApplicationComponentDirectoryMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_event" */
-  update_ApplicationComponentEventMap_many?: Maybe<Array<Maybe<ApplicationComponentEventMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_function" */
-  update_ApplicationComponentFunctionMap_many?: Maybe<Array<Maybe<ApplicationComponentFunctionMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_hierarchy" */
-  update_ApplicationComponentHierarchyMap_many?: Maybe<Array<Maybe<ApplicationComponentHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_interface" */
-  update_ApplicationComponentInterfaceMap_many?: Maybe<Array<Maybe<ApplicationComponentInterfaceMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_product" */
-  update_ApplicationComponentProductMap_many?: Maybe<Array<Maybe<ApplicationComponentProductMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_stakeholder" */
-  update_ApplicationComponentStakeholderMap_many?: Maybe<Array<Maybe<ApplicationComponentStakeholderMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_system_software" */
-  update_ApplicationComponentSystemSoftwareMap_many?: Maybe<Array<Maybe<ApplicationComponentSystemSoftwareMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_technology_logical_network" */
-  update_ApplicationComponentTechnologyLogicalNetworkMap_many?: Maybe<Array<Maybe<ApplicationComponentTechnologyLogicalNetworkMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_component_technology_node" */
-  update_ApplicationComponentTechnologyNodeMap_many?: Maybe<Array<Maybe<ApplicationComponentTechnologyNodeMap_Mutation_Response>>>;
-  /** update multiples rows of table: "components" */
-  update_ApplicationComponent_many?: Maybe<Array<Maybe<ApplicationComponent_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_function_data_object" */
-  update_ApplicationFunctionDataObjectMap_many?: Maybe<Array<Maybe<ApplicationFunctionDataObjectMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_application_interface_function" */
-  update_ApplicationFunctionInterfaceMap_many?: Maybe<Array<Maybe<ApplicationFunctionInterfaceMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_business_actor_role" */
-  update_BusinessActorRoleMap_many?: Maybe<Array<Maybe<BusinessActorRoleMap_Mutation_Response>>>;
-  /** update multiples rows of table: "actors" */
-  update_BusinessActor_many?: Maybe<Array<Maybe<BusinessActor_Mutation_Response>>>;
-  /** update multiples rows of table: "map_business_process_function" */
-  update_BusinessProcessFunctionMap_many?: Maybe<Array<Maybe<BusinessProcessFunctionMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_business_process_hierarchy" */
-  update_BusinessProcessHierarchyMap_many?: Maybe<Array<Maybe<BusinessProcessHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_business_process_motivation_item" */
-  update_BusinessProcessMotivationItemMap_many?: Maybe<Array<Maybe<BusinessProcessMotivationItemMap_Mutation_Response>>>;
-  /** update multiples rows of table: "products" */
-  update_BusinessProduct_many?: Maybe<Array<Maybe<BusinessProduct_Mutation_Response>>>;
-  /** update multiples rows of table: "roles" */
-  update_BusinessRole_many?: Maybe<Array<Maybe<BusinessRole_Mutation_Response>>>;
-  /** update multiples rows of table: "map_capability_application_component_assessment" */
-  update_CapabilityApplicationComponentAssessmentMap_many?: Maybe<Array<Maybe<CapabilityApplicationComponentAssessmentMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_capability_application_component" */
-  update_CapabilityApplicationComponentMap_many?: Maybe<Array<Maybe<CapabilityApplicationComponentMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_capability_business_process_assessment" */
-  update_CapabilityBusinessProcessAssessmentMap_many?: Maybe<Array<Maybe<CapabilityBusinessProcessAssessmentMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_capability_business_process" */
-  update_CapabilityBusinessProcessMap_many?: Maybe<Array<Maybe<CapabilityBusinessProcessMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_capability_hierarchy" */
-  update_CapabilityHierarchyMap_many?: Maybe<Array<Maybe<CapabilityHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "capabilities" */
-  update_Capability_many?: Maybe<Array<Maybe<Capability_Mutation_Response>>>;
-  /** update multiples rows of table: "data_objects" */
-  update_DataObject_many?: Maybe<Array<Maybe<DataObject_Mutation_Response>>>;
-  /** update multiples rows of table: "map_directory_items" */
-  update_DirectoryItemsMap_many?: Maybe<Array<Maybe<DirectoryItemsMap_Mutation_Response>>>;
-  /** update multiples rows of table: "directories" */
-  update_DirectoryObject_many?: Maybe<Array<Maybe<DirectoryObject_Mutation_Response>>>;
-  /** update multiples rows of table: "employees" */
-  update_Employee_many?: Maybe<Array<Maybe<Employee_Mutation_Response>>>;
-  /** update multiples rows of table: "events" */
-  update_EventGeneric_many?: Maybe<Array<Maybe<EventGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "flows" */
-  update_FlowGeneric_many?: Maybe<Array<Maybe<FlowGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "functions" */
-  update_FunctionGeneric_many?: Maybe<Array<Maybe<FunctionGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "interfaces" */
-  update_InterfaceGeneric_many?: Maybe<Array<Maybe<InterfaceGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "motivations" */
-  update_MotivationElementGeneric_many?: Maybe<Array<Maybe<MotivationElementGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "map_motivation_item_hierarchy" */
-  update_MotivationItemHierarchyMap_many?: Maybe<Array<Maybe<MotivationItemHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "locations" */
-  update_PhysicalLocation_many?: Maybe<Array<Maybe<PhysicalLocation_Mutation_Response>>>;
-  /** update multiples rows of table: "plateaus" */
-  update_Plateau_many?: Maybe<Array<Maybe<Plateau_Mutation_Response>>>;
-  /** update multiples rows of table: "processes" */
-  update_ProcessGeneric_many?: Maybe<Array<Maybe<ProcessGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "services" */
-  update_ServiceGeneric_many?: Maybe<Array<Maybe<ServiceGeneric_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_application_component" */
-  update_SolutionApplicationComponentMap_many?: Maybe<Array<Maybe<SolutionApplicationComponentMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_application_function" */
-  update_SolutionApplicationFunctionMap_many?: Maybe<Array<Maybe<SolutionApplicationFunctionMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_data_object" */
-  update_SolutionDataObjectMap_many?: Maybe<Array<Maybe<SolutionDataObjectMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_flow" */
-  update_SolutionFlowMap_many?: Maybe<Array<Maybe<SolutionFlowMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_motivation_component" */
-  update_SolutionMotivationComponentMap_many?: Maybe<Array<Maybe<SolutionMotivationComponentMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_motivation" */
-  update_SolutionMotivationElementMap_many?: Maybe<Array<Maybe<SolutionMotivationElementMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_stakeholder" */
-  update_SolutionStakeholderMap_many?: Maybe<Array<Maybe<SolutionStakeholderMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_solution_technology_node" */
-  update_SolutionTechnologyNodeMap_many?: Maybe<Array<Maybe<SolutionTechnologyNodeMap_Mutation_Response>>>;
-  /** update multiples rows of table: "solutions" */
-  update_Solution_many?: Maybe<Array<Maybe<Solution_Mutation_Response>>>;
-  /** update multiples rows of table: "stakeholders" */
-  update_Stakeholder_many?: Maybe<Array<Maybe<Stakeholder_Mutation_Response>>>;
-  /** update multiples rows of table: "system_software" */
-  update_SystemSoftware_many?: Maybe<Array<Maybe<SystemSoftware_Mutation_Response>>>;
-  /** update multiples rows of table: "map_technology_network_hierarchy" */
-  update_TechnologyNetworkHierarchyMap_many?: Maybe<Array<Maybe<TechnologyNetworkHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "technology_networks" */
-  update_TechnologyNetwork_many?: Maybe<Array<Maybe<TechnologyNetwork_Mutation_Response>>>;
-  /** update multiples rows of table: "map_technology_node_hierarchy" */
-  update_TechnologyNodeHierarchyMap_many?: Maybe<Array<Maybe<TechnologyNodeHierarchyMap_Mutation_Response>>>;
-  /** update multiples rows of table: "map_technology_node_system_software" */
-  update_TechnologyNodeSystemSoftwareMap_many?: Maybe<Array<Maybe<TechnologyNodeSystemSoftwareMap_Mutation_Response>>>;
-  /** update multiples rows of table: "technology_nodes" */
-  update_TechnologyNode_many?: Maybe<Array<Maybe<TechnologyNode_Mutation_Response>>>;
-  /** update multiples rows of table: "tenants" */
-  update_Tenant_many?: Maybe<Array<Maybe<Tenant_Mutation_Response>>>;
-  /** update multiples rows of table: "user_profiles" */
-  update_UserProfile_many?: Maybe<Array<Maybe<UserProfile_Mutation_Response>>>;
-  /** update multiples rows of table: "map_variant_motivation" */
-  update_VariantMotivationElementMap_many?: Maybe<Array<Maybe<VariantMotivationElementMap_Mutation_Response>>>;
-  /** update multiples rows of table: "variants" */
-  update_Variant_many?: Maybe<Array<Maybe<Variant_Mutation_Response>>>;
-  /** update multiples rows of table: "views" */
-  update_View_many?: Maybe<Array<Maybe<View_Mutation_Response>>>;
-  /** update multiples rows of table: "workspaces" */
-  update_Workspace_many?: Maybe<Array<Maybe<Workspace_Mutation_Response>>>;
-  /** update data of the table: "map_tenant_user_profiles" */
-  update_mapTenantUserProfiles?: Maybe<MapTenantUserProfiles_Mutation_Response>;
-  /** update single row of the table: "map_tenant_user_profiles" */
-  update_mapTenantUserProfiles_by_pk?: Maybe<MapTenantUserProfiles>;
-  /** update multiples rows of table: "map_tenant_user_profiles" */
-  update_mapTenantUserProfiles_many?: Maybe<Array<Maybe<MapTenantUserProfiles_Mutation_Response>>>;
-  /** update data of the table: "map_workspace_user_profiles" */
-  update_mapWorkspaceUserProfiles?: Maybe<MapWorkspaceUserProfiles_Mutation_Response>;
-  /** update single row of the table: "map_workspace_user_profiles" */
-  update_mapWorkspaceUserProfiles_by_pk?: Maybe<MapWorkspaceUserProfiles>;
-  /** update multiples rows of table: "map_workspace_user_profiles" */
-  update_mapWorkspaceUserProfiles_many?: Maybe<Array<Maybe<MapWorkspaceUserProfiles_Mutation_Response>>>;
-  /** update data of the table: "states" */
-  update_states?: Maybe<States_Mutation_Response>;
-  /** update single row of the table: "states" */
-  update_states_by_pk?: Maybe<States>;
-  /** update multiples rows of table: "states" */
-  update_states_many?: Maybe<Array<Maybe<States_Mutation_Response>>>;
-  /** update data of the table: "transitions" */
-  update_transitions?: Maybe<Transitions_Mutation_Response>;
-  /** update single row of the table: "transitions" */
-  update_transitions_by_pk?: Maybe<Transitions>;
-  /** update multiples rows of table: "transitions" */
-  update_transitions_many?: Maybe<Array<Maybe<Transitions_Mutation_Response>>>;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentArgs = {
-  where: ApplicationComponent_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentBusinessActorRoleMapArgs = {
-  where: ApplicationComponentBusinessActorRoleMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentBusinessActorRoleMapByPkArgs = {
-  actorId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
-  roleId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentDataObjectMapArgs = {
-  where: ApplicationComponentDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentDataObjectMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentDirectoryMapArgs = {
-  where: ApplicationComponentDirectoryMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentDirectoryMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  directoryId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentEventMapArgs = {
-  where: ApplicationComponentEventMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentEventMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  eventId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentFunctionMapArgs = {
-  where: ApplicationComponentFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentFunctionMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentHierarchyMapArgs = {
-  where: ApplicationComponentHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentHierarchyMapByPkArgs = {
-  componentChildId: Scalars['uuid']['input'];
-  componentParentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentInterfaceMapArgs = {
-  where: ApplicationComponentInterfaceMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentInterfaceMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  interfaceId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentProductMapArgs = {
-  where: ApplicationComponentProductMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentProductMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  productId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentStakeholderMapArgs = {
-  where: ApplicationComponentStakeholderMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentStakeholderMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  stakeholderId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentSystemSoftwareMapArgs = {
-  where: ApplicationComponentSystemSoftwareMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentSystemSoftwareMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  systemSoftwareId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentTechnologyLogicalNetworkMapArgs = {
-  where: ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentTechnologyLogicalNetworkMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  logicalNetworkId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentTechnologyNodeMapArgs = {
-  where: ApplicationComponentTechnologyNodeMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationComponentTechnologyNodeMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  nodeId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationFunctionDataObjectMapArgs = {
-  where: ApplicationFunctionDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationFunctionDataObjectMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationFunctionInterfaceMapArgs = {
-  where: ApplicationFunctionInterfaceMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteApplicationFunctionInterfaceMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-  interfaceId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessActorArgs = {
-  where: BusinessActor_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessActorByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessActorRoleMapArgs = {
-  where: BusinessActorRoleMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessActorRoleMapByPkArgs = {
-  actorId: Scalars['uuid']['input'];
-  roleId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessFunctionMapArgs = {
-  where: BusinessProcessFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessFunctionMapByPkArgs = {
-  functionId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessHierarchyMapArgs = {
-  where: BusinessProcessHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessHierarchyMapByPkArgs = {
-  processChildId: Scalars['uuid']['input'];
-  processParentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessMotivationItemMapArgs = {
-  where: BusinessProcessMotivationItemMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProcessMotivationItemMapByPkArgs = {
-  motivationId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProductArgs = {
-  where: BusinessProduct_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessProductByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessRoleArgs = {
-  where: BusinessRole_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteBusinessRoleByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityArgs = {
-  where: Capability_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityApplicationComponentAssessmentMapArgs = {
-  where: CapabilityApplicationComponentAssessmentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityApplicationComponentAssessmentMapByPkArgs = {
-  assessmentId: Scalars['uuid']['input'];
-  capabilityId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityApplicationComponentMapArgs = {
-  where: CapabilityApplicationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityApplicationComponentMapByPkArgs = {
-  capabilityId: Scalars['uuid']['input'];
-  componentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityBusinessProcessAssessmentMapArgs = {
-  where: CapabilityBusinessProcessAssessmentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityBusinessProcessAssessmentMapByPkArgs = {
-  assessmentId: Scalars['uuid']['input'];
-  capabilityId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityBusinessProcessMapArgs = {
-  where: CapabilityBusinessProcessMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityBusinessProcessMapByPkArgs = {
-  capabilityId: Scalars['uuid']['input'];
-  processId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityHierarchyMapArgs = {
-  where: CapabilityHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteCapabilityHierarchyMapByPkArgs = {
-  childId: Scalars['uuid']['input'];
-  parentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDataObjectArgs = {
-  where: DataObject_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDataObjectByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDirectoryItemsMapArgs = {
-  where: DirectoryItemsMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDirectoryItemsMapByPkArgs = {
-  sourceId: Scalars['uuid']['input'];
-  targetId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDirectoryObjectArgs = {
-  where: DirectoryObject_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteDirectoryObjectByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteEmployeeArgs = {
-  where: Employee_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteEmployeeByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteEventGenericArgs = {
-  where: EventGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteEventGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFlowGenericArgs = {
-  where: FlowGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFlowGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFunctionGenericArgs = {
-  where: FunctionGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteFunctionGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteInterfaceGenericArgs = {
-  where: InterfaceGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteInterfaceGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteMotivationElementGenericArgs = {
-  where: MotivationElementGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteMotivationElementGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteMotivationItemHierarchyMapArgs = {
-  where: MotivationItemHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteMotivationItemHierarchyMapByPkArgs = {
-  childId: Scalars['uuid']['input'];
-  parentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeletePhysicalLocationArgs = {
-  where: PhysicalLocation_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeletePhysicalLocationByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeletePlateauArgs = {
-  where: Plateau_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeletePlateauByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteProcessGenericArgs = {
-  where: ProcessGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteProcessGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteServiceGenericArgs = {
-  where: ServiceGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteServiceGenericByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionArgs = {
-  where: Solution_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionApplicationComponentMapArgs = {
-  where: SolutionApplicationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionApplicationComponentMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionApplicationFunctionMapArgs = {
-  where: SolutionApplicationFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionApplicationFunctionMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  functionId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionDataObjectMapArgs = {
-  where: SolutionDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionDataObjectMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  dataObjectId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionFlowMapArgs = {
-  where: SolutionFlowMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionFlowMapByPkArgs = {
-  flowId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionMotivationComponentMapArgs = {
-  where: SolutionMotivationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionMotivationComponentMapByPkArgs = {
-  componentId: Scalars['uuid']['input'];
-  motivationId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionMotivationElementMapArgs = {
-  where: SolutionMotivationElementMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionMotivationElementMapByPkArgs = {
-  motivationId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionStakeholderMapArgs = {
-  where: SolutionStakeholderMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionStakeholderMapByPkArgs = {
-  solutionId: Scalars['uuid']['input'];
-  stakeholderId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionTechnologyNodeMapArgs = {
-  where: SolutionTechnologyNodeMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSolutionTechnologyNodeMapByPkArgs = {
-  nodeId: Scalars['uuid']['input'];
-  solutionId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteStakeholderArgs = {
-  where: Stakeholder_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteStakeholderByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSystemSoftwareArgs = {
-  where: SystemSoftware_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteSystemSoftwareByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNetworkArgs = {
-  where: TechnologyNetwork_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNetworkByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNetworkHierarchyMapArgs = {
-  where: TechnologyNetworkHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNetworkHierarchyMapByPkArgs = {
-  networkChildId: Scalars['uuid']['input'];
-  networkParentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeArgs = {
-  where: TechnologyNode_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeHierarchyMapArgs = {
-  where: TechnologyNodeHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeHierarchyMapByPkArgs = {
-  nodeChildId: Scalars['uuid']['input'];
-  nodeParentId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeSystemSoftwareMapArgs = {
-  where: TechnologyNodeSystemSoftwareMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTechnologyNodeSystemSoftwareMapByPkArgs = {
-  nodeId: Scalars['uuid']['input'];
-  systemSoftwareId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTenantArgs = {
-  where: Tenant_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteTenantByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteUserProfileArgs = {
-  where: UserProfile_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteUserProfileByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteVariantArgs = {
-  where: Variant_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteVariantByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteVariantMotivationElementMapArgs = {
-  where: VariantMotivationElementMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteVariantMotivationElementMapByPkArgs = {
-  motivationId: Scalars['uuid']['input'];
-  variantId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteViewArgs = {
-  where: View_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteViewByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteWorkspaceArgs = {
-  where: Workspace_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDeleteWorkspaceByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_MapTenantUserProfilesArgs = {
-  where: MapTenantUserProfiles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_MapTenantUserProfiles_By_PkArgs = {
-  userId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_MapWorkspaceUserProfilesArgs = {
-  where: MapWorkspaceUserProfiles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_MapWorkspaceUserProfiles_By_PkArgs = {
-  userId: Scalars['uuid']['input'];
-  workspaceId: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_StatesArgs = {
-  where: States_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_States_By_PkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_TransitionsArgs = {
-  where: Transitions_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Transitions_By_PkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentArgs = {
-  objects: Array<ApplicationComponent_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponent_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentBusinessActorRoleMapArgs = {
-  objects: Array<ApplicationComponentBusinessActorRoleMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentBusinessActorRoleMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentBusinessActorRoleMapOneArgs = {
-  object: ApplicationComponentBusinessActorRoleMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentBusinessActorRoleMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentDataObjectMapArgs = {
-  objects: Array<ApplicationComponentDataObjectMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentDataObjectMapOneArgs = {
-  object: ApplicationComponentDataObjectMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentDirectoryMapArgs = {
-  objects: Array<ApplicationComponentDirectoryMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentDirectoryMapOneArgs = {
-  object: ApplicationComponentDirectoryMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentDirectoryMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentEventMapArgs = {
-  objects: Array<ApplicationComponentEventMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentEventMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentEventMapOneArgs = {
-  object: ApplicationComponentEventMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentEventMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentFunctionMapArgs = {
-  objects: Array<ApplicationComponentFunctionMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentFunctionMapOneArgs = {
-  object: ApplicationComponentFunctionMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentHierarchyMapArgs = {
-  objects: Array<ApplicationComponentHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentHierarchyMapOneArgs = {
-  object: ApplicationComponentHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentInterfaceMapArgs = {
-  objects: Array<ApplicationComponentInterfaceMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentInterfaceMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentInterfaceMapOneArgs = {
-  object: ApplicationComponentInterfaceMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentInterfaceMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentOneArgs = {
-  object: ApplicationComponent_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponent_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentProductMapArgs = {
-  objects: Array<ApplicationComponentProductMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentProductMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentProductMapOneArgs = {
-  object: ApplicationComponentProductMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentProductMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentStakeholderMapArgs = {
-  objects: Array<ApplicationComponentStakeholderMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentStakeholderMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentStakeholderMapOneArgs = {
-  object: ApplicationComponentStakeholderMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentStakeholderMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentSystemSoftwareMapArgs = {
-  objects: Array<ApplicationComponentSystemSoftwareMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentSystemSoftwareMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentSystemSoftwareMapOneArgs = {
-  object: ApplicationComponentSystemSoftwareMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentSystemSoftwareMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentTechnologyLogicalNetworkMapArgs = {
-  objects: Array<ApplicationComponentTechnologyLogicalNetworkMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentTechnologyLogicalNetworkMapOneArgs = {
-  object: ApplicationComponentTechnologyLogicalNetworkMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentTechnologyNodeMapArgs = {
-  objects: Array<ApplicationComponentTechnologyNodeMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyNodeMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationComponentTechnologyNodeMapOneArgs = {
-  object: ApplicationComponentTechnologyNodeMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationComponentTechnologyNodeMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationFunctionDataObjectMapArgs = {
-  objects: Array<ApplicationFunctionDataObjectMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationFunctionDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationFunctionDataObjectMapOneArgs = {
-  object: ApplicationFunctionDataObjectMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationFunctionDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationFunctionInterfaceMapArgs = {
-  objects: Array<ApplicationFunctionInterfaceMap_Insert_Input>;
-  on_conflict?: InputMaybe<ApplicationFunctionInterfaceMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertApplicationFunctionInterfaceMapOneArgs = {
-  object: ApplicationFunctionInterfaceMap_Insert_Input;
-  on_conflict?: InputMaybe<ApplicationFunctionInterfaceMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessActorArgs = {
-  objects: Array<BusinessActor_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessActor_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessActorOneArgs = {
-  object: BusinessActor_Insert_Input;
-  on_conflict?: InputMaybe<BusinessActor_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessActorRoleMapArgs = {
-  objects: Array<BusinessActorRoleMap_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessActorRoleMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessActorRoleMapOneArgs = {
-  object: BusinessActorRoleMap_Insert_Input;
-  on_conflict?: InputMaybe<BusinessActorRoleMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessFunctionMapArgs = {
-  objects: Array<BusinessProcessFunctionMap_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessProcessFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessFunctionMapOneArgs = {
-  object: BusinessProcessFunctionMap_Insert_Input;
-  on_conflict?: InputMaybe<BusinessProcessFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessHierarchyMapArgs = {
-  objects: Array<BusinessProcessHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessProcessHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessHierarchyMapOneArgs = {
-  object: BusinessProcessHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<BusinessProcessHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessMotivationItemMapArgs = {
-  objects: Array<BusinessProcessMotivationItemMap_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessProcessMotivationItemMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProcessMotivationItemMapOneArgs = {
-  object: BusinessProcessMotivationItemMap_Insert_Input;
-  on_conflict?: InputMaybe<BusinessProcessMotivationItemMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProductArgs = {
-  objects: Array<BusinessProduct_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessProduct_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessProductOneArgs = {
-  object: BusinessProduct_Insert_Input;
-  on_conflict?: InputMaybe<BusinessProduct_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessRoleArgs = {
-  objects: Array<BusinessRole_Insert_Input>;
-  on_conflict?: InputMaybe<BusinessRole_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertBusinessRoleOneArgs = {
-  object: BusinessRole_Insert_Input;
-  on_conflict?: InputMaybe<BusinessRole_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityArgs = {
-  objects: Array<Capability_Insert_Input>;
-  on_conflict?: InputMaybe<Capability_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityApplicationComponentAssessmentMapArgs = {
-  objects: Array<CapabilityApplicationComponentAssessmentMap_Insert_Input>;
-  on_conflict?: InputMaybe<CapabilityApplicationComponentAssessmentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityApplicationComponentAssessmentMapOneArgs = {
-  object: CapabilityApplicationComponentAssessmentMap_Insert_Input;
-  on_conflict?: InputMaybe<CapabilityApplicationComponentAssessmentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityApplicationComponentMapArgs = {
-  objects: Array<CapabilityApplicationComponentMap_Insert_Input>;
-  on_conflict?: InputMaybe<CapabilityApplicationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityApplicationComponentMapOneArgs = {
-  object: CapabilityApplicationComponentMap_Insert_Input;
-  on_conflict?: InputMaybe<CapabilityApplicationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityBusinessProcessAssessmentMapArgs = {
-  objects: Array<CapabilityBusinessProcessAssessmentMap_Insert_Input>;
-  on_conflict?: InputMaybe<CapabilityBusinessProcessAssessmentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityBusinessProcessAssessmentMapOneArgs = {
-  object: CapabilityBusinessProcessAssessmentMap_Insert_Input;
-  on_conflict?: InputMaybe<CapabilityBusinessProcessAssessmentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityBusinessProcessMapArgs = {
-  objects: Array<CapabilityBusinessProcessMap_Insert_Input>;
-  on_conflict?: InputMaybe<CapabilityBusinessProcessMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityBusinessProcessMapOneArgs = {
-  object: CapabilityBusinessProcessMap_Insert_Input;
-  on_conflict?: InputMaybe<CapabilityBusinessProcessMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityHierarchyMapArgs = {
-  objects: Array<CapabilityHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<CapabilityHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityHierarchyMapOneArgs = {
-  object: CapabilityHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<CapabilityHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertCapabilityOneArgs = {
-  object: Capability_Insert_Input;
-  on_conflict?: InputMaybe<Capability_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDataObjectArgs = {
-  objects: Array<DataObject_Insert_Input>;
-  on_conflict?: InputMaybe<DataObject_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDataObjectOneArgs = {
-  object: DataObject_Insert_Input;
-  on_conflict?: InputMaybe<DataObject_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDirectoryItemsMapArgs = {
-  objects: Array<DirectoryItemsMap_Insert_Input>;
-  on_conflict?: InputMaybe<DirectoryItemsMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDirectoryItemsMapOneArgs = {
-  object: DirectoryItemsMap_Insert_Input;
-  on_conflict?: InputMaybe<DirectoryItemsMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDirectoryObjectArgs = {
-  objects: Array<DirectoryObject_Insert_Input>;
-  on_conflict?: InputMaybe<DirectoryObject_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertDirectoryObjectOneArgs = {
-  object: DirectoryObject_Insert_Input;
-  on_conflict?: InputMaybe<DirectoryObject_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertEmployeeArgs = {
-  objects: Array<Employee_Insert_Input>;
-  on_conflict?: InputMaybe<Employee_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertEmployeeOneArgs = {
-  object: Employee_Insert_Input;
-  on_conflict?: InputMaybe<Employee_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertEventGenericArgs = {
-  objects: Array<EventGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<EventGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertEventGenericOneArgs = {
-  object: EventGeneric_Insert_Input;
-  on_conflict?: InputMaybe<EventGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFlowGenericArgs = {
-  objects: Array<FlowGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<FlowGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFlowGenericOneArgs = {
-  object: FlowGeneric_Insert_Input;
-  on_conflict?: InputMaybe<FlowGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFunctionGenericArgs = {
-  objects: Array<FunctionGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<FunctionGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertFunctionGenericOneArgs = {
-  object: FunctionGeneric_Insert_Input;
-  on_conflict?: InputMaybe<FunctionGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertInterfaceGenericArgs = {
-  objects: Array<InterfaceGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<InterfaceGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertInterfaceGenericOneArgs = {
-  object: InterfaceGeneric_Insert_Input;
-  on_conflict?: InputMaybe<InterfaceGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertMotivationElementGenericArgs = {
-  objects: Array<MotivationElementGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<MotivationElementGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertMotivationElementGenericOneArgs = {
-  object: MotivationElementGeneric_Insert_Input;
-  on_conflict?: InputMaybe<MotivationElementGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertMotivationItemHierarchyMapArgs = {
-  objects: Array<MotivationItemHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<MotivationItemHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertMotivationItemHierarchyMapOneArgs = {
-  object: MotivationItemHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<MotivationItemHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertPhysicalLocationArgs = {
-  objects: Array<PhysicalLocation_Insert_Input>;
-  on_conflict?: InputMaybe<PhysicalLocation_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertPhysicalLocationOneArgs = {
-  object: PhysicalLocation_Insert_Input;
-  on_conflict?: InputMaybe<PhysicalLocation_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertPlateauArgs = {
-  objects: Array<Plateau_Insert_Input>;
-  on_conflict?: InputMaybe<Plateau_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertPlateauOneArgs = {
-  object: Plateau_Insert_Input;
-  on_conflict?: InputMaybe<Plateau_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertProcessGenericArgs = {
-  objects: Array<ProcessGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<ProcessGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertProcessGenericOneArgs = {
-  object: ProcessGeneric_Insert_Input;
-  on_conflict?: InputMaybe<ProcessGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertServiceGenericArgs = {
-  objects: Array<ServiceGeneric_Insert_Input>;
-  on_conflict?: InputMaybe<ServiceGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertServiceGenericOneArgs = {
-  object: ServiceGeneric_Insert_Input;
-  on_conflict?: InputMaybe<ServiceGeneric_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionArgs = {
-  objects: Array<Solution_Insert_Input>;
-  on_conflict?: InputMaybe<Solution_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionApplicationComponentMapArgs = {
-  objects: Array<SolutionApplicationComponentMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionApplicationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionApplicationComponentMapOneArgs = {
-  object: SolutionApplicationComponentMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionApplicationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionApplicationFunctionMapArgs = {
-  objects: Array<SolutionApplicationFunctionMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionApplicationFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionApplicationFunctionMapOneArgs = {
-  object: SolutionApplicationFunctionMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionApplicationFunctionMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionDataObjectMapArgs = {
-  objects: Array<SolutionDataObjectMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionDataObjectMapOneArgs = {
-  object: SolutionDataObjectMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionDataObjectMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionFlowMapArgs = {
-  objects: Array<SolutionFlowMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionFlowMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionFlowMapOneArgs = {
-  object: SolutionFlowMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionFlowMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionMotivationComponentMapArgs = {
-  objects: Array<SolutionMotivationComponentMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionMotivationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionMotivationComponentMapOneArgs = {
-  object: SolutionMotivationComponentMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionMotivationComponentMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionMotivationElementMapArgs = {
-  objects: Array<SolutionMotivationElementMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionMotivationElementMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionMotivationElementMapOneArgs = {
-  object: SolutionMotivationElementMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionMotivationElementMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionOneArgs = {
-  object: Solution_Insert_Input;
-  on_conflict?: InputMaybe<Solution_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionStakeholderMapArgs = {
-  objects: Array<SolutionStakeholderMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionStakeholderMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionStakeholderMapOneArgs = {
-  object: SolutionStakeholderMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionStakeholderMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionTechnologyNodeMapArgs = {
-  objects: Array<SolutionTechnologyNodeMap_Insert_Input>;
-  on_conflict?: InputMaybe<SolutionTechnologyNodeMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSolutionTechnologyNodeMapOneArgs = {
-  object: SolutionTechnologyNodeMap_Insert_Input;
-  on_conflict?: InputMaybe<SolutionTechnologyNodeMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertStakeholderArgs = {
-  objects: Array<Stakeholder_Insert_Input>;
-  on_conflict?: InputMaybe<Stakeholder_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertStakeholderOneArgs = {
-  object: Stakeholder_Insert_Input;
-  on_conflict?: InputMaybe<Stakeholder_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSystemSoftwareArgs = {
-  objects: Array<SystemSoftware_Insert_Input>;
-  on_conflict?: InputMaybe<SystemSoftware_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertSystemSoftwareOneArgs = {
-  object: SystemSoftware_Insert_Input;
-  on_conflict?: InputMaybe<SystemSoftware_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNetworkArgs = {
-  objects: Array<TechnologyNetwork_Insert_Input>;
-  on_conflict?: InputMaybe<TechnologyNetwork_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNetworkHierarchyMapArgs = {
-  objects: Array<TechnologyNetworkHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<TechnologyNetworkHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNetworkHierarchyMapOneArgs = {
-  object: TechnologyNetworkHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<TechnologyNetworkHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNetworkOneArgs = {
-  object: TechnologyNetwork_Insert_Input;
-  on_conflict?: InputMaybe<TechnologyNetwork_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeArgs = {
-  objects: Array<TechnologyNode_Insert_Input>;
-  on_conflict?: InputMaybe<TechnologyNode_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeHierarchyMapArgs = {
-  objects: Array<TechnologyNodeHierarchyMap_Insert_Input>;
-  on_conflict?: InputMaybe<TechnologyNodeHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeHierarchyMapOneArgs = {
-  object: TechnologyNodeHierarchyMap_Insert_Input;
-  on_conflict?: InputMaybe<TechnologyNodeHierarchyMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeOneArgs = {
-  object: TechnologyNode_Insert_Input;
-  on_conflict?: InputMaybe<TechnologyNode_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeSystemSoftwareMapArgs = {
-  objects: Array<TechnologyNodeSystemSoftwareMap_Insert_Input>;
-  on_conflict?: InputMaybe<TechnologyNodeSystemSoftwareMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTechnologyNodeSystemSoftwareMapOneArgs = {
-  object: TechnologyNodeSystemSoftwareMap_Insert_Input;
-  on_conflict?: InputMaybe<TechnologyNodeSystemSoftwareMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTenantArgs = {
-  objects: Array<Tenant_Insert_Input>;
-  on_conflict?: InputMaybe<Tenant_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertTenantOneArgs = {
-  object: Tenant_Insert_Input;
-  on_conflict?: InputMaybe<Tenant_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertUserProfileArgs = {
-  objects: Array<UserProfile_Insert_Input>;
-  on_conflict?: InputMaybe<UserProfile_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertUserProfileOneArgs = {
-  object: UserProfile_Insert_Input;
-  on_conflict?: InputMaybe<UserProfile_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertVariantArgs = {
-  objects: Array<Variant_Insert_Input>;
-  on_conflict?: InputMaybe<Variant_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertVariantMotivationElementMapArgs = {
-  objects: Array<VariantMotivationElementMap_Insert_Input>;
-  on_conflict?: InputMaybe<VariantMotivationElementMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertVariantMotivationElementMapOneArgs = {
-  object: VariantMotivationElementMap_Insert_Input;
-  on_conflict?: InputMaybe<VariantMotivationElementMap_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertVariantOneArgs = {
-  object: Variant_Insert_Input;
-  on_conflict?: InputMaybe<Variant_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertViewArgs = {
-  objects: Array<View_Insert_Input>;
-  on_conflict?: InputMaybe<View_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertViewOneArgs = {
-  object: View_Insert_Input;
-  on_conflict?: InputMaybe<View_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertWorkspaceArgs = {
-  objects: Array<Workspace_Insert_Input>;
-  on_conflict?: InputMaybe<Workspace_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsertWorkspaceOneArgs = {
-  object: Workspace_Insert_Input;
-  on_conflict?: InputMaybe<Workspace_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_MapTenantUserProfilesArgs = {
-  objects: Array<MapTenantUserProfiles_Insert_Input>;
-  on_conflict?: InputMaybe<MapTenantUserProfiles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_MapTenantUserProfiles_OneArgs = {
-  object: MapTenantUserProfiles_Insert_Input;
-  on_conflict?: InputMaybe<MapTenantUserProfiles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_MapWorkspaceUserProfilesArgs = {
-  objects: Array<MapWorkspaceUserProfiles_Insert_Input>;
-  on_conflict?: InputMaybe<MapWorkspaceUserProfiles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_MapWorkspaceUserProfiles_OneArgs = {
-  object: MapWorkspaceUserProfiles_Insert_Input;
-  on_conflict?: InputMaybe<MapWorkspaceUserProfiles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_StatesArgs = {
-  objects: Array<States_Insert_Input>;
-  on_conflict?: InputMaybe<States_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_States_OneArgs = {
-  object: States_Insert_Input;
-  on_conflict?: InputMaybe<States_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_TransitionsArgs = {
-  objects: Array<Transitions_Insert_Input>;
-  on_conflict?: InputMaybe<Transitions_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Transitions_OneArgs = {
-  object: Transitions_Insert_Input;
-  on_conflict?: InputMaybe<Transitions_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentArgs = {
-  _set?: InputMaybe<ApplicationComponent_Set_Input>;
-  where: ApplicationComponent_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentBusinessActorRoleMapArgs = {
-  _set?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Set_Input>;
-  where: ApplicationComponentBusinessActorRoleMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentBusinessActorRoleMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentBusinessActorRoleMap_Set_Input>;
-  pk_columns: ApplicationComponentBusinessActorRoleMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentByPkArgs = {
-  _set?: InputMaybe<ApplicationComponent_Set_Input>;
-  pk_columns: ApplicationComponent_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentDataObjectMapArgs = {
-  _set?: InputMaybe<ApplicationComponentDataObjectMap_Set_Input>;
-  where: ApplicationComponentDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentDataObjectMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentDataObjectMap_Set_Input>;
-  pk_columns: ApplicationComponentDataObjectMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentDirectoryMapArgs = {
-  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
-  where: ApplicationComponentDirectoryMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentDirectoryMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentDirectoryMap_Set_Input>;
-  pk_columns: ApplicationComponentDirectoryMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentEventMapArgs = {
-  _set?: InputMaybe<ApplicationComponentEventMap_Set_Input>;
-  where: ApplicationComponentEventMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentEventMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentEventMap_Set_Input>;
-  pk_columns: ApplicationComponentEventMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentFunctionMapArgs = {
-  _set?: InputMaybe<ApplicationComponentFunctionMap_Set_Input>;
-  where: ApplicationComponentFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentFunctionMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentFunctionMap_Set_Input>;
-  pk_columns: ApplicationComponentFunctionMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentHierarchyMapArgs = {
-  _inc?: InputMaybe<ApplicationComponentHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<ApplicationComponentHierarchyMap_Set_Input>;
-  where: ApplicationComponentHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentHierarchyMapByPkArgs = {
-  _inc?: InputMaybe<ApplicationComponentHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<ApplicationComponentHierarchyMap_Set_Input>;
-  pk_columns: ApplicationComponentHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentInterfaceMapArgs = {
-  _set?: InputMaybe<ApplicationComponentInterfaceMap_Set_Input>;
-  where: ApplicationComponentInterfaceMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentInterfaceMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentInterfaceMap_Set_Input>;
-  pk_columns: ApplicationComponentInterfaceMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentProductMapArgs = {
-  _set?: InputMaybe<ApplicationComponentProductMap_Set_Input>;
-  where: ApplicationComponentProductMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentProductMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentProductMap_Set_Input>;
-  pk_columns: ApplicationComponentProductMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentStakeholderMapArgs = {
-  _set?: InputMaybe<ApplicationComponentStakeholderMap_Set_Input>;
-  where: ApplicationComponentStakeholderMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentStakeholderMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentStakeholderMap_Set_Input>;
-  pk_columns: ApplicationComponentStakeholderMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentSystemSoftwareMapArgs = {
-  _set?: InputMaybe<ApplicationComponentSystemSoftwareMap_Set_Input>;
-  where: ApplicationComponentSystemSoftwareMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentSystemSoftwareMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentSystemSoftwareMap_Set_Input>;
-  pk_columns: ApplicationComponentSystemSoftwareMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentTechnologyLogicalNetworkMapArgs = {
-  _set?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Set_Input>;
-  where: ApplicationComponentTechnologyLogicalNetworkMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentTechnologyLogicalNetworkMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentTechnologyLogicalNetworkMap_Set_Input>;
-  pk_columns: ApplicationComponentTechnologyLogicalNetworkMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentTechnologyNodeMapArgs = {
-  _set?: InputMaybe<ApplicationComponentTechnologyNodeMap_Set_Input>;
-  where: ApplicationComponentTechnologyNodeMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationComponentTechnologyNodeMapByPkArgs = {
-  _set?: InputMaybe<ApplicationComponentTechnologyNodeMap_Set_Input>;
-  pk_columns: ApplicationComponentTechnologyNodeMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationFunctionDataObjectMapArgs = {
-  _set?: InputMaybe<ApplicationFunctionDataObjectMap_Set_Input>;
-  where: ApplicationFunctionDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationFunctionDataObjectMapByPkArgs = {
-  _set?: InputMaybe<ApplicationFunctionDataObjectMap_Set_Input>;
-  pk_columns: ApplicationFunctionDataObjectMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationFunctionInterfaceMapArgs = {
-  _set?: InputMaybe<ApplicationFunctionInterfaceMap_Set_Input>;
-  where: ApplicationFunctionInterfaceMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateApplicationFunctionInterfaceMapByPkArgs = {
-  _set?: InputMaybe<ApplicationFunctionInterfaceMap_Set_Input>;
-  pk_columns: ApplicationFunctionInterfaceMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessActorArgs = {
-  _set?: InputMaybe<BusinessActor_Set_Input>;
-  where: BusinessActor_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessActorByPkArgs = {
-  _set?: InputMaybe<BusinessActor_Set_Input>;
-  pk_columns: BusinessActor_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessActorRoleMapArgs = {
-  _set?: InputMaybe<BusinessActorRoleMap_Set_Input>;
-  where: BusinessActorRoleMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessActorRoleMapByPkArgs = {
-  _set?: InputMaybe<BusinessActorRoleMap_Set_Input>;
-  pk_columns: BusinessActorRoleMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessFunctionMapArgs = {
-  _set?: InputMaybe<BusinessProcessFunctionMap_Set_Input>;
-  where: BusinessProcessFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessFunctionMapByPkArgs = {
-  _set?: InputMaybe<BusinessProcessFunctionMap_Set_Input>;
-  pk_columns: BusinessProcessFunctionMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessHierarchyMapArgs = {
-  _set?: InputMaybe<BusinessProcessHierarchyMap_Set_Input>;
-  where: BusinessProcessHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessHierarchyMapByPkArgs = {
-  _set?: InputMaybe<BusinessProcessHierarchyMap_Set_Input>;
-  pk_columns: BusinessProcessHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessMotivationItemMapArgs = {
-  _set?: InputMaybe<BusinessProcessMotivationItemMap_Set_Input>;
-  where: BusinessProcessMotivationItemMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProcessMotivationItemMapByPkArgs = {
-  _set?: InputMaybe<BusinessProcessMotivationItemMap_Set_Input>;
-  pk_columns: BusinessProcessMotivationItemMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProductArgs = {
-  _set?: InputMaybe<BusinessProduct_Set_Input>;
-  where: BusinessProduct_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessProductByPkArgs = {
-  _set?: InputMaybe<BusinessProduct_Set_Input>;
-  pk_columns: BusinessProduct_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessRoleArgs = {
-  _set?: InputMaybe<BusinessRole_Set_Input>;
-  where: BusinessRole_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateBusinessRoleByPkArgs = {
-  _set?: InputMaybe<BusinessRole_Set_Input>;
-  pk_columns: BusinessRole_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityArgs = {
-  _set?: InputMaybe<Capability_Set_Input>;
-  where: Capability_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityApplicationComponentAssessmentMapArgs = {
-  _set?: InputMaybe<CapabilityApplicationComponentAssessmentMap_Set_Input>;
-  where: CapabilityApplicationComponentAssessmentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityApplicationComponentAssessmentMapByPkArgs = {
-  _set?: InputMaybe<CapabilityApplicationComponentAssessmentMap_Set_Input>;
-  pk_columns: CapabilityApplicationComponentAssessmentMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityApplicationComponentMapArgs = {
-  _set?: InputMaybe<CapabilityApplicationComponentMap_Set_Input>;
-  where: CapabilityApplicationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityApplicationComponentMapByPkArgs = {
-  _set?: InputMaybe<CapabilityApplicationComponentMap_Set_Input>;
-  pk_columns: CapabilityApplicationComponentMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityBusinessProcessAssessmentMapArgs = {
-  _set?: InputMaybe<CapabilityBusinessProcessAssessmentMap_Set_Input>;
-  where: CapabilityBusinessProcessAssessmentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityBusinessProcessAssessmentMapByPkArgs = {
-  _set?: InputMaybe<CapabilityBusinessProcessAssessmentMap_Set_Input>;
-  pk_columns: CapabilityBusinessProcessAssessmentMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityBusinessProcessMapArgs = {
-  _set?: InputMaybe<CapabilityBusinessProcessMap_Set_Input>;
-  where: CapabilityBusinessProcessMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityBusinessProcessMapByPkArgs = {
-  _set?: InputMaybe<CapabilityBusinessProcessMap_Set_Input>;
-  pk_columns: CapabilityBusinessProcessMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityByPkArgs = {
-  _set?: InputMaybe<Capability_Set_Input>;
-  pk_columns: Capability_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityHierarchyMapArgs = {
-  _inc?: InputMaybe<CapabilityHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<CapabilityHierarchyMap_Set_Input>;
-  where: CapabilityHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateCapabilityHierarchyMapByPkArgs = {
-  _inc?: InputMaybe<CapabilityHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<CapabilityHierarchyMap_Set_Input>;
-  pk_columns: CapabilityHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDataObjectArgs = {
-  _set?: InputMaybe<DataObject_Set_Input>;
-  where: DataObject_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDataObjectByPkArgs = {
-  _set?: InputMaybe<DataObject_Set_Input>;
-  pk_columns: DataObject_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDirectoryItemsMapArgs = {
-  _set?: InputMaybe<DirectoryItemsMap_Set_Input>;
-  where: DirectoryItemsMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDirectoryItemsMapByPkArgs = {
-  _set?: InputMaybe<DirectoryItemsMap_Set_Input>;
-  pk_columns: DirectoryItemsMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDirectoryObjectArgs = {
-  _set?: InputMaybe<DirectoryObject_Set_Input>;
-  where: DirectoryObject_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateDirectoryObjectByPkArgs = {
-  _set?: InputMaybe<DirectoryObject_Set_Input>;
-  pk_columns: DirectoryObject_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateEmployeeArgs = {
-  _set?: InputMaybe<Employee_Set_Input>;
-  where: Employee_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateEmployeeByPkArgs = {
-  _set?: InputMaybe<Employee_Set_Input>;
-  pk_columns: Employee_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateEventGenericArgs = {
-  _set?: InputMaybe<EventGeneric_Set_Input>;
-  where: EventGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateEventGenericByPkArgs = {
-  _set?: InputMaybe<EventGeneric_Set_Input>;
-  pk_columns: EventGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFlowGenericArgs = {
-  _set?: InputMaybe<FlowGeneric_Set_Input>;
-  where: FlowGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFlowGenericByPkArgs = {
-  _set?: InputMaybe<FlowGeneric_Set_Input>;
-  pk_columns: FlowGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFunctionGenericArgs = {
-  _set?: InputMaybe<FunctionGeneric_Set_Input>;
-  where: FunctionGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateFunctionGenericByPkArgs = {
-  _set?: InputMaybe<FunctionGeneric_Set_Input>;
-  pk_columns: FunctionGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateInterfaceGenericArgs = {
-  _set?: InputMaybe<InterfaceGeneric_Set_Input>;
-  where: InterfaceGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateInterfaceGenericByPkArgs = {
-  _set?: InputMaybe<InterfaceGeneric_Set_Input>;
-  pk_columns: InterfaceGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateMotivationElementGenericArgs = {
-  _inc?: InputMaybe<MotivationElementGeneric_Inc_Input>;
-  _set?: InputMaybe<MotivationElementGeneric_Set_Input>;
-  where: MotivationElementGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateMotivationElementGenericByPkArgs = {
-  _inc?: InputMaybe<MotivationElementGeneric_Inc_Input>;
-  _set?: InputMaybe<MotivationElementGeneric_Set_Input>;
-  pk_columns: MotivationElementGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateMotivationItemHierarchyMapArgs = {
-  _set?: InputMaybe<MotivationItemHierarchyMap_Set_Input>;
-  where: MotivationItemHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateMotivationItemHierarchyMapByPkArgs = {
-  _set?: InputMaybe<MotivationItemHierarchyMap_Set_Input>;
-  pk_columns: MotivationItemHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdatePhysicalLocationArgs = {
-  _set?: InputMaybe<PhysicalLocation_Set_Input>;
-  where: PhysicalLocation_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdatePhysicalLocationByPkArgs = {
-  _set?: InputMaybe<PhysicalLocation_Set_Input>;
-  pk_columns: PhysicalLocation_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdatePlateauArgs = {
-  _set?: InputMaybe<Plateau_Set_Input>;
-  where: Plateau_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdatePlateauByPkArgs = {
-  _set?: InputMaybe<Plateau_Set_Input>;
-  pk_columns: Plateau_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateProcessGenericArgs = {
-  _set?: InputMaybe<ProcessGeneric_Set_Input>;
-  where: ProcessGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateProcessGenericByPkArgs = {
-  _set?: InputMaybe<ProcessGeneric_Set_Input>;
-  pk_columns: ProcessGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateServiceGenericArgs = {
-  _set?: InputMaybe<ServiceGeneric_Set_Input>;
-  where: ServiceGeneric_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateServiceGenericByPkArgs = {
-  _set?: InputMaybe<ServiceGeneric_Set_Input>;
-  pk_columns: ServiceGeneric_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionArgs = {
-  _set?: InputMaybe<Solution_Set_Input>;
-  where: Solution_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionApplicationComponentMapArgs = {
-  _set?: InputMaybe<SolutionApplicationComponentMap_Set_Input>;
-  where: SolutionApplicationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionApplicationComponentMapByPkArgs = {
-  _set?: InputMaybe<SolutionApplicationComponentMap_Set_Input>;
-  pk_columns: SolutionApplicationComponentMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionApplicationFunctionMapArgs = {
-  _set?: InputMaybe<SolutionApplicationFunctionMap_Set_Input>;
-  where: SolutionApplicationFunctionMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionApplicationFunctionMapByPkArgs = {
-  _set?: InputMaybe<SolutionApplicationFunctionMap_Set_Input>;
-  pk_columns: SolutionApplicationFunctionMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionByPkArgs = {
-  _set?: InputMaybe<Solution_Set_Input>;
-  pk_columns: Solution_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionDataObjectMapArgs = {
-  _set?: InputMaybe<SolutionDataObjectMap_Set_Input>;
-  where: SolutionDataObjectMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionDataObjectMapByPkArgs = {
-  _set?: InputMaybe<SolutionDataObjectMap_Set_Input>;
-  pk_columns: SolutionDataObjectMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionFlowMapArgs = {
-  _set?: InputMaybe<SolutionFlowMap_Set_Input>;
-  where: SolutionFlowMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionFlowMapByPkArgs = {
-  _set?: InputMaybe<SolutionFlowMap_Set_Input>;
-  pk_columns: SolutionFlowMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionMotivationComponentMapArgs = {
-  _set?: InputMaybe<SolutionMotivationComponentMap_Set_Input>;
-  where: SolutionMotivationComponentMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionMotivationComponentMapByPkArgs = {
-  _set?: InputMaybe<SolutionMotivationComponentMap_Set_Input>;
-  pk_columns: SolutionMotivationComponentMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionMotivationElementMapArgs = {
-  _set?: InputMaybe<SolutionMotivationElementMap_Set_Input>;
-  where: SolutionMotivationElementMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionMotivationElementMapByPkArgs = {
-  _set?: InputMaybe<SolutionMotivationElementMap_Set_Input>;
-  pk_columns: SolutionMotivationElementMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionStakeholderMapArgs = {
-  _set?: InputMaybe<SolutionStakeholderMap_Set_Input>;
-  where: SolutionStakeholderMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionStakeholderMapByPkArgs = {
-  _set?: InputMaybe<SolutionStakeholderMap_Set_Input>;
-  pk_columns: SolutionStakeholderMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionTechnologyNodeMapArgs = {
-  _set?: InputMaybe<SolutionTechnologyNodeMap_Set_Input>;
-  where: SolutionTechnologyNodeMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSolutionTechnologyNodeMapByPkArgs = {
-  _set?: InputMaybe<SolutionTechnologyNodeMap_Set_Input>;
-  pk_columns: SolutionTechnologyNodeMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateStakeholderArgs = {
-  _set?: InputMaybe<Stakeholder_Set_Input>;
-  where: Stakeholder_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateStakeholderByPkArgs = {
-  _set?: InputMaybe<Stakeholder_Set_Input>;
-  pk_columns: Stakeholder_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSystemSoftwareArgs = {
-  _set?: InputMaybe<SystemSoftware_Set_Input>;
-  where: SystemSoftware_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateSystemSoftwareByPkArgs = {
-  _set?: InputMaybe<SystemSoftware_Set_Input>;
-  pk_columns: SystemSoftware_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNetworkArgs = {
-  _set?: InputMaybe<TechnologyNetwork_Set_Input>;
-  where: TechnologyNetwork_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNetworkByPkArgs = {
-  _set?: InputMaybe<TechnologyNetwork_Set_Input>;
-  pk_columns: TechnologyNetwork_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNetworkHierarchyMapArgs = {
-  _inc?: InputMaybe<TechnologyNetworkHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<TechnologyNetworkHierarchyMap_Set_Input>;
-  where: TechnologyNetworkHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNetworkHierarchyMapByPkArgs = {
-  _inc?: InputMaybe<TechnologyNetworkHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<TechnologyNetworkHierarchyMap_Set_Input>;
-  pk_columns: TechnologyNetworkHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeArgs = {
-  _inc?: InputMaybe<TechnologyNode_Inc_Input>;
-  _set?: InputMaybe<TechnologyNode_Set_Input>;
-  where: TechnologyNode_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeByPkArgs = {
-  _inc?: InputMaybe<TechnologyNode_Inc_Input>;
-  _set?: InputMaybe<TechnologyNode_Set_Input>;
-  pk_columns: TechnologyNode_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeHierarchyMapArgs = {
-  _inc?: InputMaybe<TechnologyNodeHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<TechnologyNodeHierarchyMap_Set_Input>;
-  where: TechnologyNodeHierarchyMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeHierarchyMapByPkArgs = {
-  _inc?: InputMaybe<TechnologyNodeHierarchyMap_Inc_Input>;
-  _set?: InputMaybe<TechnologyNodeHierarchyMap_Set_Input>;
-  pk_columns: TechnologyNodeHierarchyMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeSystemSoftwareMapArgs = {
-  _set?: InputMaybe<TechnologyNodeSystemSoftwareMap_Set_Input>;
-  where: TechnologyNodeSystemSoftwareMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTechnologyNodeSystemSoftwareMapByPkArgs = {
-  _set?: InputMaybe<TechnologyNodeSystemSoftwareMap_Set_Input>;
-  pk_columns: TechnologyNodeSystemSoftwareMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTenantArgs = {
-  _set?: InputMaybe<Tenant_Set_Input>;
-  where: Tenant_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateTenantByPkArgs = {
-  _set?: InputMaybe<Tenant_Set_Input>;
-  pk_columns: Tenant_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateUserProfileArgs = {
-  _set?: InputMaybe<UserProfile_Set_Input>;
-  where: UserProfile_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateUserProfileByPkArgs = {
-  _set?: InputMaybe<UserProfile_Set_Input>;
-  pk_columns: UserProfile_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateVariantArgs = {
-  _set?: InputMaybe<Variant_Set_Input>;
-  where: Variant_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateVariantByPkArgs = {
-  _set?: InputMaybe<Variant_Set_Input>;
-  pk_columns: Variant_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateVariantMotivationElementMapArgs = {
-  _set?: InputMaybe<VariantMotivationElementMap_Set_Input>;
-  where: VariantMotivationElementMap_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateVariantMotivationElementMapByPkArgs = {
-  _set?: InputMaybe<VariantMotivationElementMap_Set_Input>;
-  pk_columns: VariantMotivationElementMap_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateViewArgs = {
-  _set?: InputMaybe<View_Set_Input>;
-  where: View_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateViewByPkArgs = {
-  _set?: InputMaybe<View_Set_Input>;
-  pk_columns: View_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateWorkspaceArgs = {
-  _set?: InputMaybe<Workspace_Set_Input>;
-  where: Workspace_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateWorkspaceByPkArgs = {
-  _set?: InputMaybe<Workspace_Set_Input>;
-  pk_columns: Workspace_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentBusinessActorRoleMap_ManyArgs = {
-  updates: Array<ApplicationComponentBusinessActorRoleMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentDataObjectMap_ManyArgs = {
-  updates: Array<ApplicationComponentDataObjectMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentDirectoryMap_ManyArgs = {
-  updates: Array<ApplicationComponentDirectoryMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentEventMap_ManyArgs = {
-  updates: Array<ApplicationComponentEventMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentFunctionMap_ManyArgs = {
-  updates: Array<ApplicationComponentFunctionMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentHierarchyMap_ManyArgs = {
-  updates: Array<ApplicationComponentHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentInterfaceMap_ManyArgs = {
-  updates: Array<ApplicationComponentInterfaceMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentProductMap_ManyArgs = {
-  updates: Array<ApplicationComponentProductMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentStakeholderMap_ManyArgs = {
-  updates: Array<ApplicationComponentStakeholderMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentSystemSoftwareMap_ManyArgs = {
-  updates: Array<ApplicationComponentSystemSoftwareMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentTechnologyLogicalNetworkMap_ManyArgs = {
-  updates: Array<ApplicationComponentTechnologyLogicalNetworkMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponentTechnologyNodeMap_ManyArgs = {
-  updates: Array<ApplicationComponentTechnologyNodeMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationComponent_ManyArgs = {
-  updates: Array<ApplicationComponent_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationFunctionDataObjectMap_ManyArgs = {
-  updates: Array<ApplicationFunctionDataObjectMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ApplicationFunctionInterfaceMap_ManyArgs = {
-  updates: Array<ApplicationFunctionInterfaceMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessActorRoleMap_ManyArgs = {
-  updates: Array<BusinessActorRoleMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessActor_ManyArgs = {
-  updates: Array<BusinessActor_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessProcessFunctionMap_ManyArgs = {
-  updates: Array<BusinessProcessFunctionMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessProcessHierarchyMap_ManyArgs = {
-  updates: Array<BusinessProcessHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessProcessMotivationItemMap_ManyArgs = {
-  updates: Array<BusinessProcessMotivationItemMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessProduct_ManyArgs = {
-  updates: Array<BusinessProduct_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_BusinessRole_ManyArgs = {
-  updates: Array<BusinessRole_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_CapabilityApplicationComponentAssessmentMap_ManyArgs = {
-  updates: Array<CapabilityApplicationComponentAssessmentMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_CapabilityApplicationComponentMap_ManyArgs = {
-  updates: Array<CapabilityApplicationComponentMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_CapabilityBusinessProcessAssessmentMap_ManyArgs = {
-  updates: Array<CapabilityBusinessProcessAssessmentMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_CapabilityBusinessProcessMap_ManyArgs = {
-  updates: Array<CapabilityBusinessProcessMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_CapabilityHierarchyMap_ManyArgs = {
-  updates: Array<CapabilityHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Capability_ManyArgs = {
-  updates: Array<Capability_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_DataObject_ManyArgs = {
-  updates: Array<DataObject_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_DirectoryItemsMap_ManyArgs = {
-  updates: Array<DirectoryItemsMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_DirectoryObject_ManyArgs = {
-  updates: Array<DirectoryObject_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Employee_ManyArgs = {
-  updates: Array<Employee_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventGeneric_ManyArgs = {
-  updates: Array<EventGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_FlowGeneric_ManyArgs = {
-  updates: Array<FlowGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_FunctionGeneric_ManyArgs = {
-  updates: Array<FunctionGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_InterfaceGeneric_ManyArgs = {
-  updates: Array<InterfaceGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MotivationElementGeneric_ManyArgs = {
-  updates: Array<MotivationElementGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MotivationItemHierarchyMap_ManyArgs = {
-  updates: Array<MotivationItemHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_PhysicalLocation_ManyArgs = {
-  updates: Array<PhysicalLocation_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Plateau_ManyArgs = {
-  updates: Array<Plateau_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ProcessGeneric_ManyArgs = {
-  updates: Array<ProcessGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ServiceGeneric_ManyArgs = {
-  updates: Array<ServiceGeneric_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionApplicationComponentMap_ManyArgs = {
-  updates: Array<SolutionApplicationComponentMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionApplicationFunctionMap_ManyArgs = {
-  updates: Array<SolutionApplicationFunctionMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionDataObjectMap_ManyArgs = {
-  updates: Array<SolutionDataObjectMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionFlowMap_ManyArgs = {
-  updates: Array<SolutionFlowMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionMotivationComponentMap_ManyArgs = {
-  updates: Array<SolutionMotivationComponentMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionMotivationElementMap_ManyArgs = {
-  updates: Array<SolutionMotivationElementMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionStakeholderMap_ManyArgs = {
-  updates: Array<SolutionStakeholderMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SolutionTechnologyNodeMap_ManyArgs = {
-  updates: Array<SolutionTechnologyNodeMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Solution_ManyArgs = {
-  updates: Array<Solution_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Stakeholder_ManyArgs = {
-  updates: Array<Stakeholder_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_SystemSoftware_ManyArgs = {
-  updates: Array<SystemSoftware_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TechnologyNetworkHierarchyMap_ManyArgs = {
-  updates: Array<TechnologyNetworkHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TechnologyNetwork_ManyArgs = {
-  updates: Array<TechnologyNetwork_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TechnologyNodeHierarchyMap_ManyArgs = {
-  updates: Array<TechnologyNodeHierarchyMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TechnologyNodeSystemSoftwareMap_ManyArgs = {
-  updates: Array<TechnologyNodeSystemSoftwareMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TechnologyNode_ManyArgs = {
-  updates: Array<TechnologyNode_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Tenant_ManyArgs = {
-  updates: Array<Tenant_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UserProfile_ManyArgs = {
-  updates: Array<UserProfile_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_VariantMotivationElementMap_ManyArgs = {
-  updates: Array<VariantMotivationElementMap_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Variant_ManyArgs = {
-  updates: Array<Variant_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_View_ManyArgs = {
-  updates: Array<View_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Workspace_ManyArgs = {
-  updates: Array<Workspace_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapTenantUserProfilesArgs = {
-  _set?: InputMaybe<MapTenantUserProfiles_Set_Input>;
-  where: MapTenantUserProfiles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapTenantUserProfiles_By_PkArgs = {
-  _set?: InputMaybe<MapTenantUserProfiles_Set_Input>;
-  pk_columns: MapTenantUserProfiles_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapTenantUserProfiles_ManyArgs = {
-  updates: Array<MapTenantUserProfiles_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapWorkspaceUserProfilesArgs = {
-  _set?: InputMaybe<MapWorkspaceUserProfiles_Set_Input>;
-  where: MapWorkspaceUserProfiles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapWorkspaceUserProfiles_By_PkArgs = {
-  _set?: InputMaybe<MapWorkspaceUserProfiles_Set_Input>;
-  pk_columns: MapWorkspaceUserProfiles_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_MapWorkspaceUserProfiles_ManyArgs = {
-  updates: Array<MapWorkspaceUserProfiles_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_StatesArgs = {
-  _set?: InputMaybe<States_Set_Input>;
-  where: States_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_States_By_PkArgs = {
-  _set?: InputMaybe<States_Set_Input>;
-  pk_columns: States_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_States_ManyArgs = {
-  updates: Array<States_Updates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_TransitionsArgs = {
-  _set?: InputMaybe<Transitions_Set_Input>;
-  where: Transitions_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Transitions_By_PkArgs = {
-  _set?: InputMaybe<Transitions_Set_Input>;
-  pk_columns: Transitions_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Transitions_ManyArgs = {
-  updates: Array<Transitions_Updates>;
 };
 
 /** Boolean expression to compare columns of type "network_abstraction_level_enum". All fields are combined with logical 'AND'. */
@@ -26416,12 +15617,6 @@ export type Query_Root = {
   BusinessProductAggregate: BusinessProduct_Aggregate;
   /** fetch data from the table: "products" using primary key columns */
   BusinessProductByPk?: Maybe<BusinessProduct>;
-  /** fetch data from the table: "roles" */
-  BusinessRole: Array<BusinessRole>;
-  /** fetch aggregated fields from the table: "roles" */
-  BusinessRoleAggregate: BusinessRole_Aggregate;
-  /** fetch data from the table: "roles" using primary key columns */
-  BusinessRoleByPk?: Maybe<BusinessRole>;
   /** fetch data from the table: "capabilities" */
   Capability: Array<Capability>;
   /** fetch aggregated fields from the table: "capabilities" */
@@ -26483,11 +15678,11 @@ export type Query_Root = {
   /** fetch data from the table: "employees" using primary key columns */
   EmployeeByPk?: Maybe<Employee>;
   /** fetch data from the table: "events" */
-  EventGeneric: Array<EventGeneric>;
+  Event: Array<Event>;
   /** fetch aggregated fields from the table: "events" */
-  EventGenericAggregate: EventGeneric_Aggregate;
+  EventAggregate: Event_Aggregate;
   /** fetch data from the table: "events" using primary key columns */
-  EventGenericByPk?: Maybe<EventGeneric>;
+  EventByPk?: Maybe<Event>;
   /** fetch data from the table: "flows" */
   FlowGeneric: Array<FlowGeneric>;
   /** fetch aggregated fields from the table: "flows" */
@@ -26495,17 +15690,23 @@ export type Query_Root = {
   /** fetch data from the table: "flows" using primary key columns */
   FlowGenericByPk?: Maybe<FlowGeneric>;
   /** fetch data from the table: "functions" */
-  FunctionGeneric: Array<FunctionGeneric>;
+  Function: Array<Function>;
   /** fetch aggregated fields from the table: "functions" */
-  FunctionGenericAggregate: FunctionGeneric_Aggregate;
+  FunctionAggregate: Function_Aggregate;
   /** fetch data from the table: "functions" using primary key columns */
-  FunctionGenericByPk?: Maybe<FunctionGeneric>;
+  FunctionByPk?: Maybe<Function>;
   /** fetch data from the table: "interfaces" */
-  InterfaceGeneric: Array<InterfaceGeneric>;
+  Interface: Array<Interface>;
   /** fetch aggregated fields from the table: "interfaces" */
-  InterfaceGenericAggregate: InterfaceGeneric_Aggregate;
+  InterfaceAggregate: Interface_Aggregate;
   /** fetch data from the table: "interfaces" using primary key columns */
-  InterfaceGenericByPk?: Maybe<InterfaceGeneric>;
+  InterfaceByPk?: Maybe<Interface>;
+  /** fetch data from the table: "locations" */
+  Location: Array<Location>;
+  /** fetch aggregated fields from the table: "locations" */
+  LocationAggregate: Location_Aggregate;
+  /** fetch data from the table: "locations" using primary key columns */
+  LocationByPk?: Maybe<Location>;
   /** fetch data from the table: "motivations" */
   MotivationElementGeneric: Array<MotivationElementGeneric>;
   /** fetch aggregated fields from the table: "motivations" */
@@ -26518,12 +15719,6 @@ export type Query_Root = {
   MotivationItemHierarchyMapAggregate: MotivationItemHierarchyMap_Aggregate;
   /** fetch data from the table: "map_motivation_item_hierarchy" using primary key columns */
   MotivationItemHierarchyMapByPk?: Maybe<MotivationItemHierarchyMap>;
-  /** fetch data from the table: "locations" */
-  PhysicalLocation: Array<PhysicalLocation>;
-  /** fetch aggregated fields from the table: "locations" */
-  PhysicalLocationAggregate: PhysicalLocation_Aggregate;
-  /** fetch data from the table: "locations" using primary key columns */
-  PhysicalLocationByPk?: Maybe<PhysicalLocation>;
   /** fetch data from the table: "plateaus" */
   Plateau: Array<Plateau>;
   /** fetch aggregated fields from the table: "plateaus" */
@@ -26531,17 +15726,23 @@ export type Query_Root = {
   /** fetch data from the table: "plateaus" using primary key columns */
   PlateauByPk?: Maybe<Plateau>;
   /** fetch data from the table: "processes" */
-  ProcessGeneric: Array<ProcessGeneric>;
+  Process: Array<Process>;
   /** fetch aggregated fields from the table: "processes" */
-  ProcessGenericAggregate: ProcessGeneric_Aggregate;
+  ProcessAggregate: Process_Aggregate;
   /** fetch data from the table: "processes" using primary key columns */
-  ProcessGenericByPk?: Maybe<ProcessGeneric>;
+  ProcessByPk?: Maybe<Process>;
+  /** fetch data from the table: "roles" */
+  Role: Array<Role>;
+  /** fetch aggregated fields from the table: "roles" */
+  RoleAggregate: Role_Aggregate;
+  /** fetch data from the table: "roles" using primary key columns */
+  RoleByPk?: Maybe<Role>;
   /** fetch data from the table: "services" */
-  ServiceGeneric: Array<ServiceGeneric>;
+  Service: Array<Service>;
   /** fetch aggregated fields from the table: "services" */
-  ServiceGenericAggregate: ServiceGeneric_Aggregate;
+  ServiceAggregate: Service_Aggregate;
   /** fetch data from the table: "services" using primary key columns */
-  ServiceGenericByPk?: Maybe<ServiceGeneric>;
+  ServiceByPk?: Maybe<Service>;
   /** fetch data from the table: "solutions" */
   Solution: Array<Solution>;
   /** fetch aggregated fields from the table: "solutions" */
@@ -26560,6 +15761,12 @@ export type Query_Root = {
   SolutionApplicationFunctionMapByPk?: Maybe<SolutionApplicationFunctionMap>;
   /** fetch data from the table: "solutions" using primary key columns */
   SolutionByPk?: Maybe<Solution>;
+  /** fetch data from the table: "map_solution_constraint" */
+  SolutionConstraintMap: Array<SolutionConstraintMap>;
+  /** fetch aggregated fields from the table: "map_solution_constraint" */
+  SolutionConstraintMapAggregate: SolutionConstraintMap_Aggregate;
+  /** fetch data from the table: "map_solution_constraint" using primary key columns */
+  SolutionConstraintMapByPk?: Maybe<SolutionConstraintMap>;
   /** fetch data from the table: "map_solution_data_object" */
   SolutionDataObjectMap: Array<SolutionDataObjectMap>;
   /** fetch aggregated fields from the table: "map_solution_data_object" */
@@ -27205,29 +16412,6 @@ export type Query_RootBusinessProductByPkArgs = {
 };
 
 
-export type Query_RootBusinessRoleArgs = {
-  distinct_on?: InputMaybe<Array<BusinessRole_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessRole_Order_By>>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-
-export type Query_RootBusinessRoleAggregateArgs = {
-  distinct_on?: InputMaybe<Array<BusinessRole_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessRole_Order_By>>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-
-export type Query_RootBusinessRoleByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
 export type Query_RootCapabilityArgs = {
   distinct_on?: InputMaybe<Array<Capability_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -27466,25 +16650,25 @@ export type Query_RootEmployeeByPkArgs = {
 };
 
 
-export type Query_RootEventGenericArgs = {
-  distinct_on?: InputMaybe<Array<EventGeneric_Select_Column>>;
+export type Query_RootEventArgs = {
+  distinct_on?: InputMaybe<Array<Event_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<EventGeneric_Order_By>>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Event_Order_By>>;
+  where?: InputMaybe<Event_Bool_Exp>;
 };
 
 
-export type Query_RootEventGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<EventGeneric_Select_Column>>;
+export type Query_RootEventAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Event_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<EventGeneric_Order_By>>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Event_Order_By>>;
+  where?: InputMaybe<Event_Bool_Exp>;
 };
 
 
-export type Query_RootEventGenericByPkArgs = {
+export type Query_RootEventByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -27512,48 +16696,71 @@ export type Query_RootFlowGenericByPkArgs = {
 };
 
 
-export type Query_RootFunctionGenericArgs = {
-  distinct_on?: InputMaybe<Array<FunctionGeneric_Select_Column>>;
+export type Query_RootFunctionArgs = {
+  distinct_on?: InputMaybe<Array<Function_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<FunctionGeneric_Order_By>>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Function_Order_By>>;
+  where?: InputMaybe<Function_Bool_Exp>;
 };
 
 
-export type Query_RootFunctionGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<FunctionGeneric_Select_Column>>;
+export type Query_RootFunctionAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Function_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<FunctionGeneric_Order_By>>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Function_Order_By>>;
+  where?: InputMaybe<Function_Bool_Exp>;
 };
 
 
-export type Query_RootFunctionGenericByPkArgs = {
+export type Query_RootFunctionByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootInterfaceGenericArgs = {
-  distinct_on?: InputMaybe<Array<InterfaceGeneric_Select_Column>>;
+export type Query_RootInterfaceArgs = {
+  distinct_on?: InputMaybe<Array<Interface_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<InterfaceGeneric_Order_By>>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Interface_Order_By>>;
+  where?: InputMaybe<Interface_Bool_Exp>;
 };
 
 
-export type Query_RootInterfaceGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<InterfaceGeneric_Select_Column>>;
+export type Query_RootInterfaceAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Interface_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<InterfaceGeneric_Order_By>>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Interface_Order_By>>;
+  where?: InputMaybe<Interface_Bool_Exp>;
 };
 
 
-export type Query_RootInterfaceGenericByPkArgs = {
+export type Query_RootInterfaceByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootLocationArgs = {
+  distinct_on?: InputMaybe<Array<Location_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Location_Order_By>>;
+  where?: InputMaybe<Location_Bool_Exp>;
+};
+
+
+export type Query_RootLocationAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Location_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Location_Order_By>>;
+  where?: InputMaybe<Location_Bool_Exp>;
+};
+
+
+export type Query_RootLocationByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -27605,29 +16812,6 @@ export type Query_RootMotivationItemHierarchyMapByPkArgs = {
 };
 
 
-export type Query_RootPhysicalLocationArgs = {
-  distinct_on?: InputMaybe<Array<PhysicalLocation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PhysicalLocation_Order_By>>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-
-export type Query_RootPhysicalLocationAggregateArgs = {
-  distinct_on?: InputMaybe<Array<PhysicalLocation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PhysicalLocation_Order_By>>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-
-export type Query_RootPhysicalLocationByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
 export type Query_RootPlateauArgs = {
   distinct_on?: InputMaybe<Array<Plateau_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -27651,48 +16835,71 @@ export type Query_RootPlateauByPkArgs = {
 };
 
 
-export type Query_RootProcessGenericArgs = {
-  distinct_on?: InputMaybe<Array<ProcessGeneric_Select_Column>>;
+export type Query_RootProcessArgs = {
+  distinct_on?: InputMaybe<Array<Process_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ProcessGeneric_Order_By>>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Process_Order_By>>;
+  where?: InputMaybe<Process_Bool_Exp>;
 };
 
 
-export type Query_RootProcessGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<ProcessGeneric_Select_Column>>;
+export type Query_RootProcessAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Process_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ProcessGeneric_Order_By>>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Process_Order_By>>;
+  where?: InputMaybe<Process_Bool_Exp>;
 };
 
 
-export type Query_RootProcessGenericByPkArgs = {
+export type Query_RootProcessByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootServiceGenericArgs = {
-  distinct_on?: InputMaybe<Array<ServiceGeneric_Select_Column>>;
+export type Query_RootRoleArgs = {
+  distinct_on?: InputMaybe<Array<Role_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ServiceGeneric_Order_By>>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Role_Order_By>>;
+  where?: InputMaybe<Role_Bool_Exp>;
 };
 
 
-export type Query_RootServiceGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<ServiceGeneric_Select_Column>>;
+export type Query_RootRoleAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Role_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ServiceGeneric_Order_By>>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Role_Order_By>>;
+  where?: InputMaybe<Role_Bool_Exp>;
 };
 
 
-export type Query_RootServiceGenericByPkArgs = {
+export type Query_RootRoleByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootServiceArgs = {
+  distinct_on?: InputMaybe<Array<Service_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Service_Order_By>>;
+  where?: InputMaybe<Service_Bool_Exp>;
+};
+
+
+export type Query_RootServiceAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Service_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Service_Order_By>>;
+  where?: InputMaybe<Service_Bool_Exp>;
+};
+
+
+export type Query_RootServiceByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -27766,6 +16973,30 @@ export type Query_RootSolutionApplicationFunctionMapByPkArgs = {
 
 export type Query_RootSolutionByPkArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootSolutionConstraintMapArgs = {
+  distinct_on?: InputMaybe<Array<SolutionConstraintMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<SolutionConstraintMap_Order_By>>;
+  where?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
+};
+
+
+export type Query_RootSolutionConstraintMapAggregateArgs = {
+  distinct_on?: InputMaybe<Array<SolutionConstraintMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<SolutionConstraintMap_Order_By>>;
+  where?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
+};
+
+
+export type Query_RootSolutionConstraintMapByPkArgs = {
+  motivationId: Scalars['uuid']['input'];
+  solutionId: Scalars['uuid']['input'];
 };
 
 
@@ -28449,23 +17680,6 @@ export type States_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "states" */
-export enum States_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  StatesPkey = 'states_pkey'
-}
-
-/** input type for inserting data into table "states" */
-export type States_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type States_Max_Fields = {
   __typename?: 'states_max_fields';
@@ -28490,22 +17704,6 @@ export type States_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "states" */
-export type States_Mutation_Response = {
-  __typename?: 'states_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<States>;
-};
-
-/** on_conflict condition type for table "states" */
-export type States_On_Conflict = {
-  constraint: States_Constraint;
-  update_columns?: Array<States_Update_Column>;
-  where?: InputMaybe<States_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "states". */
 export type States_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -28515,11 +17713,6 @@ export type States_Order_By = {
   id?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: states */
-export type States_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "states" */
@@ -28540,17 +17733,6 @@ export enum States_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "states" */
-export type States_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "states" */
 export type States_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -28568,31 +17750,6 @@ export type States_Stream_Cursor_Value_Input = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "states" */
-export enum States_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type States_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<States_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: States_Bool_Exp;
 };
 
 export type Subscription_Root = {
@@ -28765,14 +17922,6 @@ export type Subscription_Root = {
   BusinessProductByPk?: Maybe<BusinessProduct>;
   /** fetch data from the table in a streaming manner: "products" */
   BusinessProduct_stream: Array<BusinessProduct>;
-  /** fetch data from the table: "roles" */
-  BusinessRole: Array<BusinessRole>;
-  /** fetch aggregated fields from the table: "roles" */
-  BusinessRoleAggregate: BusinessRole_Aggregate;
-  /** fetch data from the table: "roles" using primary key columns */
-  BusinessRoleByPk?: Maybe<BusinessRole>;
-  /** fetch data from the table in a streaming manner: "roles" */
-  BusinessRole_stream: Array<BusinessRole>;
   /** fetch data from the table: "capabilities" */
   Capability: Array<Capability>;
   /** fetch aggregated fields from the table: "capabilities" */
@@ -28854,13 +18003,13 @@ export type Subscription_Root = {
   /** fetch data from the table in a streaming manner: "employees" */
   Employee_stream: Array<Employee>;
   /** fetch data from the table: "events" */
-  EventGeneric: Array<EventGeneric>;
+  Event: Array<Event>;
   /** fetch aggregated fields from the table: "events" */
-  EventGenericAggregate: EventGeneric_Aggregate;
+  EventAggregate: Event_Aggregate;
   /** fetch data from the table: "events" using primary key columns */
-  EventGenericByPk?: Maybe<EventGeneric>;
+  EventByPk?: Maybe<Event>;
   /** fetch data from the table in a streaming manner: "events" */
-  EventGeneric_stream: Array<EventGeneric>;
+  Event_stream: Array<Event>;
   /** fetch data from the table: "flows" */
   FlowGeneric: Array<FlowGeneric>;
   /** fetch aggregated fields from the table: "flows" */
@@ -28870,21 +18019,29 @@ export type Subscription_Root = {
   /** fetch data from the table in a streaming manner: "flows" */
   FlowGeneric_stream: Array<FlowGeneric>;
   /** fetch data from the table: "functions" */
-  FunctionGeneric: Array<FunctionGeneric>;
+  Function: Array<Function>;
   /** fetch aggregated fields from the table: "functions" */
-  FunctionGenericAggregate: FunctionGeneric_Aggregate;
+  FunctionAggregate: Function_Aggregate;
   /** fetch data from the table: "functions" using primary key columns */
-  FunctionGenericByPk?: Maybe<FunctionGeneric>;
+  FunctionByPk?: Maybe<Function>;
   /** fetch data from the table in a streaming manner: "functions" */
-  FunctionGeneric_stream: Array<FunctionGeneric>;
+  Function_stream: Array<Function>;
   /** fetch data from the table: "interfaces" */
-  InterfaceGeneric: Array<InterfaceGeneric>;
+  Interface: Array<Interface>;
   /** fetch aggregated fields from the table: "interfaces" */
-  InterfaceGenericAggregate: InterfaceGeneric_Aggregate;
+  InterfaceAggregate: Interface_Aggregate;
   /** fetch data from the table: "interfaces" using primary key columns */
-  InterfaceGenericByPk?: Maybe<InterfaceGeneric>;
+  InterfaceByPk?: Maybe<Interface>;
   /** fetch data from the table in a streaming manner: "interfaces" */
-  InterfaceGeneric_stream: Array<InterfaceGeneric>;
+  Interface_stream: Array<Interface>;
+  /** fetch data from the table: "locations" */
+  Location: Array<Location>;
+  /** fetch aggregated fields from the table: "locations" */
+  LocationAggregate: Location_Aggregate;
+  /** fetch data from the table: "locations" using primary key columns */
+  LocationByPk?: Maybe<Location>;
+  /** fetch data from the table in a streaming manner: "locations" */
+  Location_stream: Array<Location>;
   /** fetch data from the table: "motivations" */
   MotivationElementGeneric: Array<MotivationElementGeneric>;
   /** fetch aggregated fields from the table: "motivations" */
@@ -28901,14 +18058,6 @@ export type Subscription_Root = {
   MotivationItemHierarchyMapByPk?: Maybe<MotivationItemHierarchyMap>;
   /** fetch data from the table in a streaming manner: "map_motivation_item_hierarchy" */
   MotivationItemHierarchyMap_stream: Array<MotivationItemHierarchyMap>;
-  /** fetch data from the table: "locations" */
-  PhysicalLocation: Array<PhysicalLocation>;
-  /** fetch aggregated fields from the table: "locations" */
-  PhysicalLocationAggregate: PhysicalLocation_Aggregate;
-  /** fetch data from the table: "locations" using primary key columns */
-  PhysicalLocationByPk?: Maybe<PhysicalLocation>;
-  /** fetch data from the table in a streaming manner: "locations" */
-  PhysicalLocation_stream: Array<PhysicalLocation>;
   /** fetch data from the table: "plateaus" */
   Plateau: Array<Plateau>;
   /** fetch aggregated fields from the table: "plateaus" */
@@ -28918,21 +18067,29 @@ export type Subscription_Root = {
   /** fetch data from the table in a streaming manner: "plateaus" */
   Plateau_stream: Array<Plateau>;
   /** fetch data from the table: "processes" */
-  ProcessGeneric: Array<ProcessGeneric>;
+  Process: Array<Process>;
   /** fetch aggregated fields from the table: "processes" */
-  ProcessGenericAggregate: ProcessGeneric_Aggregate;
+  ProcessAggregate: Process_Aggregate;
   /** fetch data from the table: "processes" using primary key columns */
-  ProcessGenericByPk?: Maybe<ProcessGeneric>;
+  ProcessByPk?: Maybe<Process>;
   /** fetch data from the table in a streaming manner: "processes" */
-  ProcessGeneric_stream: Array<ProcessGeneric>;
+  Process_stream: Array<Process>;
+  /** fetch data from the table: "roles" */
+  Role: Array<Role>;
+  /** fetch aggregated fields from the table: "roles" */
+  RoleAggregate: Role_Aggregate;
+  /** fetch data from the table: "roles" using primary key columns */
+  RoleByPk?: Maybe<Role>;
+  /** fetch data from the table in a streaming manner: "roles" */
+  Role_stream: Array<Role>;
   /** fetch data from the table: "services" */
-  ServiceGeneric: Array<ServiceGeneric>;
+  Service: Array<Service>;
   /** fetch aggregated fields from the table: "services" */
-  ServiceGenericAggregate: ServiceGeneric_Aggregate;
+  ServiceAggregate: Service_Aggregate;
   /** fetch data from the table: "services" using primary key columns */
-  ServiceGenericByPk?: Maybe<ServiceGeneric>;
+  ServiceByPk?: Maybe<Service>;
   /** fetch data from the table in a streaming manner: "services" */
-  ServiceGeneric_stream: Array<ServiceGeneric>;
+  Service_stream: Array<Service>;
   /** fetch data from the table: "solutions" */
   Solution: Array<Solution>;
   /** fetch aggregated fields from the table: "solutions" */
@@ -28955,6 +18112,14 @@ export type Subscription_Root = {
   SolutionApplicationFunctionMap_stream: Array<SolutionApplicationFunctionMap>;
   /** fetch data from the table: "solutions" using primary key columns */
   SolutionByPk?: Maybe<Solution>;
+  /** fetch data from the table: "map_solution_constraint" */
+  SolutionConstraintMap: Array<SolutionConstraintMap>;
+  /** fetch aggregated fields from the table: "map_solution_constraint" */
+  SolutionConstraintMapAggregate: SolutionConstraintMap_Aggregate;
+  /** fetch data from the table: "map_solution_constraint" using primary key columns */
+  SolutionConstraintMapByPk?: Maybe<SolutionConstraintMap>;
+  /** fetch data from the table in a streaming manner: "map_solution_constraint" */
+  SolutionConstraintMap_stream: Array<SolutionConstraintMap>;
   /** fetch data from the table: "map_solution_data_object" */
   SolutionDataObjectMap: Array<SolutionDataObjectMap>;
   /** fetch aggregated fields from the table: "map_solution_data_object" */
@@ -29795,36 +18960,6 @@ export type Subscription_RootBusinessProduct_StreamArgs = {
 };
 
 
-export type Subscription_RootBusinessRoleArgs = {
-  distinct_on?: InputMaybe<Array<BusinessRole_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessRole_Order_By>>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-
-export type Subscription_RootBusinessRoleAggregateArgs = {
-  distinct_on?: InputMaybe<Array<BusinessRole_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<BusinessRole_Order_By>>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-
-export type Subscription_RootBusinessRoleByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-export type Subscription_RootBusinessRole_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<BusinessRole_Stream_Cursor_Input>>;
-  where?: InputMaybe<BusinessRole_Bool_Exp>;
-};
-
-
 export type Subscription_RootCapabilityArgs = {
   distinct_on?: InputMaybe<Array<Capability_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -30133,33 +19268,33 @@ export type Subscription_RootEmployee_StreamArgs = {
 };
 
 
-export type Subscription_RootEventGenericArgs = {
-  distinct_on?: InputMaybe<Array<EventGeneric_Select_Column>>;
+export type Subscription_RootEventArgs = {
+  distinct_on?: InputMaybe<Array<Event_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<EventGeneric_Order_By>>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Event_Order_By>>;
+  where?: InputMaybe<Event_Bool_Exp>;
 };
 
 
-export type Subscription_RootEventGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<EventGeneric_Select_Column>>;
+export type Subscription_RootEventAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Event_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<EventGeneric_Order_By>>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Event_Order_By>>;
+  where?: InputMaybe<Event_Bool_Exp>;
 };
 
 
-export type Subscription_RootEventGenericByPkArgs = {
+export type Subscription_RootEventByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootEventGeneric_StreamArgs = {
+export type Subscription_RootEvent_StreamArgs = {
   batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<EventGeneric_Stream_Cursor_Input>>;
-  where?: InputMaybe<EventGeneric_Bool_Exp>;
+  cursor: Array<InputMaybe<Event_Stream_Cursor_Input>>;
+  where?: InputMaybe<Event_Bool_Exp>;
 };
 
 
@@ -30193,63 +19328,93 @@ export type Subscription_RootFlowGeneric_StreamArgs = {
 };
 
 
-export type Subscription_RootFunctionGenericArgs = {
-  distinct_on?: InputMaybe<Array<FunctionGeneric_Select_Column>>;
+export type Subscription_RootFunctionArgs = {
+  distinct_on?: InputMaybe<Array<Function_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<FunctionGeneric_Order_By>>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Function_Order_By>>;
+  where?: InputMaybe<Function_Bool_Exp>;
 };
 
 
-export type Subscription_RootFunctionGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<FunctionGeneric_Select_Column>>;
+export type Subscription_RootFunctionAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Function_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<FunctionGeneric_Order_By>>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Function_Order_By>>;
+  where?: InputMaybe<Function_Bool_Exp>;
 };
 
 
-export type Subscription_RootFunctionGenericByPkArgs = {
+export type Subscription_RootFunctionByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootFunctionGeneric_StreamArgs = {
+export type Subscription_RootFunction_StreamArgs = {
   batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<FunctionGeneric_Stream_Cursor_Input>>;
-  where?: InputMaybe<FunctionGeneric_Bool_Exp>;
+  cursor: Array<InputMaybe<Function_Stream_Cursor_Input>>;
+  where?: InputMaybe<Function_Bool_Exp>;
 };
 
 
-export type Subscription_RootInterfaceGenericArgs = {
-  distinct_on?: InputMaybe<Array<InterfaceGeneric_Select_Column>>;
+export type Subscription_RootInterfaceArgs = {
+  distinct_on?: InputMaybe<Array<Interface_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<InterfaceGeneric_Order_By>>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Interface_Order_By>>;
+  where?: InputMaybe<Interface_Bool_Exp>;
 };
 
 
-export type Subscription_RootInterfaceGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<InterfaceGeneric_Select_Column>>;
+export type Subscription_RootInterfaceAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Interface_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<InterfaceGeneric_Order_By>>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Interface_Order_By>>;
+  where?: InputMaybe<Interface_Bool_Exp>;
 };
 
 
-export type Subscription_RootInterfaceGenericByPkArgs = {
+export type Subscription_RootInterfaceByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootInterfaceGeneric_StreamArgs = {
+export type Subscription_RootInterface_StreamArgs = {
   batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<InterfaceGeneric_Stream_Cursor_Input>>;
-  where?: InputMaybe<InterfaceGeneric_Bool_Exp>;
+  cursor: Array<InputMaybe<Interface_Stream_Cursor_Input>>;
+  where?: InputMaybe<Interface_Bool_Exp>;
+};
+
+
+export type Subscription_RootLocationArgs = {
+  distinct_on?: InputMaybe<Array<Location_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Location_Order_By>>;
+  where?: InputMaybe<Location_Bool_Exp>;
+};
+
+
+export type Subscription_RootLocationAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Location_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Location_Order_By>>;
+  where?: InputMaybe<Location_Bool_Exp>;
+};
+
+
+export type Subscription_RootLocationByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootLocation_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Location_Stream_Cursor_Input>>;
+  where?: InputMaybe<Location_Bool_Exp>;
 };
 
 
@@ -30314,36 +19479,6 @@ export type Subscription_RootMotivationItemHierarchyMap_StreamArgs = {
 };
 
 
-export type Subscription_RootPhysicalLocationArgs = {
-  distinct_on?: InputMaybe<Array<PhysicalLocation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PhysicalLocation_Order_By>>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-
-export type Subscription_RootPhysicalLocationAggregateArgs = {
-  distinct_on?: InputMaybe<Array<PhysicalLocation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PhysicalLocation_Order_By>>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-
-export type Subscription_RootPhysicalLocationByPkArgs = {
-  id: Scalars['uuid']['input'];
-};
-
-
-export type Subscription_RootPhysicalLocation_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<PhysicalLocation_Stream_Cursor_Input>>;
-  where?: InputMaybe<PhysicalLocation_Bool_Exp>;
-};
-
-
 export type Subscription_RootPlateauArgs = {
   distinct_on?: InputMaybe<Array<Plateau_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -30374,63 +19509,93 @@ export type Subscription_RootPlateau_StreamArgs = {
 };
 
 
-export type Subscription_RootProcessGenericArgs = {
-  distinct_on?: InputMaybe<Array<ProcessGeneric_Select_Column>>;
+export type Subscription_RootProcessArgs = {
+  distinct_on?: InputMaybe<Array<Process_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ProcessGeneric_Order_By>>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Process_Order_By>>;
+  where?: InputMaybe<Process_Bool_Exp>;
 };
 
 
-export type Subscription_RootProcessGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<ProcessGeneric_Select_Column>>;
+export type Subscription_RootProcessAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Process_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ProcessGeneric_Order_By>>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Process_Order_By>>;
+  where?: InputMaybe<Process_Bool_Exp>;
 };
 
 
-export type Subscription_RootProcessGenericByPkArgs = {
+export type Subscription_RootProcessByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootProcessGeneric_StreamArgs = {
+export type Subscription_RootProcess_StreamArgs = {
   batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<ProcessGeneric_Stream_Cursor_Input>>;
-  where?: InputMaybe<ProcessGeneric_Bool_Exp>;
+  cursor: Array<InputMaybe<Process_Stream_Cursor_Input>>;
+  where?: InputMaybe<Process_Bool_Exp>;
 };
 
 
-export type Subscription_RootServiceGenericArgs = {
-  distinct_on?: InputMaybe<Array<ServiceGeneric_Select_Column>>;
+export type Subscription_RootRoleArgs = {
+  distinct_on?: InputMaybe<Array<Role_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ServiceGeneric_Order_By>>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Role_Order_By>>;
+  where?: InputMaybe<Role_Bool_Exp>;
 };
 
 
-export type Subscription_RootServiceGenericAggregateArgs = {
-  distinct_on?: InputMaybe<Array<ServiceGeneric_Select_Column>>;
+export type Subscription_RootRoleAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Role_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<ServiceGeneric_Order_By>>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
+  order_by?: InputMaybe<Array<Role_Order_By>>;
+  where?: InputMaybe<Role_Bool_Exp>;
 };
 
 
-export type Subscription_RootServiceGenericByPkArgs = {
+export type Subscription_RootRoleByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootServiceGeneric_StreamArgs = {
+export type Subscription_RootRole_StreamArgs = {
   batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<ServiceGeneric_Stream_Cursor_Input>>;
-  where?: InputMaybe<ServiceGeneric_Bool_Exp>;
+  cursor: Array<InputMaybe<Role_Stream_Cursor_Input>>;
+  where?: InputMaybe<Role_Bool_Exp>;
+};
+
+
+export type Subscription_RootServiceArgs = {
+  distinct_on?: InputMaybe<Array<Service_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Service_Order_By>>;
+  where?: InputMaybe<Service_Bool_Exp>;
+};
+
+
+export type Subscription_RootServiceAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Service_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Service_Order_By>>;
+  where?: InputMaybe<Service_Bool_Exp>;
+};
+
+
+export type Subscription_RootServiceByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootService_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Service_Stream_Cursor_Input>>;
+  where?: InputMaybe<Service_Bool_Exp>;
 };
 
 
@@ -30517,6 +19682,37 @@ export type Subscription_RootSolutionApplicationFunctionMap_StreamArgs = {
 
 export type Subscription_RootSolutionByPkArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSolutionConstraintMapArgs = {
+  distinct_on?: InputMaybe<Array<SolutionConstraintMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<SolutionConstraintMap_Order_By>>;
+  where?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
+};
+
+
+export type Subscription_RootSolutionConstraintMapAggregateArgs = {
+  distinct_on?: InputMaybe<Array<SolutionConstraintMap_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<SolutionConstraintMap_Order_By>>;
+  where?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
+};
+
+
+export type Subscription_RootSolutionConstraintMapByPkArgs = {
+  motivationId: Scalars['uuid']['input'];
+  solutionId: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSolutionConstraintMap_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<SolutionConstraintMap_Stream_Cursor_Input>>;
+  where?: InputMaybe<SolutionConstraintMap_Bool_Exp>;
 };
 
 
@@ -31329,23 +20525,6 @@ export type Transitions_Bool_Exp = {
   updatedBy?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "transitions" */
-export enum Transitions_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  TransitionsPkey = 'transitions_pkey'
-}
-
-/** input type for inserting data into table "transitions" */
-export type Transitions_Insert_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** aggregate max on columns */
 export type Transitions_Max_Fields = {
   __typename?: 'transitions_max_fields';
@@ -31370,22 +20549,6 @@ export type Transitions_Min_Fields = {
   updatedBy?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** response of any mutation on the table "transitions" */
-export type Transitions_Mutation_Response = {
-  __typename?: 'transitions_mutation_response';
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<Transitions>;
-};
-
-/** on_conflict condition type for table "transitions" */
-export type Transitions_On_Conflict = {
-  constraint: Transitions_Constraint;
-  update_columns?: Array<Transitions_Update_Column>;
-  where?: InputMaybe<Transitions_Bool_Exp>;
-};
-
 /** Ordering options when selecting data from "transitions". */
 export type Transitions_Order_By = {
   createdAt?: InputMaybe<Order_By>;
@@ -31395,11 +20558,6 @@ export type Transitions_Order_By = {
   id?: InputMaybe<Order_By>;
   updatedAt?: InputMaybe<Order_By>;
   updatedBy?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: transitions */
-export type Transitions_Pk_Columns_Input = {
-  id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "transitions" */
@@ -31420,17 +20578,6 @@ export enum Transitions_Select_Column {
   UpdatedBy = 'updatedBy'
 }
 
-/** input type for updating data in table "transitions" */
-export type Transitions_Set_Input = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  createdBy?: InputMaybe<Scalars['uuid']['input']>;
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  deletedBy?: InputMaybe<Scalars['uuid']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
 /** Streaming cursor of the table "transitions" */
 export type Transitions_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -31448,31 +20595,6 @@ export type Transitions_Stream_Cursor_Value_Input = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
-};
-
-/** update columns of table "transitions" */
-export enum Transitions_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  CreatedBy = 'createdBy',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  DeletedBy = 'deletedBy',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  UpdatedBy = 'updatedBy'
-}
-
-export type Transitions_Updates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Transitions_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Transitions_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "user_state". All fields are combined with logical 'AND'. */
@@ -31507,7 +20629,7 @@ export type GetComponentFullQueryVariables = Exact<{
 }>;
 
 
-export type GetComponentFullQuery = { __typename?: 'query_root', component: Array<{ __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, name: string, color?: string | null } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, style?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, criticalLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, failoverType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, recoveryTime?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, redundancyType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, monitoringLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, scalingType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null }>, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null } }>, dataObjects: Array<{ __typename?: 'ApplicationComponentDataObjectMap', dataObject: { __typename?: 'DataObject', id: any, code: string, name: string, description?: string | null } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'InterfaceGeneric', id: any, code: string, name: string, description?: string | null } }>, events: Array<{ __typename?: 'ApplicationComponentEventMap', event: { __typename?: 'EventGeneric', id: any, code: string, name: string, description?: string | null } }>, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, name: string } }>, technologyNodes: Array<{ __typename?: 'ApplicationComponentTechnologyNodeMap', node: { __typename?: 'TechnologyNode', id: any, code: string, name: string } }>, technologyNetworks: Array<{ __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap', logicalNetwork: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string } }>, parentComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', parent: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, childComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', child: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, incomingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }>, outgoingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }>, stakeholders: Array<{ __typename?: 'ApplicationComponentStakeholderMap', role: any, stakeholder: { __typename?: 'Stakeholder', id: any, code: string, name: string, description?: string | null } }>, businessActorRoles: Array<{ __typename?: 'BusinessActorRoleMap', actor: { __typename?: 'BusinessActor', id: any, code: string, name: string }, role: { __typename?: 'BusinessRole', id: any, code: string, name: string } }> };
+export type GetComponentFullQuery = { __typename?: 'query_root', component: Array<{ __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, name: string, color?: string | null } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, style?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, criticalLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, failoverType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, recoveryTime?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, redundancyType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, monitoringLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, scalingType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null }>, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'Function', id: any, code: string, name: string, description?: string | null } }>, dataObjects: Array<{ __typename?: 'ApplicationComponentDataObjectMap', dataObject: { __typename?: 'DataObject', id: any, code: string, name: string, description?: string | null } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'Interface', id: any, code: string, name: string, description?: string | null } }>, events: Array<{ __typename?: 'ApplicationComponentEventMap', event: { __typename?: 'Event', id: any, code: string, name: string, description?: string | null } }>, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, name: string } }>, technologyNodes: Array<{ __typename?: 'ApplicationComponentTechnologyNodeMap', node: { __typename?: 'TechnologyNode', id: any, code: string, name: string } }>, technologyNetworks: Array<{ __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap', logicalNetwork: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string } }>, parentComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', parent: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, childComponents: Array<{ __typename?: 'ApplicationComponentHierarchyMap', child: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, incomingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }>, outgoingFlows: Array<{ __typename?: 'FlowGeneric', id: any, code: string, name: string, description?: string | null, sourceComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null, targetComponent?: { __typename?: 'ApplicationComponent', id: any, code: string, name: string } | null }>, stakeholders: Array<{ __typename?: 'ApplicationComponentStakeholderMap', role: any, stakeholder: { __typename?: 'Stakeholder', id: any, code: string, name: string, description?: string | null } }>, businessActorRoles: Array<{ __typename?: 'BusinessActorRoleMap', actor: { __typename?: 'BusinessActor', id: any, code: string, name: string }, role: { __typename?: 'Role', id: any, code: string, name: string } }> };
 
 export type GetComponentsQueryVariables = Exact<{
   where: ApplicationComponent_Bool_Exp;
@@ -31516,30 +20638,7 @@ export type GetComponentsQueryVariables = Exact<{
 }>;
 
 
-export type GetComponentsQuery = { __typename?: 'query_root', ApplicationComponent: Array<{ __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'FunctionGeneric', id: any, code: string, name: string } }>, products: Array<{ __typename?: 'ApplicationComponentProductMap', product: { __typename?: 'BusinessProduct', id: any, code: string, name: string } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'InterfaceGeneric', id: any, code: string, name: string } }>, criticalLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, failoverType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', code: string, id: any, name: string } | null, monitoringLevel?: { __typename?: 'DirectoryObject', code: string, id: any, name: string } | null, recoveryTime?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, redundancyType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, scalingType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, style?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, kind: any, licenseType?: { __typename?: 'DirectoryObject', code: string, color?: string | null, id: any, name: string } | null } }> }>, ApplicationComponentAggregate: { __typename?: 'ApplicationComponent_aggregate', aggregate?: { __typename?: 'ApplicationComponent_aggregate_fields', count: number } | null } };
-
-export type GetApplicationFunctionByPkQueryVariables = Exact<{
-  where: FunctionGeneric_Bool_Exp;
-}>;
-
-
-export type GetApplicationFunctionByPkQuery = { __typename?: 'query_root', FunctionGeneric: Array<{ __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }> };
-
-export type GetApplicationFunctionsQueryVariables = Exact<{
-  where: FunctionGeneric_Bool_Exp;
-  limit: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
-}>;
-
-
-export type GetApplicationFunctionsQuery = { __typename?: 'query_root', FunctionGeneric: Array<{ __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, FunctionGenericAggregate: { __typename?: 'FunctionGeneric_aggregate', aggregate?: { __typename?: 'FunctionGeneric_aggregate_fields', count: number } | null } };
-
-export type GetFunctionsByIdsQueryVariables = Exact<{
-  where: FunctionGeneric_Bool_Exp;
-}>;
-
-
-export type GetFunctionsByIdsQuery = { __typename?: 'query_root', FunctionGeneric: Array<{ __typename?: 'FunctionGeneric', id: any, code: string, name: string, description?: string | null }> };
+export type GetComponentsQuery = { __typename?: 'query_root', ApplicationComponent: Array<{ __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, state?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, functions: Array<{ __typename?: 'ApplicationComponentFunctionMap', function: { __typename?: 'Function', id: any, code: string, name: string } }>, products: Array<{ __typename?: 'ApplicationComponentProductMap', product: { __typename?: 'BusinessProduct', id: any, code: string, name: string } }>, interfaces: Array<{ __typename?: 'ApplicationComponentInterfaceMap', interface: { __typename?: 'Interface', id: any, code: string, name: string } }>, criticalLevel?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, failoverType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', code: string, id: any, name: string } | null, monitoringLevel?: { __typename?: 'DirectoryObject', code: string, id: any, name: string } | null, recoveryTime?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, redundancyType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, scalingType?: { __typename?: 'DirectoryObject', id: any, code: string, name: string, color?: string | null } | null, style?: { __typename?: 'DirectoryObject', id: any, code: string, name: string } | null, systemSoftware: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, kind: any, licenseType?: { __typename?: 'DirectoryObject', code: string, color?: string | null, id: any, name: string } | null } }> }>, ApplicationComponentAggregate: { __typename?: 'ApplicationComponent_aggregate', aggregate?: { __typename?: 'ApplicationComponent_aggregate_fields', count: number } | null } };
 
 export type GetDataObjectByPkQueryVariables = Exact<{
   where: DataObject_Bool_Exp;
@@ -31634,7 +20733,15 @@ export type GetSystemSoftwareByPkQueryVariables = Exact<{
 }>;
 
 
-export type GetSystemSoftwareByPkQuery = { __typename?: 'query_root', SystemSoftware: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null, version?: string | null, kind: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, type?: { __typename?: 'DirectoryObject', id: any, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, name: string } | null }> };
+export type GetSystemSoftwareByPkQuery = { __typename?: 'query_root', SystemSoftware: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null, version?: string | null, kind: any, radarArea: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, type?: { __typename?: 'DirectoryObject', id: any, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, name: string } | null }> };
+
+export type GetSystemSoftwareFullQueryVariables = Exact<{
+  where: SystemSoftware_Bool_Exp;
+  systemSoftwareId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetSystemSoftwareFullQuery = { __typename?: 'query_root', software: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null, version?: string | null, kind: any, radarArea: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, type?: { __typename?: 'DirectoryObject', id: any, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, name: string } | null }>, componentMaps: Array<{ __typename?: 'ApplicationComponentSystemSoftwareMap', kind: any, component: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, nodeMaps: Array<{ __typename?: 'TechnologyNodeSystemSoftwareMap', node: { __typename?: 'TechnologyNode', id: any, code: string, name: string, description?: string | null } }> };
 
 export type GetSystemSoftwareQueryVariables = Exact<{
   where: SystemSoftware_Bool_Exp;
@@ -31643,7 +20750,7 @@ export type GetSystemSoftwareQueryVariables = Exact<{
 }>;
 
 
-export type GetSystemSoftwareQuery = { __typename?: 'query_root', SystemSoftware: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null, version?: string | null, kind: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, type?: { __typename?: 'DirectoryObject', id: any, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, name: string } | null }>, SystemSoftwareAggregate: { __typename?: 'SystemSoftware_aggregate', aggregate?: { __typename?: 'SystemSoftware_aggregate_fields', count: number } | null } };
+export type GetSystemSoftwareQuery = { __typename?: 'query_root', SystemSoftware: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null, version?: string | null, kind: any, radarArea: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null, type?: { __typename?: 'DirectoryObject', id: any, name: string } | null, licenseType?: { __typename?: 'DirectoryObject', id: any, name: string } | null }>, SystemSoftwareAggregate: { __typename?: 'SystemSoftware_aggregate', aggregate?: { __typename?: 'SystemSoftware_aggregate_fields', count: number } | null } };
 
 export type GetSystemSoftwareListQueryVariables = Exact<{
   where: SystemSoftware_Bool_Exp;

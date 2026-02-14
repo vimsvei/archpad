@@ -3,11 +3,10 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { ApplicationFunction, Paginated } from "@/@types/application-function"
 import type {
   CreateApplicationFunctionInput,
+  GetApplicationFunctionsParams,
   UpdateApplicationFunctionInput,
 } from "@/services/application-function.rest"
 import * as ApplicationFunctionAPI from "@/services/application-function.rest"
-import type { GetApplicationFunctionsParams } from "@/services/application-function.graphql"
-import * as ApplicationFunctionGraphql from "@/services/application-function.graphql"
 
 export const applicationFunctionApi = createApi({
   reducerPath: "applicationFunctionApi",
@@ -21,7 +20,7 @@ export const applicationFunctionApi = createApi({
     >({
       async queryFn(params) {
         try {
-          const data = await ApplicationFunctionGraphql.getApplicationFunctionsGraphql(params)
+          const data = await ApplicationFunctionAPI.getApplicationFunctionsRest(params)
           return { data }
         } catch (error) {
           return { error }
@@ -33,7 +32,7 @@ export const applicationFunctionApi = createApi({
     getApplicationFunction: builder.query<ApplicationFunction, { id: string }>({
       async queryFn({ id }) {
         try {
-          const data = await ApplicationFunctionGraphql.getApplicationFunctionGraphql(id)
+          const data = await ApplicationFunctionAPI.getApplicationFunctionRest(id)
           return { data }
         } catch (error) {
           return { error }
@@ -104,4 +103,3 @@ export const {
   useUpdateApplicationFunctionMutation,
   useDeleteApplicationFunctionMutation,
 } = applicationFunctionApi
-
