@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SystemSoftwareKind } from "./system-software-kind";
+import { TechnologyRadarZone } from "./technology-radar-zone";
 import { baseNamedObjectSchema } from "../common/named-object";
 
 export type DirectoryRef = { id: string; name: string };
@@ -15,6 +16,7 @@ export type SystemSoftware = {
   description: string | null;
   version: string | null;
   kind?: SystemSoftwareKind | null;
+  radarArea?: TechnologyRadarZone | null;
   type?: DirectoryRef | null;
   license?: DirectoryRef | null;
   createdAt?: string | null;
@@ -39,6 +41,7 @@ export const createSystemSoftwareInputSchema = baseNamedObjectSchema
     code: z.string().optional(),
     version: z.string().optional(),
     kind: z.nativeEnum(SystemSoftwareKind).optional(),
+    radarArea: z.nativeEnum(TechnologyRadarZone).optional(),
     typeId: z.string().uuid().optional(),
     licenseTypeId: z.string().uuid().optional(),
   })
@@ -53,7 +56,6 @@ export type CreateSystemSoftwareInput = z.infer<
 export type UpdateSystemSoftwareInput = z.infer<
   typeof updateSystemSoftwareInputSchema
 >;
-
 
 
 
