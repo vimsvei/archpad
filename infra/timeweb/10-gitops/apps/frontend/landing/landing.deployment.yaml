@@ -41,7 +41,7 @@ spec:
       serviceAccountName: landing
       containers:
         - name: landing
-          image: archpad-cr.registry.twcstorage.ru/archpad/landing:main-23270c40
+          image: archpad-cr.registry.twcstorage.ru/archpad/landing:main-87c72075
           ports:
             - name: http
               containerPort: 3000
