@@ -7,6 +7,7 @@ import { TechnologyClusterNode } from '../../../model/archimate/technology/techn
 import { DataObject } from '../../../model/archimate/application/data-object.entity';
 import { ApplicationEvent } from '../../../model/archimate/application/application-event.entity';
 import { BusinessActor } from '@/model/archimate/business/business-actor.entity';
+import { BusinessProcess } from '@/model/archimate/business/business-process.entity';
 import { Role } from '@/model/archimate/common/role.entity';
 import { BusinessProduct } from '@/model/archimate/business/business-product.entity';
 import { Capability } from '@/model/archimate/strategy/capability.entity';
@@ -66,6 +67,12 @@ export class NamedObjectAutoRegistry {
           entity: BusinessActor,
           path: 'business-actors',
           createDto: createNamedObjectZodDto('CreateDtoBusinessActor'),
+        }),
+        NamedObjectModule.register({
+          tag: 'Бизнес-процессы',
+          entity: BusinessProcess,
+          path: 'business-processes',
+          createDto: createNamedObjectZodDto('CreateDtoBusinessProcess'),
         }),
         NamedObjectModule.register({
           tag: 'Бизнес-роли',

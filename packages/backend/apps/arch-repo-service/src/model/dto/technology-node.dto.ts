@@ -8,3 +8,11 @@ export class CreateDtoTechnologyDeviceNode extends createZodDto(
 export class CreateDtoTechnologyHostNode extends createZodDto(
   baseNamedObjectSchema,
 ) {}
+
+export class UpdateDtoTechnologyDeviceNode extends createZodDto(
+  baseNamedObjectSchema.partial(),
+) {}
+
+export class UpdateDtoTechnologyHostNode extends createZodDto(
+  baseNamedObjectSchema.partial(),
+) {}

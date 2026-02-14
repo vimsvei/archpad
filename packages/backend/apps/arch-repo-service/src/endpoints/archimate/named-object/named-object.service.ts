@@ -86,6 +86,25 @@ export class NamedObjectService<T extends NamedObject> {
     return this.repo.findOneOrFail(where);
   }
 
+  async update(
+    id: string,
+    data: Partial<RequiredEntityData<T>>,
+    context: ArchpadRequestContext,
+  ) {
+    const entity = await this.findOne(id);
+    const payload = data as Record<string, unknown>;
+
+    for (const [key, value] of Object.entries(payload)) {
+      if (value !== undefined) {
+        (entity as any)[key] = value;
+      }
+    }
+
+    (entity as any).updated = ActionStamp.now(context.userId) as any;
+    await this.repo.getEntityManager().persistAndFlush(entity);
+    return entity;
+  }
+
   async delete(id: string) {
     const ctx = getArchpadRequestContext();
     const tenantId = ctx?.tenantIds?.[0];

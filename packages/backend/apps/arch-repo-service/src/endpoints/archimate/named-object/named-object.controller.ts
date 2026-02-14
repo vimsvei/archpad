@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Patch,
   Param,
   Post,
   Query,
@@ -100,6 +101,33 @@ export function createNamedObjectController<
     })
     findOne(@Param('id') id: string) {
       return this.service.findOne(id);
+    }
+
+    @Patch(':id')
+    @ApiOperation({ summary: `Обновление ${entityClass.name}` })
+    @ApiParam({
+      name: 'id',
+      description: 'UUID объекта',
+      example: '550e8400-e29b-41d4-a716-446655440000',
+    })
+    @ApiBody({
+      description: 'Данные для обновления элемента',
+      type: Object,
+    })
+    @ApiOkResponse({
+      description: 'Элемент успешно обновлён.',
+      type: entityClass,
+    })
+    update(
+      @Param('id') id: string,
+      @Body() dto: Partial<TCreateDto>,
+      @ArchpadContext() context: ArchpadRequestContext,
+    ) {
+      return this.service.update(
+        id,
+        dto as Partial<RequiredEntityData<TEntity>>,
+        context,
+      );
     }
 
     @Delete(':id')

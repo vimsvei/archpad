@@ -21,6 +21,12 @@ export type CreateTechnologyHostNodeDto = {
   description?: string;
 };
 
+export type UpdateTechnologyHostNodeDto = {
+  code?: string;
+  name?: string;
+  description?: string;
+};
+
 @Injectable()
 export class TechnologyHostNodeService {
   constructor(
@@ -82,6 +88,22 @@ export class TechnologyHostNodeService {
       ? ({ id, tenantId } as FilterQuery<TechnologyHostNode>)
       : ({ id } as FilterQuery<TechnologyHostNode>);
     return this.repo.findOneOrFail(where);
+  }
+
+  async update(
+    id: string,
+    dto: UpdateTechnologyHostNodeDto,
+    context: ArchpadRequestContext,
+  ): Promise<TechnologyHostNode> {
+    const entity = await this.findOne(id);
+
+    if (dto.code !== undefined) entity.code = dto.code;
+    if (dto.name !== undefined) entity.name = dto.name;
+    if (dto.description !== undefined) entity.description = dto.description;
+    (entity as any).updated = ActionStamp.now(context.userId) as any;
+
+    await this.repo.getEntityManager().persistAndFlush(entity);
+    return entity;
   }
 
   async delete(id: string): Promise<void> {

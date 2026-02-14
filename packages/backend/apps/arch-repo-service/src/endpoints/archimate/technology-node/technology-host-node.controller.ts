@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Patch,
   Param,
   Post,
   Query,
@@ -21,7 +22,10 @@ import { ArchpadContext } from '@/common/decorators/archpad-context.decorator';
 import type { ArchpadRequestContext } from '@/request-context/archpad-request-context';
 import { TechnologyHostNode } from '@/model/archimate/technology/technology-node.entity';
 import { TechnologyHostNodeService } from './technology-host-node.service';
-import { CreateDtoTechnologyHostNode } from '@/model/dto/technology-node.dto';
+import {
+  CreateDtoTechnologyHostNode,
+  UpdateDtoTechnologyHostNode,
+} from '@/model/dto/technology-node.dto';
 
 class TechnologyHostNodeListResponse {
   items!: TechnologyHostNode[];
@@ -74,6 +78,19 @@ export class TechnologyHostNodeController {
   @ApiOkResponse({ type: TechnologyHostNode })
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Обновление узла-хоста' })
+  @ApiParam({ name: 'id', description: 'UUID' })
+  @ApiBody({ type: UpdateDtoTechnologyHostNode })
+  @ApiOkResponse({ type: TechnologyHostNode })
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateDtoTechnologyHostNode,
+    @ArchpadContext() context: ArchpadRequestContext,
+  ) {
+    return this.service.update(id, dto, context);
   }
 
   @Delete(':id')
