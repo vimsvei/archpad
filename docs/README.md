@@ -33,7 +33,7 @@
 ### Разработка
 
 - [SERVICES_SETUP.md](./SERVICES_SETUP.md) - Настройка backend и frontend сервисов
-- [AI_AGENTS_GUIDE.md](./AI_AGENTS_GUIDE.md) - Практический гайд для AI-агентов по коду и процессу изменений
+- [../packages/frontend/portal/AGENTS.md](../packages/frontend/portal/AGENTS.md) - Практические правила для AI-агентов в portal
 - [UNIFIED_ARCHIMATE_DETAIL_CARD.md](./UNIFIED_ARCHIMATE_DETAIL_CARD.md) - Настройка и расширение унифицированной карточки Archimate-объектов
 
 ### Мониторинг

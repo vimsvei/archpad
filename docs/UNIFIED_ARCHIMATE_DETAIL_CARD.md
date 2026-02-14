@@ -12,6 +12,7 @@
 - `detail-layout.tsx` — layout (header/main/sidebar)
 - `properties-section.tsx` и `property-fields.tsx` — декларативные поля sidebar
 - `relation-group.tsx`, `relation-layer-factory.tsx` — конфигурация relation-слоёв
+- `named-object-relations-config.tsx` — reuse-конфиги relation-слоёв для функций/процессов/событий/сетей/узлов
 - `named-object-list-page.tsx` — общий list page
 - `named-object-edit-item.tsx` — общий edit flow
 - `named-object-detail-v3.tsx` — базовая detail-карточка для named-object
@@ -41,6 +42,16 @@
 3. В `relations-config.tsx` описать слои через `relationLayer/relationGroupByPrefix`.
 4. Для удаления связи добавить backend endpoint и REST/RTK мутацию.
 5. В edit-item хранить локальный draft + dirty/valid + guard выхода.
+
+## Блок \"Структура и связи\" для named-object
+
+Для `functions`, `processes`, `events`, `networks`, `nodes` используется общий flow:
+
+1. `NamedObjectEditItem` получает full read-model через `useGet*FullQuery`.
+2. `buildRelationLayers` пробрасывает relation-конфиг в `NamedObjectDetailV3`.
+3. `NamedObjectDetailV3` передает `relations` в `ArchimateDetailCard`.
+
+Источник relation-данных: map-таблицы `arch-repo-service` (Hasura GraphQL full-query).
 
 ## Минимальный backend контракт для edit flow
 
