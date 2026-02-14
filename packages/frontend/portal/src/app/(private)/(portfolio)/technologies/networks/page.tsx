@@ -1,9 +1,5 @@
-import { UnderConstructionBlock } from "@/components/empty/under-construction"
+import { ListPage } from "@/components/archimate/technology-network/list-page"
 
-export default async function TechnologyNetworksPage() {
-  return (
-    <UnderConstructionBlock />
-  )
+export default function TechnologyNetworksPage() {
+  return <ListPage />
 }
-
-

@@ -15,7 +15,7 @@ export type RelationGroupConfig = {
   editPath: (item: RelationGroupItem) => string
   onAddExisting?: () => void
   onCreate?: () => void
-  onDelete: (item: RelationGroupItem) => void
+  onDelete?: (item: RelationGroupItem) => void
   /** When provided, "Просмотр" opens item in sidebar (read-only) instead of navigating */
   onViewInSidebar?: (item: RelationGroupItem, editPath: string) => void
 }

@@ -56,6 +56,7 @@
     "layer": "Architecture Layer",
     "layer.application": "Applications",
     "layer.business": "Business",
+    "layer.common": "Common",
     "layer.implementation": "Implementation and migration",
     "layer.motivation": "Motivation",
     "layer.strategy": "Strategies",
@@ -157,6 +158,11 @@
     "actors": "Actors",
     "products": "Products",
     "roles": "Business roles"
+  },
+  "common": {
+    "events": "Events",
+    "functions": "Functions",
+    "processes": "Processes"
   },
   "create": {
     "item": "Create"
@@ -278,7 +284,11 @@
     "color": "Color",
     "description": "Description",
     "name": "Name",
-    "state": "State"
+    "state": "State",
+    "radarArea": "Radar area",
+    "vendor_name": "Vendor",
+    "licenseCount": "License count",
+    "criticalLevel": "Criticality level"
   },
   "loading": "Loading...",
   "management": "Management",
@@ -591,6 +601,10 @@
       "no-results": "Application functions not found",
       "no-results.description": "Create a new application function or add an existing one from the list"
     },
+    "events": {
+      "no-results": "Application events not found",
+      "no-results.description": "Create a new application event or add an existing one from the list"
+    },
     "item": {
       "actions": "Actions"
     },
@@ -598,9 +612,21 @@
       "type": "License type"
     },
     "name": "Name",
+    "networks": {
+      "no-results": "Networks not found",
+      "no-results.description": "Create a new network or add an existing one from the list"
+    },
     "no-results": "Nothing found",
+    "nodes": {
+      "no-results": "Nodes not found",
+      "no-results.description": "Create a new node or add an existing one from the list"
+    },
     "page": {
       "size": "Rows per page"
+    },
+    "processes": {
+      "no-results": "Business processes not found",
+      "no-results.description": "Create a new business process or add an existing one from the list"
     },
     "select": {
       "all": "Select all",
@@ -720,6 +746,14 @@
         "open-exchange": "Open Exchange XML"
       },
       "title": "Upload Repository"
+    }
+  },
+  "radar": {
+    "zone": {
+      "adopt": "Adopt",
+      "trial": "Trial",
+      "access": "Access",
+      "hold": "Hold"
     }
   }
 }

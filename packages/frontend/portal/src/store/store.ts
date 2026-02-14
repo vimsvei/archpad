@@ -4,6 +4,10 @@ import { applicationComponentApi } from "@/store/apis/application-component-api"
 import { systemSoftwareApi } from "@/store/apis/system-software-api"
 import { dataObjectApi } from "@/store/apis/data-object-api"
 import { applicationFunctionApi } from "@/store/apis/application-function-api"
+import { applicationEventApi } from "@/store/apis/application-event-api"
+import { businessProcessApi } from "@/store/apis/business-process-api"
+import { technologyNetworkApi } from "@/store/apis/technology-network-api"
+import { technologyNodeApi } from "@/store/apis/technology-node-api"
 import { solutionApi } from "@/store/apis/solution-api"
 import { profileApi } from "@/store/apis/profile-api"
 import { applicationComponentEditReducer } from "@/store/slices/application-component-edit-slice"
@@ -23,6 +27,10 @@ export function makeStore() {
       [systemSoftwareApi.reducerPath]: systemSoftwareApi.reducer,
       [dataObjectApi.reducerPath]: dataObjectApi.reducer,
       [applicationFunctionApi.reducerPath]: applicationFunctionApi.reducer,
+      [applicationEventApi.reducerPath]: applicationEventApi.reducer,
+      [businessProcessApi.reducerPath]: businessProcessApi.reducer,
+      [technologyNetworkApi.reducerPath]: technologyNetworkApi.reducer,
+      [technologyNodeApi.reducerPath]: technologyNodeApi.reducer,
       [solutionApi.reducerPath]: solutionApi.reducer,
       [profileApi.reducerPath]: profileApi.reducer,
       authForms: authFormsReducer,
@@ -43,6 +51,10 @@ export function makeStore() {
         .concat(systemSoftwareApi.middleware)
         .concat(dataObjectApi.middleware)
         .concat(applicationFunctionApi.middleware)
+        .concat(applicationEventApi.middleware)
+        .concat(businessProcessApi.middleware)
+        .concat(technologyNetworkApi.middleware)
+        .concat(technologyNodeApi.middleware)
         .concat(solutionApi.middleware)
         .concat(profileApi.middleware)
         .prepend(directoriesMiddleware.middleware),
@@ -54,4 +66,3 @@ export function makeStore() {
 export type AppStore = ReturnType<typeof makeStore>
 export type RootState = ReturnType<AppStore["getState"]>
 export type AppDispatch = AppStore["dispatch"]
-

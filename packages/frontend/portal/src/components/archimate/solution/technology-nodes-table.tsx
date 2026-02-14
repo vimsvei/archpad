@@ -62,7 +62,7 @@ export function TechnologyNodesTable({
       items={items}
       isLoading={isLoading}
       iconType="technology-node"
-      editPath={(item) => `/portfolio/technologies/nodes/${item.id}`}
+      editPath={(item) => `/technologies/nodes/${item.id}`}
       onRefresh={handleRefresh}
       actions={{ onAddExisting, onDelete: handleDelete }}
       selection={{ selectedItems, onToggleItem: handleToggleItem }}

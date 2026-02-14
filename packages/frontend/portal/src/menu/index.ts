@@ -77,12 +77,26 @@ export const menu: TMenu = [
             url: '/application/components',
           },
           {
-            title: 'application.functions',
-            url: '/application/functions',
-          },
-          {
             title: 'application.data-objects',
             url: '/application/data-objects',
+          }
+        ]
+      },
+      {
+        title: 'architecture.layer.common',
+        icon: BringToFront,
+        items: [
+          {
+            title: 'common.functions',
+            url: '/common/functions',
+          },
+          {
+            title: 'common.events',
+            url: '/common/events',
+          },
+          {
+            title: 'common.processes',
+            url: '/common/processes',
           }
         ]
       },

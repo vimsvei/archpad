@@ -59,6 +59,8 @@ import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/
 import { getSheetConfig, type SheetType } from "@/components/shared/archimate/sheet-configs"
 import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
+import { EditPageErrorState, EditPageLoadingState } from "@/components/shared/archimate/edit-page-state"
+import { useUnsavedNavigationGuard } from "@/hooks/archimate/use-unsaved-navigation-guard"
 
 type EditItemProps = {
   id: string
@@ -151,7 +153,7 @@ export function EditItem({ id }: EditItemProps) {
       const errorMsg = t("form.invalid")
       toast.error(errorMsg)
       dispatch(setSaveError(errorMsg))
-      return
+      return false
     }
 
     try {
@@ -232,12 +234,13 @@ export function EditItem({ id }: EditItemProps) {
       toast.success(t("action.saved"))
       dispatch(updateBaseline())
       dispatch(setSaveError(null))
+      return true
     } catch (e: any) {
       const errorMessage = e?.message ?? t("action.save.failed")
       dispatch(setSaveError(errorMessage))
       toast.error(errorMessage)
       console.error("Failed to save solution:", e)
-      throw e
+      return false
     } finally {
       dispatch(setSaving(false))
     }
@@ -366,69 +369,21 @@ export function EditItem({ id }: EditItemProps) {
     description: "",
   })
 
-  // Dialog state for unsaved changes
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
-  const [pendingNavigation, setPendingNavigation] = React.useState<(() => void) | null>(null)
-
   const goBack = React.useCallback(() => {
     router.push("/solutions")
   }, [router])
 
-  const handleBack = React.useCallback(() => {
-    if (isDirty) {
-      setPendingNavigation(() => goBack)
-      setConfirmDialogOpen(true)
-    } else {
-      goBack()
-    }
-  }, [goBack, isDirty])
-
-  // Handle dialog cancel
-  const handleDialogCancel = React.useCallback(() => {
-    setConfirmDialogOpen(false)
-    setPendingNavigation(null)
-  }, [])
-
-  // Handle dialog save
-  const handleDialogSave = React.useCallback(async () => {
-    try {
-      await handleSaveFull()
-      if (pendingNavigation) {
-        setConfirmDialogOpen(false)
-        pendingNavigation()
-        setPendingNavigation(null)
-      }
-    } catch {
-      // Error already handled in handleSaveFull
-    }
-  }, [handleSaveFull, pendingNavigation])
-
-  // Intercept navigation when dirty
-  React.useEffect(() => {
-    const handlePopState = () => {
-      if (isDirty && !confirmDialogOpen) {
-        window.history.pushState(null, "", window.location.href)
-        setPendingNavigation(() => () => window.history.back())
-        setConfirmDialogOpen(true)
-      }
-    }
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault()
-        e.returnValue = ""
-        return ""
-      }
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-    window.addEventListener("popstate", handlePopState)
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload)
-      window.removeEventListener("popstate", handlePopState)
-    }
-  }, [isDirty, confirmDialogOpen])
+  const {
+    confirmDialogOpen,
+    setConfirmDialogOpen,
+    handleBack,
+    handleDialogCancel,
+    handleDialogSave,
+  } = useUnsavedNavigationGuard({
+    isDirty,
+    onBackNavigation: goBack,
+    onSave: handleSaveFull,
+  })
 
   const handleOpenCreateSheet = React.useCallback((type: SheetType) => {
     const config = getSheetConfig(type)
@@ -549,30 +504,12 @@ export function EditItem({ id }: EditItemProps) {
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("solution.solution")}</h1>
-        </div>
-        <Card className="p-10">
-          <div className="flex items-center justify-center gap-2">
-            <Spinner className="h-6 w-6" />
-            <span className="text-muted-foreground">{t("loading")}</span>
-          </div>
-        </Card>
-      </div>
+      <EditPageLoadingState
+        title={t("solution.solution")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        loadingLabel={t("loading")}
+      />
     )
   }
 
@@ -581,38 +518,18 @@ export function EditItem({ id }: EditItemProps) {
     const errorMessage = editState.error || (queryError as any)?.message || t("error.not-found")
     
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("solution.solution")}</h1>
-        </div>
-        <Card className="p-6">
-          <div className="text-destructive font-medium mb-2">{t("error.title")}</div>
-          <div className="text-muted-foreground">{errorMessage}</div>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => {
-              dispatch(setError(null))
-              window.location.reload()
-            }}
-          >
-            {t("action.retry")}
-          </Button>
-        </Card>
-      </div>
+      <EditPageErrorState
+        title={t("solution.solution")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        errorTitle={t("error.title")}
+        errorMessage={errorMessage}
+        retryLabel={t("action.retry")}
+        onRetry={() => {
+          dispatch(setError(null))
+          window.location.reload()
+        }}
+      />
     )
   }
 

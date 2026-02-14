@@ -14,8 +14,8 @@ import {
 import "@xyflow/react/dist/style.css"
 import { useGetApplicationComponentFullQuery } from "@/store/apis/application-component-api"
 import { ApplicationComponentNode, type ApplicationComponentNodeData } from "@/components/schema-elements/application-component-node"
-import { useElkLayout } from "@/components/schema-elements/use-elk-layout"
-import { useSchemaExport } from "@/components/schema-elements/use-schema-export"
+import { useElkLayout } from "@/hooks/schema/use-elk-layout"
+import { useSchemaExport } from "@/hooks/schema/use-schema-export"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { useMemo } from "react"
@@ -311,4 +311,3 @@ export function ApplicationSchemaView({
     </Card>
   )
 }
-

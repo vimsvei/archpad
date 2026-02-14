@@ -2,14 +2,11 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { UnsavedChangesDialog } from "./unsaved-changes-dialog"
 import {
   useGetApplicationComponentFullQuery,
@@ -62,10 +59,13 @@ import {
 } from "@/store/slices/application-component-edit-slice"
 import { ComponentDetailV3 } from "./component-detail-v3"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
+import { EditPageErrorState, EditPageLoadingState } from "@/components/shared/archimate/edit-page-state"
 import { getSheetConfig, type SheetType } from "@/components/shared/archimate/sheet-configs"
 import { CreateNamedObjectSheet, type NamedObjectDraft } from "@/components/shared/create-named-object-sheet"
+import { useUnsavedNavigationGuard } from "@/hooks/archimate/use-unsaved-navigation-guard"
 import * as ApplicationInterfaceRest from "@/services/application-interface.rest"
 import * as ApplicationEventRest from "@/services/application-event.rest"
+import { mapApplicationComponentToLoadPayload } from "./edit-mappers"
 
 type EditItemProps = {
   id: string
@@ -103,74 +103,7 @@ export function EditItem({ id }: EditItemProps) {
   React.useEffect(() => {
     if (!fullData) return
 
-    // Get stateId from state if available
-    const stateId = fullData.state?.id ?? null
-
-    // Map directory fields from GraphQL
-    const directoryFields = {
-      stateId,
-      licenseTypeId: fullData.licenseType?.id ?? null,
-      architectureStyleId: fullData.style?.id ?? null,
-      criticalLevelId: fullData.criticalLevel?.id ?? null,
-      failoverTypeId: fullData.failoverType?.id ?? null,
-      recoveryTimeId: fullData.recoveryTime?.id ?? null,
-      redundancyTypeId: fullData.redundancyType?.id ?? null,
-      monitoringLevelId: fullData.monitoringLevel?.id ?? null,
-      scalingTypeId: fullData.scalingType?.id ?? null,
-    }
-
-    dispatch(
-      loadComponent({
-        code: fullData.code,
-        name: fullData.name,
-        description: fullData.description ?? "",
-        stateId,
-        directoryFields,
-        functions: fullData.functions,
-        dataObjects: fullData.dataObjects,
-        interfaces: fullData.interfaces,
-        events: fullData.events,
-        systemSoftware: fullData.systemSoftware,
-        technologyNodes: fullData.technologyNodes,
-        technologyNetworks: fullData.technologyNetworks,
-        parents: fullData.parents,
-        children: fullData.children,
-        businessActors: fullData.businessActors ?? [],
-        businessRoles: fullData.businessRoles ?? [],
-        businessProcesses: fullData.businessProcesses ?? [],
-        stakeholders: (fullData.stakeholders || []).map((s) => ({
-          id: `${id}-${s.stakeholderId}-${s.roleId}`,
-          stakeholderId: s.stakeholderId,
-          stakeholderName: s.stakeholderName,
-          roleId: s.roleId,
-          roleName: s.roleName,
-        })),
-        incomingFlows: (fullData.incomingFlows || []).map((flow) => ({
-          id: flow.id,
-          code: flow.code,
-          name: flow.name,
-          description: flow.description ?? null,
-          sourceComponent: flow.sourceComponent?.name ?? null,
-          sourceFunction: null, // Not available in GraphQL (composite key)
-          sourceInterface: null, // Not available in model
-          targetComponent: flow.targetComponent?.name ?? null,
-          targetFunction: null, // Not available in GraphQL (composite key)
-          targetInterface: null, // Not available in model
-        })),
-        outgoingFlows: (fullData.outgoingFlows || []).map((flow) => ({
-          id: flow.id,
-          code: flow.code,
-          name: flow.name,
-          description: flow.description ?? null,
-          sourceComponent: flow.sourceComponent?.name ?? null,
-          sourceFunction: null, // Not available in GraphQL (composite key)
-          sourceInterface: null, // Not available in model
-          targetComponent: flow.targetComponent?.name ?? null,
-          targetFunction: null, // Not available in GraphQL (composite key)
-          targetInterface: null, // Not available in model
-        })),
-      })
-    )
+    dispatch(loadComponent(mapApplicationComponentToLoadPayload(id, fullData)))
   }, [fullData, dispatch, id])
 
   // Reset on unmount
@@ -193,9 +126,9 @@ export function EditItem({ id }: EditItemProps) {
       const errorMsg = t("form.invalid")
       toast.error(errorMsg)
       dispatch(setSaveError(errorMsg))
-      return
+      return false
     }
-    if (saveInProgressRef.current) return
+    if (saveInProgressRef.current) return false
     saveInProgressRef.current = true
 
     try {
@@ -314,6 +247,7 @@ export function EditItem({ id }: EditItemProps) {
       toast.success(t("action.saved"))
       dispatch(updateBaseline())
       dispatch(setSaveError(null))
+      return true
     } catch (e: any) {
       const errorMessage = e?.message ?? t("action.save.failed")
       dispatch(setSaveError(errorMessage))
@@ -321,7 +255,7 @@ export function EditItem({ id }: EditItemProps) {
       
       // Log error for debugging
       console.error("Failed to save component:", e)
-      throw e // Re-throw to allow caller to handle
+      return false
     } finally {
       saveInProgressRef.current = false
       dispatch(setSaving(false))
@@ -448,108 +382,21 @@ export function EditItem({ id }: EditItemProps) {
   })
 
 
-  // Dialog state for unsaved changes
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
-  const [pendingNavigation, setPendingNavigation] = React.useState<(() => void) | null>(null)
-
   const goBack = React.useCallback(() => {
     router.push("/application/components")
   }, [router])
 
-  const handleBack = React.useCallback(() => {
-    if (isDirty) {
-      setPendingNavigation(() => goBack)
-      setConfirmDialogOpen(true)
-    } else {
-      goBack()
-    }
-  }, [goBack, isDirty])
-
-  // Handle dialog cancel
-  const handleDialogCancel = React.useCallback(() => {
-    setConfirmDialogOpen(false)
-    setPendingNavigation(null)
-  }, [])
-
-  // Handle dialog save
-  const handleDialogSave = React.useCallback(async () => {
-    try {
-      await handleSaveFull()
-      // After successful save, proceed with navigation
-      if (pendingNavigation) {
-        setConfirmDialogOpen(false)
-        pendingNavigation()
-        setPendingNavigation(null)
-      }
-    } catch {
-      // Error already handled in handleSaveFull
-      // Don't close dialog on error
-    }
-  }, [handleSaveFull, pendingNavigation])
-
-  // Intercept link clicks - optimized with early returns and memoized
-  const handleLinkClick = React.useCallback((e: MouseEvent) => {
-    if (!isDirty || confirmDialogOpen) return
-
-    // Early return if not a link click - check nodeName first for better performance
-    const target = e.target as HTMLElement
-    if (target.nodeName !== 'A' && !target.closest) return
-    
-    const link = target.closest?.('a[href]') as HTMLAnchorElement | null
-    if (!link) return
-
-    const href = link.getAttribute('href')
-    if (!href) return
-
-    // Don't intercept external links or anchors
-    if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
-      return
-    }
-
-    // Don't intercept if it's the current page
-    const currentPath = window.location.pathname
-    if (href === currentPath || href === `${currentPath}/`) {
-      return
-    }
-
-    // Intercept navigation
-    e.preventDefault()
-    e.stopPropagation()
-    
-    setPendingNavigation(() => () => router.push(href))
-    setConfirmDialogOpen(true)
-  }, [isDirty, confirmDialogOpen, router])
-
-  // Intercept navigation when dirty
-  React.useEffect(() => {
-    // Handle browser back/forward
-    const handlePopState = () => {
-      if (isDirty && !confirmDialogOpen) {
-        window.history.pushState(null, "", window.location.href)
-        setPendingNavigation(() => () => window.history.back())
-        setConfirmDialogOpen(true)
-      }
-    }
-
-    // Handle beforeunload (browser close/refresh)
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault()
-        e.returnValue = ""
-        return ""
-      }
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-    window.addEventListener("popstate", handlePopState)
-    document.addEventListener("click", handleLinkClick, true) // Use capture phase
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload)
-      window.removeEventListener("popstate", handlePopState)
-      document.removeEventListener("click", handleLinkClick, true)
-    }
-  }, [isDirty, confirmDialogOpen, handleLinkClick])
+  const {
+    confirmDialogOpen,
+    setConfirmDialogOpen,
+    handleBack,
+    handleDialogCancel,
+    handleDialogSave,
+  } = useUnsavedNavigationGuard({
+    isDirty,
+    onBackNavigation: goBack,
+    onSave: handleSaveFull,
+  })
 
 
   const handleOpenCreateSheet = React.useCallback((type: SheetType) => {
@@ -726,30 +573,12 @@ export function EditItem({ id }: EditItemProps) {
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
-        </div>
-        <Card className="p-10">
-          <div className="flex items-center justify-center gap-2">
-            <Spinner className="h-6 w-6" />
-            <span className="text-muted-foreground">{t("loading")}</span>
-          </div>
-        </Card>
-      </div>
+      <EditPageLoadingState
+        title={t("application.component")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        loadingLabel={t("loading")}
+      />
     )
   }
 
@@ -758,39 +587,18 @@ export function EditItem({ id }: EditItemProps) {
     const errorMessage = editState.error || (queryError as any)?.message || t("error.not-found")
     
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("application.component")}</h1>
-        </div>
-        <Card className="p-6">
-          <div className="text-destructive font-medium mb-2">{t("error.title")}</div>
-          <div className="text-muted-foreground">{errorMessage}</div>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => {
-              dispatch(setError(null))
-              // Retry loading
-              window.location.reload()
-            }}
-          >
-            {t("action.retry")}
-          </Button>
-        </Card>
-      </div>
+      <EditPageErrorState
+        title={t("application.component")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        errorTitle={t("error.title")}
+        errorMessage={errorMessage}
+        retryLabel={t("action.retry")}
+        onRetry={() => {
+          dispatch(setError(null))
+          window.location.reload()
+        }}
+      />
     )
   }
 
@@ -917,4 +725,3 @@ export function EditItem({ id }: EditItemProps) {
     </div>
   )
 }
-

@@ -9,6 +9,7 @@ import ApplicationEvent from "@/components/icons/ApplicationEvent"
 import { SystemSoftwareIcon } from "@/components/icons/system-software-icon"
 import TechnicalNode from "@/components/icons/TechnicalNode"
 import Network from "@/components/icons/Network"
+import BusinessFunction2 from "@/components/icons/BusinessFunction2"
 import { TrendingUp, BrickWallShield } from "lucide-react"
 import type { SheetType } from "./archimate-object-type"
 
@@ -81,6 +82,13 @@ export const SHEET_CONFIGS: Record<SheetType, SheetConfig> = {
     canAdd: true,
     canDelete: true,
   },
+  processes: {
+    tableKey: "business.processes",
+    icon: (props) => <BusinessFunction2 width={24} height={24} {...props} />,
+    canCreate: true,
+    canAdd: true,
+    canDelete: true,
+  },
   node: {
     tableKey: "technologies.nodes",
     icon: (props) => <TechnicalNode width={24} height={24} {...props} />,
@@ -122,4 +130,3 @@ export function getSheetConfig(type: SheetType | null): SheetConfig | null {
   if (!type) return null
   return SHEET_CONFIGS[type] || null
 }
-

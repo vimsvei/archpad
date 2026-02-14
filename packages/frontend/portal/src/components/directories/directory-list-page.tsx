@@ -27,7 +27,7 @@ import { SheetTrigger } from "@/components/ui/sheet"
 import { EntityListPageShell, type PageSizeOption } from "@/components/common/entity-list-page-shell"
 import { EntityDataTable } from "@/components/common/entity-data-table"
 import { EntityColumnsMenu } from "@/components/common/entity-columns-menu"
-import { usePersistedColumnVisibility } from "@/components/common/use-persisted-column-visibility"
+import { usePersistedColumnVisibility } from "@/hooks/use-persisted-column-visibility"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { DirectoryItem } from "@/@types/directories"
 

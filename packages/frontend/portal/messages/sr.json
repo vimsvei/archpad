@@ -56,6 +56,7 @@
     "layer": "Arhitektonski sloj",
     "layer.application": "Aplikacije",
     "layer.business": "Biznis",
+    "layer.common": "Opšte",
     "layer.implementation": "Implementacija i migracija",
     "layer.motivation": "Motivacija",
     "layer.strategy": "Strategije",
@@ -157,6 +158,11 @@
     "actors": "Akteri",
     "products": "Proizvodi",
     "roles": "Biznis uloge"
+  },
+  "common": {
+    "events": "Događaji",
+    "functions": "Funkcije",
+    "processes": "Procesi"
   },
   "create": {
     "item": "Kreiraj"
@@ -278,7 +284,11 @@
     "color": "Boja",
     "description": "Opis",
     "name": "Naziv",
-    "state": "Stanje"
+    "state": "Stanje",
+    "radarArea": "Radar zona",
+    "vendor_name": "Dobavljač",
+    "licenseCount": "Broj licenci",
+    "criticalLevel": "Nivo kriticnosti"
   },
   "loading": "Učitavanje...",
   "management": "Upravljanje",
@@ -597,6 +607,10 @@
       "no-results": "Funkcije aplikacije nisu pronađene",
       "no-results.description": "Kreirajte novu funkciju aplikacije ili dodajte postojeću sa liste"
     },
+    "events": {
+      "no-results": "Događaji aplikacije nisu pronađeni",
+      "no-results.description": "Kreirajte novi događaj aplikacije ili dodajte postojeći sa liste"
+    },
     "item": {
       "actions": "Akcije"
     },
@@ -604,9 +618,21 @@
       "type": "Tip licence"
     },
     "name": "Naziv",
+    "networks": {
+      "no-results": "Mreže nisu pronađene",
+      "no-results.description": "Kreirajte novu mrežu ili dodajte postojeću sa liste"
+    },
     "no-results": "Ništa nije pronađeno",
+    "nodes": {
+      "no-results": "Čvorovi nisu pronađeni",
+      "no-results.description": "Kreirajte novi čvor ili dodajte postojeći sa liste"
+    },
     "page": {
       "size": "Redova na stranici"
+    },
+    "processes": {
+      "no-results": "Poslovni procesi nisu pronađeni",
+      "no-results.description": "Kreirajte novi poslovni proces ili dodajte postojeći sa liste"
     },
     "select": {
       "all": "Izaberi sve",
@@ -726,6 +752,14 @@
         "open-exchange": "Open Exchange XML"
       },
       "title": "Otpremanje repozitorijuma"
+    }
+  },
+  "radar": {
+    "zone": {
+      "adopt": "Usvojiti",
+      "trial": "Probati",
+      "access": "Proceniti",
+      "hold": "Zadrzati"
     }
   }
 }

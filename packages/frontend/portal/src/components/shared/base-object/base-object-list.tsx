@@ -14,7 +14,7 @@ import { SheetTrigger } from "@/components/ui/sheet"
 import { EntityListPageShell, type PageSizeOption } from "@/components/common/entity-list-page-shell"
 import { EntityDataTable } from "@/components/common/entity-data-table"
 import { EntityColumnsMenu } from "@/components/common/entity-columns-menu"
-import { usePersistedColumnVisibility } from "@/components/common/use-persisted-column-visibility"
+import { usePersistedColumnVisibility } from "@/hooks/use-persisted-column-visibility"
 
 import { BaseObjectNewItem } from "./base-object-new-item"
 import type { BaseObject, BaseObjectValues } from "./base-object-types"
@@ -255,5 +255,4 @@ export function BaseObjectList<TItem extends BaseObject>(props: BaseObjectListPr
     />
   )
 }
-
 

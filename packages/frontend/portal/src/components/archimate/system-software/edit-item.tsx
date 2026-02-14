@@ -2,139 +2,131 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Spinner } from "@/components/ui/spinner"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { UnsavedChangesDialog } from "@/components/archimate/application-component/unsaved-changes-dialog"
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContents,
-  TabsContent,
-} from "@/components/animate-ui/components/animate/tabs"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { BaseObjectItem } from "@/components/shared/base-object/base-object-item"
-import type { BaseObjectValues } from "@/components/shared/base-object/base-object-types"
-import {
-  useGetSystemSoftwareByIdQuery,
+  useGetSystemSoftwareFullQuery,
+  useUnlinkSystemSoftwareComponentMutation,
+  useUnlinkSystemSoftwareNodeMutation,
   useUpdateSystemSoftwareMutation,
 } from "@/store/apis/system-software-api"
 import { useDirectoryItems } from "@/hooks/use-directory-items"
 import type { SystemSoftwareDirectoryFields } from "@/@types/system-software"
-import { MarkdownEditor } from "../application-component/markdown-editor"
+import type { TechnologyRadarZone } from "@archpad/contract"
+import { SystemSoftwareDetailV3 } from "./component-detail-v3"
+import {
+  mapDirectoryIdByName,
+  mapRelatedItems,
+} from "@/components/shared/archimate/edit-mappers"
+import { EditPageErrorState, EditPageLoadingState } from "@/components/shared/archimate/edit-page-state"
+import { useUnsavedNavigationGuard } from "@/hooks/archimate/use-unsaved-navigation-guard"
 
 type EditItemProps = {
   id: string
+}
+
+type DraftValues = {
+  code: string
+  name: string
+  description: string
+  version: string
+  radarArea: TechnologyRadarZone | null
 }
 
 export function EditItem({ id }: EditItemProps) {
   const { t } = useTranslate()
   const router = useRouter()
 
-  const { data: item, error, isLoading, isFetching } = useGetSystemSoftwareByIdQuery(
+  const { data: fullData, error: queryError, isLoading, isFetching } = useGetSystemSoftwareFullQuery(
     { id },
     { refetchOnMountOrArgChange: true }
   )
   const [updateItem, updateState] = useUpdateSystemSoftwareMutation()
+  const [unlinkComponent] = useUnlinkSystemSoftwareComponentMutation()
+  const [unlinkNode] = useUnlinkSystemSoftwareNodeMutation()
 
-  const normalize = React.useCallback((v: BaseObjectValues) => {
+  const normalize = React.useCallback((value: DraftValues) => {
     return {
-      code: v.code.trim(),
-      name: v.name.trim(),
-      description: v.description.trim(),
+      code: value.code.trim(),
+      name: value.name.trim(),
+      description: value.description.trim(),
+      version: value.version.trim(),
+      radarArea: value.radarArea,
     }
   }, [])
 
   const baselineRef = React.useRef<ReturnType<typeof normalize> | null>(null)
   const directoryFieldsBaselineRef = React.useRef<SystemSoftwareDirectoryFields | null>(null)
-  const [draft, setDraft] = React.useState<BaseObjectValues & { version: string }>({
+
+  const [draft, setDraft] = React.useState<DraftValues>({
     code: "",
     name: "",
     description: "",
     version: "",
+    radarArea: null,
   })
 
   const [directoryFields, setDirectoryFields] = React.useState<SystemSoftwareDirectoryFields>({
     typeId: null,
     licenseTypeId: null,
   })
-  const [confirmOpen, setConfirmOpen] = React.useState(false)
-  const [tab, setTab] = React.useState<string>("general")
+  const [relatedComponents, setRelatedComponents] = React.useState<
+    Array<{ id: string; code: string; name: string; description?: string | null }>
+  >([])
+  const [relatedTechnologyNodes, setRelatedTechnologyNodes] = React.useState<
+    Array<{ id: string; code: string; name: string; description?: string | null }>
+  >([])
 
-  // Load directory items from Redux store (preloaded on app start)
   const { items: softwareTypes = [] } = useDirectoryItems("software-types")
   const { items: licenseTypes = [] } = useDirectoryItems("license-types")
 
   React.useEffect(() => {
-    if (!item) return
-    const initial: BaseObjectValues & { version: string } = {
-      code: item.code ?? "",
-      name: item.name ?? "",
-      description: item.description ?? "",
-      version: item.version ?? "",
+    if (!fullData) return
+
+    const initial: DraftValues = {
+      code: fullData.code ?? "",
+      name: fullData.name ?? "",
+      description: fullData.description ?? "",
+      version: fullData.version ?? "",
+      radarArea: fullData.radarArea ?? null,
     }
+
     baselineRef.current = normalize(initial)
     setDraft(initial)
-  }, [item, normalize])
+  }, [fullData, normalize])
 
-  // Initialize directory fields from item data
   React.useEffect(() => {
-    if (!item) return
-    
-    const updateDirectoryField = (directoryItems: typeof softwareTypes, itemField?: { name: string } | null) => {
-      if (!itemField?.name || directoryItems.length === 0) {
-        return null
-      }
-      const found = directoryItems.find((item) => item.name === itemField.name)
-      return found?.id ?? null
-    }
+    if (!fullData) return
 
     const initialFields: SystemSoftwareDirectoryFields = {
-      typeId: updateDirectoryField(softwareTypes, item.type) ?? null,
-      licenseTypeId: updateDirectoryField(licenseTypes, item.license) ?? null,
+      typeId: mapDirectoryIdByName(softwareTypes, fullData.type),
+      licenseTypeId: mapDirectoryIdByName(licenseTypes, fullData.license),
     }
-    
+
     directoryFieldsBaselineRef.current = initialFields
     setDirectoryFields(initialFields)
-  }, [item, softwareTypes, licenseTypes])
+  }, [fullData, softwareTypes, licenseTypes])
+
+  React.useEffect(() => {
+    if (!fullData) return
+
+    setRelatedComponents(mapRelatedItems(fullData.components))
+    setRelatedTechnologyNodes(mapRelatedItems(fullData.technologyNodes))
+  }, [fullData])
 
   const isDirty = React.useMemo(() => {
     if (!baselineRef.current) return false
-    
-    // Check basic fields
+
     const basicFieldsChanged = JSON.stringify(normalize(draft)) !== JSON.stringify(baselineRef.current)
-    
-    // Check version
-    const versionChanged = (item?.version ?? "") !== draft.version
-    
-    // Check directory fields
+
     const directoryFieldsChanged = directoryFieldsBaselineRef.current
       ? JSON.stringify(directoryFields) !== JSON.stringify(directoryFieldsBaselineRef.current)
       : false
-    
-    return basicFieldsChanged || versionChanged || directoryFieldsChanged
-  }, [draft, normalize, directoryFields, item])
+
+    return basicFieldsChanged || directoryFieldsChanged
+  }, [draft, normalize, directoryFields])
 
   const isDraftValid = React.useMemo(() => {
     return Boolean(draft.name.trim())
@@ -144,38 +136,39 @@ export function EditItem({ id }: EditItemProps) {
     router.push("/technologies/system-software")
   }, [router])
 
-  const handleBack = React.useCallback(() => {
-    if (isDirty) {
-      setConfirmOpen(true)
-      return
-    }
-    goBack()
-  }, [isDirty, goBack])
-
   const handleSave = React.useCallback(async () => {
-    if (!item) return
+    if (!fullData) return false
+
     if (!isDraftValid) {
       toast.error(t("form.invalid"))
-      return
+      return false
     }
 
     const normalized = normalize(draft)
-    await updateItem({
-      id: item.id,
-      input: {
-        code: normalized.code,
-        name: normalized.name,
-        description: normalized.description ? normalized.description : undefined,
-        version: draft.version.trim() ? draft.version.trim() : undefined,
-        typeId: directoryFields.typeId ?? undefined,
-        licenseTypeId: directoryFields.licenseTypeId ?? undefined,
-      },
-    }).unwrap()
 
-    toast.success(t("action.saved"))
-    baselineRef.current = normalize(draft)
-    directoryFieldsBaselineRef.current = { ...directoryFields }
-  }, [draft, directoryFields, isDraftValid, item, normalize, t, updateItem])
+    try {
+      await updateItem({
+        id: fullData.id,
+        input: {
+          code: normalized.code,
+          name: normalized.name,
+          description: normalized.description ? normalized.description : undefined,
+          version: normalized.version ? normalized.version : undefined,
+          radarArea: normalized.radarArea ?? undefined,
+          typeId: directoryFields.typeId ?? undefined,
+          licenseTypeId: directoryFields.licenseTypeId ?? undefined,
+        },
+      }).unwrap()
+
+      toast.success(t("action.saved"))
+      baselineRef.current = normalized
+      directoryFieldsBaselineRef.current = { ...directoryFields }
+      return true
+    } catch (error: any) {
+      toast.error(error?.message ?? t("action.save.failed"))
+      return false
+    }
+  }, [directoryFields, draft, fullData, isDraftValid, normalize, t, updateItem])
 
   const handleDirectoryFieldChange = React.useCallback(
     (fieldName: keyof SystemSoftwareDirectoryFields, value: string | null) => {
@@ -184,267 +177,113 @@ export function EditItem({ id }: EditItemProps) {
     []
   )
 
+  const handleRemoveComponentRelation = React.useCallback(
+    async (componentId: string) => {
+      if (!fullData) return
+      try {
+        await unlinkComponent({ id: fullData.id, componentId }).unwrap()
+        setRelatedComponents((prev) => prev.filter((item) => item.id !== componentId))
+        toast.success(t("action.deleted"))
+      } catch (error: any) {
+        toast.error(error?.message ?? t("action.delete.failed"))
+      }
+    },
+    [fullData, t, unlinkComponent]
+  )
+
+  const handleRemoveNodeRelation = React.useCallback(
+    async (nodeId: string) => {
+      if (!fullData) return
+      try {
+        await unlinkNode({ id: fullData.id, nodeId }).unwrap()
+        setRelatedTechnologyNodes((prev) => prev.filter((item) => item.id !== nodeId))
+        toast.success(t("action.deleted"))
+      } catch (error: any) {
+        toast.error(error?.message ?? t("action.delete.failed"))
+      }
+    },
+    [fullData, t, unlinkNode]
+  )
+
+  const {
+    confirmDialogOpen,
+    setConfirmDialogOpen,
+    handleBack,
+    handleDialogCancel,
+    handleDialogSave,
+  } = useUnsavedNavigationGuard({
+    isDirty,
+    onBackNavigation: goBack,
+    onSave: handleSave,
+  })
+
   if (isLoading || isFetching) {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
-        </div>
-        <Card className="p-10">
-          <div className="flex items-center justify-center">
-            <Spinner className="h-6 w-6" />
-          </div>
-        </Card>
-      </div>
+      <EditPageLoadingState
+        title={t("technologies.system-software")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        loadingLabel={t("loading")}
+      />
     )
   }
 
-  if (!item) {
+  if (queryError || !fullData) {
+    const errorMessage = (queryError as any)?.message ?? t("error.not-found")
+
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <h1 className="text-2xl font-semibold">{t("technologies.system-software")}</h1>
-        </div>
-        <Card className="p-6">
-          <div className="text-muted-foreground">{(error as any)?.message ?? "Item not found."}</div>
-        </Card>
-      </div>
+      <EditPageErrorState
+        title={t("technologies.system-software")}
+        backLabel={t("action.back")}
+        onBack={handleBack}
+        errorTitle={t("error.title")}
+        errorMessage={errorMessage}
+        retryLabel={t("action.retry")}
+        onRetry={() => window.location.reload()}
+      />
     )
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("action.back")}
-                onClick={handleBack}
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.back")}</TooltipContent>
-          </Tooltip>
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-semibold">
-              {t("technologies.system-software")}: {item.name}
-            </h1>
-            <p className="text-muted-foreground text-sm">ID: {item.id}</p>
-          </div>
-        </div>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <SystemSoftwareDetailV3
+        softwareId={id}
+        isSaving={updateState.isLoading}
+        isDirty={isDirty}
+        isDraftValid={isDraftValid}
+        onBack={handleBack}
+        onSave={() => void handleSave()}
+        editState={{
+          code: draft.code,
+          name: draft.name,
+          description: draft.description,
+          version: draft.version,
+          radarArea: draft.radarArea,
+          typeId: directoryFields.typeId,
+          licenseTypeId: directoryFields.licenseTypeId,
+          components: relatedComponents,
+          technologyNodes: relatedTechnologyNodes,
+        }}
+        onUpdateCode={(value) => setDraft((prev) => ({ ...prev, code: value }))}
+        onUpdateName={(value) => setDraft((prev) => ({ ...prev, name: value }))}
+        onUpdateDescription={(value) => setDraft((prev) => ({ ...prev, description: value }))}
+        onUpdateVersion={(value) => setDraft((prev) => ({ ...prev, version: value }))}
+        onUpdateRadarArea={(value) => setDraft((prev) => ({ ...prev, radarArea: value }))}
+        onUpdateTypeId={(value) => handleDirectoryFieldChange("typeId", value)}
+        onUpdateLicenseTypeId={(value) => handleDirectoryFieldChange("licenseTypeId", value)}
+        onRemoveComponent={handleRemoveComponentRelation}
+        onRemoveTechnologyNode={handleRemoveNodeRelation}
+      />
 
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                aria-label={t("action.save")}
-                onClick={() => void handleSave()}
-                disabled={!isDirty || updateState.isLoading || !isDraftValid}
-              >
-                <Save />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("action.save")}</TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
-
-      <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
-        <TabsList className="relative w-fit">
-          <TabsTrigger value="general">
-            {t("tabs.general")}
-          </TabsTrigger>
-          <TabsTrigger value="description">
-            {t("tabs.description")}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContents className="flex min-h-0 flex-1 flex-col">
-          <TabsContent value="general" className="flex min-h-0 flex-1 flex-col mt-0">
-          <div className="min-h-0 flex-1 overflow-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left area: 2/3 - General fields */}
-              <div className="lg:col-span-2 flex flex-col gap-6 min-h-0">
-                {/* General fields card */}
-                <Card className="flex-shrink-0 flex flex-col gap-4 p-6">
-                  <BaseObjectItem
-                    values={draft}
-                    onChange={(values) => setDraft((prev) => ({ ...prev, ...values }))}
-                    submitLabel={t("action.save")}
-                    hideActions
-                    hideDescription
-                    disabled={updateState.isLoading}
-                    onSubmit={async (values) => {
-                      try {
-                        const normalized = normalize(values)
-                        await updateItem({
-                          id: item.id,
-                          input: {
-                            code: normalized.code,
-                            name: normalized.name,
-                            description: normalized.description ? normalized.description : undefined,
-                            version: draft.version.trim() ? draft.version.trim() : undefined,
-                          },
-                        }).unwrap()
-                        toast.success(t("action.saved"))
-                        baselineRef.current = normalize(values)
-                      } catch (e: any) {
-                        toast.error(e?.message ?? t("action.save.failed"))
-                      }
-                    }}
-                  />
-                  
-                  {/* Version field */}
-                  <div className="grid gap-2">
-                    <Label htmlFor="system-software-version">{t("table.version")}</Label>
-                    <Input
-                      id="system-software-version"
-                      value={draft.version}
-                      onChange={(e) => setDraft((prev) => ({ ...prev, version: e.target.value }))}
-                      disabled={updateState.isLoading || !item}
-                      placeholder={t("table.version.placeholder")}
-                    />
-                  </div>
-                </Card>
-              </div>
-
-              {/* Right area: 1/3 - Directory fields */}
-              <Card className="lg:col-span-1 flex flex-col gap-4 p-6">
-                  
-                {/* Software Type */}
-                <div className="grid gap-2">
-                  <Label htmlFor="software-type">{t("directory.software.type")}</Label>
-                    <Select
-                      value={directoryFields.typeId ?? ""}
-                      onValueChange={(value) => handleDirectoryFieldChange("typeId", value || null)}
-                      disabled={updateState.isLoading || !item}
-                    >
-                    <SelectTrigger id="software-type" className="w-full">
-                      <SelectValue placeholder={t("select.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {softwareTypes.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* License Type */}
-                <div className="grid gap-2">
-                  <Label htmlFor="license-type">{t("directory.license.type")}</Label>
-                    <Select
-                      value={directoryFields.licenseTypeId ?? ""}
-                      onValueChange={(value) => handleDirectoryFieldChange("licenseTypeId", value || null)}
-                      disabled={updateState.isLoading || !item}
-                    >
-                    <SelectTrigger id="license-type" className="w-full">
-                      <SelectValue placeholder={t("select.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {licenseTypes.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </Card>
-            </div>
-          </div>
-          </TabsContent>
-
-          <TabsContent value="description" className="flex min-h-0 flex-1 flex-col mt-0">
-            <Card className="flex min-h-0 flex-1 flex-col p-6">
-              <MarkdownEditor
-                key={item.id}
-                value={draft.description}
-                onChange={(markdown) => {
-                  setDraft((prev) => ({ ...prev, description: markdown }))
-                }}
-                disabled={updateState.isLoading || !item}
-                placeholder={t("description.placeholder")}
-              />
-            </Card>
-          </TabsContent>
-        </TabsContents>
-      </Tabs>
-
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("dialog.unsaved.title")}</DialogTitle>
-            <DialogDescription>
-              {t("dialog.unsaved.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              {t("action.cancel")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setConfirmOpen(false)
-                goBack()
-              }}
-            >
-              {t("action.discard")}
-            </Button>
-            <Button
-              onClick={() => {
-                void (async () => {
-                  try {
-                    await handleSave()
-                    setConfirmOpen(false)
-                    goBack()
-                  } catch (e: any) {
-                    toast.error(e?.message ?? t("action.save.failed"))
-                  }
-                })()
-              }}
-              disabled={updateState.isLoading || !isDraftValid}
-            >
-              {t("action.save")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UnsavedChangesDialog
+        open={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        componentName={draft.name || fullData.name || t("technologies.system-software")}
+        isSaving={updateState.isLoading}
+        isValid={isDraftValid}
+        onCancel={handleDialogCancel}
+        onSave={handleDialogSave}
+      />
     </div>
   )
 }
-

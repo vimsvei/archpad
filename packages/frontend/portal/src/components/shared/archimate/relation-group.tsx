@@ -50,7 +50,7 @@ export type RelationGroupProps = {
   onRefresh: () => void
   onAddExisting?: () => void
   onCreate?: () => void
-  onDelete: (item: RelationGroupItem) => void
+  onDelete?: (item: RelationGroupItem) => void
   /** When provided, "Просмотр" opens item in sidebar (read-only) instead of navigating */
   onViewInSidebar?: (item: RelationGroupItem, editPath: string) => void
   /** Optional color for status indicator per item */
@@ -235,17 +235,21 @@ export function RelationGroup({
                                   {t("action.edit")}
                                 </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-destructive focus:text-destructive"
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  onDelete(item)
-                                }}
-                              >
-                                <Trash2 className="size-4 mr-2" />
-                                {t("action.delete")}
-                              </DropdownMenuItem>
+                              {onDelete && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      onDelete(item)
+                                    }}
+                                  >
+                                    <Trash2 className="size-4 mr-2" />
+                                    {t("action.delete")}
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>

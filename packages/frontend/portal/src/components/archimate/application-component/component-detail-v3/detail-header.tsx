@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
+import type { ArchimateObjectIconType } from "@/components/shared/archimate/archimate-object-icon"
 
 export type DetailHeaderProps = {
   t: (key: string) => string
@@ -21,7 +22,7 @@ export type DetailHeaderProps = {
   isDraftValid: boolean
   placeholder?: string
   /** Icon type for the entity, e.g. "application-component" */
-  iconType?: "application-component"
+  iconType?: ArchimateObjectIconType
 }
 
 /**

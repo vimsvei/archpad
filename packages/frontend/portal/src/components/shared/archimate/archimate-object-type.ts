@@ -8,6 +8,7 @@ export type ArchimateObjectType =
   | "application-data-object"
   | "application-interface"
   | "application-event"
+  | "business-process"
   | "system-software"
   | "technology-node"
   | "technology-network"
@@ -27,6 +28,7 @@ export type SheetType =
   | "functions" // Plural form (uses application-function icon)
   | "interfaces" // Plural form (uses application-interface icon)
   | "events" // Plural form (uses application-event icon)
+  | "processes" // Business processes
   | "node" // Short form for technology-node
   | "network" // Short form for technology-network
   | "flows" // Application flows
@@ -53,6 +55,8 @@ export function getSheetTypeFromObjectType(
       return "interfaces"
     case "application-event":
       return "events"
+    case "business-process":
+      return "processes"
     case "system-software":
       return "system-software"
     case "technology-node":
@@ -66,4 +70,3 @@ export function getSheetTypeFromObjectType(
       return "system-software"
   }
 }
-

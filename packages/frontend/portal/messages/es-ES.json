@@ -56,6 +56,7 @@
     "layer": "Capa de arquitectura",
     "layer.application": "Aplicaciones",
     "layer.business": "Negocio",
+    "layer.common": "Común",
     "layer.implementation": "Implementación y migración",
     "layer.motivation": "Motivación",
     "layer.strategy": "Estrategias",
@@ -157,6 +158,11 @@
     "actors": "Actores",
     "products": "Productos",
     "roles": "Roles de negocio"
+  },
+  "common": {
+    "events": "Eventos",
+    "functions": "Funciones",
+    "processes": "Procesos"
   },
   "create": {
     "item": "Crear"
@@ -278,7 +284,11 @@
     "color": "Color",
     "description": "Descripción",
     "name": "Nombre",
-    "state": "Estado"
+    "state": "Estado",
+    "radarArea": "Área de radar",
+    "vendor_name": "Proveedor",
+    "licenseCount": "Cantidad de licencias",
+    "criticalLevel": "Nivel de criticidad"
   },
   "loading": "Cargando...",
   "management": "Gestión",
@@ -597,6 +607,10 @@
       "no-results": "Funciones de aplicación no encontradas",
       "no-results.description": "Cree una nueva función de aplicación o añada una existente de la lista"
     },
+    "events": {
+      "no-results": "Eventos de aplicación no encontrados",
+      "no-results.description": "Cree un nuevo evento de aplicación o añada uno existente de la lista"
+    },
     "item": {
       "actions": "Acciones"
     },
@@ -604,9 +618,21 @@
       "type": "Tipo de licencia"
     },
     "name": "Nombre",
+    "networks": {
+      "no-results": "Redes no encontradas",
+      "no-results.description": "Cree una nueva red o añada una existente de la lista"
+    },
     "no-results": "No se encontró nada",
+    "nodes": {
+      "no-results": "Nodos no encontrados",
+      "no-results.description": "Cree un nuevo nodo o añada uno existente de la lista"
+    },
     "page": {
       "size": "Filas por página"
+    },
+    "processes": {
+      "no-results": "Procesos de negocio no encontrados",
+      "no-results.description": "Cree un nuevo proceso de negocio o añada uno existente de la lista"
     },
     "select": {
       "all": "Seleccionar todo",
@@ -726,6 +752,14 @@
         "open-exchange": "Open Exchange XML"
       },
       "title": "Subir repositorio"
+    }
+  },
+  "radar": {
+    "zone": {
+      "adopt": "Adoptar",
+      "trial": "Probar",
+      "access": "Acceso",
+      "hold": "Mantener"
     }
   }
 }
