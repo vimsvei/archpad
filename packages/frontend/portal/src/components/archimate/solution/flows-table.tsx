@@ -21,7 +21,7 @@ export function FlowsTable({ solutionId: _solutionId, solutionName, onAddExistin
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.solutionEdit)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const isLoading = false
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
 
   const items = editState.flows

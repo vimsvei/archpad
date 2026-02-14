@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
-import type { RootState, AppDispatch } from "@/store/store"
+import type { AppDispatch } from "@/store/store"
 import {
   selectDirectoryItems,
   selectIsDirectoryLoading,

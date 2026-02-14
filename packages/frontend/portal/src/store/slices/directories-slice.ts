@@ -1,6 +1,5 @@
 import { createSlice, type PayloadAction, createSelector } from "@reduxjs/toolkit"
 import type { DirectoryItem, DirectorySlug } from "@/@types/directories"
-import { listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 
 export type DirectoriesState = {
   // Store all directories by slug
@@ -149,4 +148,3 @@ export const selectInitialLoadComplete = createSelector(
 )
 
 export const selectAllDirectories = selectDirectories
-

@@ -4,7 +4,6 @@ import * as React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useTranslate } from "@tolgee/react"
 import { toast } from "sonner"
-import { Card } from "@/components/ui/card"
 import { ApplicationComponentIcon } from "@/components/icons/application-component-icon"
 import { ArchimateItemTable } from "@/components/shared/archimate/archimate-item-table"
 import type { RelatedItem } from "@/components/shared/related-items-list"
@@ -137,4 +136,3 @@ export function HierarchyTable({
     </div>
   )
 }
-

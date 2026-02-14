@@ -110,7 +110,7 @@ export function ListPage() {
         },
       },
     ],
-    [formatDateTime, t]
+    [t]
   )
 
   return (

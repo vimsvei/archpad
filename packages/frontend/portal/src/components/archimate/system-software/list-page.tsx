@@ -14,7 +14,6 @@ import {
   useCreateSystemSoftwareMutation,
   useGetSystemSoftwareQuery,
 } from "@/store/apis/system-software-api"
-import { Badge } from "@/components/ui/badge"
 import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import { Button } from "@/components/ui/button"
 
@@ -133,7 +132,7 @@ export function ListPage() {
         },
       },
     ],
-    [formatDateTime, t]
+    [t]
   )
 
   return (
@@ -167,4 +166,3 @@ export function ListPage() {
     />
   )
 }
-

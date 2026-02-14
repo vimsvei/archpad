@@ -1,5 +1,5 @@
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit"
-import type { AppDispatch, RootState } from "@/store/store"
+import type { AppDispatch } from "@/store/store"
 import { directoryApi } from "@/store/apis/directory-api"
 import { setDirectoryItems, clearDirectory } from "@/store/slices/directories-slice"
 import * as DirectoryHasura from "@/services/directories.graphql"
@@ -41,4 +41,3 @@ directoriesMiddleware.startListening({
     }
   },
 })
-

@@ -11,10 +11,10 @@ type ParentTableProps = {
   onAddExisting?: () => void
 }
 
-export function ParentTable({ componentId, onAddExisting }: ParentTableProps) {
+export function ParentTable({ componentId: _componentId, onAddExisting }: ParentTableProps) {
   const { t } = useTranslate()
   const [isLoading, setIsLoading] = React.useState(false)
-  const [parents, setParents] = React.useState<ApplicationComponent[]>([])
+  const [parents, _setParents] = React.useState<ApplicationComponent[]>([])
 
   const handleRefresh = React.useCallback(() => {
     setIsLoading(true)
@@ -22,7 +22,7 @@ export function ParentTable({ componentId, onAddExisting }: ParentTableProps) {
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
-  }, [componentId])
+  }, [])
 
   const handleAdd = React.useCallback(() => {
     // TODO: Implement add parent dialog
@@ -54,10 +54,10 @@ type ChildrenTableProps = {
   onAddExisting?: () => void
 }
 
-export function ChildrenTable({ componentId, onAddExisting }: ChildrenTableProps) {
+export function ChildrenTable({ componentId: _componentId, onAddExisting }: ChildrenTableProps) {
   const { t } = useTranslate()
   const [isLoading, setIsLoading] = React.useState(false)
-  const [children, setChildren] = React.useState<ApplicationComponent[]>([])
+  const [children, _setChildren] = React.useState<ApplicationComponent[]>([])
 
   const handleRefresh = React.useCallback(() => {
     setIsLoading(true)
@@ -65,7 +65,7 @@ export function ChildrenTable({ componentId, onAddExisting }: ChildrenTableProps
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
-  }, [componentId])
+  }, [])
 
   const handleAdd = React.useCallback(() => {
     // TODO: Implement add child dialog

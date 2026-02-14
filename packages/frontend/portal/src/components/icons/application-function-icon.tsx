@@ -1,6 +1,6 @@
 import * as React from "react"
 
-export interface ApplicationFunctionIconProps extends React.SVGProps<SVGSVGElement> {}
+export type ApplicationFunctionIconProps = React.SVGProps<SVGSVGElement>
 
 export function ApplicationFunctionIcon({ ...props }: ApplicationFunctionIconProps) {
   const maskId = React.useId()
@@ -17,4 +17,3 @@ export function ApplicationFunctionIcon({ ...props }: ApplicationFunctionIconPro
     </svg>
   )
 }
-

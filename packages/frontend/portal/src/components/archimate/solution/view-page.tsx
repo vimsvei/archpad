@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card"
 import { ArchimateObjectIcon } from "@/components/shared/archimate/archimate-object-icon"
 import type { SolutionFull } from "@/@types/solution"
 import { MarkdownViewer } from "@/components/shared/markdown-viewer"
-import { FlowsTable } from "./flows-table"
 import {
   Table,
   TableBody,

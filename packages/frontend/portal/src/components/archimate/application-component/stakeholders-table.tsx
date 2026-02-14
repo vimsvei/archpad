@@ -42,8 +42,6 @@ export function StakeholdersTable({
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
   const isLoading = editState.isSaving
-  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
-
   const items = editState.stakeholders
 
   const handleRefresh = React.useCallback(() => {
@@ -53,27 +51,10 @@ export function StakeholdersTable({
   const handleDelete = React.useCallback(
     (item: StakeholderItem) => {
       dispatch(removeStakeholder(item.id))
-      setSelectedItems((prev) => {
-        const next = new Set(prev)
-        next.delete(item.id)
-        return next
-      })
       toast.success(t("action.deleted"))
     },
     [dispatch, t]
   )
-
-  const handleToggleItem = React.useCallback((itemId: string) => {
-    setSelectedItems((prev) => {
-      const next = new Set(prev)
-      if (next.has(itemId)) {
-        next.delete(itemId)
-      } else {
-        next.add(itemId)
-      }
-      return next
-    })
-  }, [])
 
   const renderEmpty = () => {
     if (!componentName) {
@@ -180,4 +161,3 @@ export function StakeholdersTable({
     </Card>
   )
 }
-

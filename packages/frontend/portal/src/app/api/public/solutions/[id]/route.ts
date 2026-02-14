@@ -28,21 +28,6 @@ async function loadGqlServer(pathFromApiGraphql: string): Promise<string> {
   throw new Error(`Failed to load gql file: ${key}`)
 }
 
-function getGraphqlGatewayBaseUrl(): string {
-  // Для серверных компонентов приоритет у внутренних адресов (в кластере).
-  const internal = process.env.API_GATEWAY_INTERNAL_URL?.trim()
-  const external = process.env.NEXT_PUBLIC_API_GRAPHQL_URI?.trim()
-  const defaultInternal = "http://oathkeeper.secure.svc:4455"
-  const url =
-    process.env.NODE_ENV === "production"
-      ? internal || defaultInternal || external
-      : external || internal
-  if (!url) {
-    throw new Error('API_GATEWAY_INTERNAL_URL or NEXT_PUBLIC_API_GRAPHQL_URI must be set')
-  }
-  return url
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

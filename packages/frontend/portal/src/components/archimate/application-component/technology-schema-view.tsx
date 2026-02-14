@@ -9,8 +9,8 @@ type TechnologySchemaViewProps = {
 }
 
 export function TechnologySchemaView({
-  componentId,
-  componentName,
+  componentId: _componentId,
+  componentName: _componentName,
 }: TechnologySchemaViewProps) {
   return (
     <Card className="flex min-h-0 flex-1 flex-col p-6">
@@ -18,4 +18,3 @@ export function TechnologySchemaView({
     </Card>
   )
 }
-

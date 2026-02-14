@@ -47,7 +47,7 @@ type EntityDataTableProps<TData> = {
 }
 
 export function EntityDataTable<TData>({
-  tableId,
+  tableId: _tableId,
   data,
   columns,
   loading,
@@ -155,5 +155,4 @@ export function EntityDataTable<TData>({
     </div>
   )
 }
-
 

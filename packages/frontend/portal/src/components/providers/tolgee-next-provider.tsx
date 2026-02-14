@@ -31,7 +31,7 @@ export const TolgeeNextProvider = ({ language, staticData, children }: TolgeeNex
       router.refresh();
     });
     return () => unsubscribe();
-  }, [tolgee, router]);
+  }, [language, router]);
   
   return (
     <TolgeeProvider

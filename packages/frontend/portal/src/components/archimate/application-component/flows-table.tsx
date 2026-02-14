@@ -16,7 +16,7 @@ type FlowsTableProps = {
   onCreate?: () => void
 }
 
-export function FlowsTable({ componentId, componentName, onCreate }: FlowsTableProps) {
+export function FlowsTable({ componentId: _componentId, componentName, onCreate }: FlowsTableProps) {
   const { t } = useTranslate()
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.applicationComponentEdit)
@@ -57,7 +57,7 @@ export function FlowsTable({ componentId, componentName, onCreate }: FlowsTableP
         }
       })()
     },
-    [componentId, dispatch, t, editState.incomingFlows]
+    [dispatch, t, editState.incomingFlows]
   )
 
   const handleToggleItem = React.useCallback((itemId: string) => {
@@ -140,4 +140,3 @@ export function FlowsTable({ componentId, componentName, onCreate }: FlowsTableP
     />
   )
 }
-

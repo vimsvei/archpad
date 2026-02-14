@@ -124,7 +124,7 @@ export function ListPage() {
         },
       },
     ],
-    [formatDateTime, t]
+    [t]
   )
 
   return (
@@ -154,5 +154,4 @@ export function ListPage() {
     />
   )
 }
-
 

@@ -42,8 +42,6 @@ export function StakeholdersTable({
   const dispatch = useDispatch<AppDispatch>()
   const editState = useSelector((state: RootState) => state.solutionEdit)
   const isLoading = editState.isSaving
-  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set())
-
   const items = editState.stakeholders
 
   const handleRefresh = React.useCallback(() => {
@@ -53,11 +51,6 @@ export function StakeholdersTable({
   const handleDelete = React.useCallback(
     (item: StakeholderItem) => {
       dispatch(removeStakeholder(item.id))
-      setSelectedItems((prev) => {
-        const next = new Set(prev)
-        next.delete(item.id)
-        return next
-      })
       toast.success(t("action.deleted"))
     },
     [dispatch, t]

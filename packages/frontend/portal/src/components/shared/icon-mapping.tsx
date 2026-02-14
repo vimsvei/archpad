@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 
 export type IconType =
   | "system-software"
@@ -26,7 +27,7 @@ export function getIconPath(iconType: IconType): string {
 export function Icon({ iconType, className }: { iconType: IconType; className?: string }) {
   const path = getIconPath(iconType)
   return (
-    <img
+    <Image
       src={path}
       alt=""
       // Most of our SVG assets are black; make them readable in dark mode.
@@ -36,4 +37,3 @@ export function Icon({ iconType, className }: { iconType: IconType; className?: 
     />
   )
 }
-

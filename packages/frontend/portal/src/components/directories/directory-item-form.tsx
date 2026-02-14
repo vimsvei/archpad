@@ -74,6 +74,7 @@ export function DirectoryItemForm({
     setTouched(false)
   }, [
     isControlled,
+    initialValues,
     initialValues?.code,
     initialValues?.name,
     initialValues?.description,
@@ -230,4 +231,3 @@ export function DirectoryItemForm({
     </form>
   )
 }
-

@@ -6,11 +6,9 @@ import type {
   GetSolutionsQuery,
   GetSolutionsQueryVariables,
   GetSolutionFullQuery,
-  GetSolutionFullQueryVariables,
 } from "@/generated/operations"
 // GetSolutionFullByCodeQuery and GetSolutionFullByCodeQueryVariables will be generated after codegen
 type GetSolutionFullByCodeQuery = any
-type GetSolutionFullByCodeQueryVariables = { code: string }
 
 type HasuraSolutionRow = GetSolutionsQuery["Solution"][number]
 
@@ -137,11 +135,6 @@ export async function getSolutionFullGraphql(idOrCode: string): Promise<Solution
   
   if (!solution) throw new Error("Item not found")
 
-  // Collect function and dataObject IDs from solution mappings
-  const functionPairs = (solution.functions || []).map((f: any) => ({
-    componentId: f.componentId,
-    functionId: f.functionId,
-  }))
   // solutionDataObjects is at root level (Solution no longer has dataObjects relation)
   const solutionDataObjects = (data as any).solutionDataObjects || []
   const dataObjectPairs = solutionDataObjects.map((d: any) => ({

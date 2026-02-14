@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Save } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslate } from "@tolgee/react"
 import { useDispatch, useSelector } from "react-redux"
@@ -59,7 +59,6 @@ import {
   removeChild,
   removeStakeholder,
   selectIsDirty,
-  selectIsDraftValid,
 } from "@/store/slices/application-component-edit-slice"
 import { ComponentDetailV3 } from "./component-detail-v3"
 import { AddExistingItemsSheet, type SelectableItem } from "@/components/shared/add-existing-items-sheet"
@@ -172,7 +171,7 @@ export function EditItem({ id }: EditItemProps) {
         })),
       })
     )
-  }, [fullData, dispatch])
+  }, [fullData, dispatch, id])
 
   // Reset on unmount
   React.useEffect(() => {
@@ -327,7 +326,16 @@ export function EditItem({ id }: EditItemProps) {
       saveInProgressRef.current = false
       dispatch(setSaving(false))
     }
-  }, [id, editState, isDraftValid, dispatch, t, updateComponentFull])
+  }, [
+    id,
+    editState,
+    isDraftValid,
+    dispatch,
+    t,
+    updateComponentFull,
+    createDataObject,
+    createApplicationFunction,
+  ])
 
   // Global save handler (alias for compatibility)
   const handleSave = handleSaveFull
@@ -564,7 +572,7 @@ export function EditItem({ id }: EditItemProps) {
     const titleKey = `${t("action.create")} ${t(config.tableKey)}`
     const title = t(titleKey) // show key if translation missing
     return { title }
-  }, [createSheetType, t, t])
+  }, [createSheetType, t])
 
   const handleCreateNamedObject = React.useCallback(() => {
     if (!createSheetType) return
@@ -708,7 +716,7 @@ export function EditItem({ id }: EditItemProps) {
       title,
       icon: config.icon,
     }
-  }, [sheetType, t, t])
+  }, [sheetType, t])
 
   const handleAddStakeholder = React.useCallback(() => {
     toast.info(t("action.not-implemented"))
@@ -909,5 +917,4 @@ export function EditItem({ id }: EditItemProps) {
     </div>
   )
 }
-
 

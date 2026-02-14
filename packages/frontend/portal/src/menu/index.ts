@@ -1,19 +1,20 @@
-import {TMenu, TMenuItem, TSecondaryMenu} from "@/menu/t-menu-item";
-import {BrickWallShield, BringToFront, Building2, CheckCircle2, Folder, House, Layers, LayoutDashboard,
-  LibraryBig, LifeBuoy, Network, Send, Settings, Settings2, Sparkles, Target, Tent, TrendingUp, Upload} from "lucide-react";
-import { DirectoryKind } from "@/@types/directory-kind";
-
-function slugFromDirectoryKindKey(key: string) {
-  return `${key.toLowerCase().replace(/_/g, "-")}s`;
-}
-
-const DIRECTORY_MENU_ITEMS: TMenuItem[] = (Object.keys(DirectoryKind) as Array<keyof typeof DirectoryKind>)
-  .sort()
-  .map((key) => ({
-    title: DirectoryKind[key],
-    icon: BrickWallShield,
-    url: `/directories/${slugFromDirectoryKindKey(String(key))}`,
-  }));
+import { TMenu } from "@/menu/t-menu-item";
+import {
+  BrickWallShield,
+  BringToFront,
+  Building2,
+  CheckCircle2,
+  House,
+  Layers,
+  LibraryBig,
+  Network,
+  Settings,
+  Sparkles,
+  Target,
+  Tent,
+  TrendingUp,
+  Upload,
+} from "lucide-react";
 
 export const menu: TMenu = [
   {

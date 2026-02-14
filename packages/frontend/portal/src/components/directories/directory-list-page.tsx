@@ -20,7 +20,6 @@ import {
   useCreateDirectoryItemMutation,
   useBulkCreateDirectoryItemsMutation,
   useBulkUpsertDirectoryItemsMutation,
-  useCreateDirectoryLinkMutation,
   useBulkCreateDirectoryLinksMutation,
 } from "@/store/apis/directory-api"
 import { useDirectoryItems } from "@/hooks/use-directory-items"
@@ -61,22 +60,6 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     }
   }, [])
 
-  const formatDateTime = React.useCallback((iso?: string | null) => {
-    if (!iso) return null
-    try {
-      return new Intl.DateTimeFormat(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(new Date(iso))
-    } catch {
-      return iso
-    }
-  }, [])
-
   // Memoize translations used in columns to prevent recreation
   const translations = React.useMemo(
     () => ({
@@ -114,9 +97,8 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
 
   const [createItem, createState] = useCreateDirectoryItemMutation()
   const [deleteItem] = useDeleteDirectoryItemMutation()
-  const [bulkCreateItems, bulkCreateState] = useBulkCreateDirectoryItemsMutation()
+  const [_bulkCreateItems, bulkCreateState] = useBulkCreateDirectoryItemsMutation()
   const [bulkUpsertItems, bulkUpsertState] = useBulkUpsertDirectoryItemsMutation()
-  const [createLink] = useCreateDirectoryLinkMutation()
   const [bulkCreateLinks] = useBulkCreateDirectoryLinksMutation()
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -126,7 +108,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     `directory:${directorySlug}`
   )
 
-  const itemsAll = remoteItems ?? []
+  const itemsAll = React.useMemo(() => remoteItems ?? [], [remoteItems])
   const normalizedSearch = search.trim().toLowerCase()
 
   const filtered = React.useMemo(() => {
@@ -213,7 +195,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
         }
       }
     },
-    [bulkCreateLinks, bulkUpsertItems, directorySlug, formatNowWithTz, refetch]
+    [bulkCreateLinks, bulkUpsertItems, directorySlug, formatNowWithTz, handleRefetch]
   )
 
   const handleUploadClick = React.useCallback(() => {
@@ -442,7 +424,7 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
                   className:
                     "border-emerald-600 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950 dark:text-emerald-50",
                 })
-              } catch (e: any) {
+              } catch (_e: any) {
                 setOpen(false)
                 toast.error(
                   `${t("directory.item.error")} ${title}`,
@@ -492,4 +474,3 @@ export function DirectoryListPage({ directorySlug }: DirectoryListPageProps) {
     />
   )
 }
-

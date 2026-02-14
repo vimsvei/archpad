@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useDispatch, useSelector } from "react-redux"
-import type { AppDispatch, RootState } from "@/store/store"
+import type { AppDispatch } from "@/store/store"
 import { setLoading, setInitialLoadComplete, setMultipleDirectories, selectInitialLoadComplete } from "@/store/slices/directories-slice"
 import { listKnownDirectorySlugs } from "@/components/directories/directory-meta"
 import * as DirectoryHasura from "@/services/directories.graphql"
@@ -59,4 +59,3 @@ export function DirectoriesPreloader() {
 
   return null // This component doesn't render anything
 }
-

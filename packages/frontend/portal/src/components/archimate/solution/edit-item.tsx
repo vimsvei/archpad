@@ -18,11 +18,7 @@ import {
   TabsContents,
   TabsContent,
 } from "@/components/animate-ui/components/animate/tabs"
-import {
-  useGetSolutionFullQuery,
-  useGetSolutionsQuery,
-  useUpdateSolutionFullMutation,
-} from "@/store/apis/solution-api"
+import { useGetSolutionFullQuery, useUpdateSolutionFullMutation } from "@/store/apis/solution-api"
 import type { SolutionFull } from "@/services/solution.graphql"
 import {
   useCreateApplicationFunctionMutation,
@@ -46,9 +42,6 @@ import {
   addComponent,
   addFunction,
   addDataObject,
-  addFlow,
-  addMotivation,
-  addStakeholder,
   addTechnologyNode,
   addTechnologyNetwork,
   updateBaseline,
@@ -275,8 +268,14 @@ export function EditItem({ id }: EditItemProps) {
     { skip: !sheetOpen || (sheetType !== "parent" && sheetType !== "components") }
   )
   // TODO: Add technology nodes and networks queries when APIs are available
-  const nodesList = { data: { items: [], pageCount: 1 }, isLoading: false, isFetching: false } as any
-  const networksList = { data: { items: [], pageCount: 1 }, isLoading: false, isFetching: false } as any
+  const nodesList = React.useMemo(
+    () => ({ data: { items: [], pageCount: 1 }, isLoading: false, isFetching: false }) as any,
+    []
+  )
+  const networksList = React.useMemo(
+    () => ({ data: { items: [], pageCount: 1 }, isLoading: false, isFetching: false }) as any,
+    []
+  )
 
   const sheetItems: SelectableItem[] = React.useMemo(() => {
     switch (sheetType) {
@@ -449,7 +448,7 @@ export function EditItem({ id }: EditItemProps) {
     const titleKey = `${t("action.create")} ${t(config.tableKey)}`
     const title = t(titleKey)
     return { title }
-  }, [createSheetType, t, t])
+  }, [createSheetType, t])
 
   const handleCreateNamedObject = React.useCallback(() => {
     if (!createSheetType) return
@@ -545,7 +544,7 @@ export function EditItem({ id }: EditItemProps) {
       title,
       icon: config.icon,
     }
-  }, [sheetType, t, t])
+  }, [sheetType, t])
 
   // Show loading state
   if (isLoading || isFetching || editState.isLoading) {

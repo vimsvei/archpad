@@ -18,10 +18,6 @@ import type {
   GetDirectoryRelationsQueryVariables,
 } from "@/generated/operations"
 
-type HasuraDirectoryRow =
-  | GetDirectoryItemsQuery["DirectoryObject"][number]
-  | NonNullable<GetDirectoryItemByPkQuery["DirectoryObjectByPk"]>
-
 type HasuraDirectoryRelationRow = GetDirectoryRelationsQuery["DirectoryItemsMap"][number]
 
 type DirectoryRowLike = {
@@ -173,5 +169,4 @@ export async function getAllDirectoriesGraphql(): Promise<Record<DirectorySlug, 
   
   return directoriesBySlug as Record<DirectorySlug, DirectoryItem[]>
 }
-
 

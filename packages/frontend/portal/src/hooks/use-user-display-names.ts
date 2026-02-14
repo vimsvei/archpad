@@ -29,7 +29,7 @@ export function useUserDisplayNames(keycloakIds: (string | null | undefined)[]):
     return () => {
       cancelled = true
     }
-  }, [ids.join(",")])
+  }, [ids])
 
   return map
 }

@@ -40,11 +40,9 @@ export function PasswordStrengthIndicator({ password }: { password: string }) {
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, showStrength = false, value, "aria-invalid": ariaInvalid, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false)
-    const [internalRef, setInternalRef] = React.useState<HTMLInputElement | null>(null)
 
     const mergedRef = React.useCallback(
       (node: HTMLInputElement | null) => {
-        setInternalRef(node)
         if (typeof ref === "function") {
           ref(node)
         } else if (ref) {

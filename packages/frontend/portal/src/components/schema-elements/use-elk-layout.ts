@@ -4,12 +4,6 @@ import * as React from "react"
 import type { Edge, Node } from "@xyflow/react"
 import type { Dispatch, SetStateAction } from "react"
 
-type ElkModule = {
-  default: new (opts?: any) => {
-    layout: (graph: any, opts?: any) => Promise<any>
-  }
-}
-
 async function loadElk(): Promise<any> {
   // IMPORTANT for Next.js/Turbopack:
   // Do NOT import `elkjs` root or `elk-api` here, because those may pull Node-oriented code
@@ -146,5 +140,4 @@ export function useElkLayout<T extends Node = Node>(
 
   return { runLayout, isLayingOut }
 }
-
 

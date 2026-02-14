@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { T, useTranslate } from "@tolgee/react"
@@ -48,10 +49,12 @@ export function AuthFormWrapper({className, title, titleKey, subtitle, subtitleK
                 </div>
               </div>
               <div className="bg-muted relative hidden md:block">
-                <img
+                <Image
                   src="/placeholder.svg"
                   alt="Image"
-                  className="inset-0 w-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 50vw, 100vw"
                 />
               </div>
             </CardContent>

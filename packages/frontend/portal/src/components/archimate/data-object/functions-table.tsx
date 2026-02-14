@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
-import type { RelatedItem } from "@/store/slices/data-object-edit-slice"
 import { FunctionUsagesMapTab, type FunctionUsageRow } from "@/components/shared/archimate/maps-tabs/function-usages-map-tab"
 
 export function FunctionsTable() {
@@ -38,5 +37,4 @@ export function FunctionsTable() {
     />
   )
 }
-
 

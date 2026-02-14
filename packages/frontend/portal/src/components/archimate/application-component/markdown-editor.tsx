@@ -100,7 +100,7 @@ function MarkdownInitializerPlugin({
         }, { discrete: true })
       }
     }
-  }, [editor])
+  }, [editor, initialMarkdown])
 
   return null
 }

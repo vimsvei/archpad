@@ -9,10 +9,6 @@ import type { RelatedItem } from "@/components/shared/related-items-list"
 import type { RootState, AppDispatch } from "@/store/store"
 import { removeSystemSoftware } from "@/store/slices/application-component-edit-slice"
 
-type SystemSoftwareItem = RelatedItem & {
-  kind?: string
-}
-
 type SystemSoftwareTableProps = {
   componentId: string
   componentName?: string

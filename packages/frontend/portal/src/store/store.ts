@@ -14,7 +14,6 @@ import { authFormsReducer } from "@/store/slices/auth-forms-slice"
 import { directoriesMiddleware } from "@/store/middleware/directories-middleware"
 import { openExchangeImportReducer } from "@/store/slices/open-exchange-import-slice"
 import { drawIoImportReducer } from "@/store/slices/draw-io-import-slice"
-import logger from 'redux-logger';
 
 export function makeStore() {
   return configureStore({
@@ -55,5 +54,4 @@ export function makeStore() {
 export type AppStore = ReturnType<typeof makeStore>
 export type RootState = ReturnType<AppStore["getState"]>
 export type AppDispatch = AppStore["dispatch"]
-
 

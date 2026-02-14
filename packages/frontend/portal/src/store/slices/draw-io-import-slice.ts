@@ -1,7 +1,7 @@
 "use client"
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { AppDispatch, RootState } from "@/store/store"
+import type { AppDispatch } from "@/store/store"
 
 export type DrawIoImportStatus = "idle" | "uploading" | "processing" | "completed" | "failed"
 

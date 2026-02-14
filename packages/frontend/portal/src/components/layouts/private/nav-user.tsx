@@ -5,11 +5,8 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Send,
-  Settings2,
-  Sparkles,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTranslate } from "@tolgee/react"
@@ -17,7 +14,6 @@ import { useTranslate } from "@tolgee/react"
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import {
   DropdownMenu,

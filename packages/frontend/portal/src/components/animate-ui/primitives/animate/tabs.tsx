@@ -155,6 +155,7 @@ function TabsTrigger({
   ref,
   value,
   asChild = false,
+  children,
   ...props
 }: TabsTriggerProps) {
   const { activeValue, handleValueChange, registerTrigger } = useTabs();
@@ -167,17 +168,32 @@ function TabsTrigger({
     return () => registerTrigger(value, null);
   }, [value, registerTrigger]);
 
-  const Component = asChild ? Slot : motion.button;
+  if (asChild) {
+    return (
+      <Slot
+        ref={localRef}
+        data-slot="tabs-trigger"
+        role="tab"
+        onClick={() => handleValueChange(value)}
+        data-state={activeValue === value ? 'active' : 'inactive'}
+        {...props}
+      >
+        {children as React.ReactElement}
+      </Slot>
+    );
+  }
 
   return (
-    <Component
+    <motion.button
       ref={localRef}
       data-slot="tabs-trigger"
       role="tab"
       onClick={() => handleValueChange(value)}
       data-state={activeValue === value ? 'active' : 'inactive'}
       {...props}
-    />
+    >
+      {children}
+    </motion.button>
   );
 }
 
@@ -333,15 +349,32 @@ function TabsContent({
   value,
   style,
   asChild = false,
+  children,
   ...props
 }: TabsContentProps) {
   const { activeValue } = useTabs();
   const isActive = activeValue === value;
 
-  const Component = asChild ? Slot : motion.div;
+  if (asChild) {
+    return (
+      <Slot
+        role="tabpanel"
+        data-slot="tabs-content"
+        inert={!isActive}
+        style={{ overflow: 'hidden', ...style }}
+        initial={{ filter: 'blur(0px)' }}
+        animate={{ filter: isActive ? 'blur(0px)' : 'blur(4px)' }}
+        exit={{ filter: 'blur(0px)' }}
+        transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+        {...props}
+      >
+        {children as React.ReactElement}
+      </Slot>
+    );
+  }
 
   return (
-    <Component
+    <motion.div
       role="tabpanel"
       data-slot="tabs-content"
       inert={!isActive}
@@ -351,7 +384,9 @@ function TabsContent({
       exit={{ filter: 'blur(0px)' }}
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       {...props}
-    />
+    >
+      {children}
+    </motion.div>
   );
 }
 

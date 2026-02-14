@@ -1,6 +1,6 @@
 import * as React from "react"
 
-export interface ApplicationComponentIconProps extends React.SVGProps<SVGSVGElement> {}
+export type ApplicationComponentIconProps = React.SVGProps<SVGSVGElement>
 
 export function ApplicationComponentIcon({ ...props }: ApplicationComponentIconProps) {
   return (
@@ -11,4 +11,3 @@ export function ApplicationComponentIcon({ ...props }: ApplicationComponentIconP
     </svg>
   )
 }
-

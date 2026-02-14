@@ -10,7 +10,7 @@ import {
   TabsContents,
   TabsContent,
 } from "@/components/animate-ui/components/animate/tabs"
-import type { RootState, AppDispatch } from "@/store/store"
+import type { AppDispatch } from "@/store/store"
 import { updateADRField, selectADRFields } from "@/store/slices/solution-edit-slice"
 import { MarkdownEditor } from "@/components/archimate/application-component/markdown-editor"
 
