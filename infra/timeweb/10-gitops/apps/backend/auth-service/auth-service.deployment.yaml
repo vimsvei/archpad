@@ -101,7 +101,7 @@ spec:
       serviceAccountName: auth-service
       containers:
         - name: auth-service
-          image: archpad-cr.registry.twcstorage.ru/archpad/auth-service:main-87c72075
+          image: archpad-cr.registry.twcstorage.ru/archpad/auth-service:main-36f450ed
           command: ["sh", "-c"]
           args:
             - |

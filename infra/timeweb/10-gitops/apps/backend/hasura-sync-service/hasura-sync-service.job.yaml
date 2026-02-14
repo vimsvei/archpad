@@ -67,7 +67,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: hasura-sync-service
-          image: archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service:main-87c72075
+          image: archpad-cr.registry.twcstorage.ru/archpad/hasura-sync-service:main-36f450ed
           imagePullPolicy: Always
           command: ["sh", "-c"]
           args:

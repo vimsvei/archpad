@@ -77,7 +77,7 @@ spec:
       serviceAccountName: portal
       containers:
         - name: portal
-          image: archpad-cr.registry.twcstorage.ru/archpad/portal:main-87c72075
+          image: archpad-cr.registry.twcstorage.ru/archpad/portal:main-36f450ed
           command: ["sh", "-c"]
           args:
             - |
