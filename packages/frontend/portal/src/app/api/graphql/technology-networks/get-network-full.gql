@@ -1,0 +1,45 @@
+query GetTechnologyNetworkFull($where: TechnologyNetwork_bool_exp!, $networkId: uuid!) {
+  item: TechnologyNetwork(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: ApplicationComponentTechnologyLogicalNetworkMap(where: { logicalNetworkId: { _eq: $networkId } }) {
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  parentMaps: TechnologyNetworkHierarchyMap(
+    where: { networkChildId: { _eq: $networkId } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    parent {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  childMaps: TechnologyNetworkHierarchyMap(
+    where: { networkParentId: { _eq: $networkId } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    child {
+      id
+      code
+      name
+      description
+    }
+  }
+}

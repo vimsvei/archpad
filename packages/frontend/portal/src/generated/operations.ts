@@ -20704,6 +20704,30 @@ export type GetDirectoryRelationsQueryVariables = Exact<{
 
 export type GetDirectoryRelationsQuery = { __typename?: 'query_root', DirectoryItemsMap: Array<{ __typename?: 'DirectoryItemsMap', createdAt: any, type: any, sourceId: any, targetId: any, target: { __typename?: 'DirectoryObject', id: any, code: string, name: string, description?: string | null, kind: any } }> };
 
+export type GetEventFullQueryVariables = Exact<{
+  where: Event_Bool_Exp;
+  eventId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetEventFullQuery = { __typename?: 'query_root', item: Array<{ __typename?: 'Event', id: any, code: string, name: string, description?: string | null, layer: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, componentMaps: Array<{ __typename?: 'ApplicationComponentEventMap', component: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }> };
+
+export type GetFunctionFullQueryVariables = Exact<{
+  where: Function_Bool_Exp;
+  functionId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetFunctionFullQuery = { __typename?: 'query_root', item: Array<{ __typename?: 'Function', id: any, code: string, name: string, description?: string | null, layer: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, componentMaps: Array<{ __typename?: 'ApplicationComponentFunctionMap', component: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, processMaps: Array<{ __typename?: 'BusinessProcessFunctionMap', process: { __typename?: 'Process', id: any, code: string, name: string, description?: string | null } }> };
+
+export type GetProcessFullQueryVariables = Exact<{
+  where: Process_Bool_Exp;
+  processId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetProcessFullQuery = { __typename?: 'query_root', item: Array<{ __typename?: 'Process', id: any, code: string, name: string, description?: string | null, layer: any, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, functionMaps: Array<{ __typename?: 'BusinessProcessFunctionMap', function: { __typename?: 'Function', id: any, code: string, name: string, description?: string | null } }>, parentMaps: Array<{ __typename?: 'BusinessProcessHierarchyMap', parent: { __typename?: 'Process', id: any, code: string, name: string, description?: string | null } }>, childMaps: Array<{ __typename?: 'BusinessProcessHierarchyMap', child: { __typename?: 'Process', id: any, code: string, name: string, description?: string | null } }> };
+
 export type GetSolutionFullByCodeQueryVariables = Exact<{
   where: Solution_Bool_Exp;
 }>;
@@ -20760,3 +20784,19 @@ export type GetSystemSoftwareListQueryVariables = Exact<{
 
 
 export type GetSystemSoftwareListQuery = { __typename?: 'query_root', SystemSoftware: Array<{ __typename?: 'SystemSoftware', id: any, code: string, name: string }>, SystemSoftwareAggregate: { __typename?: 'SystemSoftware_aggregate', aggregate?: { __typename?: 'SystemSoftware_aggregate_fields', count: number } | null } };
+
+export type GetTechnologyNetworkFullQueryVariables = Exact<{
+  where: TechnologyNetwork_Bool_Exp;
+  networkId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetTechnologyNetworkFullQuery = { __typename?: 'query_root', item: Array<{ __typename?: 'TechnologyNetwork', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, componentMaps: Array<{ __typename?: 'ApplicationComponentTechnologyLogicalNetworkMap', component: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, parentMaps: Array<{ __typename?: 'TechnologyNetworkHierarchyMap', parent: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string, description?: string | null } }>, childMaps: Array<{ __typename?: 'TechnologyNetworkHierarchyMap', child: { __typename?: 'TechnologyNetwork', id: any, code: string, name: string, description?: string | null } }> };
+
+export type GetTechnologyNodeFullQueryVariables = Exact<{
+  where: TechnologyNode_Bool_Exp;
+  nodeId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetTechnologyNodeFullQuery = { __typename?: 'query_root', item: Array<{ __typename?: 'TechnologyNode', id: any, code: string, name: string, description?: string | null, createdAt: any, createdBy?: any | null, updatedAt?: any | null, updatedBy?: any | null }>, componentMaps: Array<{ __typename?: 'ApplicationComponentTechnologyNodeMap', component: { __typename?: 'ApplicationComponent', id: any, code: string, name: string, description?: string | null } }>, softwareMaps: Array<{ __typename?: 'TechnologyNodeSystemSoftwareMap', systemSoftware: { __typename?: 'SystemSoftware', id: any, code: string, name: string, description?: string | null } }>, parentMaps: Array<{ __typename?: 'TechnologyNodeHierarchyMap', parent: { __typename?: 'TechnologyNode', id: any, code: string, name: string, description?: string | null } }>, childMaps: Array<{ __typename?: 'TechnologyNodeHierarchyMap', child: { __typename?: 'TechnologyNode', id: any, code: string, name: string, description?: string | null } }> };

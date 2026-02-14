@@ -1,12 +1,17 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 
-import type { ApplicationFunction, Paginated } from "@/@types/application-function"
+import type {
+  ApplicationFunction,
+  ApplicationFunctionFull,
+  Paginated,
+} from "@/@types/application-function"
 import type {
   CreateApplicationFunctionInput,
   GetApplicationFunctionsParams,
   UpdateApplicationFunctionInput,
 } from "@/services/application-function.rest"
 import * as ApplicationFunctionAPI from "@/services/application-function.rest"
+import * as NamedObjectHasura from "@/services/named-object.graphql"
 
 export const applicationFunctionApi = createApi({
   reducerPath: "applicationFunctionApi",
@@ -33,6 +38,21 @@ export const applicationFunctionApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await ApplicationFunctionAPI.getApplicationFunctionRest(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "ApplicationFunctions" },
+        { type: "ApplicationFunction", id },
+      ],
+    }),
+
+    getApplicationFunctionFull: builder.query<ApplicationFunctionFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await NamedObjectHasura.getApplicationFunctionFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -99,6 +119,7 @@ export const applicationFunctionApi = createApi({
 export const {
   useGetApplicationFunctionsQuery,
   useGetApplicationFunctionQuery,
+  useGetApplicationFunctionFullQuery,
   useCreateApplicationFunctionMutation,
   useUpdateApplicationFunctionMutation,
   useDeleteApplicationFunctionMutation,

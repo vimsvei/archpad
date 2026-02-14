@@ -12,6 +12,7 @@ import type {
   NamedObjectRecord,
   UpdateNamedObjectInput,
 } from "@/components/shared/archimate/named-object-types"
+import type { RelationLayer } from "@/components/archimate/application-component/component-detail-v3/relations-panel"
 import { useUnsavedNavigationGuard } from "@/hooks/archimate/use-unsaved-navigation-guard"
 
 type QueryResult<TItem> = {
@@ -42,6 +43,7 @@ type NamedObjectEditItemProps<TItem extends NamedObjectRecord> = {
     options?: { refetchOnMountOrArgChange?: boolean }
   ) => QueryResult<TItem>
   useUpdateMutation: () => [UpdateMutationTrigger<TItem>, MutationState]
+  buildRelationLayers?: (item: TItem) => RelationLayer[]
 }
 
 export function NamedObjectEditItem<TItem extends NamedObjectRecord>({
@@ -51,6 +53,7 @@ export function NamedObjectEditItem<TItem extends NamedObjectRecord>({
   backPath,
   useGetItemQuery,
   useUpdateMutation,
+  buildRelationLayers,
 }: NamedObjectEditItemProps<TItem>) {
   const { t } = useTranslate()
   const router = useRouter()
@@ -97,6 +100,11 @@ export function NamedObjectEditItem<TItem extends NamedObjectRecord>({
   const isDraftValid = React.useMemo(() => {
     return Boolean(draft.name.trim())
   }, [draft.name])
+
+  const relationLayers = React.useMemo(() => {
+    if (!data || !buildRelationLayers) return []
+    return buildRelationLayers(data)
+  }, [buildRelationLayers, data])
 
   const goBack = React.useCallback(() => {
     router.push(backPath)
@@ -184,10 +192,12 @@ export function NamedObjectEditItem<TItem extends NamedObjectRecord>({
           code: draft.code,
           name: draft.name,
           description: draft.description,
+          layer: data.layer ?? null,
         }}
         onUpdateCode={(value) => setDraft((prev) => ({ ...prev, code: value }))}
         onUpdateName={(value) => setDraft((prev) => ({ ...prev, name: value }))}
         onUpdateDescription={(value) => setDraft((prev) => ({ ...prev, description: value }))}
+        relations={relationLayers.length > 0 ? { layers: relationLayers } : undefined}
       />
 
       <UnsavedChangesDialog

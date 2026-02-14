@@ -1,0 +1,54 @@
+query GetTechnologyNodeFull($where: TechnologyNode_bool_exp!, $nodeId: uuid!) {
+  item: TechnologyNode(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: ApplicationComponentTechnologyNodeMap(where: { nodeId: { _eq: $nodeId } }) {
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  softwareMaps: TechnologyNodeSystemSoftwareMap(where: { nodeId: { _eq: $nodeId } }) {
+    systemSoftware {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  parentMaps: TechnologyNodeHierarchyMap(
+    where: { nodeChildId: { _eq: $nodeId } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    parent {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  childMaps: TechnologyNodeHierarchyMap(
+    where: { nodeParentId: { _eq: $nodeId } }
+    order_by: { order: asc_nulls_last }
+  ) {
+    child {
+      id
+      code
+      name
+      description
+    }
+  }
+}

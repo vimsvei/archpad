@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react"
 import { ArchimateDetailCard } from "@/components/shared/archimate/archimate-detail-card"
 import { PropertiesSection, type PropertiesSectionField } from "@/components/shared/archimate/properties-section"
 import type { ArchimateObjectIconType } from "@/components/shared/archimate/archimate-object-icon"
+import type { RelationLayer } from "@/components/archimate/application-component/component-detail-v3/relations-panel"
 
 type NamedObjectDetailV3Props = {
   objectId: string
@@ -18,10 +19,15 @@ type NamedObjectDetailV3Props = {
     code: string
     name: string
     description: string
+    layer?: string | null
   }
   onUpdateCode: (value: string) => void
   onUpdateName: (value: string) => void
   onUpdateDescription: (value: string) => void
+  relations?: {
+    layers: RelationLayer[]
+    titleKey?: string
+  }
 }
 
 export function NamedObjectDetailV3({
@@ -37,8 +43,31 @@ export function NamedObjectDetailV3({
   onUpdateCode,
   onUpdateName,
   onUpdateDescription,
+  relations,
 }: NamedObjectDetailV3Props) {
   const { t } = useTranslate()
+
+  const layerValue = (() => {
+    const raw = (editState.layer ?? "").trim()
+    if (!raw) return ""
+
+    const normalized = raw.toLowerCase().replace(/[_\s]+/g, "-")
+    const layerKeyMap: Record<string, string> = {
+      application: "architecture.layer.application",
+      business: "architecture.layer.business",
+      common: "architecture.layer.common",
+      motivation: "architecture.layer.motivation",
+      strategy: "architecture.layer.strategy",
+      technology: "architecture.layer.technologies",
+      technologies: "architecture.layer.technologies",
+      implementation: "architecture.layer.implementation",
+      "implementation-and-migration": "architecture.layer.implementation",
+      "implementation-and-migrations": "architecture.layer.implementation",
+    }
+
+    const key = layerKeyMap[normalized]
+    return key ? t(key) : raw
+  })()
 
   const fields: PropertiesSectionField[] = [
     {
@@ -48,6 +77,14 @@ export function NamedObjectDetailV3({
       value: editState.code,
       onChange: onUpdateCode,
     },
+    ...(layerValue ? [{
+      kind: "input" as const,
+      id: `${objectId}-layer`,
+      label: t("architecture.layer"),
+      value: layerValue,
+      readOnly: true,
+      disabled: true,
+    }] : []),
   ]
 
   return (
@@ -70,6 +107,7 @@ export function NamedObjectDetailV3({
         onChange: onUpdateDescription,
         disabled: isSaving,
       }}
+      relations={relations}
       sidebar={(
         <PropertiesSection
           title={t("tab.properties")}

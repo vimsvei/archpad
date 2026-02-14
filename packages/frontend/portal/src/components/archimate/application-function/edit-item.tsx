@@ -1,9 +1,10 @@
 "use client"
 
-import type { ApplicationFunction } from "@/@types/application-function"
+import type { ApplicationFunctionFull } from "@/@types/application-function"
 import { NamedObjectEditItem } from "@/components/shared/archimate/named-object-edit-item"
+import { createApplicationFunctionRelationLayers } from "@/components/shared/archimate/named-object-relations-config"
 import {
-  useGetApplicationFunctionQuery,
+  useGetApplicationFunctionFullQuery,
   useUpdateApplicationFunctionMutation,
 } from "@/store/apis/application-function-api"
 
@@ -13,13 +14,19 @@ type EditItemProps = {
 
 export function EditItem({ id }: EditItemProps) {
   return (
-    <NamedObjectEditItem<ApplicationFunction>
+    <NamedObjectEditItem<ApplicationFunctionFull>
       id={id}
       titleKey="application.functions"
       iconType="application-function"
       backPath="/common/functions"
-      useGetItemQuery={useGetApplicationFunctionQuery as any}
+      useGetItemQuery={useGetApplicationFunctionFullQuery as any}
       useUpdateMutation={useUpdateApplicationFunctionMutation as any}
+      buildRelationLayers={(item) =>
+        createApplicationFunctionRelationLayers({
+          components: item.components,
+          processes: item.processes,
+        })
+      }
     />
   )
 }

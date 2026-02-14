@@ -1,11 +1,16 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { TechnologyNode, Paginated } from "@/@types/technology-node"
+import type {
+  TechnologyNode,
+  TechnologyNodeFull,
+  Paginated,
+} from "@/@types/technology-node"
 import type {
   CreateTechnologyNodeInput,
   GetTechnologyNodesParams,
   UpdateTechnologyNodeInput,
 } from "@/services/technology-node.rest"
 import * as TechnologyNodeAPI from "@/services/technology-node.rest"
+import * as NamedObjectHasura from "@/services/named-object.graphql"
 
 export const technologyNodeApi = createApi({
   reducerPath: "technologyNodeApi",
@@ -29,6 +34,21 @@ export const technologyNodeApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await TechnologyNodeAPI.getTechnologyNodeRest(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "TechnologyNodes" },
+        { type: "TechnologyNode", id },
+      ],
+    }),
+
+    getTechnologyNodeFull: builder.query<TechnologyNodeFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await NamedObjectHasura.getTechnologyNodeFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -84,6 +104,7 @@ export const technologyNodeApi = createApi({
 export const {
   useGetTechnologyNodesQuery,
   useGetTechnologyNodeQuery,
+  useGetTechnologyNodeFullQuery,
   useCreateTechnologyNodeMutation,
   useUpdateTechnologyNodeMutation,
   useDeleteTechnologyNodeMutation,

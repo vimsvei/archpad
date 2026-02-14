@@ -1,11 +1,16 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { TechnologyNetwork, Paginated } from "@/@types/technology-network"
+import type {
+  TechnologyNetwork,
+  TechnologyNetworkFull,
+  Paginated,
+} from "@/@types/technology-network"
 import type {
   CreateTechnologyNetworkInput,
   GetTechnologyNetworksParams,
   UpdateTechnologyNetworkInput,
 } from "@/services/technology-network.rest"
 import * as TechnologyNetworkAPI from "@/services/technology-network.rest"
+import * as NamedObjectHasura from "@/services/named-object.graphql"
 
 export const technologyNetworkApi = createApi({
   reducerPath: "technologyNetworkApi",
@@ -29,6 +34,21 @@ export const technologyNetworkApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await TechnologyNetworkAPI.getTechnologyNetworkRest(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "TechnologyNetworks" },
+        { type: "TechnologyNetwork", id },
+      ],
+    }),
+
+    getTechnologyNetworkFull: builder.query<TechnologyNetworkFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await NamedObjectHasura.getTechnologyNetworkFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -87,6 +107,7 @@ export const technologyNetworkApi = createApi({
 export const {
   useGetTechnologyNetworksQuery,
   useGetTechnologyNetworkQuery,
+  useGetTechnologyNetworkFullQuery,
   useCreateTechnologyNetworkMutation,
   useUpdateTechnologyNetworkMutation,
   useDeleteTechnologyNetworkMutation,

@@ -1,13 +1,13 @@
-export type ApplicationFunction = {
-  id: string
-  code: string
-  name: string
-  description: string | null
-  createdAt?: string | null
-  createdBy?: string | null
-  updatedAt?: string | null
-  updatedBy?: string | null
+import type {
+  NamedObjectRecord,
+  NamedObjectRelationItem,
+} from "@/components/shared/archimate/named-object-types"
+
+export type ApplicationFunction = NamedObjectRecord
+
+export type ApplicationFunctionFull = ApplicationFunction & {
+  components: NamedObjectRelationItem[]
+  processes: NamedObjectRelationItem[]
 }
 
 export type { Paginated } from "@archpad/contract"
-

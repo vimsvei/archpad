@@ -1,0 +1,31 @@
+query GetFunctionFull($where: Function_bool_exp!, $functionId: uuid!) {
+  item: Function(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    layer
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: ApplicationComponentFunctionMap(where: { functionId: { _eq: $functionId } }) {
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  processMaps: BusinessProcessFunctionMap(where: { functionId: { _eq: $functionId } }) {
+    process {
+      id
+      code
+      name
+      description
+    }
+  }
+}

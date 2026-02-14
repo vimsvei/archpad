@@ -1,9 +1,10 @@
 "use client"
 
-import type { BusinessProcess } from "@/@types/business-process"
+import type { BusinessProcessFull } from "@/@types/business-process"
 import { NamedObjectEditItem } from "@/components/shared/archimate/named-object-edit-item"
+import { createBusinessProcessRelationLayers } from "@/components/shared/archimate/named-object-relations-config"
 import {
-  useGetBusinessProcessQuery,
+  useGetBusinessProcessFullQuery,
   useUpdateBusinessProcessMutation,
 } from "@/store/apis/business-process-api"
 
@@ -13,13 +14,20 @@ type EditItemProps = {
 
 export function EditItem({ id }: EditItemProps) {
   return (
-    <NamedObjectEditItem<BusinessProcess>
+    <NamedObjectEditItem<BusinessProcessFull>
       id={id}
       titleKey="business.processes"
       iconType="business-process"
       backPath="/common/processes"
-      useGetItemQuery={useGetBusinessProcessQuery as any}
+      useGetItemQuery={useGetBusinessProcessFullQuery as any}
       useUpdateMutation={useUpdateBusinessProcessMutation as any}
+      buildRelationLayers={(item) =>
+        createBusinessProcessRelationLayers({
+          functions: item.functions,
+          parents: item.parents,
+          children: item.children,
+        })
+      }
     />
   )
 }

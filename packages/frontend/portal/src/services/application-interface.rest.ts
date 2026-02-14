@@ -5,6 +5,7 @@ export type ApplicationInterface = {
   code: string
   name: string
   description?: string | null
+  layer?: string | null
 }
 
 export type Paginated<T> = {
@@ -53,5 +54,4 @@ export async function createApplicationInterfaceRest(
     body: input,
   })
 }
-
 

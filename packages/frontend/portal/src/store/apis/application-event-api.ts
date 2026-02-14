@@ -1,11 +1,16 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { ApplicationEvent, Paginated } from "@/@types/application-event"
+import type {
+  ApplicationEvent,
+  ApplicationEventFull,
+  Paginated,
+} from "@/@types/application-event"
 import type {
   CreateApplicationEventInput,
   GetApplicationEventsParams,
   UpdateApplicationEventInput,
 } from "@/services/application-event.rest"
 import * as ApplicationEventAPI from "@/services/application-event.rest"
+import * as NamedObjectHasura from "@/services/named-object.graphql"
 
 export const applicationEventApi = createApi({
   reducerPath: "applicationEventApi",
@@ -29,6 +34,21 @@ export const applicationEventApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await ApplicationEventAPI.getApplicationEventRest(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "ApplicationEvents" },
+        { type: "ApplicationEvent", id },
+      ],
+    }),
+
+    getApplicationEventFull: builder.query<ApplicationEventFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await NamedObjectHasura.getApplicationEventFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -84,6 +104,7 @@ export const applicationEventApi = createApi({
 export const {
   useGetApplicationEventsQuery,
   useGetApplicationEventQuery,
+  useGetApplicationEventFullQuery,
   useCreateApplicationEventMutation,
   useUpdateApplicationEventMutation,
   useDeleteApplicationEventMutation,

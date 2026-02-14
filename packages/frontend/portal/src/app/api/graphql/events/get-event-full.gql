@@ -1,0 +1,22 @@
+query GetEventFull($where: Event_bool_exp!, $eventId: uuid!) {
+  item: Event(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    layer
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: ApplicationComponentEventMap(where: { eventId: { _eq: $eventId } }) {
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+}

@@ -16,18 +16,18 @@ export type RelationGroupByPrefixSpec = Omit<RelationGroupSpec, "editPath"> & {
   editPathPrefix: string
 }
 
-const defaultNoopDelete = () => {}
-
 export function relationGroup(spec: RelationGroupSpec): RelationGroupConfig {
-  const onDelete =
-    spec.onDelete ??
-    (spec.onDeleteById
+  const onDelete = spec.onDelete
+    ?? (spec.onDeleteById
       ? (item: RelationGroupItem) => spec.onDeleteById?.(item.id)
-      : defaultNoopDelete)
+      : undefined)
 
-  return {
+  return onDelete ? {
     ...spec,
     onDelete,
+    emptyTextKey: spec.emptyTextKey ?? "table.no-results",
+  } : {
+    ...spec,
     emptyTextKey: spec.emptyTextKey ?? "table.no-results",
   }
 }

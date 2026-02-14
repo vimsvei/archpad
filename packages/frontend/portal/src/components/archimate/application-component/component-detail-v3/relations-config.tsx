@@ -55,8 +55,6 @@ export type ApplicationComponentRelationsArgs = {
 
 const iconClassName = "size-6 min-w-6 min-h-6"
 
-const businessNoOp = () => {}
-
 export function createApplicationComponentRelationLayers({
   state,
   callbacks,
@@ -67,21 +65,18 @@ export function createApplicationComponentRelationLayers({
       icon: <Stakeholder className={iconClassName} />,
       items: state.businessActors,
       editPathPrefix: "/business/actors",
-      onDelete: businessNoOp,
     }),
     relationGroupByPrefix({
       titleKey: "tab.business.processes",
       icon: <BusinessFunction2 className={iconClassName} />,
       items: state.businessProcesses,
       editPathPrefix: "/common/processes",
-      onDelete: businessNoOp,
     }),
     relationGroupByPrefix({
       titleKey: "tab.business.roles",
       icon: <BusinessRole className={iconClassName} />,
       items: state.businessRoles,
       editPathPrefix: "/business/roles",
-      onDelete: businessNoOp,
     }),
   ])
 

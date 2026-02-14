@@ -1,9 +1,10 @@
 "use client"
 
-import type { TechnologyNetwork } from "@/@types/technology-network"
+import type { TechnologyNetworkFull } from "@/@types/technology-network"
 import { NamedObjectEditItem } from "@/components/shared/archimate/named-object-edit-item"
+import { createTechnologyNetworkRelationLayers } from "@/components/shared/archimate/named-object-relations-config"
 import {
-  useGetTechnologyNetworkQuery,
+  useGetTechnologyNetworkFullQuery,
   useUpdateTechnologyNetworkMutation,
 } from "@/store/apis/technology-network-api"
 
@@ -13,13 +14,20 @@ type EditItemProps = {
 
 export function EditItem({ id }: EditItemProps) {
   return (
-    <NamedObjectEditItem<TechnologyNetwork>
+    <NamedObjectEditItem<TechnologyNetworkFull>
       id={id}
       titleKey="technologies.networks"
       iconType="technology-network"
       backPath="/technologies/networks"
-      useGetItemQuery={useGetTechnologyNetworkQuery as any}
+      useGetItemQuery={useGetTechnologyNetworkFullQuery as any}
       useUpdateMutation={useUpdateTechnologyNetworkMutation as any}
+      buildRelationLayers={(item) =>
+        createTechnologyNetworkRelationLayers({
+          components: item.components,
+          parents: item.parents,
+          children: item.children,
+        })
+      }
     />
   )
 }

@@ -3,10 +3,18 @@ export type NamedObjectRecord = {
   code: string
   name: string
   description: string | null
+  layer?: string | null
   createdAt?: string | null
   createdBy?: string | null
   updatedAt?: string | null
   updatedBy?: string | null
+}
+
+export type NamedObjectRelationItem = {
+  id: string
+  code: string
+  name: string
+  description: string | null
 }
 
 export type CreateNamedObjectInput = {

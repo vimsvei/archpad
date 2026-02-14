@@ -1,0 +1,40 @@
+query GetProcessFull($where: Process_bool_exp!, $processId: uuid!) {
+  item: Process(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    layer
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  functionMaps: BusinessProcessFunctionMap(where: { processId: { _eq: $processId } }) {
+    function {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  parentMaps: BusinessProcessHierarchyMap(where: { processChildId: { _eq: $processId } }) {
+    parent {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  childMaps: BusinessProcessHierarchyMap(where: { processParentId: { _eq: $processId } }) {
+    child {
+      id
+      code
+      name
+      description
+    }
+  }
+}

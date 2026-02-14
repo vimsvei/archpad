@@ -1,11 +1,16 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { BusinessProcess, Paginated } from "@/@types/business-process"
+import type {
+  BusinessProcess,
+  BusinessProcessFull,
+  Paginated,
+} from "@/@types/business-process"
 import type {
   CreateBusinessProcessInput,
   GetBusinessProcessesParams,
   UpdateBusinessProcessInput,
 } from "@/services/business-process.rest"
 import * as BusinessProcessAPI from "@/services/business-process.rest"
+import * as NamedObjectHasura from "@/services/named-object.graphql"
 
 export const businessProcessApi = createApi({
   reducerPath: "businessProcessApi",
@@ -29,6 +34,21 @@ export const businessProcessApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await BusinessProcessAPI.getBusinessProcessRest(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "BusinessProcesses" },
+        { type: "BusinessProcess", id },
+      ],
+    }),
+
+    getBusinessProcessFull: builder.query<BusinessProcessFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await NamedObjectHasura.getBusinessProcessFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -84,6 +104,7 @@ export const businessProcessApi = createApi({
 export const {
   useGetBusinessProcessesQuery,
   useGetBusinessProcessQuery,
+  useGetBusinessProcessFullQuery,
   useCreateBusinessProcessMutation,
   useUpdateBusinessProcessMutation,
   useDeleteBusinessProcessMutation,
