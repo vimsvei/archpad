@@ -115,6 +115,19 @@
       "subtitle": "Cree una nueva cuenta",
       "title": "Registrarse"
     },
+    "set-password": {
+      "title": "Establecer contraseña",
+      "subtitle": "Cree una contraseña para su cuenta",
+      "submit": "Establecer contraseña",
+      "missing-token": "Falta el enlace para establecer la contraseña",
+      "invalid-link": "El enlace no es válido o ha expirado",
+      "success": "Redirigiendo al inicio de sesión..."
+    },
+    "profile-pending": {
+      "title": "El perfil se está creando",
+      "subtitle": "Aún estamos creando su perfil, tenant y espacio de trabajo. Inténtelo de nuevo en unos minutos.",
+      "refresh": "Actualizar estado"
+    },
     "sign_in": {
       "footer": {
         "no_account": "¿No tiene una cuenta?",

@@ -115,6 +115,19 @@
       "subtitle": "Kreirajte novi nalog",
       "title": "Registracija"
     },
+    "set-password": {
+      "title": "Postavite lozinku",
+      "subtitle": "Kreirajte lozinku za svoj nalog",
+      "submit": "Postavi lozinku",
+      "missing-token": "Nedostaje link za postavljanje lozinke",
+      "invalid-link": "Link nije važeći ili je istekao",
+      "success": "Preusmeravamo na prijavu..."
+    },
+    "profile-pending": {
+      "title": "Profil se kreira",
+      "subtitle": "Još uvek kreiramo profil, tenant i radni prostor. Pokušajte ponovo za nekoliko minuta.",
+      "refresh": "Osveži status"
+    },
     "sign_in": {
       "footer": {
         "no_account": "Nemate nalog?",

@@ -115,6 +115,19 @@
       "subtitle": "Create a new account",
       "title": "Sign up"
     },
+    "set-password": {
+      "title": "Set password",
+      "subtitle": "Create a password for your account",
+      "submit": "Set password",
+      "missing-token": "Missing setup link",
+      "invalid-link": "Invalid or expired link",
+      "success": "Redirecting to sign in..."
+    },
+    "profile-pending": {
+      "title": "Profile is being created",
+      "subtitle": "We are still creating your profile, tenant, and workspace. Please try again in a couple of minutes.",
+      "refresh": "Refresh status"
+    },
     "sign_in": {
       "footer": {
         "no_account": "Don't have an account?",

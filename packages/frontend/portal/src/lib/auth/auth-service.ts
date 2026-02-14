@@ -112,3 +112,9 @@ export async function authServiceVerifyEmailConfirm(input: {
   await postJson<{ ok: true }>("/auth/verify-email/confirm", input)
 }
 
+export async function authServiceSetupPasswordConfirm(input: {
+  token: string
+  password: string
+}): Promise<void> {
+  await postJson<{ ok: true }>("/auth/setup-password/confirm", input)
+}

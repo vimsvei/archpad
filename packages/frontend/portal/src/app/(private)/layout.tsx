@@ -6,6 +6,7 @@ import {ModeToggle} from "@/components/toggles/mode-toggle";
 import {LocaleToggle} from "@/components/toggles/locale-toggle";
 import { PrivateBreadcrumbs } from "@/components/layouts/private/breadcrumbs";
 import { DirectoriesPreloader } from "@/components/providers/directories-preloader";
+import { ProfileProvisioningGuard } from "@/components/providers/profile-provisioning-guard";
 
 export const metadata: Metadata = {
   title: "Archpad - The new Architecture Repository",
@@ -38,6 +39,7 @@ export default function PrivateLayout({
           </div>
         </header>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 p-4 pt-0 overflow-hidden">
+          <ProfileProvisioningGuard />
           {children}
         </div>
       </SidebarInset>
