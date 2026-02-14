@@ -16,7 +16,8 @@ spec:
     path: infra/timeweb/10-gitops/apps/frontend/landing
     directory:
       recurse: false
-      exclude: landing.app.yaml
+      # landing.app.yaml — сам Application; turnstile secret sync — в root kustomization (wave 42)
+      exclude: '{landing.app.yaml,landing-turnstile-secret-sync.job.yaml,landing-turnstile-secret-sync.serviceaccount.yaml}'
   syncPolicy:
     automated:
       prune: true

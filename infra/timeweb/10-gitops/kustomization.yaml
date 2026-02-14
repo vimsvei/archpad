@@ -45,6 +45,10 @@ resources:
   - apps/ory/secure-vault-role.configmap.yaml
   - apps/ory/secure-vault-role.job.yaml
 
+  # Landing Turnstile secret (после Vault setup, wave 42)
+  - apps/frontend/landing/landing-turnstile-secret-sync.serviceaccount.yaml
+  - apps/frontend/landing/landing-turnstile-secret-sync.job.yaml
+
   # Monitoring Application создается через platform-applications (directory recurse)
   # Не добавляем сюда, чтобы избежать SharedResourceWarning
 
