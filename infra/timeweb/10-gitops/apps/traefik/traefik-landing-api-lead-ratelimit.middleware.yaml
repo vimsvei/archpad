@@ -1,10 +1,11 @@
+# Rate limit для POST /api/lead лендинга (защита от DDoS)
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: landing-api-lead-ratelimit
-  namespace: platform
+  namespace: traefik
   annotations:
-    argocd.argoproj.io/sync-wave: "72"
+    argocd.argoproj.io/sync-wave: "14"
 spec:
   rateLimit:
     average: 10

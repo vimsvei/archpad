@@ -16,7 +16,7 @@ spec:
           port: 3000
       middlewares:
         - name: landing-api-lead-ratelimit
-          namespace: platform
+          namespace: traefik
     - match: Host(`archpad.pro`)
       kind: Rule
       services:
