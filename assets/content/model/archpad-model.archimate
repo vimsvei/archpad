@@ -812,6 +812,7 @@ OAuth 2.0</documentation>
     <element xsi:type="archimate:FlowRelationship" name="NS-9.4" id="id-2f4882f9a8694ef3927a8a70981db6ae" source="id-75e12ba1dd95466cb9d8faadf95b1007" target="id-6f5c415f833942fcae9536855d774c98">
       <documentation>Сохранение логов в хранилище</documentation>
     </element>
+    <element xsi:type="archimate:FlowRelationship" id="id-2f938e3e73dd44d4942f53a51163530d" source="id-42c44109b6484e7eb958c2879b11b115" target="id-55dea6e9a1d64adfa19d699eb0c449fb"/>
   </folder>
   <folder name="Views" id="id-ec0a5f86b04141bcae0e55e281bd2b94" type="diagrams">
     <folder name="NewSpot" id="id-4ae91e9e9caf46a7b1db0d3286fdfd7f">
@@ -914,7 +915,7 @@ OAuth 2.0</documentation>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-0751cd9102dc4ebcbe3d5272dffa54a8" archimateElement="id-46fd56a8518044beb001763b1caa1dcd">
-              <bounds x="96" y="157" width="132" height="26"/>
+              <bounds x="108" y="157" width="120" height="26"/>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-e821896a895349148ba0108f851dadca" archimateElement="id-33c73d5689f149eab3bd304c6ac2a4f2">
@@ -1051,7 +1052,7 @@ OAuth 2.0</documentation>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-9b52ea38f281428cac7e7b39fa6c0ba6" targetConnections="id-cf9644fb9c534bef8f0f72b486be4b4e" archimateElement="id-e80e2023b7ae476eb61a73daa30ee346">
-              <bounds x="240" y="72" width="216" height="39"/>
+              <bounds x="240" y="72" width="216" height="38"/>
             </child>
           </child>
           <child xsi:type="archimate:DiagramObject" id="id-3ae8035fb15b4816be461c84df1f2a34" targetConnections="id-c8377fce80b5453184fd7b5197e10309" archimateElement="id-963905ca94594ce78bb25f577736abc2">
@@ -1117,11 +1118,11 @@ OAuth 2.0</documentation>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-07c600b479e34e46a90383c36c06f2e6" targetConnections="id-0a595fbed5f647acaff7d425c893ccf5" archimateElement="id-db9c8515e8de486e9af8f1637652cf24">
-              <bounds x="12" y="372" width="205" height="61"/>
+              <bounds x="12" y="372" width="205" height="37"/>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-d08ea636a4e9461c977a758c7109f610" targetConnections="id-1ddb9014ffa443bc86e86d2c82f1c2fb" archimateElement="id-2173be6085074067874dee325db95045">
-              <bounds x="12" y="432" width="205" height="61"/>
+              <bounds x="12" y="408" width="205" height="37"/>
               <feature name="deriveElementLineColor" value="false"/>
             </child>
           </child>
@@ -1160,7 +1161,7 @@ OAuth 2.0</documentation>
               <sourceConnection xsi:type="archimate:Connection" id="id-a6d661cf2f61437eb7f9e65b0c6c1773" source="id-8c34bfe75be2461686ccdc3255c13c97" target="id-fe31fdc3e79540b192369283f62c5bb0" archimateRelationship="id-c937493cf56c462b9248c5ea276cc881"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-de86a48625a24b9f8095e65d5f46ff15" source="id-8c34bfe75be2461686ccdc3255c13c97" target="id-a1d4f4776a7f435981d3350f3029513d" archimateRelationship="id-a1b8c8e20ae94d2e9edeaeab2fd92509"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-499eaa379b2a4ae6af3c611a3cc347aa" source="id-8c34bfe75be2461686ccdc3255c13c97" target="id-cba7028fc7da425ab6d6258c2283944e" archimateRelationship="id-e9963771d33749a39251ad842e9bc04a">
-                <bendpoint startX="276" startY="-114" endX="-251" endY="-171"/>
+                <bendpoint startX="276" startY="-120" endX="-251" endY="-195"/>
               </sourceConnection>
               <sourceConnection xsi:type="archimate:Connection" id="id-486cc1f1bcbf4b8db35ebee73b65c56c" source="id-8c34bfe75be2461686ccdc3255c13c97" target="id-44213cd238444d4685784246f2444f9a" archimateRelationship="id-906bfd2a00364a74a279fa7f6d23e796">
                 <bendpoint startX="204" startY="-90" endX="-60" endY="-246"/>
@@ -1206,7 +1207,7 @@ OAuth 2.0</documentation>
               </child>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-44213cd238444d4685784246f2444f9a" targetConnections="id-a90e5f4380a34cfbb6e3033bca3800e1 id-486cc1f1bcbf4b8db35ebee73b65c56c id-add1212564284b94b92e96515660c10a id-84d503aa45414aed8606954eff6ccdb9" archimateElement="id-f88423254d134a78a6f7228c45c42708">
-              <bounds x="288" y="168" width="241" height="397"/>
+              <bounds x="288" y="108" width="241" height="397"/>
               <feature name="deriveElementLineColor" value="false"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-3bf54872e84643438159cc2b0d56eabd" source="id-44213cd238444d4685784246f2444f9a" target="id-b89db77193fa4b3d8787f1b7a88eeeb0" archimateRelationship="id-781cd5f7736b437c9fba756827af27c3"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-05dcbc7fce52430482883493fc48ee1c" source="id-44213cd238444d4685784246f2444f9a" target="id-8206777fe2f8414b8032af34b6e1b87e" archimateRelationship="id-d7940d6350884988bdc6666f22944cd6"/>
@@ -1260,8 +1261,13 @@ OAuth 2.0</documentation>
               <sourceConnection xsi:type="archimate:Connection" id="id-31ff73a18c214dbdb33fffa01040d1d0" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-74564913f76749d58ada754848698e31" archimateRelationship="id-567b9c3ac98945e79549f4dd4a818960"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-cb53c3db19b9496f99d04c00a137178a" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-a0bbf5a6b6f6473c8f99d85678a5962f" archimateRelationship="id-4e004651fe65444593fe506012b40880"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-eed1777b9ba14fb798a633068f860f01" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-4b5b5c4deede4aaba1136cc59b144942" archimateRelationship="id-6bb04c6416a645d583fb1d34ecfee356"/>
-              <sourceConnection xsi:type="archimate:Connection" id="id-84d503aa45414aed8606954eff6ccdb9" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-44213cd238444d4685784246f2444f9a" archimateRelationship="id-9e44eb19af424a0a84598c8749225a8f"/>
+              <sourceConnection xsi:type="archimate:Connection" id="id-84d503aa45414aed8606954eff6ccdb9" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-44213cd238444d4685784246f2444f9a" archimateRelationship="id-9e44eb19af424a0a84598c8749225a8f">
+                <bendpoint startX="-84" startY="-174" endX="-84" endY="246"/>
+              </sourceConnection>
               <sourceConnection xsi:type="archimate:Connection" id="id-e770d380bd1c4746a8778594c0e84dae" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-4b434ca4aefb47fda38669da00faed16" archimateRelationship="id-78ca329552c744ada85142237de8c0c4"/>
+              <sourceConnection xsi:type="archimate:Connection" id="id-ef2b0e97d1c5442e9c021ab7a5ff5924" source="id-b2f5c5dda9524b0a9b0ddcf929b80157" target="id-e11df2f4359f4a1d98346faed097da7e" archimateRelationship="id-2f938e3e73dd44d4942f53a51163530d">
+                <bendpoint startX="384" startY="-42" endX="-143" endY="522"/>
+              </sourceConnection>
               <child xsi:type="archimate:DiagramObject" id="id-1ef495dd6f71488982bd2f79753a2e9e" targetConnections="id-b457c53cfbb4484b9400c43777228ff0" archimateElement="id-d1213b1ab73d449890f463f1ff4c73a4">
                 <bounds x="12" y="156" width="216" height="25"/>
                 <feature name="deriveElementLineColor" value="false"/>
@@ -1440,14 +1446,15 @@ OAuth 2.0</documentation>
               </child>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-f932ceb96d43415facc09a960358cb46" targetConnections="id-aeec016d3abe4ba8a8708cc1083b874b" archimateElement="id-3ada9939ef60428b998ab3102f7c15f3">
-              <bounds x="24" y="396" width="241" height="181"/>
+              <bounds x="24" y="420" width="241" height="181"/>
               <feature name="deriveElementLineColor" value="false"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-a10392e406b24591becfd8b1b67929e4" source="id-f932ceb96d43415facc09a960358cb46" target="id-ec7b22663e2d4e038799bb918b99e2f6" archimateRelationship="id-21fda9de402446c5af64264f7064b04f"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-d521d672b47f4f78900f5f48bd61c953" source="id-f932ceb96d43415facc09a960358cb46" target="id-ae227a91af594b69acaf1a3880fa8345" archimateRelationship="id-8dd5658a277341338a0e28cfccc164fc"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-042601c0439647e3b75346c541ec118f" source="id-f932ceb96d43415facc09a960358cb46" target="id-2866ccb770164aabac6c030f91bafb0b" archimateRelationship="id-ab91e7d118c94865a6cc0efbf058a7dc"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-a157c004c99e4cc593fe9206814a2e49" source="id-f932ceb96d43415facc09a960358cb46" target="id-8c34bfe75be2461686ccdc3255c13c97" archimateRelationship="id-43afe19ae4964e30adcbc17f4acddbc6"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-79023aff452548a6a8d2dcb99cc4defd" source="id-f932ceb96d43415facc09a960358cb46" target="id-8967cd174f7e4858bd78642c7b088231" archimateRelationship="id-4d463452562945c68530d1360d822cdc">
-                <bendpoint startX="48" startY="102" endX="-743" endY="-90"/>
+                <bendpoint startX="384" startY="78" endX="-407" endY="-90"/>
+                <bendpoint startX="420" startY="150" endX="-371" endY="-18"/>
               </sourceConnection>
               <child xsi:type="archimate:DiagramObject" id="id-ec7b22663e2d4e038799bb918b99e2f6" targetConnections="id-a10392e406b24591becfd8b1b67929e4" archimateElement="id-f58bd3a0d3184a8bb7d0662092b98b4f">
                 <bounds x="12" y="24" width="217" height="37"/>
@@ -1492,7 +1499,7 @@ OAuth 2.0</documentation>
               </child>
             </child>
             <child xsi:type="archimate:DiagramObject" id="id-cba7028fc7da425ab6d6258c2283944e" targetConnections="id-469766d1eb7340cc956c1fa5a3ad0b25 id-499eaa379b2a4ae6af3c611a3cc347aa" archimateElement="id-9d9769d37d5047118b1b56c0fd09d4f7">
-              <bounds x="551" y="66" width="241" height="403"/>
+              <bounds x="551" y="24" width="241" height="403"/>
               <feature name="deriveElementLineColor" value="false"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-cfee29765a1741819171d8fb05b44ec4" source="id-cba7028fc7da425ab6d6258c2283944e" target="id-4d35dd2826094db680170a551d71cdf1" archimateRelationship="id-055f1a3ec1984698b385cb3c02fdcfbc"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-b55853b740f945e59ebe4187b108cbe7" source="id-cba7028fc7da425ab6d6258c2283944e" target="id-2d4ab0b39da949ac9f1fecd9f420b7b3" archimateRelationship="id-10ef07777e674cb3b1908edebfc4de35"/>
@@ -1547,7 +1554,7 @@ OAuth 2.0</documentation>
                 <feature name="deriveElementLineColor" value="false"/>
               </child>
             </child>
-            <child xsi:type="archimate:DiagramObject" id="id-e11df2f4359f4a1d98346faed097da7e" targetConnections="id-46eabe10801546a28bbac91a55a2a1f2" archimateElement="id-55dea6e9a1d64adfa19d699eb0c449fb">
+            <child xsi:type="archimate:DiagramObject" id="id-e11df2f4359f4a1d98346faed097da7e" targetConnections="id-46eabe10801546a28bbac91a55a2a1f2 id-ef2b0e97d1c5442e9c021ab7a5ff5924" archimateElement="id-55dea6e9a1d64adfa19d699eb0c449fb">
               <bounds x="815" y="66" width="241" height="193"/>
               <feature name="deriveElementLineColor" value="false"/>
               <sourceConnection xsi:type="archimate:Connection" id="id-f69c3f97659149bbbc7ad6aef7d330ac" source="id-e11df2f4359f4a1d98346faed097da7e" target="id-f849be201af649faa55459dbebd083e3" archimateRelationship="id-f56594ab04fd4abd9b9f8bc075dc2df1"/>
