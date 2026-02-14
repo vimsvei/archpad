@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Script from 'next/script';
 import { Link } from 'react-router';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,11 @@ import {
   getMetadataValue,
 } from '@/lib/text-blocks';
 
-export function Register() {
+type RegisterProps = {
+  turnstileSiteKey?: string;
+};
+
+export function Register({ turnstileSiteKey = '' }: RegisterProps) {
   usePageMeta();
   const content = getTextBlockBySlug('register');
   const roleOptions = getMetadataValue<Array<{ value: string; label: string }>>(
@@ -24,6 +29,13 @@ export function Register() {
   );
   const [isSuccess, setIsSuccess] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [turnstileError, setTurnstileError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
+  const turnstileEnabled = Boolean(turnstileSiteKey);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -37,8 +49,55 @@ export function Register() {
     agreeToNewsletter: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!turnstileEnabled || !turnstileContainerRef.current) return;
+
+    const renderWidget = () => {
+      if (!turnstileContainerRef.current) return;
+      const turnstile = (window as any).turnstile;
+      if (!turnstile || turnstileWidgetIdRef.current) return;
+      turnstileWidgetIdRef.current = turnstile.render(
+        turnstileContainerRef.current,
+        {
+          sitekey: turnstileSiteKey,
+          callback: (token: string) => {
+            setTurnstileToken(token);
+            setTurnstileError('');
+          },
+          'error-callback': () => {
+            setTurnstileToken('');
+            setTurnstileError(getMetadata(content, 'turnstileError'));
+          },
+          'expired-callback': () => {
+            setTurnstileToken('');
+            setTurnstileError(getMetadata(content, 'turnstileExpiredError'));
+          },
+        },
+      );
+    };
+
+    const onLoad = (window as any).onTurnstileLoad;
+    if (!onLoad) {
+      (window as any).onTurnstileLoad = renderWidget;
+    }
+
+    if ((window as any).turnstile) {
+      renderWidget();
+    }
+
+    return () => {
+      const turnstile = (window as any).turnstile;
+      if (turnstile && turnstileWidgetIdRef.current) {
+        turnstile.remove(turnstileWidgetIdRef.current);
+        turnstileWidgetIdRef.current = null;
+      }
+    };
+  }, [content, turnstileEnabled, turnstileSiteKey]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
+    setTurnstileError('');
 
     // Валидация email
     if (formData.email !== formData.confirmEmail) {
@@ -46,8 +105,50 @@ export function Register() {
       return;
     }
 
-    console.log('Form submitted:', formData);
-    setIsSuccess(true);
+    if (turnstileEnabled && !turnstileToken) {
+      setTurnstileError(getMetadata(content, 'turnstileError'));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          formId: 'landing-register',
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          company: formData.company,
+          role: formData.role,
+          personalWorkspace: formData.workspaceType === 'personal',
+          agreeToNewsletter: formData.agreeToNewsletter,
+          turnstileToken,
+        }),
+      });
+
+      if (res.ok) {
+        setIsSuccess(true);
+        return;
+      }
+
+      if (res.status === 400) {
+        setSubmitError(getMetadata(content, 'validationError'));
+        return;
+      }
+      if (res.status === 429) {
+        setSubmitError(getMetadata(content, 'rateLimitError'));
+        return;
+      }
+      setSubmitError(getMetadata(content, 'submitError'));
+    } catch {
+      setSubmitError(getMetadata(content, 'submitError'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Проверка валидности формы
@@ -60,7 +161,8 @@ export function Register() {
       formData.email === formData.confirmEmail &&
       formData.role.trim() !== '' &&
       formData.agreeToTerms &&
-      formData.agreeToPrivacy
+      formData.agreeToPrivacy &&
+      (!turnstileEnabled || turnstileToken !== '')
     );
   };
 
@@ -107,6 +209,12 @@ export function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F1F8E9] via-white to-[#E8F5E9] py-12 px-4">
       <div className="max-w-2xl mx-auto">
+        {turnstileEnabled && (
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit"
+            strategy="afterInteractive"
+          />
+        )}
         {/* Header */}
         <div className="text-center mb-8">
           <Link
@@ -332,12 +440,27 @@ export function Register() {
             </div>
 
             {/* Submit Button */}
+            {submitError && (
+              <p className="text-red-500 text-sm text-center">{submitError}</p>
+            )}
+
+            {turnstileEnabled && (
+              <div className="space-y-2">
+                <div ref={turnstileContainerRef} />
+                {turnstileError && (
+                  <p className="text-red-500 text-sm">{turnstileError}</p>
+                )}
+              </div>
+            )}
+
             <button
               type="submit"
               className="w-full px-8 py-3 bg-[#7CB342] hover:bg-[#689F38] text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7CB342] disabled:hover:shadow-lg"
-              disabled={!isFormValid()}
+              disabled={!isFormValid() || isSubmitting}
             >
-              {getMetadata(content, 'submitButton')}
+              {isSubmitting
+                ? getMetadata(content, 'submitButtonLoading')
+                : getMetadata(content, 'submitButton')}
             </button>
 
             <p className="text-sm text-center text-gray-500">

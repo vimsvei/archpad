@@ -3,8 +3,8 @@ slug: register
 title: Register Page
 metadata:
   successTitle: "Спасибо за регистрацию!"
-  successDescriptionPrefix: "Мы отправили письмо с подтверждением на"
-  successDescriptionSuffix: "Проверьте почту, чтобы активировать аккаунт."
+  successDescriptionPrefix: "Мы отправили письмо со ссылкой для установки пароля на"
+  successDescriptionSuffix: "Проверьте почту и завершите регистрацию."
   successBackButton: "Вернуться на главную"
 
   backLink: "Вернуться на главную"
@@ -21,6 +21,11 @@ metadata:
   confirmEmailLabel: "Подтвердите Email *"
   confirmEmailPlaceholder: "ivan.petrov@company.com"
   emailMismatchError: "Email адреса не совпадают"
+  validationError: "Проверьте введенные данные и попробуйте снова."
+  rateLimitError: "Слишком много попыток. Пожалуйста, попробуйте позже."
+  submitError: "Не удалось отправить форму. Попробуйте еще раз."
+  turnstileError: "Подтвердите, что вы не робот."
+  turnstileExpiredError: "Проверка истекла. Пожалуйста, подтвердите снова."
 
   companyLabel: "Название компании"
   companyPlaceholder: "ООО «Ваша компания»"
@@ -54,6 +59,7 @@ metadata:
   agreeNewsletter: "Я согласен на получение информационных и рекламных материалов"
 
   submitButton: "Зарегистрироваться"
+  submitButtonLoading: "Отправляем..."
   haveAccountText: "У вас уже есть аккаунт?"
   loginLink: "Войти"
 ---
