@@ -27,7 +27,6 @@ export default function UploadPage() {
             {t("upload.repository.tab.draw-io")}
           </TabsTrigger>
         </TabsList>
-
         <TabsContents className="mt-4 flex-1 min-h-0 flex flex-col">
           <TabsContent value="open-exchange" className="mt-0 flex-1 min-h-0 flex flex-col">
             <OpenExchangeUploader />
