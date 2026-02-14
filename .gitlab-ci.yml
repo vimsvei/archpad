@@ -850,17 +850,17 @@ cleanup:landing:
     - if: $CI_COMMIT_REF_NAME =~ /^r[\/-][0-9]+\.[0-9]+\.[0-9]+$/
 
 # ============================================
-# Update deployment image tags (GitOps: commit tag after build)
+# Update deployment image tags (GitOps: one commit per pipeline)
 # ============================================
-# После успешной сборки обновляет тег образа в манифестах и делает коммит.
-# ArgoCD подтягивает изменения и деплоит новый образ.
+# После успешной сборки обновляет теги образов в затронутых манифестах и делает ОДИН коммит.
+# ArgoCD подтягивает изменения и деплоит новые образы.
 
-.update_deploy_image_main:
+.update_deploy_images_main:
   stage: update-deploy-tags
   image: alpine:3.19
   before_script:
     - apk add --no-cache git
-    - export COMMIT_SHA=$(echo $CI_COMMIT_SHA | cut -c1-8)
+    - export COMMIT_SHA=$(echo "$CI_COMMIT_SHA" | cut -c1-8)
     - git config --global user.name "GitLab CI"
     - git config --global user.email "ci@archpad.pro"
     - |
@@ -875,18 +875,65 @@ cleanup:landing:
     - export REGISTRY_URL="${REGISTRY_URL:-archpad-cr.registry.twcstorage.ru}"
     - export REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-archpad}"
     - |
+      set -eu
+
       REGISTRY="${REGISTRY_URL}"
       PREFIX="${REGISTRY_IMAGE_PREFIX}"
-      IMAGE_BASE="${REGISTRY}/${PREFIX}/${DEPLOY_SERVICE_NAME}"
       NEW_TAG="main-${COMMIT_SHA}"
-      echo "Updating ${DEPLOY_FILE} image: ${IMAGE_BASE}:* -> ${IMAGE_BASE}:${NEW_TAG}"
-      sed -i "s|\(${IMAGE_BASE}:\)[a-zA-Z0-9._-]*|\1${NEW_TAG}|" "${DEPLOY_FILE}"
-      git add "${DEPLOY_FILE}"
-      if git diff --cached --quiet; then
-        echo "No change in image tag (already ${NEW_TAG})"
+
+      echo "Selecting deploy manifests to update based on changed files"
+      if [ -n "${CI_COMMIT_BEFORE_SHA:-}" ] && [ "${CI_COMMIT_BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
+        CHANGED_FILES="$(git diff --name-only "${CI_COMMIT_BEFORE_SHA}" "${CI_COMMIT_SHA}" || true)"
+      else
+        CHANGED_FILES="$(git show --pretty='' --name-only "${CI_COMMIT_SHA}" || true)"
+      fi
+
+      if [ -z "${CHANGED_FILES}" ]; then
+        echo "No changed files found, skipping deploy manifest update."
         exit 0
       fi
-      git commit -m "chore(deploy): update ${DEPLOY_SERVICE_NAME} image to ${NEW_TAG} [ci skip]"
+
+      printf "%s\n" "${CHANGED_FILES}" | sed 's/^/ - /'
+
+      update_image_tag() {
+        service="$1"
+        deploy_file="$2"
+        image_base="${REGISTRY}/${PREFIX}/${service}"
+        echo "Updating ${deploy_file}: ${image_base}:* -> ${image_base}:${NEW_TAG}"
+        sed -i "s|\\(${image_base}:\\)[a-zA-Z0-9._-]*|\\1${NEW_TAG}|g" "${deploy_file}"
+        git add "${deploy_file}"
+      }
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/backend/apps/arch-repo-service/|^packages/backend/libs/|^packages/contract/'; then
+        update_image_tag "arch-repo-service" "infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.deployment.yaml"
+      fi
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/backend/apps/tenant-service/|^packages/backend/libs/|^packages/contract/'; then
+        update_image_tag "tenant-service" "infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.deployment.yaml"
+      fi
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/backend/apps/auth-service/|^packages/backend/libs/|^packages/contract/'; then
+        update_image_tag "auth-service" "infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.deployment.yaml"
+      fi
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/backend/apps/hasura-sync-service/|^packages/backend/libs/|^packages/contract/'; then
+        update_image_tag "hasura-sync-service" "infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.job.yaml"
+      fi
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/frontend/portal/|^packages/frontend/lib/logger/|^packages/contract/'; then
+        update_image_tag "portal" "infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml"
+      fi
+
+      if printf "%s\n" "${CHANGED_FILES}" | grep -Eq '^packages/frontend/landing/|^packages/frontend/lib/logger/'; then
+        update_image_tag "landing" "infra/timeweb/10-gitops/apps/frontend/landing/landing.deployment.yaml"
+      fi
+
+      if git diff --cached --quiet; then
+        echo "No deploy manifest changes to commit."
+        exit 0
+      fi
+
+      git commit -m "chore(deploy): update manifests to ${NEW_TAG} [ci skip]"
       git push origin main
 
 # ============================================
@@ -913,19 +960,6 @@ build:main:arch-repo-service:
 
 cleanup:main:arch-repo-service:
   extends: .cleanup_registry_image
-  needs: ["build:main:arch-repo-service"]
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
-      changes:
-        - packages/backend/apps/arch-repo-service/**/*
-        - packages/backend/libs/**/*
-        - packages/contract/**/*
-
-update:main:arch-repo-service:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: arch-repo-service
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/arch-repo-service/arch-repo-service.deployment.yaml
   needs: ["build:main:arch-repo-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -962,19 +996,6 @@ cleanup:main:tenant-service:
         - packages/backend/libs/**/*
         - packages/contract/**/*
 
-update:main:tenant-service:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: tenant-service
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/tenant-service/tenant-service.deployment.yaml
-  needs: ["build:main:tenant-service"]
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
-      changes:
-        - packages/backend/apps/tenant-service/**/*
-        - packages/backend/libs/**/*
-        - packages/contract/**/*
-
 build:main:auth-service:
   extends: .build_docker_image_main
   variables:
@@ -994,19 +1015,6 @@ build:main:auth-service:
 
 cleanup:main:auth-service:
   extends: .cleanup_registry_image
-  needs: ["build:main:auth-service"]
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
-      changes:
-        - packages/backend/apps/auth-service/**/*
-        - packages/backend/libs/**/*
-        - packages/contract/**/*
-
-update:main:auth-service:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: auth-service
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/auth-service/auth-service.deployment.yaml
   needs: ["build:main:auth-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -1035,19 +1043,6 @@ build:main:hasura-sync-service:
 
 cleanup:main:hasura-sync-service:
   extends: .cleanup_registry_image
-  needs: ["build:main:hasura-sync-service"]
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
-      changes:
-        - packages/backend/apps/hasura-sync-service/**/*
-        - packages/backend/libs/**/*
-        - packages/contract/**/*
-
-update:main:hasura-sync-service:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: hasura-sync-service
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/backend/hasura-sync-service/hasura-sync-service.job.yaml
   needs: ["build:main:hasura-sync-service"]
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
@@ -1088,19 +1083,6 @@ cleanup:main:portal:
         - packages/frontend/lib/logger/**/*
         - packages/contract/**/*
 
-update:main:portal:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: portal
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/frontend/portal/portal.deployment.yaml
-  needs: ["build:main:portal"]
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
-      changes:
-        - packages/frontend/portal/**/*
-        - packages/frontend/lib/logger/**/*
-        - packages/contract/**/*
-
 build:main:landing:
   extends: .build_docker_image_main
   variables:
@@ -1125,17 +1107,39 @@ cleanup:main:landing:
         - packages/frontend/landing/**/*
         - packages/frontend/lib/logger/**/*
 
-update:main:landing:
-  extends: .update_deploy_image_main
-  variables:
-    DEPLOY_SERVICE_NAME: landing
-    DEPLOY_FILE: infra/timeweb/10-gitops/apps/frontend/landing/landing.deployment.yaml
-  needs: ["build:main:landing"]
+update:main:deploy-images:
+  extends: .update_deploy_images_main
+  needs:
+    - job: build:main:arch-repo-service
+      optional: true
+      artifacts: false
+    - job: build:main:tenant-service
+      optional: true
+      artifacts: false
+    - job: build:main:auth-service
+      optional: true
+      artifacts: false
+    - job: build:main:hasura-sync-service
+      optional: true
+      artifacts: false
+    - job: build:main:portal
+      optional: true
+      artifacts: false
+    - job: build:main:landing
+      optional: true
+      artifacts: false
   rules:
     - if: $CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE == "push"
       changes:
+        - packages/backend/apps/arch-repo-service/**/*
+        - packages/backend/apps/tenant-service/**/*
+        - packages/backend/apps/auth-service/**/*
+        - packages/backend/apps/hasura-sync-service/**/*
+        - packages/backend/libs/**/*
+        - packages/frontend/portal/**/*
         - packages/frontend/landing/**/*
         - packages/frontend/lib/logger/**/*
+        - packages/contract/**/*
 
 # ============================================
 # Version Update (обновление версий в package.json)
