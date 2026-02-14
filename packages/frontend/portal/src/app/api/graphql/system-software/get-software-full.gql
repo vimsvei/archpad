@@ -1,0 +1,42 @@
+query GetSystemSoftwareFull($where: SystemSoftware_bool_exp!, $systemSoftwareId: uuid!) {
+  software: SystemSoftware(where: $where, limit: 1) {
+    id
+    code
+    name
+    description
+    version
+    kind
+    radarArea
+    type {
+      id
+      name
+    }
+    licenseType {
+      id
+      name
+    }
+    createdAt
+    createdBy
+    updatedAt
+    updatedBy
+  }
+
+  componentMaps: ApplicationComponentSystemSoftwareMap(where: { systemSoftwareId: { _eq: $systemSoftwareId } }) {
+    kind
+    component {
+      id
+      code
+      name
+      description
+    }
+  }
+
+  nodeMaps: TechnologyNodeSystemSoftwareMap(where: { systemSoftwareId: { _eq: $systemSoftwareId } }) {
+    node {
+      id
+      code
+      name
+      description
+    }
+  }
+}

@@ -52,4 +52,23 @@ export async function deleteSystemSoftwareRest(id: string): Promise<void> {
   })
 }
 
+export async function unlinkSystemSoftwareComponentRest(
+  id: string,
+  componentId: string
+): Promise<void> {
+  return restRequest<void>(
+    archRepoPath(["system-software", id, "components", componentId]),
+    { method: "DELETE" }
+  )
+}
+
+export async function unlinkSystemSoftwareNodeRest(
+  id: string,
+  nodeId: string
+): Promise<void> {
+  return restRequest<void>(
+    archRepoPath(["system-software", id, "nodes", nodeId]),
+    { method: "DELETE" }
+  )
+}
 

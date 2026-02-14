@@ -6,6 +6,7 @@ query GetSystemSoftwareByPk($where: SystemSoftware_bool_exp!) {
     description
     version
     kind
+    radarArea
     type {
       id
       name
@@ -20,4 +21,3 @@ query GetSystemSoftwareByPk($where: SystemSoftware_bool_exp!) {
     updatedBy
   }
 }
-

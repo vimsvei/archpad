@@ -6,7 +6,7 @@ import type {
   UpdateSystemSoftwareInput,
 } from "@/services/system-software.rest"
 import * as SystemSoftwareAPI from "@/services/system-software.rest"
-import type { GetSystemSoftwareParams } from "@/services/system-software.graphql"
+import type { GetSystemSoftwareParams, SystemSoftwareFull } from "@/services/system-software.graphql"
 import * as SystemSoftwareHasura from "@/services/system-software.graphql"
 
 export const systemSoftwareApi = createApi({
@@ -34,6 +34,21 @@ export const systemSoftwareApi = createApi({
       async queryFn({ id }) {
         try {
           const data = await SystemSoftwareHasura.getSystemSoftwareByPkGraphql(id)
+          return { data }
+        } catch (error) {
+          return { error }
+        }
+      },
+      providesTags: (_result, _error, { id }) => [
+        { type: "SystemSoftwareList" },
+        { type: "SystemSoftware", id },
+      ],
+    }),
+
+    getSystemSoftwareFull: builder.query<SystemSoftwareFull, { id: string }>({
+      async queryFn({ id }) {
+        try {
+          const data = await SystemSoftwareHasura.getSystemSoftwareFullGraphql(id)
           return { data }
         } catch (error) {
           return { error }
@@ -94,14 +109,49 @@ export const systemSoftwareApi = createApi({
       },
       invalidatesTags: () => [{ type: "SystemSoftwareList" }],
     }),
+
+    unlinkSystemSoftwareComponent: builder.mutation<
+      void,
+      { id: string; componentId: string }
+    >({
+      async queryFn({ id, componentId }) {
+        try {
+          await SystemSoftwareAPI.unlinkSystemSoftwareComponentRest(id, componentId)
+          return { data: undefined }
+        } catch (error) {
+          return { error }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "SystemSoftwareList" },
+        { type: "SystemSoftware", id },
+      ],
+    }),
+
+    unlinkSystemSoftwareNode: builder.mutation<void, { id: string; nodeId: string }>({
+      async queryFn({ id, nodeId }) {
+        try {
+          await SystemSoftwareAPI.unlinkSystemSoftwareNodeRest(id, nodeId)
+          return { data: undefined }
+        } catch (error) {
+          return { error }
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "SystemSoftwareList" },
+        { type: "SystemSoftware", id },
+      ],
+    }),
   }),
 })
 
 export const {
   useGetSystemSoftwareQuery,
   useGetSystemSoftwareByIdQuery,
+  useGetSystemSoftwareFullQuery,
   useCreateSystemSoftwareMutation,
   useUpdateSystemSoftwareMutation,
   useDeleteSystemSoftwareMutation,
+  useUnlinkSystemSoftwareComponentMutation,
+  useUnlinkSystemSoftwareNodeMutation,
 } = systemSoftwareApi
-
