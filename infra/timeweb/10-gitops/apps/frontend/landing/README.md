@@ -18,7 +18,14 @@ Landing — Next.js приложение лендинга ArchPad, доступ�
 - `NEXT_PUBLIC_TOLGEE_API_URL` и `TOLGEE_API_URL` — из `kv/data/archpad/demo/tolgee/front`
 - `NEXT_PUBLIC_SITE_URL` — публичный URL лендинга (по умолчанию `https://archpad.pro`)
 
-ServiceAccount `landing` должен быть добавлен в Vault роль `platform` (bound_service_account_names).
+Turnstile (для /api/lead и /register) в `/v1/kv/data/archpad/demo/turnstile`:
+
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — публичный ключ Cloudflare Turnstile
+- `TURNSTILE_SECRET_KEY` — секретный ключ
+
+Синхронизируется Job'ом `landing-turnstile-secret-sync` в K8s secret `landing-turnstile`.
+
+ServiceAccount `landing` и `landing-turnstile-secret-sync` должны быть в Vault роли `platform`.
 
 ## Настройка DNS
 
