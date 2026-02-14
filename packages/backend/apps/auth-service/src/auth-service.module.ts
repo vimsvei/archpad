@@ -22,6 +22,9 @@ import { TenantServiceClient } from './tenant-service.client';
 import { InternalTokenGuard } from './internal-token.guard';
 import { KeycloakDesiredStateService } from './keycloak-desired-state.service';
 import { VerificationEmailService } from './verification-email.service';
+import { LeadService } from './lead.service';
+import { TenantProvisioningService } from './tenant-provisioning.service';
+import { PasswordSetupService } from './setup-password.service';
 
 @Module({
   imports: [
@@ -131,6 +134,9 @@ import { VerificationEmailService } from './verification-email.service';
     TenantServiceClient,
     InternalTokenGuard,
     KeycloakDesiredStateService,
+    LeadService,
+    TenantProvisioningService,
+    PasswordSetupService,
   ],
 })
 export class AuthServiceModule implements OnModuleInit {

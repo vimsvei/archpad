@@ -12,6 +12,13 @@ export class EnsureUserProfileRequestDto {
 
   @ApiProperty({ required: false, nullable: true })
   department?: string;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description: 'Create personal tenant/workspace for the user',
+  })
+  personalWorkspace?: boolean;
 }
 
 export class EnsureUserProfileResponseDto {
@@ -32,4 +39,3 @@ export class UpdateProfileRequestDto {
   @ApiProperty({ required: false, nullable: true })
   department?: string;
 }
-

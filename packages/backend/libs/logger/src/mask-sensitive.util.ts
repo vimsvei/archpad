@@ -22,6 +22,15 @@ const SENSITIVE_KEYS = new Set([
   'session_id',
   'cookie',
   'internaltoken',
+  'email',
+  'confirmemail',
+  'firstname',
+  'lastname',
+  'company',
+  'role',
+  'turnstiletoken',
+  'cf-turnstile-response',
+  'g-recaptcha-response',
 ]);
 
 const MASK = '***';

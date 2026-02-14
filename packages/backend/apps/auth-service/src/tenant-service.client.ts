@@ -23,6 +23,8 @@ export class TenantServiceClient {
   async ensureUserProfile(input: {
     keycloakId: string;
     middleName?: string;
+    personalWorkspace?: boolean;
+    requestId?: string;
   }): Promise<EnsureUserProfileResponse> {
     const url = new URL('/internal/user-profiles/ensure', this.getBaseUrl());
     const res = await fetch(url.toString(), {
@@ -30,6 +32,7 @@ export class TenantServiceClient {
       headers: {
         'content-type': 'application/json',
         'x-internal-token': this.getInternalToken(),
+        ...(input.requestId ? { 'x-request-id': input.requestId } : {}),
       },
       body: JSON.stringify(input),
     });
@@ -66,4 +69,3 @@ export class TenantServiceClient {
     return json;
   }
 }
-

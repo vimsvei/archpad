@@ -512,16 +512,34 @@ export class KeycloakService {
 
   async createUser(input: {
     email: string;
-    password: string;
+    password?: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
     requireEmailVerification?: boolean;
+    requiredActions?: string[];
+    attributes?: Record<string, string[] | string | undefined>;
   }): Promise<{ userId: string; created: boolean }> {
     const token = await this.getServiceAccessToken();
     const base = this.getKeycloakBaseUrl();
     const realm = this.getRealm();
     const url = new URL(`/admin/realms/${realm}/users`, base);
+
+    const requiredActions = new Set<string>();
+    if (input.requireEmailVerification) requiredActions.add('VERIFY_EMAIL');
+    if (input.requiredActions) {
+      for (const action of input.requiredActions) {
+        if (action) requiredActions.add(action);
+      }
+    }
+
+    const attributes = input.attributes
+      ? Object.fromEntries(
+          Object.entries(input.attributes).filter(
+            ([, v]) => v !== undefined && v !== null && v !== '',
+          ),
+        )
+      : undefined;
 
     const payload: Record<string, unknown> = {
       username: input.email,
@@ -530,12 +548,15 @@ export class KeycloakService {
       emailVerified: false,
       firstName: input.firstName,
       lastName: input.lastName,
-      attributes: input.phone ? { phone: [input.phone] } : undefined,
-      credentials: [
-        { type: 'password', value: input.password, temporary: false },
-      ],
-      ...(input.requireEmailVerification
-        ? { requiredActions: ['VERIFY_EMAIL'] }
+      attributes: {
+        ...(input.phone ? { phone: [input.phone] } : {}),
+        ...(attributes ?? {}),
+      },
+      ...(input.password
+        ? { credentials: [{ type: 'password', value: input.password, temporary: false }] }
+        : {}),
+      ...(requiredActions.size > 0
+        ? { requiredActions: Array.from(requiredActions) }
         : {}),
     };
 
@@ -614,6 +635,38 @@ export class KeycloakService {
       const text = await res.text().catch(() => '');
       throw new Error(
         `execute_actions_failed (${res.status}) ${text.slice(0, 200)}`,
+      );
+    }
+  }
+
+  async setUserPassword(
+    userId: string,
+    password: string,
+    temporary = false,
+  ): Promise<void> {
+    const token = await this.getServiceAccessToken();
+    const base = this.getKeycloakBaseUrl();
+    const realm = this.getRealm();
+    const url = new URL(
+      `/admin/realms/${realm}/users/${userId}/reset-password`,
+      base,
+    );
+    const res = await fetch(url.toString(), {
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'password',
+        value: password,
+        temporary: Boolean(temporary),
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(
+        `set_password_failed (${res.status}) ${text.slice(0, 200)}`,
       );
     }
   }

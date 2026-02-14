@@ -35,7 +35,9 @@ export class InternalUserProfilesService {
     private readonly vault: VaultConfigService,
   ) {}
 
-  async ensureUserProfile(input: EnsureUserProfileRequestDto): Promise<UserProfile> {
+  async ensureUserProfile(
+    input: EnsureUserProfileRequestDto,
+  ): Promise<UserProfile> {
     const keycloakId = String(input.keycloakId ?? '').trim();
     if (!keycloakId) throw new Error('missing_keycloak_id');
 
@@ -62,7 +64,11 @@ export class InternalUserProfilesService {
         await tx.persistAndFlush(profile);
 
         // Provision tenant and workspace if user has no tenant mapping yet
-        await this.provisionTenantAndWorkspace(tx, profile);
+        await this.provisionTenantAndWorkspace(
+          tx,
+          profile,
+          input.personalWorkspace,
+        );
 
         return profile;
       });
@@ -82,17 +88,18 @@ export class InternalUserProfilesService {
   private async provisionTenantAndWorkspace(
     tx: MikroORM['em'],
     profile: UserProfile,
+    personalWorkspace?: boolean,
   ): Promise<void> {
     await this.vault.ensureLoaded();
 
-    const tenantPerUser = parseBool(
-      this.vault.get('TENANT_PER_USER'),
-      true,
-    );
-    const workspacePerUser = parseBool(
-      this.vault.get('WORKSPACE_PER_USER'),
-      true,
-    );
+    const tenantPerUser =
+      typeof personalWorkspace === 'boolean'
+        ? personalWorkspace
+        : parseBool(this.vault.get('TENANT_PER_USER'), true);
+    const workspacePerUser =
+      typeof personalWorkspace === 'boolean'
+        ? personalWorkspace
+        : parseBool(this.vault.get('WORKSPACE_PER_USER'), true);
     const tenantDefaultCode = (
       this.vault.get('TENANT_DEFAULT_CODE') ?? ''
     ).trim();
@@ -225,4 +232,3 @@ export class InternalUserProfilesService {
     return profile;
   }
 }
-

@@ -4,6 +4,7 @@ import {
   Controller,
   HttpCode,
   Post,
+  Req,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +14,8 @@ import { SessionService } from './session.service';
 import { TenantServiceClient } from './tenant-service.client';
 import { InternalTokenGuard } from './internal-token.guard';
 import { VerificationEmailService } from './verification-email.service';
+import { LeadService } from './lead.service';
+import { PasswordSetupService } from './setup-password.service';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -22,6 +25,8 @@ export class AuthController {
     private readonly sessions: SessionService,
     private readonly tenant: TenantServiceClient,
     private readonly verificationEmail: VerificationEmailService,
+    private readonly leads: LeadService,
+    private readonly passwordSetup: PasswordSetupService,
   ) {}
 
   @Post('login')
@@ -135,6 +140,30 @@ export class AuthController {
     return { ok: true };
   }
 
+  @Post('lead')
+  @HttpCode(202)
+  @ApiOperation({
+    summary: 'Register lead from landing (no password, async provisioning)',
+  })
+  async lead(@Body() body: Record<string, unknown>, @Req() req: any) {
+    const requestId =
+      req?.headers?.['x-request-id'] ||
+      req?.headers?.['x-correlation-id'] ||
+      undefined;
+    const ip = AuthController.getClientIp(req);
+    return this.leads.processLead({ body, ip, requestId });
+  }
+
+  private static getClientIp(req: any): string | null {
+    const forwarded = String(req?.headers?.['x-forwarded-for'] || '').trim();
+    if (forwarded) {
+      const ip = forwarded.split(',')[0]?.trim();
+      if (ip) return ip;
+    }
+    const realIp = String(req?.headers?.['x-real-ip'] || '').trim();
+    return realIp || null;
+  }
+
   @Post('recovery')
   @HttpCode(200)
   @ApiOperation({
@@ -197,6 +226,24 @@ export class AuthController {
     if (!token) throw new BadRequestException('Missing token');
     try {
       await this.verificationEmail.confirmVerificationToken(token);
+      return { ok: true };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new UnauthorizedException(message || 'invalid_token');
+    }
+  }
+
+  @Post('setup-password/confirm')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Confirm password setup via token from email link' })
+  async setupPasswordConfirm(@Body() body: Record<string, unknown>) {
+    const token = String(body.token ?? '').trim();
+    const password = String(body.password ?? '');
+    if (!token || !password) {
+      throw new BadRequestException('Missing token/password');
+    }
+    try {
+      await this.passwordSetup.confirmSetupPassword({ token, password });
       return { ok: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
