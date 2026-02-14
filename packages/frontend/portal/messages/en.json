@@ -258,11 +258,49 @@
     "title": "Error"
   },
   "flow": {
+    "application": "Application Flow",
     "direction": "Direction",
+    "endpoint": {
+      "source": "Source",
+      "target": "Target"
+    },
+    "environment": "Environment",
+    "environment.demo": "Demo",
+    "environment.dev": "Development",
+    "environment.dr": "Disaster recovery",
+    "environment.local": "Local",
+    "environment.prod": "Production",
+    "environment.sandbox": "Sandbox",
+    "environment.stage": "Stage",
+    "environment.test": "Test",
+    "field": {
+      "bandwidth": "Bandwidth",
+      "critical-level": "Critical level",
+      "data-format": "Data format",
+      "encryption": "Encryption",
+      "frequency": "Frequency",
+      "latency": "Latency",
+      "not-connected": "Not connected yet",
+      "protocol": "Protocol",
+      "volume-per-day": "Volume per day"
+    },
     "incoming": "Incoming",
     "outgoing": "Outgoing",
+    "proxy": {
+      "move-down": "Move down",
+      "move-up": "Move up",
+      "remove": "Remove intermediary"
+    },
+    "relationships": "Relationships",
+    "relationships.motivations": "Motivation items",
+    "request-data-object": "Request data object",
+    "response-data-object": "Response data object",
     "source": "Source",
-    "target": "Target"
+    "structure": "Structure",
+    "structure.intermediaries": "Intermediaries",
+    "target": "Target",
+    "technology": "Technology Flow",
+    "type": "Flow type"
   },
   "form": {
     "invalid": "Fill in required fields"
@@ -600,6 +638,10 @@
     "functions": {
       "no-results": "Application functions not found",
       "no-results.description": "Create a new application function or add an existing one from the list"
+    },
+    "flows": {
+      "no-results": "Flows not found",
+      "no-results.description": "Add a flow for the selected layer"
     },
     "events": {
       "no-results": "Application events not found",

@@ -9,6 +9,7 @@ import { businessProcessApi } from "@/store/apis/business-process-api"
 import { technologyNetworkApi } from "@/store/apis/technology-network-api"
 import { technologyNodeApi } from "@/store/apis/technology-node-api"
 import { solutionApi } from "@/store/apis/solution-api"
+import { flowApi } from "@/store/apis/flow-api"
 import { profileApi } from "@/store/apis/profile-api"
 import { applicationComponentEditReducer } from "@/store/slices/application-component-edit-slice"
 import { solutionEditReducer } from "@/store/slices/solution-edit-slice"
@@ -32,6 +33,7 @@ export function makeStore() {
       [technologyNetworkApi.reducerPath]: technologyNetworkApi.reducer,
       [technologyNodeApi.reducerPath]: technologyNodeApi.reducer,
       [solutionApi.reducerPath]: solutionApi.reducer,
+      [flowApi.reducerPath]: flowApi.reducer,
       [profileApi.reducerPath]: profileApi.reducer,
       authForms: authFormsReducer,
       applicationComponentEdit: applicationComponentEditReducer,
@@ -56,6 +58,7 @@ export function makeStore() {
         .concat(technologyNetworkApi.middleware)
         .concat(technologyNodeApi.middleware)
         .concat(solutionApi.middleware)
+        .concat(flowApi.middleware)
         .concat(profileApi.middleware)
         .prepend(directoriesMiddleware.middleware),
         // .concat(logger),

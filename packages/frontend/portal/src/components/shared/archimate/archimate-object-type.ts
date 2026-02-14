@@ -12,6 +12,8 @@ export type ArchimateObjectType =
   | "system-software"
   | "technology-node"
   | "technology-network"
+  | "application-flow"
+  | "technology-flow"
   | "solution"
 
 /**
@@ -63,6 +65,10 @@ export function getSheetTypeFromObjectType(
       return "node"
     case "technology-network":
       return "network"
+    case "application-flow":
+      return "flows"
+    case "technology-flow":
+      return "flows"
     case "solution":
       return "solution"
     default:

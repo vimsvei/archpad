@@ -258,11 +258,49 @@
     "title": "Ошибка"
   },
   "flow": {
+    "application": "Поток приложения",
     "direction": "Направление",
+    "endpoint": {
+      "source": "Источник",
+      "target": "Приемник"
+    },
+    "environment": "Среда",
+    "environment.demo": "Демо",
+    "environment.dev": "Разработка",
+    "environment.dr": "Аварийный контур",
+    "environment.local": "Локальная",
+    "environment.prod": "Продакшн",
+    "environment.sandbox": "Песочница",
+    "environment.stage": "Стенд",
+    "environment.test": "Тест",
+    "field": {
+      "bandwidth": "Пропускная способность",
+      "critical-level": "Уровень критичности",
+      "data-format": "Формат данных",
+      "encryption": "Шифрование",
+      "frequency": "Частота",
+      "latency": "Задержка",
+      "not-connected": "Пока не подключено",
+      "protocol": "Протокол",
+      "volume-per-day": "Объем в день"
+    },
     "incoming": "Входящие",
     "outgoing": "Исходящие",
+    "proxy": {
+      "move-down": "Переместить ниже",
+      "move-up": "Переместить выше",
+      "remove": "Удалить посредника"
+    },
+    "relationships": "Связи",
+    "relationships.motivations": "Элементы мотивации",
+    "request-data-object": "Объект данных запроса",
+    "response-data-object": "Объект данных ответа",
     "source": "Источник",
-    "target": "Приемник"
+    "structure": "Структура",
+    "structure.intermediaries": "Посредники",
+    "target": "Приемник",
+    "technology": "Технологический поток",
+    "type": "Тип потока"
   },
   "form": {
     "invalid": "Заполните обязательные поля"
@@ -606,6 +644,10 @@
     "functions": {
       "no-results": "Функции приложения не найдены",
       "no-results.description": "Создайте новую функцию приложения или добавьте существующую из списка"
+    },
+    "flows": {
+      "no-results": "Потоки не найдены",
+      "no-results.description": "Добавьте поток для выбранного слоя"
     },
     "events": {
       "no-results": "События приложения не найдены",

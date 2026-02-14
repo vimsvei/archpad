@@ -258,11 +258,49 @@
     "title": "Error"
   },
   "flow": {
+    "application": "Flujo de aplicación",
     "direction": "Dirección",
+    "endpoint": {
+      "source": "Origen",
+      "target": "Destino"
+    },
+    "environment": "Entorno",
+    "environment.demo": "Demo",
+    "environment.dev": "Desarrollo",
+    "environment.dr": "Recuperación",
+    "environment.local": "Local",
+    "environment.prod": "Producción",
+    "environment.sandbox": "Sandbox",
+    "environment.stage": "Stage",
+    "environment.test": "Pruebas",
+    "field": {
+      "bandwidth": "Ancho de banda",
+      "critical-level": "Nivel crítico",
+      "data-format": "Formato de datos",
+      "encryption": "Cifrado",
+      "frequency": "Frecuencia",
+      "latency": "Latencia",
+      "not-connected": "Aún no conectado",
+      "protocol": "Protocolo",
+      "volume-per-day": "Volumen por día"
+    },
     "incoming": "Entrantes",
     "outgoing": "Salientes",
+    "proxy": {
+      "move-down": "Mover abajo",
+      "move-up": "Mover arriba",
+      "remove": "Eliminar intermediario"
+    },
+    "relationships": "Relaciones",
+    "relationships.motivations": "Elementos de motivación",
+    "request-data-object": "Objeto de datos de solicitud",
+    "response-data-object": "Objeto de datos de respuesta",
     "source": "Origen",
-    "target": "Destino"
+    "structure": "Estructura",
+    "structure.intermediaries": "Intermediarios",
+    "target": "Destino",
+    "technology": "Flujo tecnológico",
+    "type": "Tipo de flujo"
   },
   "form": {
     "invalid": "Complete los campos obligatorios"
@@ -606,6 +644,10 @@
     "functions": {
       "no-results": "Funciones de aplicación no encontradas",
       "no-results.description": "Cree una nueva función de aplicación o añada una existente de la lista"
+    },
+    "flows": {
+      "no-results": "Flujos no encontrados",
+      "no-results.description": "Agregue un flujo para la capa seleccionada"
     },
     "events": {
       "no-results": "Eventos de aplicación no encontrados",

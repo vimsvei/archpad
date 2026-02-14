@@ -258,11 +258,49 @@
     "title": "Greška"
   },
   "flow": {
+    "application": "Aplikacioni tok",
     "direction": "Smer",
+    "endpoint": {
+      "source": "Izvor",
+      "target": "Prijamnik"
+    },
+    "environment": "Okruženje",
+    "environment.demo": "Demo",
+    "environment.dev": "Razvoj",
+    "environment.dr": "Oporavak",
+    "environment.local": "Lokalno",
+    "environment.prod": "Produkcija",
+    "environment.sandbox": "Sandbox",
+    "environment.stage": "Stage",
+    "environment.test": "Test",
+    "field": {
+      "bandwidth": "Propusni opseg",
+      "critical-level": "Nivo kritičnosti",
+      "data-format": "Format podataka",
+      "encryption": "Šifrovanje",
+      "frequency": "Učestalost",
+      "latency": "Latencija",
+      "not-connected": "Još nije povezano",
+      "protocol": "Protokol",
+      "volume-per-day": "Obim po danu"
+    },
     "incoming": "Dolazni",
     "outgoing": "Odlazni",
+    "proxy": {
+      "move-down": "Pomeri dole",
+      "move-up": "Pomeri gore",
+      "remove": "Ukloni posrednika"
+    },
+    "relationships": "Veze",
+    "relationships.motivations": "Motivacioni elementi",
+    "request-data-object": "Objekat podataka zahteva",
+    "response-data-object": "Objekat podataka odgovora",
     "source": "Izvor",
-    "target": "Prijamnik"
+    "structure": "Struktura",
+    "structure.intermediaries": "Posrednici",
+    "target": "Prijamnik",
+    "technology": "Tehnološki tok",
+    "type": "Tip toka"
   },
   "form": {
     "invalid": "Popunite obavezna polja"
@@ -606,6 +644,10 @@
     "functions": {
       "no-results": "Funkcije aplikacije nisu pronađene",
       "no-results.description": "Kreirajte novu funkciju aplikacije ili dodajte postojeću sa liste"
+    },
+    "flows": {
+      "no-results": "Tokovi nisu pronađeni",
+      "no-results.description": "Dodajte tok za izabrani sloj"
     },
     "events": {
       "no-results": "Događaji aplikacije nisu pronađeni",

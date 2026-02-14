@@ -21,6 +21,7 @@ import { ApplicationInterfaceModule } from './endpoints/archimate/application-in
 import { SolutionModule } from './endpoints/solution/solution.module';
 import { OpenExchangeImportModule } from '@/endpoints/import/open-exchange/open-exchange-import.module';
 import { DrawIoImportModule } from '@/endpoints/import/draw-io/draw-io-import.module';
+import { FlowModule } from '@/endpoints/archimate/flow/flow.module';
 import {
   LoggerModule,
   LoggerService,
@@ -167,6 +168,7 @@ import { ArchpadRequestContextMiddleware } from '@/request-context/archpad-reque
     NamedObjectAutoRegistry.registerAll(),
     ApplicationComponentModule,
     ApplicationInterfaceModule,
+    FlowModule,
     SolutionModule,
     SystemSoftwareModule,
     TechnologyNodeDefaultsModule,

@@ -39,6 +39,7 @@ export type ArchimateDetailCardProps = {
   relations?: RelationsConfig
   sidebar: ReactNode
   beforeGrid?: ReactNode
+  mainBeforeRelations?: ReactNode
   mainAfterRelations?: ReactNode
 }
 
@@ -53,6 +54,7 @@ export function ArchimateDetailCard({
   relations,
   sidebar,
   beforeGrid,
+  mainBeforeRelations,
   mainAfterRelations,
 }: ArchimateDetailCardProps) {
   const [previewItem, setPreviewItem] = React.useState<{
@@ -94,7 +96,7 @@ export function ArchimateDetailCard({
             >
               {t(description.labelKey ?? "item.description")}
             </Label>
-            <div className="flex-1 min-h-[200px] border rounded-lg overflow-hidden flex flex-col">
+          <div className="flex-1 min-h-[200px] border rounded-lg overflow-hidden flex flex-col">
               <MarkdownEditor
                 key={description.editorKey}
                 value={description.value}
@@ -104,6 +106,8 @@ export function ArchimateDetailCard({
               />
             </div>
           </div>
+
+          {mainBeforeRelations}
 
           {relations && (
             <RelationsPanel

@@ -1,12 +1,12 @@
-import { FlowGeneric } from '@/model/archimate/core/flow.generic';
-import { Entity, ManyToOne } from '@mikro-orm/core';
-import { LayerKind } from '@/model/enums/layer-kind.enum';
-import { ApplicationComponent } from '@/model/archimate/application/application-component.entity';
-import { ApplicationComponentFunctionMap } from '@/model/maps/application-component-function.map';
-import { ApplicationComponentDataObjectMap } from '@/model/maps/application-component-data-object.map';
+import {FlowGeneric} from '@/model/archimate/core/flow.generic';
+import {Entity, ManyToOne} from '@mikro-orm/core';
+import {LayerKind} from '@/model/enums/layer-kind.enum';
+import {ApplicationComponent} from '@/model/archimate/application/application-component.entity';
+import {ApplicationComponentFunctionMap} from '@/model/maps/application-component-function.map';
+import {ApplicationComponentDataObjectMap} from '@/model/maps/application-component-data-object.map';
 
 @Entity({ discriminatorValue: LayerKind.APPLICATION })
-export class ApplicationFlow extends FlowGeneric {
+  export class ApplicationFlow extends FlowGeneric {
   @ManyToOne({
     entity: () => ApplicationComponent,
     nullable: false,
