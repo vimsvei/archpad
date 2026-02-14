@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EntityRepository, FilterQuery, QueryOrder } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { SystemSoftware } from '@/model/archimate/technology/system-software.entity';
+import { ApplicationComponentSystemSoftwareMap } from '@/model/maps/application-component-system-software.map';
+import { TechnologyNodeSystemSoftwareMap } from '@/model/maps/technology-node-system-software.map';
 import {
   LicenseTypeDirectory,
   SoftwareTypeDirectory,
@@ -34,6 +36,10 @@ export class SystemSoftwareService {
   constructor(
     @InjectRepository(SystemSoftware)
     private readonly repo: EntityRepository<SystemSoftware>,
+    @InjectRepository(ApplicationComponentSystemSoftwareMap)
+    private readonly componentMapRepo: EntityRepository<ApplicationComponentSystemSoftwareMap>,
+    @InjectRepository(TechnologyNodeSystemSoftwareMap)
+    private readonly nodeMapRepo: EntityRepository<TechnologyNodeSystemSoftwareMap>,
   ) {}
 
   async findAll(
@@ -96,6 +102,7 @@ export class SystemSoftwareService {
       description: dto.description,
       version: dto.version,
       kind: dto.kind ?? SystemSoftwareKind.OTHER,
+      ...(dto.radarArea !== undefined ? { radarArea: dto.radarArea } : {}),
       ...(tenantId ? { tenantId } : {}),
       type: dto.typeId
         ? em.getReference(SoftwareTypeDirectory, dto.typeId)
@@ -129,6 +136,7 @@ export class SystemSoftwareService {
         : {}),
       ...(dto.version !== undefined ? { version: dto.version } : {}),
       ...(dto.kind !== undefined ? { kind: dto.kind } : {}),
+      ...(dto.radarArea !== undefined ? { radarArea: dto.radarArea } : {}),
       ...(dto.typeId !== undefined
         ? {
             type: dto.typeId
@@ -158,5 +166,33 @@ export class SystemSoftwareService {
     const entity = await this.findOne(id);
     const em = this.repo.getEntityManager();
     await em.removeAndFlush(entity);
+  }
+
+  async removeComponentRelation(
+    systemSoftwareId: string,
+    componentId: string,
+  ): Promise<void> {
+    await this.findOne(systemSoftwareId);
+    const em = this.repo.getEntityManager();
+    const map = await this.componentMapRepo.findOne({
+      systemSoftware: systemSoftwareId as any,
+      component: componentId as any,
+    } as any);
+    if (!map) return;
+    await em.removeAndFlush(map);
+  }
+
+  async removeNodeRelation(
+    systemSoftwareId: string,
+    nodeId: string,
+  ): Promise<void> {
+    await this.findOne(systemSoftwareId);
+    const em = this.repo.getEntityManager();
+    const map = await this.nodeMapRepo.findOne({
+      systemSoftware: systemSoftwareId as any,
+      node: nodeId as any,
+    } as any);
+    if (!map) return;
+    await em.removeAndFlush(map);
   }
 }

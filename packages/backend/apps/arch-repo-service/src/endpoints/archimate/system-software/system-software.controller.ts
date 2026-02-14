@@ -113,4 +113,25 @@ export class SystemSoftwareController {
   delete(@Param('id') id: string) {
     return this.service.delete(id);
   }
+
+  @Delete(':id/components/:componentId')
+  @ApiOperation({ summary: `Удаление связи системного ПО с компонентом` })
+  @ApiParam({ name: 'id', description: 'UUID системного ПО' })
+  @ApiParam({ name: 'componentId', description: 'UUID компонента' })
+  @ApiOkResponse()
+  deleteComponentRelation(
+    @Param('id') id: string,
+    @Param('componentId') componentId: string,
+  ) {
+    return this.service.removeComponentRelation(id, componentId);
+  }
+
+  @Delete(':id/nodes/:nodeId')
+  @ApiOperation({ summary: `Удаление связи системного ПО с узлом` })
+  @ApiParam({ name: 'id', description: 'UUID системного ПО' })
+  @ApiParam({ name: 'nodeId', description: 'UUID технологического узла' })
+  @ApiOkResponse()
+  deleteNodeRelation(@Param('id') id: string, @Param('nodeId') nodeId: string) {
+    return this.service.removeNodeRelation(id, nodeId);
+  }
 }
