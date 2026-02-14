@@ -34,6 +34,21 @@ spec:
           {{- $oidc := secret "kv/data/archpad/demo/oidc/portal" }}
           {{- $smtp := secret "kv/data/archpad/demo/keycloak/smtp" }}
           export AUTH_DB="{{ $cfg.Data.data.AUTH_DB }}"
+          {{- if $cfg.Data.data.PII_HASH_SALT }}
+          export PII_HASH_SALT="{{ $cfg.Data.data.PII_HASH_SALT }}"
+          {{- end }}
+          {{- if $cfg.Data.data.LEAD_IP_LIMIT_10_MIN }}
+          export LEAD_IP_LIMIT_10_MIN="{{ $cfg.Data.data.LEAD_IP_LIMIT_10_MIN }}"
+          {{- end }}
+          {{- if $cfg.Data.data.TENANT_PROVISIONING_POLL_MS }}
+          export TENANT_PROVISIONING_POLL_MS="{{ $cfg.Data.data.TENANT_PROVISIONING_POLL_MS }}"
+          {{- end }}
+          {{- if $cfg.Data.data.TENANT_PROVISIONING_BATCH }}
+          export TENANT_PROVISIONING_BATCH="{{ $cfg.Data.data.TENANT_PROVISIONING_BATCH }}"
+          {{- end }}
+          {{- if $cfg.Data.data.SETUP_PASSWORD_TOKEN_SECRET }}
+          export SETUP_PASSWORD_TOKEN_SECRET="{{ $cfg.Data.data.SETUP_PASSWORD_TOKEN_SECRET }}"
+          {{- end }}
           export PROJECT_DB_USER="{{ $common.Data.data.PROJECT_DB_USER }}"
           export PROJECT_DB_PASSWORD="{{ $common.Data.data.PROJECT_DB_PASSWORD }}"
           export INTERNAL_SERVICE_TOKEN="{{ $token.Data.data.INTERNAL_SERVICE_TOKEN }}"
@@ -158,4 +173,3 @@ spec:
             limits:
               cpu: 150m
               memory: 256Mi
-

@@ -16,6 +16,8 @@ data:
       "duplicateEmailsAllowed": false,
       "resetPasswordAllowed": true,
       "rememberMe": true,
+      "actionTokenGeneratedByAdminLifespan": 3600,
+      "actionTokenGeneratedByUserLifespan": 3600,
       "clients": [
         {
           "clientId": "archpad-portal",

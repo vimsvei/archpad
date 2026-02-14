@@ -9,6 +9,14 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`archpad.pro`) && Path(`/api/lead`) && Method(`POST`)
+      kind: Rule
+      services:
+        - name: landing
+          port: 3000
+      middlewares:
+        - name: landing-api-lead-ratelimit
+          namespace: platform
     - match: Host(`archpad.pro`)
       kind: Rule
       services:
